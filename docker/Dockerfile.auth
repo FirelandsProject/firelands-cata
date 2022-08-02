@@ -1,0 +1,16 @@
+FROM debian:11
+
+RUN apt update
+RUN apt update && apt full-upgrade -y && apt install -y git cmake make gcc g++ clang libssl-dev libbz2-dev libreadline-dev libncurses-dev libboost-all-dev mariadb-server mariadb-client libmariadb-dev libmariadb-dev-compat
+RUN git clone https://github.com/FirelandsProject/firelands-cata.git --branch master --single-branch firelands-cata --depth 1
+WORKDIR /firelands/cata
+WORKDIR /firelands-cata/build
+RUN cmake ../ -DCMAKE_INSTALL_PREFIX=/firelands/cata -DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DWITH_WARNINGS=1 -DTOOLS=0 -DSCRIPTS=static
+RUN make -j4
+RUN make install
+WORKDIR /firelands/cata
+RUN rm -rf ./bin/worldserver && rm -rf ./etc/worldserver.conf.dist
+WORKDIR /firelands/cata/bin
+ENTRYPOINT ['./authserver']
+
+
