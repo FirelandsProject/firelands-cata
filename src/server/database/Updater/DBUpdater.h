@@ -72,7 +72,7 @@ public:
 
     static inline std::string GetTableName();
 
-    static std::string GetBaseFile();
+    static std::string GetBaseDirectory();
 
     static bool IsEnabled(uint32 const updateMask);
 
