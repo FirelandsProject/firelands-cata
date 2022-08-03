@@ -1,3 +1,0 @@
--- 
-UPDATE `creature_template` SET `npcflag`=0 WHERE `entry` IN (34835,34876,34877,34878,35175,35200,37203);
-DELETE FROM `creature_queststarter` WHERE `id` IN (34835,34876,34877,34878,35175,35200,37203);

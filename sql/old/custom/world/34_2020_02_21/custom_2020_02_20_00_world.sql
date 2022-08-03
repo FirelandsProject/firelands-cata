@@ -1,1 +1,0 @@
-ALTER TABLE `quest_template_addon` CHANGE `NextQuestID` `NextQuestID` MEDIUMINT(8) UNSIGNED NOT NULL DEFAULT 0;
