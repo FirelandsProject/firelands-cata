@@ -554,16 +554,6 @@ public:
         return true;
     }
 
-    static bool HandleReloadLootTemplatesCreatureCommand(ChatHandler* handler, char const* /*args*/)
-    {
-        LOG_INFO("misc", "Re-Loading Loot Tables... (`creature_loot_template`)");
-        LoadLootTemplates_Creature();
-        LootTemplates_Creature.CheckLootRefs();
-        handler->SendGlobalGMSysMessage("DB table `creature_loot_template` reloaded.");
-        sConditionMgr->LoadConditions(true);
-        return true;
-    }
-
     static bool HandleReloadCreatureMovementOverrideCommand(ChatHandler* handler, char const* /*args*/)
     {
         LOG_INFO("misc", "Re-Loading Creature movement overrides...");
@@ -572,111 +562,122 @@ public:
         return true;
     }
 
+    static bool HandleReloadLootTemplatesCreatureCommand(ChatHandler* handler, char const* /*args*/)
+    {
+        LOG_INFO("misc", "Re-Loading Loot Tables LootType 1 (Creature)...");
+        LoadLootTemplates_Creature();
+        LootTemplates_Creature.CheckLootRefs(LOOT_TYPE_CREATURE);
+        handler->SendGlobalGMSysMessage("DB table `world_loot_template` reloaded for Creature.");
+        sConditionMgr->LoadConditions(true);
+        return true;
+    }
+
     static bool HandleReloadLootTemplatesDisenchantCommand(ChatHandler* handler, char const* /*args*/)
     {
-        LOG_INFO("misc", "Re-Loading Loot Tables... (`disenchant_loot_template`)");
+        LOG_INFO("misc", "Re-Loading Loot Tables LootType 2 (Disenchant)...");
         LoadLootTemplates_Disenchant();
-        LootTemplates_Disenchant.CheckLootRefs();
-        handler->SendGlobalGMSysMessage("DB table `disenchant_loot_template` reloaded.");
+        LootTemplates_Disenchant.CheckLootRefs(LOOT_TYPE_DISENCHANT);
+        handler->SendGlobalGMSysMessage("DB table `world_loot_template` reloaded for Disenchant.");
         sConditionMgr->LoadConditions(true);
         return true;
     }
 
     static bool HandleReloadLootTemplatesFishingCommand(ChatHandler* handler, char const* /*args*/)
     {
-        LOG_INFO("misc", "Re-Loading Loot Tables... (`fishing_loot_template`)");
+        LOG_INFO("misc", "Re-Loading Loot Tables LootType 3 (Fishing)...");
         LoadLootTemplates_Fishing();
-        LootTemplates_Fishing.CheckLootRefs();
-        handler->SendGlobalGMSysMessage("DB table `fishing_loot_template` reloaded.");
+        LootTemplates_Fishing.CheckLootRefs(LOOT_TYPE_FISHING);
+        handler->SendGlobalGMSysMessage("DB table `world_loot_template` reloaded for Fishing.");
         sConditionMgr->LoadConditions(true);
         return true;
     }
 
     static bool HandleReloadLootTemplatesGameobjectCommand(ChatHandler* handler, char const* /*args*/)
     {
-        LOG_INFO("misc", "Re-Loading Loot Tables... (`gameobject_loot_template`)");
+        LOG_INFO("misc", "Re-Loading Loot Tables LootType 4 (GameObject)...");
         LoadLootTemplates_Gameobject();
-        LootTemplates_Gameobject.CheckLootRefs();
-        handler->SendGlobalGMSysMessage("DB table `gameobject_loot_template` reloaded.");
+        LootTemplates_Gameobject.CheckLootRefs(LOOT_TYPE_GAMEOBJECT);
+        handler->SendGlobalGMSysMessage("DB table `world_loot_template` reloaded for GameObject.");
         sConditionMgr->LoadConditions(true);
         return true;
     }
 
     static bool HandleReloadLootTemplatesItemCommand(ChatHandler* handler, char const* /*args*/)
     {
-        LOG_INFO("misc", "Re-Loading Loot Tables... (`item_loot_template`)");
+        LOG_INFO("misc", "Re-Loading Loot Tables LootType 5 (Item)...");
         LoadLootTemplates_Item();
-        LootTemplates_Item.CheckLootRefs();
-        handler->SendGlobalGMSysMessage("DB table `item_loot_template` reloaded.");
-        sConditionMgr->LoadConditions(true);
-        return true;
-    }
-
-    static bool HandleReloadLootTemplatesMillingCommand(ChatHandler* handler, char const* /*args*/)
-    {
-        LOG_INFO("misc", "Re-Loading Loot Tables... (`milling_loot_template`)");
-        LoadLootTemplates_Milling();
-        LootTemplates_Milling.CheckLootRefs();
-        handler->SendGlobalGMSysMessage("DB table `milling_loot_template` reloaded.");
-        sConditionMgr->LoadConditions(true);
-        return true;
-    }
-
-    static bool HandleReloadLootTemplatesPickpocketingCommand(ChatHandler* handler, char const* /*args*/)
-    {
-        LOG_INFO("misc", "Re-Loading Loot Tables... (`pickpocketing_loot_template`)");
-        LoadLootTemplates_Pickpocketing();
-        LootTemplates_Pickpocketing.CheckLootRefs();
-        handler->SendGlobalGMSysMessage("DB table `pickpocketing_loot_template` reloaded.");
-        sConditionMgr->LoadConditions(true);
-        return true;
-    }
-
-    static bool HandleReloadLootTemplatesProspectingCommand(ChatHandler* handler, char const* /*args*/)
-    {
-        LOG_INFO("misc", "Re-Loading Loot Tables... (`prospecting_loot_template`)");
-        LoadLootTemplates_Prospecting();
-        LootTemplates_Prospecting.CheckLootRefs();
-        handler->SendGlobalGMSysMessage("DB table `prospecting_loot_template` reloaded.");
+        LootTemplates_Item.CheckLootRefs(LOOT_TYPE_ITEM);
+        handler->SendGlobalGMSysMessage("DB table `world_loot_template` reloaded for Item.");
         sConditionMgr->LoadConditions(true);
         return true;
     }
 
     static bool HandleReloadLootTemplatesMailCommand(ChatHandler* handler, char const* /*args*/)
     {
-        LOG_INFO("misc", "Re-Loading Loot Tables... (`mail_loot_template`)");
+        LOG_INFO("misc", "Re-Loading Loot Tables LootType 6 (Mail)...");
         LoadLootTemplates_Mail();
-        LootTemplates_Mail.CheckLootRefs();
-        handler->SendGlobalGMSysMessage("DB table `mail_loot_template` reloaded.");
+        LootTemplates_Mail.CheckLootRefs(LOOT_TYPE_MAIL);
+        handler->SendGlobalGMSysMessage("DB table `world_loot_template` reloaded for Mail.");
+        sConditionMgr->LoadConditions(true);
+        return true;
+    }
+
+    static bool HandleReloadLootTemplatesMillingCommand(ChatHandler* handler, char const* /*args*/)
+    {
+        LOG_INFO("misc", "Re-Loading Loot Tables LootType 7 (Milling)...");
+        LoadLootTemplates_Milling();
+        LootTemplates_Milling.CheckLootRefs(LOOT_TYPE_MILLING);
+        handler->SendGlobalGMSysMessage("DB table `world_loot_template` reloaded for Milling.");
+        sConditionMgr->LoadConditions(true);
+        return true;
+    }
+
+    static bool HandleReloadLootTemplatesPickpocketingCommand(ChatHandler* handler, char const* /*args*/)
+    {
+        LOG_INFO("misc", "Re-Loading Loot Tables LootType 8 (PickPocketing)...");
+        LoadLootTemplates_Pickpocketing();
+        LootTemplates_Pickpocketing.CheckLootRefs(LOOT_TYPE_PICKPOCKETING);
+        handler->SendGlobalGMSysMessage("DB table `world_loot_template` reloaded for PickPocketing.");
+        sConditionMgr->LoadConditions(true);
+        return true;
+    }
+
+    static bool HandleReloadLootTemplatesProspectingCommand(ChatHandler* handler, char const* /*args*/)
+    {
+        LOG_INFO("misc", "Re-Loading Loot Tables LootType 9 (Prospecting)...");
+        LoadLootTemplates_Prospecting();
+        LootTemplates_Prospecting.CheckLootRefs(LOOT_TYPE_PROSPECTING);
+        handler->SendGlobalGMSysMessage("DB table `world_loot_template` reloaded for Prospecting.");
         sConditionMgr->LoadConditions(true);
         return true;
     }
 
     static bool HandleReloadLootTemplatesReferenceCommand(ChatHandler* handler, char const* /*args*/)
     {
-        LOG_INFO("misc", "Re-Loading Loot Tables... (`reference_loot_template`)");
+        LOG_INFO("misc", "Re-Loading Loot Tables LootType 10 (Reference)...");
         LoadLootTemplates_Reference();
-        handler->SendGlobalGMSysMessage("DB table `reference_loot_template` reloaded.");
+        LootTemplates_Reference.CheckLootRefs(LOOT_TYPE_REFERENCE);
+        handler->SendGlobalGMSysMessage("DB table `world_loot_template` reloaded for reference.");
         sConditionMgr->LoadConditions(true);
         return true;
     }
 
     static bool HandleReloadLootTemplatesSkinningCommand(ChatHandler* handler, char const* /*args*/)
     {
-        LOG_INFO("misc", "Re-Loading Loot Tables... (`skinning_loot_template`)");
+        LOG_INFO("misc", "Re-Loading Loot Tables LootType 11 (Skinning)...");
         LoadLootTemplates_Skinning();
-        LootTemplates_Skinning.CheckLootRefs();
-        handler->SendGlobalGMSysMessage("DB table `skinning_loot_template` reloaded.");
+        LootTemplates_Skinning.CheckLootRefs(LOOT_TYPE_SKINNING);
+        handler->SendGlobalGMSysMessage("DB table `world_loot_template` reloaded for Skinning.");
         sConditionMgr->LoadConditions(true);
         return true;
     }
 
     static bool HandleReloadLootTemplatesSpellCommand(ChatHandler* handler, char const* /*args*/)
     {
-        LOG_INFO("misc", "Re-Loading Loot Tables... (`spell_loot_template`)");
+        LOG_INFO("misc", "Re-Loading Loot Tables LootType 12 (Spell)...");
         LoadLootTemplates_Spell();
-        LootTemplates_Spell.CheckLootRefs();
-        handler->SendGlobalGMSysMessage("DB table `spell_loot_template` reloaded.");
+        LootTemplates_Spell.CheckLootRefs(LOOT_TYPE_SPELL);
+        handler->SendGlobalGMSysMessage("DB table `world_loot_template` reloaded for Spell.");
         sConditionMgr->LoadConditions(true);
         return true;
     }

@@ -134,6 +134,23 @@ enum LootSlotType
     LOOT_SLOT_TYPE_OWNER        = 4                         // ignore binding confirmation and etc, for single player looting
 };
 
+enum LootTypeId
+{
+    LOOT_TYPE_NONE            = -1,
+    LOOT_TYPE_CREATURE        = 1,
+    LOOT_TYPE_DISENCHANT      = 2,
+    LOOT_TYPE_FISHING         = 3,
+    LOOT_TYPE_GAMEOBJECT      = 4,
+    LOOT_TYPE_ITEM            = 5,
+    LOOT_TYPE_MAIL            = 6,
+    LOOT_TYPE_MILLING         = 7,
+    LOOT_TYPE_PICKPOCKETING   = 8,
+    LOOT_TYPE_PROSPECTING     = 9,
+    LOOT_TYPE_REFERENCE       = 10,
+    LOOT_TYPE_SKINNING        = 11,
+    LOOT_TYPE_SPELL           = 12
+};
+
 struct FC_GAME_API LootItem
 {
     uint32  itemid;

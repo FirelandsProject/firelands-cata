@@ -68,13 +68,13 @@ class FC_GAME_API LootStore
 
         virtual ~LootStore() { Clear(); }
 
-        void Verify() const;
+        void Verify(LootTypeId lootTypeId) const;
 
-        uint32 LoadAndCollectLootIds(LootIdSet& ids_set);
-        void CheckLootRefs(LootIdSet* ref_set = nullptr) const; // check existence reference and remove it from ref_set
-        void ReportUnusedIds(LootIdSet const& ids_set) const;
-        void ReportNonExistingId(uint32 lootId) const;
-        void ReportNonExistingId(uint32 lootId, char const* ownerType, uint32 ownerId) const;
+        uint32 LoadAndCollectLootIds(LootIdSet& ids_set, LootTypeId lootTypeId);
+        void CheckLootRefs(LootTypeId lootTypeId, LootIdSet* ref_set = nullptr) const; // check existence reference and remove it from ref_set
+        void ReportUnusedIds(LootIdSet const& ids_set, LootTypeId lootTypeId) const;
+        void ReportNonExistingId(uint32 lootId, LootTypeId lootTypeId) const;
+        void ReportNonExistingId(uint32 lootId, char const* ownerType, uint32 ownerId, LootTypeId lootTypeId) const;
 
         bool HaveLootFor(uint32 loot_id) const { return m_LootTemplates.find(loot_id) != m_LootTemplates.end(); }
         bool HaveQuestLootFor(uint32 loot_id) const;
@@ -88,7 +88,7 @@ class FC_GAME_API LootStore
         char const* GetEntryName() const { return m_entryName; }
         bool IsRatesAllowed() const { return m_ratesAllowed; }
     protected:
-        uint32 LoadLootTable();
+        uint32 LoadLootTable(LootTypeId);
         void Clear();
     private:
         LootTemplateMap m_LootTemplates;
@@ -119,8 +119,8 @@ class FC_GAME_API LootTemplate
         bool HasQuestDropForPlayer(LootTemplateMap const& store, Player const* player, uint8 groupId = 0) const;
 
         // Checks integrity of the template
-        void Verify(LootStore const& store, uint32 Id) const;
-        void CheckLootRefs(LootTemplateMap const& store, LootIdSet* ref_set) const;
+        void Verify(LootStore const& store, uint32 Id, LootTypeId lootTypeId) const;
+        void CheckLootRefs(LootTemplateMap const& store, LootTypeId, LootIdSet* ref_set) const;
         bool addConditionItem(Condition* cond);
         bool isReference(uint32 id);
 

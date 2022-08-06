@@ -40,18 +40,18 @@ static Rates const qualityToRate[MAX_ITEM_QUALITY] =
     RATE_DROP_ITEM_ARTIFACT,                                // ITEM_QUALITY_ARTIFACT
 };
 
-LootStore LootTemplates_Creature("creature_loot_template",           "creature entry",                  true);
-LootStore LootTemplates_Disenchant("disenchant_loot_template",       "item disenchant id",              true);
-LootStore LootTemplates_Fishing("fishing_loot_template",             "area id",                         true);
-LootStore LootTemplates_Gameobject("gameobject_loot_template",       "gameobject entry",                true);
-LootStore LootTemplates_Item("item_loot_template",                   "item entry",                      true);
-LootStore LootTemplates_Mail("mail_loot_template",                   "mail template id",                false);
-LootStore LootTemplates_Milling("milling_loot_template",             "item entry (herb)",               true);
-LootStore LootTemplates_Pickpocketing("pickpocketing_loot_template", "creature pickpocket lootid",      true);
-LootStore LootTemplates_Prospecting("prospecting_loot_template",     "item entry (ore)",                true);
-LootStore LootTemplates_Reference("reference_loot_template",         "reference id",                    false);
-LootStore LootTemplates_Skinning("skinning_loot_template",           "creature skinning id",            true);
-LootStore LootTemplates_Spell("spell_loot_template",                 "spell id (random item creating)", false);
+LootStore LootTemplates_Creature("world_loot_template",         "creature entry",                  true);
+LootStore LootTemplates_Disenchant("world_loot_template",       "item disenchant id",              true);
+LootStore LootTemplates_Fishing("world_loot_template",          "area id",                         true);
+LootStore LootTemplates_Gameobject("world_loot_template",       "gameobject entry",                true);
+LootStore LootTemplates_Item("world_loot_template",             "item entry",                      true);
+LootStore LootTemplates_Mail("world_loot_template",             "mail template id",                false);
+LootStore LootTemplates_Milling("world_loot_template",          "item entry (herb)",               true);
+LootStore LootTemplates_Pickpocketing("world_loot_template",    "creature pickpocket lootid",      true);
+LootStore LootTemplates_Prospecting("world_loot_template",      "item entry (ore)",                true);
+LootStore LootTemplates_Reference("world_loot_template",        "reference id",                    false);
+LootStore LootTemplates_Skinning("world_loot_template",         "creature skinning id",            true);
+LootStore LootTemplates_Spell("world_loot_template",            "spell id (random item creating)", false);
 
 // Selects invalid loot items to be removed from group possible entries (before rolling)
 struct LootGroupInvalidSelector
@@ -91,9 +91,9 @@ class LootTemplate::LootGroup                               // A set of loot def
         float RawTotalChance() const;                       // Overall chance for the group (without equal chanced items)
         float TotalChance() const;                          // Overall chance for the group
 
-        void Verify(LootStore const& lootstore, uint32 id, uint8 group_id) const;
+        void Verify(LootStore const& lootstore, uint32 id, uint8 group_id, LootTypeId lootTypeId) const;
         void CollectLootIds(LootIdSet& set) const;
-        void CheckLootRefs(LootTemplateMap const& store, LootIdSet* ref_set) const;
+        void CheckLootRefs(LootTemplateMap const& store, LootTypeId lootTypeId, LootIdSet* ref_set) const;
         LootStoreItemList* GetExplicitlyChancedItemList() { return &ExplicitlyChanced; }
         LootStoreItemList* GetEqualChancedItemList() { return &EqualChanced; }
         void CopyConditions(ConditionContainer conditions);
@@ -118,15 +118,15 @@ void LootStore::Clear()
 
 // Checks validity of the loot store
 // Actual checks are done within LootTemplate::Verify() which is called for every template
-void LootStore::Verify() const
+void LootStore::Verify(LootTypeId lootTypeId) const
 {
     for (LootTemplateMap::const_iterator i = m_LootTemplates.begin(); i != m_LootTemplates.end(); ++i)
-        i->second->Verify(*this, i->first);
+        i->second->Verify(*this, i->first, lootTypeId);
 }
 
 // Loads a *_loot_template DB table into loot store
 // All checks of the loaded template are called from here, no error reports at loot generation required
-uint32 LootStore::LoadLootTable()
+uint32 LootStore::LoadLootTable(LootTypeId lootTypeId)
 {
     LootTemplateMap::const_iterator tab;
 
@@ -134,7 +134,7 @@ uint32 LootStore::LoadLootTable()
     Clear();
 
     //                                                0      1     2          3       4              5           6         7        8         9
-    QueryResult result = WorldDatabase.PQuery("SELECT Entry, Item, Reference, Chance, QuestRequired, IsCurrency, LootMode, GroupId, MinCount, MaxCount FROM %s", GetName());
+    QueryResult result = WorldDatabase.PQuery("SELECT Entry, Item, Reference, Chance, QuestRequired, IsCurrency, LootMode, GroupId, MinCount, MaxCount FROM world_loot_template WHERE lootTypeId = %d", lootTypeId);
     if (!result)
         return 0;
 
@@ -157,7 +157,7 @@ uint32 LootStore::LoadLootTable()
 
         if (groupid >= 1 << 7)                                     // it stored in 7 bit field
         {
-            LOG_ERROR("sql.sql", "Table '%s' Entry %d Item %d: GroupId (%u) must be less %u - skipped", GetName(), entry, item, groupid, 1 << 7);
+            LOG_ERROR("sql.sql", "Table 'world_loot_template' LootType %d Entry %d Item %d GroupId %u must be less %u - skipped", lootTypeId, entry, item, groupid, 1 << 7);
             return 0;
         }
 
@@ -190,7 +190,7 @@ uint32 LootStore::LoadLootTable()
     }
     while (result->NextRow());
 
-    Verify();                                           // Checks validity of the loot store
+    Verify(lootTypeId); // Checks validity of the loot store
 
     return count;
 }
@@ -244,9 +244,9 @@ LootTemplate* LootStore::GetLootForConditionFill(uint32 loot_id)
     return tab->second;
 }
 
-uint32 LootStore::LoadAndCollectLootIds(LootIdSet& lootIdSet)
+uint32 LootStore::LoadAndCollectLootIds(LootIdSet& lootIdSet, LootTypeId lootTypeId)
 {
-    uint32 count = LoadLootTable();
+    uint32 count = LoadLootTable(lootTypeId);
 
     for (LootTemplateMap::const_iterator tab = m_LootTemplates.begin(); tab != m_LootTemplates.end(); ++tab)
         lootIdSet.insert(tab->first);
@@ -254,27 +254,27 @@ uint32 LootStore::LoadAndCollectLootIds(LootIdSet& lootIdSet)
     return count;
 }
 
-void LootStore::CheckLootRefs(LootIdSet* ref_set) const
+void LootStore::CheckLootRefs(LootTypeId lootTypeId, LootIdSet* ref_set) const
 {
     for (LootTemplateMap::const_iterator ltItr = m_LootTemplates.begin(); ltItr != m_LootTemplates.end(); ++ltItr)
-        ltItr->second->CheckLootRefs(m_LootTemplates, ref_set);
+        ltItr->second->CheckLootRefs(m_LootTemplates, lootTypeId, ref_set);
 }
 
-void LootStore::ReportUnusedIds(LootIdSet const& lootIdSet) const
+void LootStore::ReportUnusedIds(LootIdSet const& lootIdSet, LootTypeId lootTypeId) const
 {
     // all still listed ids isn't referenced
     for (LootIdSet::const_iterator itr = lootIdSet.begin(); itr != lootIdSet.end(); ++itr)
-        LOG_ERROR("sql.sql", "Table '%s' Entry %d isn't %s and not referenced from loot, and thus useless.", GetName(), *itr, GetEntryName());
+        LOG_ERROR("sql.sql", "Table 'world_loot_template' LootType %d Entry %d isn't %s and not referenced from loot, and thus useless.", lootTypeId, *itr, GetEntryName());
 }
 
-void LootStore::ReportNonExistingId(uint32 lootId) const
+void LootStore::ReportNonExistingId(uint32 lootId, LootTypeId lootTypeId) const
 {
-    LOG_ERROR("sql.sql", "Table '%s' Entry %d does not exist", GetName(), lootId);
+    LOG_ERROR("sql.sql", "Table 'world_loot_template' Entry %d LootType %d does not exist", lootId, lootTypeId);
 }
 
-void LootStore::ReportNonExistingId(uint32 lootId, char const* ownerType, uint32 ownerId) const
+void LootStore::ReportNonExistingId(uint32 lootId, char const* ownerType, uint32 ownerId, LootTypeId lootTypeId) const
 {
-    LOG_ERROR("sql.sql", "Table '%s' Entry %d does not exist but it is used by %s %d", GetName(), lootId, ownerType, ownerId);
+    LOG_ERROR("sql.sql", "Table 'world_loot_template' LootType %d Entry %d does not exist but it is used by %s %d", lootTypeId, lootId, ownerType, ownerId);
 }
 
 //
@@ -488,17 +488,17 @@ float LootTemplate::LootGroup::TotalChance() const
     return result;
 }
 
-void LootTemplate::LootGroup::Verify(LootStore const& lootstore, uint32 id, uint8 group_id) const
+void LootTemplate::LootGroup::Verify(LootStore const& lootstore, uint32 id, uint8 group_id, LootTypeId lootTypeId) const
 {
     float chance = RawTotalChance();
     if (chance > 101.0f)                                    /// @todo replace with 100% when DBs will be ready
-        LOG_ERROR("sql.sql", "Table '%s' entry %u group %d has total chance > 100%% (%f)", lootstore.GetName(), id, group_id, chance);
+        LOG_ERROR("sql.sql", "Table 'world_loot_template' LootType: %d Entry: %u Name: %s Group: %d has total chance > 100%% (%f)", lootTypeId, lootstore.GetEntryName(), id, group_id, chance);
 
     if (chance >= 100.0f && !EqualChanced.empty())
-        LOG_ERROR("sql.sql", "Table '%s' entry %u group %d has items with chance=0%% but group total chance >= 100%% (%f)", lootstore.GetName(), id, group_id, chance);
+        LOG_ERROR("sql.sql", "Table 'world_loot_template' LootType: %d Entry: %u Name: %s Group: %d has items with chance = 0%% but group total chance >= 100%% (%f)", lootTypeId, lootstore.GetEntryName(), id, group_id, chance);
 }
 
-void LootTemplate::LootGroup::CheckLootRefs(LootTemplateMap const& /*store*/, LootIdSet* ref_set) const
+void LootTemplate::LootGroup::CheckLootRefs(LootTemplateMap const& /*store*/, LootTypeId lootTypeId, LootIdSet* ref_set) const
 {
     for (LootStoreItemList::const_iterator ieItr = ExplicitlyChanced.begin(); ieItr != ExplicitlyChanced.end(); ++ieItr)
     {
@@ -506,7 +506,7 @@ void LootTemplate::LootGroup::CheckLootRefs(LootTemplateMap const& /*store*/, Lo
         if (item->reference > 0)
         {
             if (!LootTemplates_Reference.GetLootFor(item->reference))
-                LootTemplates_Reference.ReportNonExistingId(item->reference, "Reference", item->itemid);
+                LootTemplates_Reference.ReportNonExistingId(item->reference, "Reference", item->itemid, lootTypeId);
             else if (ref_set)
                 ref_set->erase(item->reference);
         }
@@ -518,7 +518,7 @@ void LootTemplate::LootGroup::CheckLootRefs(LootTemplateMap const& /*store*/, Lo
         if (item->reference > 0)
         {
             if (!LootTemplates_Reference.GetLootFor(item->reference))
-                LootTemplates_Reference.ReportNonExistingId(item->reference, "Reference", item->itemid);
+                LootTemplates_Reference.ReportNonExistingId(item->reference, "Reference", item->itemid, lootTypeId);
             else if (ref_set)
                 ref_set->erase(item->reference);
         }
@@ -701,17 +701,17 @@ bool LootTemplate::HasQuestDropForPlayer(LootTemplateMap const& store, Player co
 }
 
 // Checks integrity of the template
-void LootTemplate::Verify(LootStore const& lootstore, uint32 id) const
+void LootTemplate::Verify(LootStore const& lootstore, uint32 id, LootTypeId lootTypeId) const
 {
     // Checking group chances
     for (uint32 i = 0; i < Groups.size(); ++i)
         if (Groups[i])
-            Groups[i]->Verify(lootstore, id, i + 1);
+            Groups[i]->Verify(lootstore, id, i + 1, lootTypeId);
 
     /// @todo References validity checks
 }
 
-void LootTemplate::CheckLootRefs(LootTemplateMap const& store, LootIdSet* ref_set) const
+void LootTemplate::CheckLootRefs(LootTemplateMap const& store, LootTypeId lootTypeId, LootIdSet* ref_set) const
 {
     for (LootStoreItemList::const_iterator ieItr = Entries.begin(); ieItr != Entries.end(); ++ieItr)
     {
@@ -719,7 +719,7 @@ void LootTemplate::CheckLootRefs(LootTemplateMap const& store, LootIdSet* ref_se
         if (item->reference > 0)
         {
             if (!LootTemplates_Reference.GetLootFor(item->reference))
-                LootTemplates_Reference.ReportNonExistingId(item->reference, "Reference", item->itemid);
+                LootTemplates_Reference.ReportNonExistingId(item->reference, "Reference", item->itemid, lootTypeId);
             else if (ref_set)
                 ref_set->erase(item->reference);
         }
@@ -727,7 +727,7 @@ void LootTemplate::CheckLootRefs(LootTemplateMap const& store, LootIdSet* ref_se
 
     for (LootGroups::const_iterator grItr = Groups.begin(); grItr != Groups.end(); ++grItr)
         if (LootGroup* group = *grItr)
-            group->CheckLootRefs(store, ref_set);
+            group->CheckLootRefs(store, lootTypeId, ref_set);
 }
 
 bool LootTemplate::addConditionItem(Condition* cond)
@@ -799,12 +799,12 @@ bool LootTemplate::isReference(uint32 id)
 
 void LoadLootTemplates_Creature()
 {
-    LOG_INFO("server.loading", "Loading creature loot templates...");
+    LOG_INFO("server.loading", "Loading LootType 1 Loot Table (Creature)...");
 
     uint32 oldMSTime = getMSTime();
 
     LootIdSet lootIdSet, lootIdSetUsed;
-    uint32 count = LootTemplates_Creature.LoadAndCollectLootIds(lootIdSet);
+    uint32 count = LootTemplates_Creature.LoadAndCollectLootIds(lootIdSet, LOOT_TYPE_CREATURE);
 
     // Remove real entries and check loot existence
     CreatureTemplateContainer const* ctc = sObjectMgr->GetCreatureTemplates();
@@ -813,7 +813,7 @@ void LoadLootTemplates_Creature()
         if (uint32 lootid = itr->second.lootid)
         {
             if (lootIdSet.find(lootid) == lootIdSet.end())
-                LootTemplates_Creature.ReportNonExistingId(lootid, "Creature", itr->second.Entry);
+                LootTemplates_Creature.ReportNonExistingId(lootid, "Creature", itr->second.Entry, LOOT_TYPE_CREATURE);
             else
                 lootIdSetUsed.insert(lootid);
         }
@@ -826,22 +826,22 @@ void LoadLootTemplates_Creature()
     lootIdSet.erase(PLAYER_CORPSE_LOOT_ENTRY);
 
     // output error for any still listed (not referenced from appropriate table) ids
-    LootTemplates_Creature.ReportUnusedIds(lootIdSet);
+    LootTemplates_Creature.ReportUnusedIds(lootIdSet, LOOT_TYPE_CREATURE);
 
     if (count)
-        LOG_INFO("server.loading", ">> Loaded %u creature loot templates in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+        LOG_INFO("server.loading", ">> Loaded %u LootType 1 Loot Table (Creature) in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     else
-        LOG_ERROR("server.loading", ">> Loaded 0 creature loot templates. DB table `creature_loot_template` is empty");
+        LOG_ERROR("server.loading", ">> Loaded 0 LootType 1 (Creature). No data exists for this loot type...");
 }
 
 void LoadLootTemplates_Disenchant()
 {
-    LOG_INFO("server.loading", "Loading disenchanting loot templates...");
+    LOG_INFO("server.loading", "Loading LootType 2 Loot Table (Disenchant)...");
 
     uint32 oldMSTime = getMSTime();
 
     LootIdSet lootIdSet, lootIdSetUsed;
-    uint32 count = LootTemplates_Disenchant.LoadAndCollectLootIds(lootIdSet);
+    uint32 count = LootTemplates_Disenchant.LoadAndCollectLootIds(lootIdSet, LOOT_TYPE_DISENCHANT);
 
     for (uint32 i = 0; i < sItemDisenchantLootStore.GetNumRows(); ++i)
     {
@@ -851,7 +851,7 @@ void LoadLootTemplates_Disenchant()
 
         uint32 lootid = disenchant->ID;
         if (lootIdSet.find(lootid) == lootIdSet.end())
-            LootTemplates_Disenchant.ReportNonExistingId(lootid);
+            LootTemplates_Disenchant.ReportNonExistingId(lootid, LOOT_TYPE_DISENCHANT);
         else
             lootIdSetUsed.insert(lootid);
     }
@@ -860,22 +860,22 @@ void LoadLootTemplates_Disenchant()
         lootIdSet.erase(*itr);
 
     // output error for any still listed (not referenced from appropriate table) ids
-    LootTemplates_Disenchant.ReportUnusedIds(lootIdSet);
+    LootTemplates_Disenchant.ReportUnusedIds(lootIdSet, LOOT_TYPE_DISENCHANT);
 
     if (count)
-        LOG_INFO("server.loading", ">> Loaded %u disenchanting loot templates in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+        LOG_INFO("server.loading", ">> Loaded %u LootType 2 Loot Table (Disenchant) in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     else
-        LOG_ERROR("server.loading", ">> Loaded 0 disenchanting loot templates. DB table `disenchant_loot_template` is empty");
+        LOG_ERROR("server.loading", ">> Loaded 0 LootType 2 (Disenchant). No data exists for this loot type...");
 }
 
 void LoadLootTemplates_Fishing()
 {
-    LOG_INFO("server.loading", "Loading fishing loot templates...");
+    LOG_INFO("server.loading", "Loading LootType 3 Loot Table (Fishing)...");
 
     uint32 oldMSTime = getMSTime();
 
     LootIdSet lootIdSet;
-    uint32 count = LootTemplates_Fishing.LoadAndCollectLootIds(lootIdSet);
+    uint32 count = LootTemplates_Fishing.LoadAndCollectLootIds(lootIdSet, LOOT_TYPE_FISHING);
 
     // remove real entries and check existence loot
     for (uint32 i = 1; i < sAreaTableStore.GetNumRows(); ++i)
@@ -884,22 +884,22 @@ void LoadLootTemplates_Fishing()
                 lootIdSet.erase(areaEntry->ID);
 
     // output error for any still listed (not referenced from appropriate table) ids
-    LootTemplates_Fishing.ReportUnusedIds(lootIdSet);
+    LootTemplates_Fishing.ReportUnusedIds(lootIdSet, LOOT_TYPE_FISHING);
 
     if (count)
-        LOG_INFO("server.loading", ">> Loaded %u fishing loot templates in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+        LOG_INFO("server.loading", ">> Loaded %u LootType 3 Loot Table (Fishing) in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     else
-        LOG_ERROR("server.loading", ">> Loaded 0 fishing loot templates. DB table `fishing_loot_template` is empty");
+        LOG_ERROR("server.loading", ">> Loaded 0 LootType 3 (Fishing). No data exists for this loot type...");
 }
 
 void LoadLootTemplates_Gameobject()
 {
-    LOG_INFO("server.loading", "Loading gameobject loot templates...");
+    LOG_INFO("server.loading", "Loading LootType 4 Loot Table (GameObject)...");
 
     uint32 oldMSTime = getMSTime();
 
     LootIdSet lootIdSet, lootIdSetUsed;
-    uint32 count = LootTemplates_Gameobject.LoadAndCollectLootIds(lootIdSet);
+    uint32 count = LootTemplates_Gameobject.LoadAndCollectLootIds(lootIdSet, LOOT_TYPE_GAMEOBJECT);
 
     // remove real entries and check existence loot
     GameObjectTemplateContainer const* gotc = sObjectMgr->GetGameObjectTemplates();
@@ -908,7 +908,7 @@ void LoadLootTemplates_Gameobject()
         if (uint32 lootid = itr->second.GetLootId())
         {
             if (lootIdSet.find(lootid) == lootIdSet.end())
-                LootTemplates_Gameobject.ReportNonExistingId(lootid, "Gameobject", itr->second.entry);
+                LootTemplates_Gameobject.ReportNonExistingId(lootid, "Gameobject", itr->second.entry, LOOT_TYPE_GAMEOBJECT);
             else
                 lootIdSetUsed.insert(lootid);
         }
@@ -918,22 +918,22 @@ void LoadLootTemplates_Gameobject()
         lootIdSet.erase(*itr);
 
     // output error for any still listed (not referenced from appropriate table) ids
-    LootTemplates_Gameobject.ReportUnusedIds(lootIdSet);
+    LootTemplates_Gameobject.ReportUnusedIds(lootIdSet, LOOT_TYPE_GAMEOBJECT);
 
     if (count)
-        LOG_INFO("server.loading", ">> Loaded %u gameobject loot templates in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+        LOG_INFO("server.loading", ">> Loaded %u LootType 4 Loot Table (GameObject) in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     else
-        LOG_ERROR("server.loading", ">> Loaded 0 gameobject loot templates. DB table `gameobject_loot_template` is empty");
+        LOG_ERROR("server.loading", ">> Loaded 0 LootType 4 (GameObject). No data exists for this loot type...");
 }
 
 void LoadLootTemplates_Item()
 {
-    LOG_INFO("server.loading", "Loading item loot templates...");
+    LOG_INFO("server.loading", "Loading LootType 5 Loot Table (Item)...");
 
     uint32 oldMSTime = getMSTime();
 
     LootIdSet lootIdSet;
-    uint32 count = LootTemplates_Item.LoadAndCollectLootIds(lootIdSet);
+    uint32 count = LootTemplates_Item.LoadAndCollectLootIds(lootIdSet, LOOT_TYPE_ITEM);
 
     // remove real entries and check existence loot
     ItemTemplateContainer const* its = sObjectMgr->GetItemTemplateStore();
@@ -942,22 +942,22 @@ void LoadLootTemplates_Item()
             lootIdSet.erase(itr->second.GetId());
 
     // output error for any still listed (not referenced from appropriate table) ids
-    LootTemplates_Item.ReportUnusedIds(lootIdSet);
+    LootTemplates_Item.ReportUnusedIds(lootIdSet, LOOT_TYPE_ITEM);
 
     if (count)
-        LOG_INFO("server.loading", ">> Loaded %u item loot templates in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+        LOG_INFO("server.loading", ">> Loaded %u LootType 5 Loot Table (Item) in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     else
-        LOG_ERROR("server.loading", ">> Loaded 0 item loot templates. DB table `item_loot_template` is empty");
+        LOG_ERROR("server.loading", ">> Loaded 0 LootType 5 (Item). No data exists for this loot type...");
 }
 
 void LoadLootTemplates_Milling()
 {
-    LOG_INFO("server.loading", "Loading milling loot templates...");
+    LOG_INFO("server.loading", "Loading LootType 7 Loot Table (Milling)...");
 
     uint32 oldMSTime = getMSTime();
 
     LootIdSet lootIdSet;
-    uint32 count = LootTemplates_Milling.LoadAndCollectLootIds(lootIdSet);
+    uint32 count = LootTemplates_Milling.LoadAndCollectLootIds(lootIdSet, LOOT_TYPE_MILLING);
 
     // remove real entries and check existence loot
     ItemTemplateContainer const* its = sObjectMgr->GetItemTemplateStore();
@@ -971,22 +971,22 @@ void LoadLootTemplates_Milling()
     }
 
     // output error for any still listed (not referenced from appropriate table) ids
-    LootTemplates_Milling.ReportUnusedIds(lootIdSet);
+    LootTemplates_Milling.ReportUnusedIds(lootIdSet, LOOT_TYPE_MILLING);
 
     if (count)
-        LOG_INFO("server.loading", ">> Loaded %u milling loot templates in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+        LOG_INFO("server.loading", ">> Loaded %u LootType 7 Loot Table (Milling) in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     else
-        LOG_ERROR("server.loading", ">> Loaded 0 milling loot templates. DB table `milling_loot_template` is empty");
+        LOG_ERROR("server.loading", ">> Loaded 0 LootType 7 (Milling). No data exists for this loot type...");
 }
 
 void LoadLootTemplates_Pickpocketing()
 {
-    LOG_INFO("server.loading", "Loading pickpocketing loot templates...");
+    LOG_INFO("server.loading", "Loading LootType 8 Loot Table (Pickpocketing)...");
 
     uint32 oldMSTime = getMSTime();
 
     LootIdSet lootIdSet, lootIdSetUsed;
-    uint32 count = LootTemplates_Pickpocketing.LoadAndCollectLootIds(lootIdSet);
+    uint32 count = LootTemplates_Pickpocketing.LoadAndCollectLootIds(lootIdSet, LOOT_TYPE_PICKPOCKETING);
 
     // Remove real entries and check loot existence
     CreatureTemplateContainer const* ctc = sObjectMgr->GetCreatureTemplates();
@@ -995,7 +995,7 @@ void LoadLootTemplates_Pickpocketing()
         if (uint32 lootid = itr->second.pickpocketLootId)
         {
             if (lootIdSet.find(lootid) == lootIdSet.end())
-                LootTemplates_Pickpocketing.ReportNonExistingId(lootid, "Creature", itr->second.Entry);
+                LootTemplates_Pickpocketing.ReportNonExistingId(lootid, "Creature", itr->second.Entry, LOOT_TYPE_PICKPOCKETING);
             else
                 lootIdSetUsed.insert(lootid);
         }
@@ -1005,22 +1005,22 @@ void LoadLootTemplates_Pickpocketing()
         lootIdSet.erase(*itr);
 
     // output error for any still listed (not referenced from appropriate table) ids
-    LootTemplates_Pickpocketing.ReportUnusedIds(lootIdSet);
+    LootTemplates_Pickpocketing.ReportUnusedIds(lootIdSet, LOOT_TYPE_PICKPOCKETING);
 
     if (count)
-        LOG_INFO("server.loading", ">> Loaded %u pickpocketing loot templates in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+        LOG_INFO("server.loading", ">> Loaded %u LootType 8 Loot Table (Pickpocketing) in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     else
-        LOG_ERROR("server.loading", ">> Loaded 0 pickpocketing loot templates. DB table `pickpocketing_loot_template` is empty");
+        LOG_ERROR("server.loading", ">> Loaded 0 LootType 8 (Pickpocketing). No data exists for this loot type...");
 }
 
 void LoadLootTemplates_Prospecting()
 {
-    LOG_INFO("server.loading", "Loading prospecting loot templates...");
+    LOG_INFO("server.loading", "Loading LootType 9 Loot Table (Prospecting)...");
 
     uint32 oldMSTime = getMSTime();
 
     LootIdSet lootIdSet;
-    uint32 count = LootTemplates_Prospecting.LoadAndCollectLootIds(lootIdSet);
+    uint32 count = LootTemplates_Prospecting.LoadAndCollectLootIds(lootIdSet, LOOT_TYPE_PROSPECTING);
 
     // remove real entries and check existence loot
     ItemTemplateContainer const* its = sObjectMgr->GetItemTemplateStore();
@@ -1034,22 +1034,22 @@ void LoadLootTemplates_Prospecting()
     }
 
     // output error for any still listed (not referenced from appropriate table) ids
-    LootTemplates_Prospecting.ReportUnusedIds(lootIdSet);
+    LootTemplates_Prospecting.ReportUnusedIds(lootIdSet, LOOT_TYPE_PROSPECTING);
 
     if (count)
-        LOG_INFO("server.loading", ">> Loaded %u prospecting loot templates in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+        LOG_INFO("server.loading", ">> Loaded %u LootType 9 Loot Table (Prospecting) in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     else
-        LOG_ERROR("server.loading", ">> Loaded 0 prospecting loot templates. DB table `prospecting_loot_template` is empty");
+        LOG_ERROR("server.loading", ">> Loaded 0 LootType 9 (Prospecting). No data exists for this loot type...");
 }
 
 void LoadLootTemplates_Mail()
 {
-    LOG_INFO("server.loading", "Loading mail loot templates...");
+    LOG_INFO("server.loading", "Loading LootType 6 Loot Table (Mail)...");
 
     uint32 oldMSTime = getMSTime();
 
     LootIdSet lootIdSet;
-    uint32 count = LootTemplates_Mail.LoadAndCollectLootIds(lootIdSet);
+    uint32 count = LootTemplates_Mail.LoadAndCollectLootIds(lootIdSet, LOOT_TYPE_MAIL);
 
     // remove real entries and check existence loot
     for (uint32 i = 1; i < sMailTemplateStore.GetNumRows(); ++i)
@@ -1058,22 +1058,22 @@ void LoadLootTemplates_Mail()
                 lootIdSet.erase(i);
 
     // output error for any still listed (not referenced from appropriate table) ids
-    LootTemplates_Mail.ReportUnusedIds(lootIdSet);
+    LootTemplates_Mail.ReportUnusedIds(lootIdSet, LOOT_TYPE_MAIL);
 
     if (count)
-        LOG_INFO("server.loading", ">> Loaded %u mail loot templates in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+        LOG_INFO("server.loading", ">> Loaded %u LootType 6 Loot Table (Mail) in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     else
-        LOG_ERROR("server.loading", ">> Loaded 0 mail loot templates. DB table `mail_loot_template` is empty");
+        LOG_ERROR("server.loading", ">> Loaded 0 LootType 6 (Mail). No data exists for this loot type...");
 }
 
 void LoadLootTemplates_Skinning()
 {
-    LOG_INFO("server.loading", "Loading skinning loot templates...");
+    LOG_INFO("server.loading", "Loading LootType 11 Loot Table (Skinning)...");
 
     uint32 oldMSTime = getMSTime();
 
     LootIdSet lootIdSet, lootIdSetUsed;
-    uint32 count = LootTemplates_Skinning.LoadAndCollectLootIds(lootIdSet);
+    uint32 count = LootTemplates_Skinning.LoadAndCollectLootIds(lootIdSet, LOOT_TYPE_SKINNING);
 
     // remove real entries and check existence loot
     CreatureTemplateContainer const* ctc = sObjectMgr->GetCreatureTemplates();
@@ -1082,7 +1082,7 @@ void LoadLootTemplates_Skinning()
         if (uint32 lootid = itr->second.SkinLootId)
         {
             if (lootIdSet.find(lootid) == lootIdSet.end())
-                LootTemplates_Skinning.ReportNonExistingId(lootid, "Creature", itr->second.Entry);
+                LootTemplates_Skinning.ReportNonExistingId(lootid, "Creature", itr->second.Entry, LOOT_TYPE_SKINNING);
             else
                 lootIdSetUsed.insert(lootid);
         }
@@ -1092,22 +1092,22 @@ void LoadLootTemplates_Skinning()
         lootIdSet.erase(*itr);
 
     // output error for any still listed (not referenced from appropriate table) ids
-    LootTemplates_Skinning.ReportUnusedIds(lootIdSet);
+    LootTemplates_Skinning.ReportUnusedIds(lootIdSet, LOOT_TYPE_SKINNING);
 
     if (count)
-        LOG_INFO("server.loading", ">> Loaded %u skinning loot templates in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+        LOG_INFO("server.loading", ">> Loaded %u LootType 11 Loot Table (Skinning) in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     else
-        LOG_ERROR("server.loading", ">> Loaded 0 skinning loot templates. DB table `skinning_loot_template` is empty");
+        LOG_ERROR("server.loading", ">> Loaded 0 LootType 11 (Skinning). No data exists for this loot type...");
 }
 
 void LoadLootTemplates_Spell()
 {
-    LOG_INFO("server.loading", "Loading spell loot templates...");
+    LOG_INFO("server.loading", "Loading LootType 12 Loot Table (Spell)...");
 
     uint32 oldMSTime = getMSTime();
 
     LootIdSet lootIdSet;
-    uint32 count = LootTemplates_Spell.LoadAndCollectLootIds(lootIdSet);
+    uint32 count = LootTemplates_Spell.LoadAndCollectLootIds(lootIdSet, LOOT_TYPE_SPELL);
 
     // remove real entries and check existence loot
     for (uint32 spell_id = 1; spell_id < sSpellMgr->GetSpellInfoStoreSize(); ++spell_id)
@@ -1126,7 +1126,7 @@ void LoadLootTemplates_Spell()
             // ignore 61756 (Northrend Inscription Research (FAST QA VERSION) for example
             if (!spellInfo->HasAttribute(SPELL_ATTR0_NOT_SHAPESHIFT) || spellInfo->HasAttribute(SPELL_ATTR0_TRADESPELL))
             {
-                LootTemplates_Spell.ReportNonExistingId(spell_id, "Spell", spellInfo->Id);
+                LootTemplates_Spell.ReportNonExistingId(spell_id, "Spell", spellInfo->Id, LOOT_TYPE_SPELL);
             }
         }
         else
@@ -1134,40 +1134,40 @@ void LoadLootTemplates_Spell()
     }
 
     // output error for any still listed (not referenced from appropriate table) ids
-    LootTemplates_Spell.ReportUnusedIds(lootIdSet);
+    LootTemplates_Spell.ReportUnusedIds(lootIdSet, LOOT_TYPE_SPELL);
 
     if (count)
-        LOG_INFO("server.loading", ">> Loaded %u spell loot templates in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+        LOG_INFO("server.loading", ">> Loaded %u LootType 12 Loot Table (Spell) in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     else
-        LOG_ERROR("server.loading", ">> Loaded 0 spell loot templates. DB table `spell_loot_template` is empty");
+        LOG_ERROR("server.loading", ">> Loaded 0 LootType 12 (Spell). No data exists for this loot type...");
 }
 
 void LoadLootTemplates_Reference()
 {
-    LOG_INFO("server.loading", "Loading reference loot templates...");
+    LOG_INFO("server.loading", "Loading LootType 10 Loot Table (Reference)...");
 
     uint32 oldMSTime = getMSTime();
 
     LootIdSet lootIdSet;
-    LootTemplates_Reference.LoadAndCollectLootIds(lootIdSet);
+    LootTemplates_Reference.LoadAndCollectLootIds(lootIdSet, LOOT_TYPE_REFERENCE);
 
     // check references and remove used
-    LootTemplates_Creature.CheckLootRefs(&lootIdSet);
-    LootTemplates_Fishing.CheckLootRefs(&lootIdSet);
-    LootTemplates_Gameobject.CheckLootRefs(&lootIdSet);
-    LootTemplates_Item.CheckLootRefs(&lootIdSet);
-    LootTemplates_Milling.CheckLootRefs(&lootIdSet);
-    LootTemplates_Pickpocketing.CheckLootRefs(&lootIdSet);
-    LootTemplates_Skinning.CheckLootRefs(&lootIdSet);
-    LootTemplates_Disenchant.CheckLootRefs(&lootIdSet);
-    LootTemplates_Prospecting.CheckLootRefs(&lootIdSet);
-    LootTemplates_Mail.CheckLootRefs(&lootIdSet);
-    LootTemplates_Reference.CheckLootRefs(&lootIdSet);
+    LootTemplates_Creature.CheckLootRefs(LOOT_TYPE_CREATURE, &lootIdSet);
+    LootTemplates_Fishing.CheckLootRefs(LOOT_TYPE_FISHING, &lootIdSet);
+    LootTemplates_Gameobject.CheckLootRefs(LOOT_TYPE_GAMEOBJECT, &lootIdSet);
+    LootTemplates_Item.CheckLootRefs(LOOT_TYPE_ITEM, &lootIdSet);
+    LootTemplates_Milling.CheckLootRefs(LOOT_TYPE_MILLING, &lootIdSet);
+    LootTemplates_Pickpocketing.CheckLootRefs(LOOT_TYPE_PICKPOCKETING, &lootIdSet);
+    LootTemplates_Skinning.CheckLootRefs(LOOT_TYPE_SKINNING, &lootIdSet);
+    LootTemplates_Disenchant.CheckLootRefs(LOOT_TYPE_DISENCHANT, &lootIdSet);
+    LootTemplates_Prospecting.CheckLootRefs(LOOT_TYPE_PROSPECTING, &lootIdSet);
+    LootTemplates_Mail.CheckLootRefs(LOOT_TYPE_MAIL, &lootIdSet);
+    LootTemplates_Reference.CheckLootRefs(LOOT_TYPE_REFERENCE, &lootIdSet);
 
     // output error for any still listed ids (not referenced from any loot table)
-    LootTemplates_Reference.ReportUnusedIds(lootIdSet);
+    LootTemplates_Reference.ReportUnusedIds(lootIdSet, LOOT_TYPE_NONE);
 
-    LOG_INFO("server.loading", ">> Loaded refence loot templates in %u ms", GetMSTimeDiffToNow(oldMSTime));
+    LOG_INFO("server.loading", ">> Loaded %u LootType 10 Loot Table (Reference) in %u ms", GetMSTimeDiffToNow(oldMSTime));
 }
 
 void LoadLootTables()
