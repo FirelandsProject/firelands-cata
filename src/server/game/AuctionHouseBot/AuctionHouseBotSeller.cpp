@@ -75,18 +75,7 @@ bool AuctionBotSeller::Initialize()
     LOG_DEBUG("ahbot", "Npc vendor filter has %u items", (uint32)npcItems.size());
 
     LOG_DEBUG("ahbot", "Loading loot items for filter..");
-    QueryResult result = WorldDatabase.PQuery(
-        "SELECT `item` FROM `creature_loot_template` WHERE `Reference` = 0 UNION "
-        "SELECT `item` FROM `disenchant_loot_template` WHERE `Reference` = 0 UNION "
-        "SELECT `item` FROM `fishing_loot_template` WHERE `Reference` = 0 UNION "
-        "SELECT `item` FROM `gameobject_loot_template` WHERE `Reference` = 0 UNION "
-        "SELECT `item` FROM `item_loot_template` WHERE `Reference` = 0 UNION "
-        "SELECT `item` FROM `milling_loot_template` WHERE `Reference` = 0 UNION "
-        "SELECT `item` FROM `pickpocketing_loot_template` WHERE `Reference` = 0 UNION "
-        "SELECT `item` FROM `prospecting_loot_template` WHERE `Reference` = 0 UNION "
-        "SELECT `item` FROM `reference_loot_template` WHERE `Reference` = 0 UNION "
-        "SELECT `item` FROM `skinning_loot_template` WHERE `Reference` = 0 UNION "
-        "SELECT `item` FROM `spell_loot_template` WHERE `Reference` = 0");
+    QueryResult result = WorldDatabase.PQuery("SELECT `item` FROM `world_loot_template` WHERE `Reference` = 0");
 
     if (result)
     {
