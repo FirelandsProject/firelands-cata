@@ -33,7 +33,7 @@
     terminates the application.
  */
 
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
 #include <Windows.h>
 #define Crash(message) \
     ULONG_PTR execeptionArgs[] = { reinterpret_cast<ULONG_PTR>(strdup(message)), reinterpret_cast<ULONG_PTR>(_ReturnAddress()) }; \

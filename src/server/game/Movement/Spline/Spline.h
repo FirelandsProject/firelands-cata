@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITYSERVER_SPLINE_H
-#define TRINITYSERVER_SPLINE_H
+#ifndef FIRELANDSSERVER_SPLINE_H
+#define FIRELANDSSERVER_SPLINE_H
 
 #include "MovementTypedefs.h"
 #include "Errors.h"
@@ -209,4 +209,4 @@ public:
 
 #include "SplineImpl.h"
 
-#endif // TRINITYSERVER_SPLINE_H
+#endif // FIRELANDSSERVER_SPLINE_H

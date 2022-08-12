@@ -29,7 +29,7 @@
 #include "Log.h"
 #include "Util.h"
 
-#if FIRELANDS_PLATFORM != FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM != FC_PLATFORM_WINDOWS
 #include "Chat.h"
 #include <readline/history.h>
 #include <readline/readline.h>
@@ -82,7 +82,7 @@ int cli_hook_func() {
 #endif
 
 void utf8print(void * /*arg*/, char const *str) {
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
   wchar_t wtemp_buf[6000];
   size_t wtemp_len = 6000 - 1;
   if (!Utf8toWStr(str, strlen(str), wtemp_buf, wtemp_len))
@@ -100,7 +100,7 @@ void utf8print(void * /*arg*/, char const *str) {
 }
 
 void commandFinished(void *, bool /*success*/) {
-  printf("TC> ");
+  printf("FC> ");
   fflush(stdout);
 }
 
@@ -123,7 +123,7 @@ int kb_hit_return() {
 void CliThread() {
   ///- Display the list of available CLI functions then beep
   // LOG_INFO("server.worldserver", "");
-#if FIRELANDS_PLATFORM != FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM != FC_PLATFORM_WINDOWS
   ::rl_attempted_completion_function = &Firelands::Impl::Readline::cli_completion;
   ::rl_event_hook = &Firelands::Impl::Readline::cli_hook_func;
 #endif
@@ -133,7 +133,7 @@ void CliThread() {
 
   // print this here the first time
   // later it will be printed after command queue updates
-  printf("TC>");
+  printf("FC>");
 
   ///- As long as the World is running (no World::m_stopEvent), get the command
   /// line and handle it
@@ -142,11 +142,11 @@ void CliThread() {
 
     char *command_str; // = fgets(commandbuf, sizeof(commandbuf), stdin);
 
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
     char commandbuf[256];
     command_str = fgets(commandbuf, sizeof(commandbuf), stdin);
 #else
-    command_str = readline("TC>");
+    command_str = readline("FC>");
     rl_bind_key('\t', rl_complete);
 #endif
 
@@ -158,8 +158,8 @@ void CliThread() {
         }
 
       if (!*command_str) {
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
-        printf("TC>");
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
+        printf("FC>");
 #else
         free(command_str);
 #endif
@@ -170,8 +170,8 @@ void CliThread() {
       if (!consoleToUtf8(command_str,
                          command)) // convert from console encoding to utf8
       {
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
-        printf("TC>");
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
+        printf("FC>");
 #else
         free(command_str);
 #endif
@@ -181,7 +181,7 @@ void CliThread() {
       fflush(stdout);
       sWorld->QueueCliCommand(new CliCommandHolder(
           nullptr, command.c_str(), &utf8print, &commandFinished));
-#if FIRELANDS_PLATFORM != FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM != FC_PLATFORM_WINDOWS
       add_history(command.c_str());
       free(command_str);
 #endif

@@ -19,28 +19,29 @@
 #ifndef RealmList_h__
 #define RealmList_h__
 
-#include "Define.h"
-#include "Realm.h"
 #include <map>
 #include <unordered_set>
 #include <vector>
+
+#include "Define.h"
+#include "Realm.h"
 
 namespace boost {
 namespace system {
 class error_code;
 }
-} // namespace boost
+}  // namespace boost
 
 namespace Firelands {
 namespace Asio {
 class IoContext;
 class DeadlineTimer;
-} // namespace Asio
-} // namespace Firelands
+}  // namespace Asio
+}  // namespace Firelands
 
 /// Storage object for the list of realms on the server
 class RealmList {
-public:
+ public:
   typedef std::map<Battlenet::RealmHandle, Realm> RealmMap;
 
   static RealmList *Instance();
@@ -53,7 +54,7 @@ public:
   RealmMap const &GetRealms() const { return _realms; }
   Realm const *GetRealm(Battlenet::RealmHandle const &id) const;
 
-private:
+ private:
   RealmList();
 
   void UpdateRealms(boost::system::error_code const &error);
@@ -72,4 +73,4 @@ private:
 
 #define sRealmList RealmList::Instance()
 
-#endif // RealmList_h__
+#endif  // RealmList_h__

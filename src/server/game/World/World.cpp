@@ -1422,7 +1422,7 @@ void World::LoadConfigSettings(bool reload)
     if (dataPath.empty() || (dataPath.at(dataPath.length()-1) != '/' && dataPath.at(dataPath.length()-1) != '\\'))
         dataPath.push_back('/');
 
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_UNIX || FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_APPLE
+#if FC_PLATFORM == FC_PLATFORM_UNIX || FC_PLATFORM == FC_PLATFORM_APPLE
     if (dataPath[0] == '~')
     {
         char const* home = getenv("HOME");

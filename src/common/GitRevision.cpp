@@ -73,18 +73,18 @@ char const* GitRevision::GetHotfixesDatabase()
     return _HOTFIXES_DATABASE;
 }
 
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
 #  ifdef _WIN64
-#    define FIRELANDS_PLATFORM_STR "Win64"
+#    define FC_PLATFORM_STR "Win64"
 #  else
-#    define FIRELANDS_PLATFORM_STR "Win32"
+#    define FC_PLATFORM_STR "Win32"
 #  endif
-#elif FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_APPLE
-#  define FIRELANDS_PLATFORM_STR "MacOSX"
-#elif FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_INTEL
-#  define FIRELANDS_PLATFORM_STR "Intel"
-#else // FIRELANDS_PLATFORM_UNIX
-#  define FIRELANDS_PLATFORM_STR "Unix"
+#elif FC_PLATFORM == FC_PLATFORM_APPLE
+#  define FC_PLATFORM_STR "MacOSX"
+#elif FC_PLATFORM == FC_PLATFORM_INTEL
+#  define FC_PLATFORM_STR "Intel"
+#else // FC_PLATFORM_UNIX
+#  define FC_PLATFORM_STR "Unix"
 #endif
 
 #ifndef FIRELANDS_API_USE_DYNAMIC_LINKING
@@ -96,7 +96,7 @@ char const* GitRevision::GetHotfixesDatabase()
 char const* GitRevision::GetFullVersion()
 {
   return "Firelands rev. " VER_PRODUCTVERSION_STR
-    " (" FIRELANDS_PLATFORM_STR ", " _BUILD_DIRECTIVE ", " FIRELANDS_LINKAGE_TYPE_STR ")";
+    " (" FC_PLATFORM_STR ", " _BUILD_DIRECTIVE ", " FIRELANDS_LINKAGE_TYPE_STR ")";
 }
 
 char const* GitRevision::GetCompanyNameStr()

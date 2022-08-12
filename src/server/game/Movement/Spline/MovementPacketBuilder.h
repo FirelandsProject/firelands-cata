@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef TRINITYSERVER_PACKET_BUILDER_H
-#define TRINITYSERVER_PACKET_BUILDER_H
+#ifndef FIRELANDSSERVER_PACKET_BUILDER_H
+#define FIRELANDSSERVER_PACKET_BUILDER_H
 
 #include "Define.h" // for uint32
 #include "G3D/Vector3.h"
@@ -37,4 +37,4 @@ namespace Movement
         static float GetFlightSplineSyncDist(MoveSpline const& moveSpline);
     };
 }
-#endif // TRINITYSERVER_PACKET_BUILDER_H
+#endif // FIRELANDSSERVER_PACKET_BUILDER_H

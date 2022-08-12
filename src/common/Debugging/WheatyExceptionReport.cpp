@@ -5,7 +5,7 @@
 //==========================================
 #include "CompilerDefs.h"
 
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS && !defined(__MINGW32__)
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS && !defined(__MINGW32__)
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif

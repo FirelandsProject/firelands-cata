@@ -1214,7 +1214,7 @@ void Map::CreatureRelocation(Creature* creature, float x, float y, float z, floa
     // delay creature move for grid/cell to grid/cell moves
     if (old_cell.DiffCell(new_cell) || old_cell.DiffGrid(new_cell))
     {
-#ifdef FIRELANDS_DEBUG
+#ifdef FC_DEBUG
         LOG_DEBUG("maps", "Creature (%s Entry: %u) added to moving list from grid[%u, %u]cell[%u, %u] to grid[%u, %u]cell[%u, %u].", creature->GetGUID().ToString().c_str(), creature->GetEntry(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY(), new_cell.GridX(), new_cell.GridY(), new_cell.CellX(), new_cell.CellY());
 #endif
         AddCreatureToMoveList(creature, x, y, z, ang);
@@ -1245,7 +1245,7 @@ void Map::GameObjectRelocation(GameObject* go, float x, float y, float z, float 
     // delay creature move for grid/cell to grid/cell moves
     if (old_cell.DiffCell(new_cell) || old_cell.DiffGrid(new_cell))
     {
-#ifdef FIRELANDS_DEBUG
+#ifdef FC_DEBUG
         LOG_DEBUG("maps", "GameObject (GUID: %u Entry: %u) added to moving list from grid[%u, %u]cell[%u, %u] to grid[%u, %u]cell[%u, %u].", go->GetGUID().GetCounter(), go->GetEntry(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY(), new_cell.GridX(), new_cell.GridY(), new_cell.CellX(), new_cell.CellY());
 #endif
         AddGameObjectToMoveList(go, x, y, z, orientation);
@@ -1271,7 +1271,7 @@ void Map::DynamicObjectRelocation(DynamicObject* dynObj, float x, float y, float
     // delay creature move for grid/cell to grid/cell moves
     if (old_cell.DiffCell(new_cell) || old_cell.DiffGrid(new_cell))
     {
-#ifdef FIRELANDS_DEBUG
+#ifdef FC_DEBUG
         LOG_DEBUG("maps", "GameObject (GUID: %u) added to moving list from grid[%u, %u]cell[%u, %u] to grid[%u, %u]cell[%u, %u].", dynObj->GetGUID().GetCounter(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY(), new_cell.GridX(), new_cell.GridY(), new_cell.CellX(), new_cell.CellY());
 #endif
         AddDynamicObjectToMoveList(dynObj, x, y, z, orientation);
@@ -1382,7 +1382,7 @@ void Map::MoveAllCreaturesInMoveList()
             if (!CreatureRespawnRelocation(c, false))
             {
                 // ... or unload (if respawn grid also not loaded)
-                #ifdef FIRELANDS_DEBUG
+                #ifdef FC_DEBUG
                     LOG_DEBUG("maps", "Creature (GUID: %u Entry: %u) cannot be move to unloaded respawn grid.", c->GetGUID().GetCounter(), c->GetEntry());
                 #endif
                 //AddObjectToRemoveList(Pet*) should only be called in Pet::Remove
@@ -1435,7 +1435,7 @@ void Map::MoveAllGameObjectsInMoveList()
             if (!GameObjectRespawnRelocation(go, false))
             {
                 // ... or unload (if respawn grid also not loaded)
-#ifdef FIRELANDS_DEBUG
+#ifdef FC_DEBUG
                 LOG_DEBUG("maps", "GameObject (GUID: %u Entry: %u) cannot be move to unloaded respawn grid.", go->GetGUID().GetCounter(), go->GetEntry());
 #endif
                 AddObjectToRemoveList(go);
@@ -1475,7 +1475,7 @@ void Map::MoveAllDynamicObjectsInMoveList()
         }
         else
         {
-#ifdef FIRELANDS_DEBUG
+#ifdef FC_DEBUG
             LOG_DEBUG("maps", "DynamicObject (GUID: %u) cannot be moved to unloaded grid.", dynObj->GetGUID().GetCounter());
 #endif
         }
@@ -1494,7 +1494,7 @@ bool Map::MapObjectCellRelocation(T* object, Cell new_cell, char const* objType)
         // if in same cell then none do
         if (old_cell.DiffCell(new_cell))
         {
-#ifdef FIRELANDS_DEBUG
+#ifdef FC_DEBUG
             LOG_DEBUG("maps", "%s (%s Entry: %u) moved in grid[%u, %u] from cell[%u, %u] to cell[%u, %u].", objType, object->GetGUID().ToString().c_str(), object->GetEntry(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY(), new_cell.CellX(), new_cell.CellY());
 #endif
 
@@ -1503,7 +1503,7 @@ bool Map::MapObjectCellRelocation(T* object, Cell new_cell, char const* objType)
         }
         else
         {
-#ifdef FIRELANDS_DEBUG
+#ifdef FC_DEBUG
             LOG_DEBUG("maps", "%s (%s Entry: %u) moved in same grid[%u, %u]cell[%u, %u].", objType, object->GetGUID().ToString().c_str(), object->GetEntry(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY());
 #endif
         }
@@ -1516,7 +1516,7 @@ bool Map::MapObjectCellRelocation(T* object, Cell new_cell, char const* objType)
     {
         EnsureGridLoadedForActiveObject(new_cell, object);
 
-#ifdef FIRELANDS_DEBUG
+#ifdef FC_DEBUG
         LOG_DEBUG("maps", "Active %s (%s Entry: %u) moved from grid[%u, %u]cell[%u, %u] to grid[%u, %u]cell[%u, %u].", objType, object->GetGUID().ToString().c_str(), object->GetEntry(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY(), new_cell.GridX(), new_cell.GridY(), new_cell.CellX(), new_cell.CellY());
 #endif
 
@@ -1529,7 +1529,7 @@ bool Map::MapObjectCellRelocation(T* object, Cell new_cell, char const* objType)
     // in diff. loaded grid normal object
     if (IsGridLoaded(GridCoord(new_cell.GridX(), new_cell.GridY())))
     {
-#ifdef FIRELANDS_DEBUG
+#ifdef FC_DEBUG
         LOG_DEBUG("maps", "%s (%s Entry: %u) moved from grid[%u, %u]cell[%u, %u] to grid[%u, %u]cell[%u, %u].", objType, object->GetGUID().ToString().c_str(), object->GetEntry(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY(), new_cell.GridX(), new_cell.GridY(), new_cell.CellX(), new_cell.CellY());
 #endif
 
@@ -1541,7 +1541,7 @@ bool Map::MapObjectCellRelocation(T* object, Cell new_cell, char const* objType)
     }
 
     // fail to move: normal object attempt move to unloaded grid
-#ifdef FIRELANDS_DEBUG
+#ifdef FC_DEBUG
     LOG_DEBUG("maps", "%s (%s Entry: %u) attempted to move from grid[%u, %u]cell[%u, %u] to unloaded grid[%u, %u]cell[%u, %u].", objType, object->GetGUID().ToString().c_str(), object->GetEntry(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY(), new_cell.GridX(), new_cell.GridY(), new_cell.CellX(), new_cell.CellY());
 #endif
     (void)objType;
@@ -1576,7 +1576,7 @@ bool Map::CreatureRespawnRelocation(Creature* c, bool diffGridOnly)
     c->CombatStop();
     c->GetMotionMaster()->Clear();
 
-    #ifdef FIRELANDS_DEBUG
+    #ifdef FC_DEBUG
         LOG_DEBUG("maps", "Creature (GUID: %u Entry: %u) moved from grid[%u, %u]cell[%u, %u] to respawn grid[%u, %u]cell[%u, %u].", c->GetGUID().GetCounter(), c->GetEntry(), c->GetCurrentCell().GridX(), c->GetCurrentCell().GridY(), c->GetCurrentCell().CellX(), c->GetCurrentCell().CellY(), resp_cell.GridX(), resp_cell.GridY(), resp_cell.CellX(), resp_cell.CellY());
     #endif
 
@@ -1604,7 +1604,7 @@ bool Map::GameObjectRespawnRelocation(GameObject* go, bool diffGridOnly)
     if (diffGridOnly && !go->GetCurrentCell().DiffGrid(resp_cell))
         return true;
 
-    #ifdef FIRELANDS_DEBUG
+    #ifdef FC_DEBUG
         LOG_DEBUG("maps", "GameObject (GUID: %u Entry: %u) moved from grid[%u, %u]cell[%u, %u] to respawn grid[%u, %u]cell[%u, %u].", go->GetGUID().GetCounter(), go->GetEntry(), go->GetCurrentCell().GridX(), go->GetCurrentCell().GridY(), go->GetCurrentCell().CellX(), go->GetCurrentCell().CellY(), resp_cell.GridX(), resp_cell.GridY(), resp_cell.CellX(), resp_cell.CellY());
     #endif
 

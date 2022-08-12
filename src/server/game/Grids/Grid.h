@@ -20,7 +20,7 @@
 
 /*
   @class Grid
-  Grid is a logical segment of the game world represented inside TrinIty.
+  Grid is a logical segment of the game world represented inside Firelands.
   Grid is bind at compile time to a particular type of object which
   we call it the object of interested.  There are many types of loader,
   specially, dynamic loader, static loader, or on-demand loader.  There's

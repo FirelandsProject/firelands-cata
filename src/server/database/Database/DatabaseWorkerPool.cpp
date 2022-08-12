@@ -241,7 +241,7 @@ SQLTransaction<T> DatabaseWorkerPool<T>::BeginTransaction()
 template <class T>
 void DatabaseWorkerPool<T>::CommitTransaction(SQLTransaction<T> transaction)
 {
-#ifdef FIRELANDS_DEBUG
+#ifdef FC_DEBUG
     //! Only analyze transaction weaknesses in Debug mode.
     //! Ideally we catch the faults in Debug mode and then correct them,
     //! so there's no need to waste these CPU cycles in Release mode.
@@ -256,7 +256,7 @@ void DatabaseWorkerPool<T>::CommitTransaction(SQLTransaction<T> transaction)
     default:
         break;
     }
-#endif // FIRELANDS_DEBUG
+#endif // FC_DEBUG
 
     Enqueue(new TransactionTask(transaction));
 }
@@ -264,7 +264,7 @@ void DatabaseWorkerPool<T>::CommitTransaction(SQLTransaction<T> transaction)
 template <class T>
 TransactionCallback DatabaseWorkerPool<T>::AsyncCommitTransaction(SQLTransaction<T> transaction)
 {
-#ifdef FIRELANDS_DEBUG
+#ifdef FC_DEBUG
     //! Only analyze transaction weaknesses in Debug mode.
     //! Ideally we catch the faults in Debug mode and then correct them,
     //! so there's no need to waste these CPU cycles in Release mode.
@@ -279,7 +279,7 @@ TransactionCallback DatabaseWorkerPool<T>::AsyncCommitTransaction(SQLTransaction
         default:
             break;
     }
-#endif // FIRELANDS_DEBUG
+#endif // FC_DEBUG
 
     TransactionWithResultTask* task = new TransactionWithResultTask(transaction);
     TransactionFuture result = task->GetFuture();

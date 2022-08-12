@@ -21,7 +21,7 @@
 #include "CompilerDefs.h"
 #include <boost/version.hpp>
 
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS && BOOST_VERSION >= 107300 && BOOST_VERSION < 107800
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS && BOOST_VERSION >= 107300 && BOOST_VERSION < 107800
 // __kernel_entry for boost/process/detail/windows/handle_workaround.hpp
 // DWORD for boost/process/detail/windows/handles.hpp
 #include <windows.h>

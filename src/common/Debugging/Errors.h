@@ -37,7 +37,7 @@ namespace Firelands
 
 } // namespace Firelands
 
-#if FIRELANDS_COMPILER == FIRELANDS_COMPILER_MICROSOFT
+#if FC_COMPILER == FC_COMPILER_MICROSOFT
 #define ASSERT_BEGIN __pragma(warning(push)) __pragma(warning(disable: 4127))
 #define ASSERT_END __pragma(warning(pop))
 #else
@@ -45,7 +45,7 @@ namespace Firelands
 #define ASSERT_END
 #endif
 
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
 #define EXCEPTION_ASSERTION_FAILURE 0xC0000420L
 #endif
 

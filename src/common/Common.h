@@ -23,14 +23,14 @@
 #include <string>
 #include <utility>
 
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
 #  include <ws2tcpip.h>
 
-#  if FIRELANDS_COMPILER == FIRELANDS_COMPILER_INTEL
+#  if FC_COMPILER == FC_COMPILER_INTEL
 #    if !defined(BOOST_ASIO_HAS_MOVE)
 #      define BOOST_ASIO_HAS_MOVE
 #    endif // !defined(BOOST_ASIO_HAS_MOVE)
-#  endif // if FIRELANDS_COMPILER == FIRELANDS_COMPILER_INTEL
+#  endif // if FC_COMPILER == FC_COMPILER_INTEL
 
 #else
 #  include <sys/types.h>
@@ -42,7 +42,7 @@
 #  include <cstdlib>
 #endif
 
-#if FIRELANDS_COMPILER == FIRELANDS_COMPILER_MICROSOFT
+#if FC_COMPILER == FC_COMPILER_MICROSOFT
 
 #define atoll _atoi64
 #define llabs _abs64

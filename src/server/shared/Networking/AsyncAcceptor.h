@@ -79,7 +79,7 @@ public:
             return false;
         }
 
-#if FIRELANDS_PLATFORM != FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM != FC_PLATFORM_WINDOWS
         _acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true), errorCode);
         if (errorCode)
         {

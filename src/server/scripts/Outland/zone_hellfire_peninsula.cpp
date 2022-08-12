@@ -158,7 +158,7 @@ public:
             if (creature->GetOwner() && creature->GetOwner()->GetTypeId() == TYPEID_PLAYER)
                 Start(false, false, creature->GetOwner()->GetGUID());
             else
-                LOG_ERROR("scripts", "TRINITY: npc_ancestral_wolf can not obtain owner or owner is not a player.");
+                LOG_ERROR("scripts", "Firelands: npc_ancestral_wolf can not obtain owner or owner is not a player.");
 
             creature->SetSpeedRate(MOVE_WALK, 1.5f);
             Reset();

@@ -28,7 +28,7 @@
 #include <cstdarg>
 #include <ctime>
 
-#if FIRELANDS_COMPILER == FIRELANDS_COMPILER_GNU
+#if FC_COMPILER == FC_COMPILER_GNU
   #include <sys/socket.h>
   #include <netinet/in.h>
   #include <arpa/inet.h>
@@ -480,7 +480,7 @@ std::wstring GetMainPartOfName(std::wstring const& wname, uint32 declension)
 
 bool utf8ToConsole(const std::string& utf8str, std::string& conStr)
 {
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
     std::wstring wstr;
     if (!Utf8toWStr(utf8str, wstr))
         return false;
@@ -497,7 +497,7 @@ bool utf8ToConsole(const std::string& utf8str, std::string& conStr)
 
 bool consoleToUtf8(const std::string& conStr, std::string& utf8str)
 {
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
     std::wstring wstr;
     wstr.resize(conStr.size());
     OemToCharBuffW(&conStr[0], &wstr[0], uint32(conStr.size()));
@@ -536,7 +536,7 @@ void utf8printf(FILE* out, const char *str, ...)
 
 void vutf8printf(FILE* out, const char *str, va_list* ap)
 {
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
     char temp_buf[32 * 1024];
     wchar_t wtemp_buf[32 * 1024];
 
