@@ -23083,7 +23083,7 @@ void Player::UpdateVisibilityOf(WorldObject* target)
 
             m_clientGUIDs.erase(target->GetGUID());
 
-            #ifdef FIRELANDS_DEBUG
+            #ifdef FC_DEBUG
                 LOG_DEBUG("maps", "Object %u (Type: %u) out of range for player %u. Distance = %f", target->GetGUID().GetCounter(), target->GetTypeId(), GetGUID().GetCounter(), GetDistance(target));
             #endif
         }
@@ -23095,7 +23095,7 @@ void Player::UpdateVisibilityOf(WorldObject* target)
             target->SendUpdateToPlayer(this);
             m_clientGUIDs.insert(target->GetGUID());
 
-            #ifdef FIRELANDS_DEBUG
+            #ifdef FC_DEBUG
                 LOG_DEBUG("maps", "Object %u (Type: %u) is visible now for player %u. Distance = %f", target->GetGUID().GetCounter(), target->GetTypeId(), GetGUID().GetCounter(), GetDistance(target));
             #endif
 
@@ -23175,7 +23175,7 @@ void Player::UpdateVisibilityOf(T* target, UpdateData& data, std::set<Unit*>& vi
 
             m_clientGUIDs.erase(target->GetGUID());
 
-            #ifdef FIRELANDS_DEBUG
+            #ifdef FC_DEBUG
                 LOG_DEBUG("maps", "Object %u (Type: %u, Entry: %u) is out of range for player %u. Distance = %f", target->GetGUID().GetCounter(), target->GetTypeId(), target->GetEntry(), GetGUID().GetCounter(), GetDistance(target));
             #endif
         }
@@ -23187,7 +23187,7 @@ void Player::UpdateVisibilityOf(T* target, UpdateData& data, std::set<Unit*>& vi
             target->BuildCreateUpdateBlockForPlayer(&data, this);
             UpdateVisibilityOf_helper(m_clientGUIDs, target, visibleNow);
 
-            #ifdef FIRELANDS_DEBUG
+            #ifdef FC_DEBUG
                 LOG_DEBUG("maps", "Object %u (Type: %u, Entry: %u) is visible now for player %u. Distance = %f", target->GetGUID().GetCounter(), target->GetTypeId(), target->GetEntry(), GetGUID().GetCounter(), GetDistance(target));
             #endif
         }
@@ -27915,7 +27915,7 @@ void Player::ValidateMovementInfo(MovementInfo* mi)
 {
     //! Anti-cheat checks. Please keep them in seperate if () blocks to maintain a clear overview.
     //! Might be subject to latency, so just remove improper flags.
-    #ifdef FIRELANDS_DEBUG
+    #ifdef FC_DEBUG
     #define REMOVE_VIOLATING_FLAGS(check, maskToRemove) \
     { \
         if (check) \

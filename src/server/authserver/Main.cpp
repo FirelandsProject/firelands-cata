@@ -54,7 +54,7 @@ namespace fs = boost::filesystem;
 # define _FIRELANDS_REALM_CONFIG  "authserver.conf"
 #endif
 
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
 #include "ServiceWin32.h"
 char serviceName[] = "authserver";
 char serviceLongName[] = "Firelands auth service";
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
     if (vm.count("help") || vm.count("version"))
         return 0;
 
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
     if (configService.compare("install") == 0)
         return WinServiceInstall() == true ? 0 : 1;
     else if (configService.compare("uninstall") == 0)
@@ -177,7 +177,7 @@ int main(int argc, char** argv)
 
     // Set signal handlers
     boost::asio::signal_set signals(*ioContext, SIGINT, SIGTERM);
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
     signals.add(SIGBREAK);
 #endif
     signals.async_wait(std::bind(&SignalHandler, std::weak_ptr<Firelands::Asio::IoContext>(ioContext), std::placeholders::_1, std::placeholders::_2));
@@ -196,7 +196,7 @@ int main(int argc, char** argv)
     banExpiryCheckTimer->expires_from_now(boost::posix_time::seconds(banExpiryCheckInterval));
     banExpiryCheckTimer->async_wait(std::bind(&BanExpiryHandler, std::weak_ptr<Firelands::Asio::DeadlineTimer>(banExpiryCheckTimer), banExpiryCheckInterval, std::placeholders::_1));
 
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
     std::shared_ptr<Firelands::Asio::DeadlineTimer> serviceStatusWatchTimer;
     if (m_ServiceStatus != -1)
     {
@@ -286,7 +286,7 @@ void BanExpiryHandler(std::weak_ptr<Firelands::Asio::DeadlineTimer> banExpiryChe
     }
 }
 
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
 void ServiceStatusWatcher(std::weak_ptr<Firelands::Asio::DeadlineTimer> serviceStatusWatchTimerRef, std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error)
 {
     if (!error)
@@ -314,7 +314,7 @@ variables_map GetConsoleArguments(int argc, char** argv, fs::path& configFile, s
         ("config,c", value<fs::path>(&configFile)->default_value(fs::absolute(_FIRELANDS_REALM_CONFIG)),
                      "use <arg> as configuration file")
         ;
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
     options_description win("Windows platform specific options");
     win.add_options()
         ("service,s", value<std::string>(&configService)->default_value(""), "Windows service options: [install | uninstall]")

@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITYSERVER_MOVEPLINE_H
-#define TRINITYSERVER_MOVEPLINE_H
+#ifndef FIRELANDSSERVER_MOVEPLINE_H
+#define FIRELANDSSERVER_MOVEPLINE_H
 
 #include "Spline.h"
 #include "MoveSplineInitArgs.h"
@@ -148,4 +148,4 @@ namespace Movement
         std::string ToString() const;
     };
 }
-#endif // TRINITYSERVER_MOVEPLINE_H
+#endif // FIRELANDSSERVER_MOVEPLINE_H

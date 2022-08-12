@@ -124,7 +124,7 @@ public:
 #ifdef PERFORMANCE_PROFILING
 #define FC_METRIC_EVENT(category, title, description) ((void)0)
 #define FC_METRIC_VALUE(category, value) ((void)0)
-#elif FIRELANDS_PLATFORM != FIRELANDS_PLATFORM_WINDOWS
+#elif FC_PLATFORM != FC_PLATFORM_WINDOWS
 #define FC_METRIC_EVENT(category, title, description)                    \
         do {                                                            \
             if (sMetric->IsEnabled())                              \

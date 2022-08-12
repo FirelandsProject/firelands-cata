@@ -47,7 +47,7 @@
 #include "ScriptLoader.h"
 #include "ScriptMgr.h"
 #include "ScriptReloadMgr.h"
-#include "TCSoap.h"
+#include "FCSoap.h"
 #include "World.h"
 #include "WorldSocket.h"
 #include "WorldSocketMgr.h"
@@ -239,7 +239,7 @@ extern int main(int argc, char **argv) {
   // Set signal handlers (this must be done before starting IoContext threads,
   // because otherwise they would unblock and exit)
   boost::asio::signal_set signals(*ioContext, SIGINT, SIGTERM);
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
   signals.add(SIGBREAK);
 #endif
   signals.async_wait(SignalHandler);

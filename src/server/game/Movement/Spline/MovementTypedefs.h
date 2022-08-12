@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITYSERVER_TYPEDEFS_H
-#define TRINITYSERVER_TYPEDEFS_H
+#ifndef FIRELANDSSERVER_TYPEDEFS_H
+#define FIRELANDSSERVER_TYPEDEFS_H
 
 #include "Common.h"
 namespace G3D
@@ -82,4 +82,4 @@ namespace Movement
     extern std::string MovementFlagsExtra_ToString(uint32 flags);
 }
 
-#endif // TRINITYSERVER_TYPEDEFS_H
+#endif // FIRELANDSSERVER_TYPEDEFS_H

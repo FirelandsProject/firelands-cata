@@ -21,7 +21,7 @@
 #include "CompilerDefs.h"
 #include <boost/version.hpp>
 
-#if FIRELANDS_COMPILER == FIRELANDS_COMPILER_MICROSOFT && BOOST_VERSION == 107400
+#if FC_COMPILER == FC_COMPILER_MICROSOFT && BOOST_VERSION == 107400
 #define BOOST_1_74_FIBONACCI_HEAP_MSVC_COMPILE_FIX(T)                                           \
 namespace boost::heap::detail                                                                   \
 {                                                                                               \

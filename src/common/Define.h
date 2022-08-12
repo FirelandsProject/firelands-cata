@@ -20,7 +20,7 @@
 
 #include "CompilerDefs.h"
 
-#if FIRELANDS_COMPILER == FIRELANDS_COMPILER_GNU
+#if FC_COMPILER == FC_COMPILER_GNU
 #  if !defined(__STDC_FORMAT_MACROS)
 #    define __STDC_FORMAT_MACROS
 #  endif
@@ -54,7 +54,7 @@
 #  endif
 #endif
 
-#if FIRELANDS_PLATFORM == FIRELANDS_PLATFORM_WINDOWS
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
 #  define FIRELANDS_PATH_MAX 260
 #  define _USE_MATH_DEFINES
 #  ifndef DECLSPEC_NORETURN
@@ -63,36 +63,36 @@
 #  ifndef DECLSPEC_DEPRECATED
 #    define DECLSPEC_DEPRECATED __declspec(deprecated)
 #  endif //DECLSPEC_DEPRECATED
-#else // FIRELANDS_PLATFORM != FIRELANDS_PLATFORM_WINDOWS
+#else // FC_PLATFORM != FC_PLATFORM_WINDOWS
 #  define FIRELANDS_PATH_MAX PATH_MAX
 #  define DECLSPEC_NORETURN
 #  define DECLSPEC_DEPRECATED
-#endif // FIRELANDS_PLATFORM
+#endif // FC_PLATFORM
 
 #if !defined(COREDEBUG)
 #  define FIRELANDS_INLINE inline
 #else //COREDEBUG
-#  if !defined(FIRELANDS_DEBUG)
-#    define FIRELANDS_DEBUG
-#  endif //FIRELANDS_DEBUG
+#  if !defined(FC_DEBUG)
+#    define FC_DEBUG
+#  endif //FC_DEBUG
 #  define FIRELANDS_INLINE
 #endif //!COREDEBUG
 
-#if FIRELANDS_COMPILER == FIRELANDS_COMPILER_GNU
+#if FC_COMPILER == FC_COMPILER_GNU
 #  define ATTR_NORETURN __attribute__((__noreturn__))
 #  define ATTR_PRINTF(F, V) __attribute__ ((__format__ (__printf__, F, V)))
 #  define ATTR_DEPRECATED __attribute__((__deprecated__))
-#else //FIRELANDS_COMPILER != FIRELANDS_COMPILER_GNU
+#else //FC_COMPILER != FC_COMPILER_GNU
 #  define ATTR_NORETURN
 #  define ATTR_PRINTF(F, V)
 #  define ATTR_DEPRECATED
-#endif //FIRELANDS_COMPILER == FIRELANDS_COMPILER_GNU
+#endif //FC_COMPILER == FC_COMPILER_GNU
 
 #ifdef FIRELANDS_API_USE_DYNAMIC_LINKING
-#  if FIRELANDS_COMPILER == FIRELANDS_COMPILER_MICROSOFT
+#  if FC_COMPILER == FC_COMPILER_MICROSOFT
 #    define FC_API_EXPORT __declspec(dllexport)
 #    define FC_API_IMPORT __declspec(dllimport)
-#  elif FIRELANDS_COMPILER == FIRELANDS_COMPILER_GNU
+#  elif FC_COMPILER == FC_COMPILER_GNU
 #    define FC_API_EXPORT __attribute__((visibility("default")))
 #    define FC_API_IMPORT
 #  else
