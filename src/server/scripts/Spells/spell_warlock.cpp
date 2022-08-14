@@ -113,8 +113,8 @@ enum WarlockSpellIcons
 {
     WARLOCK_ICON_ID_IMPROVED_LIFE_TAP               = 208,
     WARLOCK_ICON_ID_MANA_FEED                       = 1982,
-	WARLOCK_ICON_ID_DEATHS_EMBRACE                  = 3223,
-	WARLOCK_ICON_ID_SOUL_SIPHON                     = 5001,
+    WARLOCK_ICON_ID_DEATHS_EMBRACE                  = 3223,
+    WARLOCK_ICON_ID_SOUL_SIPHON                     = 5001,
     WARLOCK_ICON_ID_SOULBURN_SEED_OF_CORRUPTION     = 1932,
     WARLOCK_ICON_ID_FIRE_AND_BRIMSTONE              = 3173,
     WARLOCK_ICON_ID_JINX                            = 5002

@@ -185,7 +185,6 @@ public:
             AirForceSpawn const& _spawn;
             ObjectGuid _myGuard;
             std::unordered_set<ObjectGuid> _toAttack;
-            
     };
 
     CreatureAI* GetAI(Creature* creature) const override

@@ -326,7 +326,7 @@ struct boss_omnotron_defense_system : public BossAI
                         golem->DespawnOrUnsummon();
                     }
                 }
-  
+
                 instance->SetBossState(DATA_OMNOTRON_DEFENSE_SYSTEM, FAIL);
                 RemoveDebuffsFromRaid();
                 summons.DespawnAll();

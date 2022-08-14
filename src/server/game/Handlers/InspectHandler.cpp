@@ -21,7 +21,7 @@
 #include "ObjectAccessor.h"
 #include "Player.h"
 
-void WorldSession::HandleRequestHonorStatsOpcode(WorldPackets::Inspect::RequestHonorStats& packet) 
+void WorldSession::HandleRequestHonorStatsOpcode(WorldPackets::Inspect::RequestHonorStats& packet)
 {
     Player* player = ObjectAccessor::GetPlayer(*_player, packet.TargetGUID);
     if (!player)

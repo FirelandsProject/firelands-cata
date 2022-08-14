@@ -1419,7 +1419,7 @@ class spell_pal_guardian_of_ancient_kings : public SpellScript
 class spell_pal_ancient_healer : public AuraScript
 {
     bool Load() override
-    {    
+    {
         _procCount = 0;
         return true;
     }

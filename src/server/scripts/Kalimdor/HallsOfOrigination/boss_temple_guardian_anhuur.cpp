@@ -16,7 +16,7 @@
  */
 
 /* To-do: */
-// - AreaTrigger: unknown purpose (id: 1843; pos: front-right stairs) - dust animation, aggro snakes? 
+// - AreaTrigger: unknown purpose (id: 1843; pos: front-right stairs) - dust animation, aggro snakes?
 
 #include "halls_of_origination.h"
 #include "ScriptMgr.h"
@@ -35,7 +35,7 @@ enum Texts
 {
     SAY_AGGRO                    = 0,
     SAY_SHIELD                   = 1,
-    EMOTE_SHIELD                 = 2, 
+    EMOTE_SHIELD                 = 2,
     EMOTE_SHIELD_REMOVED         = 3,
     SAY_KILL                     = 4,
     SAY_DEATH                    = 5

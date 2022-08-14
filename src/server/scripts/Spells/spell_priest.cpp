@@ -1776,7 +1776,7 @@ class spell_pri_harnessed_shadows : public AuraScript
     }
 };
 
-// 2944 - Devouring Plague 
+// 2944 - Devouring Plague
 class spell_pri_devouring_plague : public AuraScript
 {
     bool Validate(SpellInfo const* /*spellInfo*/) override

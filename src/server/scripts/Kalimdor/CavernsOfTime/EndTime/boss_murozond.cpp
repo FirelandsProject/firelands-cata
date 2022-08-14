@@ -356,7 +356,6 @@ struct boss_murozond : public BossAI
                             if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.f, true))
                                 me->CastSpell(target, SPELL_DISTORTION_BOMB_1, true);
 
-                            
                             task.Repeat(6s);
                         })
                         .Schedule(7s, [this](TaskContext task)

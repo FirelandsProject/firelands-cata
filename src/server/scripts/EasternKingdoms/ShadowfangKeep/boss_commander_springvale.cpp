@@ -467,7 +467,6 @@ public:
 
         void Register() override
         {
-            
             AfterHit.Register(&spell_sfk_unholy_power_SpellScript::HandleStacks);
         }
     };

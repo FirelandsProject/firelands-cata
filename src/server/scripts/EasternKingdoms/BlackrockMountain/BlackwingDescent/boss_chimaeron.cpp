@@ -203,7 +203,6 @@ struct boss_chimaeron : public BossAI
             if (Creature* nefarius = instance->GetCreature(DATA_LORD_VICTOR_NEFARIUS_GENERIC))
                 if (nefarius->IsAIEnabled())
                     nefarius->AI()->DoAction(ACTION_CHIMAERON_DEFEATED);
-                
     }
 
     void KilledUnit(Unit* victim) override
@@ -244,7 +243,7 @@ struct boss_chimaeron : public BossAI
         {
             case SPELL_MASSACRE:
             {
-                // Hotfix (2011-01-05): "Chimaeron now resets his melee attack cycle after each Massacre and removes the Double Attack buff." 
+                // Hotfix (2011-01-05): "Chimaeron now resets his melee attack cycle after each Massacre and removes the Double Attack buff."
                 me->RemoveAurasDueToSpell(SPELL_DOUBLE_ATTACK);
                 me->resetAttackTimer();
 

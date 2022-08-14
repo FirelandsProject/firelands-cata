@@ -544,7 +544,6 @@ class instance_throne_of_the_tides : public InstanceMapScript
                         break;
                     default:
                         break;
- 
                 }
             }
 

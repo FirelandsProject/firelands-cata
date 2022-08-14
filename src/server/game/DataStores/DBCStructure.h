@@ -401,7 +401,7 @@ struct ChatChannelsEntry
     uint32  Flags;                                          // 1
     //uint32  FactionGroup                                  // 2
     char* Name;                                             // 3
-    //char* Shortcut;                                       // 4 
+    //char* Shortcut;                                       // 4
 };
 
 struct ChrClassesEntry
@@ -442,7 +442,7 @@ struct ChrRacesEntry
     //char* Name_female;                                    // 15
     //char* Name_male;                                      // 16
     // uint32 FacialHairCustomization[2]                    // 17-18
-    // uint32 HairCustomization                             // 19 
+    // uint32 HairCustomization                             // 19
     uint32  Race_related;                                   // 20
     //uint32 UnalteredVisualRaceID                          // 21 (23 for worgens)
     //uint32 UaMaleCreatureSoundDataID                      // 22 4.0.0
@@ -578,7 +578,7 @@ struct CurrencyCategoryEntry
 struct CurrencyTypesEntry
 {
     uint32 ID;                                              // 0
-    uint32 CategoryID;                                      // 1 
+    uint32 CategoryID;                                      // 1
     // char* Name;                                          // 2
     // char* InventoryIcon1;                                // 3
     // uint32 InventoryIcon2;                               // 4
@@ -622,10 +622,10 @@ struct DungeonEncounterEntry
 {
     uint32 ID;                                              // 0
     uint32 MapID;                                           // 1
-    int32 DifficultyID;                                     // 2 
+    int32 DifficultyID;                                     // 2
     // uint32 OrderIndex;                                   // 3
     uint32 Bit;                                             // 4 used for creating completed masks
-    char* Name;                                             // 5        encounter name
+    char* Name;                                             // 5 encounter name
     //uint32 CreatureDisplayID;                             // 6
     //uint32 SpellIconID;                                   // 7
 };
@@ -698,10 +698,10 @@ struct FactionEntry
 struct FactionTemplateEntry
 {
     uint32      ID;                                         // 0
-    uint32      Faction;                                    // 1 
+    uint32      Faction;                                    // 1
     uint32      Flags;                                      // 2
     uint32      FactionGroup;                               // 3
-    uint32      FriendGroup;                                // 4 
+    uint32      FriendGroup;                                // 4
     uint32      EnemyGroup;                                 // 5
     uint32      Enemies[MAX_FACTION_RELATIONS];             // 6
     uint32      Friend[MAX_FACTION_RELATIONS];              // 10
@@ -916,7 +916,7 @@ struct HolidayNamesEntry
 struct HolidaysEntry
 {
     uint32 ID;                                              // 0
-    uint32 Duration[MAX_HOLIDAY_DURATIONS];                 // 1-10 
+    uint32 Duration[MAX_HOLIDAY_DURATIONS];                 // 1-10
     uint32 Date[MAX_HOLIDAY_DATES];                         // 11-36 (dates in unix time starting at January, 1, 2000)
     uint32 Region;                                          // 37 (wow region)
     uint32 Looping;                                         // 38
@@ -1071,7 +1071,7 @@ struct ItemLimitCategoryEntry
 
 struct ItemRandomPropertiesEntry
 {
-    uint32  ID;                                             // 0 
+    uint32  ID;                                             // 0
     //char* Name                                            // 1
     uint32  Enchantment[5];                                 // 2 - 6
     char*   Name;                                           // 7
@@ -1079,7 +1079,7 @@ struct ItemRandomPropertiesEntry
 
 struct ItemRandomSuffixEntry
 {
-    uint32 ID;                                              // 0 
+    uint32 ID;                                              // 0
     char*  Name;                                            // 1
     // char* InternalName                                   // 2
     uint32  Enchantment[5];                                 // 3 - 7
@@ -1175,7 +1175,7 @@ struct LiquidTypeEntry
 
 struct LockEntry
 {
-    uint32  ID;                                             // 0 
+    uint32  ID;                                             // 0
     uint32  Type[MAX_LOCK_CASE];                            // 1-8
     uint32  Index[MAX_LOCK_CASE];                           // 9-16
     uint32  Skill[MAX_LOCK_CASE];                           // 17-24
@@ -1494,7 +1494,7 @@ struct SkillLineEntry
     char*   DisplayName;                                    // 3
     //char*  Description;                                   // 4
     uint32  SpellIconID;                                    // 5
-    //char*   AlternateVerb;                                // 6 
+    //char*   AlternateVerb;                                // 6
     uint32  CanLink;                                        // 7 (prof. with recipe)
 };
 
@@ -2210,7 +2210,7 @@ struct VehicleSeatEntry
     uint32  VehicleEnterAnimKitID;                           // 61
     uint32  VehicleRideAnimKitID;                            // 62
     uint32  VehicleExitAnimKitID;                            // 63
-    uint32  CameraModeID;                                    // 64 
+    uint32  CameraModeID;                                    // 64
     uint32  FlagsC;                                          // 65
 
     inline bool HasFlag(VehicleSeatFlags flag) const { return (Flags & flag); }

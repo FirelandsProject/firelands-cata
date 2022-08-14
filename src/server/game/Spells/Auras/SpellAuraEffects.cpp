@@ -201,7 +201,7 @@ pAuraEffectHandler AuraEffectHandler[TOTAL_AURAS]=
     &AuraEffect::HandleAuraModIncreaseHealthPercent,              //133 SPELL_AURA_MOD_INCREASE_HEALTH_PERCENT
     &AuraEffect::HandleAuraModRegenInterrupt,                     //134 SPELL_AURA_MOD_MANA_REGEN_INTERRUPT
     &AuraEffect::HandleModHealingDone,                            //135 SPELL_AURA_MOD_HEALING_DONE
-    &AuraEffect::HandleModHealingDonePercent,                     //136 SPELL_AURA_MOD_HEALING_DONE_PERCENT 
+    &AuraEffect::HandleModHealingDonePercent,                     //136 SPELL_AURA_MOD_HEALING_DONE_PERCENT
     &AuraEffect::HandleModTotalPercentStat,                       //137 SPELL_AURA_MOD_TOTAL_STAT_PERCENTAGE
     &AuraEffect::HandleModMeleeSpeedPct,                          //138 SPELL_AURA_MOD_MELEE_HASTE
     &AuraEffect::HandleForceReaction,                             //139 SPELL_AURA_FORCE_REACTION
@@ -2163,7 +2163,7 @@ void AuraEffect::HandleAuraTransform(AuraApplication const* aurApp, uint8 mode, 
                         {
                             if (caster->HasAura(52648))         // Glyph of the Penguin
                                 model_id = 26452;
-                            else if (caster->HasAura(57927))	// Glyph of the Monkey
+                            else if (caster->HasAura(57927))    // Glyph of the Monkey
                                 model_id = 21362;
                         }
                     }
@@ -2282,7 +2282,7 @@ void AuraEffect::HandleFeignDeath(AuraApplication const* aurApp, uint8 mode, boo
                 }
             }
         }
-		
+
         for (auto& pair : target->GetThreatManager().GetThreatenedByMeList())
           pair.second->ScaleThreat(0.0f);
 
@@ -3307,7 +3307,7 @@ void AuraEffect::HandleAuraModSchoolImmunity(AuraApplication const* aurApp, uint
         target->GetThreatManager().EvaluateSuppressed();
     }
     else
-    { 
+    {
         // do not remove unit flag if there are more than this auraEffect of that kind on unit
         if (target->HasAuraType(GetAuraType()))
             return;
