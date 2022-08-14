@@ -2163,7 +2163,7 @@ void AuraEffect::HandleAuraTransform(AuraApplication const* aurApp, uint8 mode, 
                         {
                             if (caster->HasAura(52648))         // Glyph of the Penguin
                                 model_id = 26452;
-                            else if (caster->HasAura(57927))	// Glyph of the Monkey
+                            else if (caster->HasAura(57927))    // Glyph of the Monkey
                                 model_id = 21362;
                         }
                     }
@@ -2282,7 +2282,7 @@ void AuraEffect::HandleFeignDeath(AuraApplication const* aurApp, uint8 mode, boo
                 }
             }
         }
-		
+
         for (auto& pair : target->GetThreatManager().GetThreatenedByMeList())
           pair.second->ScaleThreat(0.0f);
 

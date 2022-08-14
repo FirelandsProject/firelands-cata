@@ -3290,7 +3290,7 @@ void SpellMgr::LoadSpellInfoCorrections()
         16177, // Ancestral Fortitude (Rank 1)
         16236, // Ancestral Fortitude (Rank 2)
         47930, // Grace
-		48714, // Compelled
+        48714, // Compelled
         7853,  // The Art of Being a Water Terror: Force Cast on Player
     }, [](SpellInfo* spellInfo)
     {
@@ -3451,7 +3451,7 @@ void SpellMgr::LoadSpellInfoCorrections()
         47134  // Quest Complete
     }, [](SpellInfo* spellInfo)
     {
-        //! HACK: This spell break quest complete for alliance and on retail not used �_O
+        //! HACK: This spell break quest complete for alliance and on retail not used ?_O
         spellInfo->Effects[EFFECT_0].Effect = 0;
     });
 
