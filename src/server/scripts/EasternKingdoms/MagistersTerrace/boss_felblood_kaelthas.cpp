@@ -66,7 +66,7 @@ enum Spells
     SPELL_CLEAR_FLIGHT                          = 44232,
     SPELL_QUITE_SUICIDE                         = 3617, // Serverside spell
 
-    // Flame Strike 
+    // Flame Strike
     SPELL_FLAME_STRIKE_DUMMY                    = 44191,
     SPELL_FLAME_STRIKE_DAMAGE                   = 44190,
 

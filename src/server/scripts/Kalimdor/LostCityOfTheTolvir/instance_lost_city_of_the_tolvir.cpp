@@ -141,7 +141,6 @@ class instance_lost_city_of_the_tolvir : public InstanceMapScript
                     default:
                         break;
                 }
-                    
             }
 
             void OnGameObjectCreate(GameObject* go) override

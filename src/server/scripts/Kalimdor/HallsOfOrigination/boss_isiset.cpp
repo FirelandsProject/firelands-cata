@@ -65,7 +65,7 @@ enum Spells
     SPELL_IMAGE_EXPLOSION                   = 74301,
 
     // Celestial Familiar npc
-    SPELL_ORB_VISUAL                        = 74356, 
+    SPELL_ORB_VISUAL                        = 74356,
     SPELL_ARCANE_BARRAGE                    = 74374,
 
     // Starry Sky npc
@@ -176,7 +176,7 @@ public:
                 return;
 
             _mirrorImageDied = true;
-            
+
             // Handle despawning
             DummyEntryCheckPredicate pred;
             summons.DoAction(ACTION_IMAGES_SET_PASSIVE, pred);
@@ -373,7 +373,7 @@ public:
         npc_isiset_mirror_imageAI(Creature* creature) : ScriptedAI(creature), _instance(creature->GetInstanceScript()) { }
 
         void Reset() override
-        {            
+        {
             me->SetReactState(REACT_PASSIVE);
             _instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me, 1);
 
@@ -388,7 +388,7 @@ public:
                     break;
                 case NPC_VEIL_OF_SKY:
                     _events.ScheduleEvent(EVENT_IMAGE_VEIL_OF_SKY_ABILITY, Seconds(8), Seconds(9));
-                    //DoCastSelf(SPELL_MANA_SHIELD_STATE_VISUAL); // Disabled in sniffs/on retail, too shiny. 
+                    //DoCastSelf(SPELL_MANA_SHIELD_STATE_VISUAL); // Disabled in sniffs/on retail, too shiny.
                     break;
             }
         }
@@ -474,7 +474,7 @@ public:
     }
 };
 
-// 74381 - Astral Rain Controller Spell 
+// 74381 - Astral Rain Controller Spell
 class spell_isiset_astral_rain_controller : public SpellScriptLoader
 {
 public:
@@ -562,7 +562,7 @@ public:
     }
 };
 
-// 74383 - Astral Familiar Controller Spell 
+// 74383 - Astral Familiar Controller Spell
 class spell_isiset_astral_familiar_controller : public SpellScriptLoader
 {
 public:

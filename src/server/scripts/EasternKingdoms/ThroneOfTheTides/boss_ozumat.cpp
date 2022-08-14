@@ -36,7 +36,7 @@
 enum Texts
 {
     // Neptulon
-    SAY_INTRO_1                     = 0,    
+    SAY_INTRO_1                     = 0,
     SAY_INTRO_2                     = 1,
     SAY_PURIFY_WATERS_1             = 2,
     SAY_PURIFY_WATERS_2             = 3,
@@ -429,7 +429,6 @@ struct npc_ozumat_neptulon : public ScriptedAI
             default:
                 break;
         }
-        
     }
 
     void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override

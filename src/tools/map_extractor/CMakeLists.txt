@@ -38,7 +38,7 @@ target_include_directories(mapextractor
     ${PUBLIC_INCLUDES}
   PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR})
-    
+
 set_target_properties(mapextractor
   PROPERTIES
     FOLDER
