@@ -3,7 +3,6 @@
 So, you want to contribute? Great!  
 Contributing is not only about creating fixes, but also reporting bugs. Before reporting a bug, please make sure to use the latest core and database revision.  
 
-
 Issues
 ======
 
@@ -43,7 +42,6 @@ When creating patches read:
 - [WDB Fields](https://www.trinitycore.org/f/topic/58-wdb-fields/)
 - [Git Squash](https://ariejan.net/2011/07/05/git-squash-your-latests-commits-into-one/)
 
-
 We suggest that you create one branch for each C++ based fix: this will allow you to create more fixes without having to wait for your pull request to be merged.  
 For the SQL files coming with C++ based fixes the naming schema is `YYYY_MM_DD_i_database.sql`, where `YYYY_MM_DD` is the date of the fix, `i_database` is the *ith* sql created that day for `database`.  
 When doing changes to `auth` or `characters` database remember to update the base files (`/sql/base/*`).  
@@ -57,10 +55,8 @@ The wiki is located at [https://trinitycore.info](https://trinitycore.info).
 
 You are welcome to create an account and help us improve and extend the wiki.
 
-
 Requirements
 ============
-
 
 Software requirements are available in the [wiki](https://www.trinitycore.info/display/tc/Requirements) for
 Windows, Linux and Mac OSX.
