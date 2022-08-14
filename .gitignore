@@ -1,4 +1,3 @@
-
 build*/
 .directory
 .mailmap
@@ -23,3 +22,4 @@ nbproject/*
 cmake-build-*/
 .vs
 release/
+env/
