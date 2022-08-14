@@ -287,14 +287,14 @@ enum AchievementCriteriaTypes : uint8
     // ACHIEVEMENT_CRITERIA_TYPE_ANYONE_TRIGGER_GAME_EVENT_SCENATIO       = 92, // unused in DBC 4.3.4.15595 name state TBC Classic
     ACHIEVEMENT_CRITERIA_TYPE_ROLL_NEED                                   = 93,
     ACHIEVEMENT_CRITERIA_TYPE_ROLL_GREED                                  = 94,
-/*                                                                        
+/*
     ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_HEALTH                              = 95,  // unused in DBC 4.3.4.15595
     ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_POWER                               = 96,  // unused in DBC 4.3.4.15595
     ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_STAT                                = 97,  // unused in DBC 4.3.4.15595
     ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_SPELLPOWER                          = 98,  // unused in DBC 4.3.4.15595
     ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_ARMOR                               = 99,  // unused in DBC 4.3.4.15595
     ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_RATING                              = 100, // unused in DBC 4.3.4.15595
-*/                                                                        
+*/
     ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_HIT_DEALT                           = 101,
     ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_HIT_RECEIVED                        = 102,
     ACHIEVEMENT_CRITERIA_TYPE_TOTAL_DAMAGE_RECEIVED                       = 103,

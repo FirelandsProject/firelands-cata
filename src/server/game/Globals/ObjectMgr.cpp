@@ -675,7 +675,7 @@ void ObjectMgr::LoadCreatureSparringTemplate()
 {
     uint32 oldMSTime = getMSTime();
 
-    //                                               0           1 
+    //                                               0           1
     QueryResult result = WorldDatabase.Query("SELECT CreatureID, HealthLimitPct FROM creature_sparring_template");
 
     if (!result)
@@ -10191,7 +10191,7 @@ void ObjectMgr::LoadTaxiNodeLevelData()
         uint8 level = fields[1].GetUInt8();
 
         TaxiNodesEntry const* node = sTaxiNodesStore.LookupEntry(taxiNodeId);
-        
+
         if (!node)
         {
             LOG_ERROR("sql.sql", "Table `taxi_level_data` has data for nonexistent taxi node (ID: %u), skipped", taxiNodeId);

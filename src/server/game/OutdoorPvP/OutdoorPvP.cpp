@@ -184,11 +184,11 @@ bool OPvPCapturePoint::DelObject(uint32 type)
     uint32 spawnId = m_Objects[type];
     if (!spawnId)
         return false;
-    
+
     sObjectMgr->DeleteGameObjectData(spawnId);
     m_ObjectTypes[m_Objects[type]] = 0;
     m_Objects[type] = 0;
-    
+
     return GameObject::DeleteFromDB(spawnId);
 }
 

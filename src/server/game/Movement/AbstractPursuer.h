@@ -30,7 +30,7 @@ struct AbstractPursuer
 
         void SetTarget(PursuingType type, Unit* target);
         Unit* GetTarget() const { return _target; }
-    
+
     private:
         Unit* _target = nullptr;
         PursuingType _type;

@@ -48,7 +48,7 @@ enum LfgOptions
 {
     LFG_OPTION_ENABLE_DUNGEON_FINDER            = 0x1,
     LFG_OPTION_ENABLE_RAID_BROWSER              = 0x2,
-    LFG_OPTION_ENABLE_SHORTAGE_REWARDS          = 0x4 
+    LFG_OPTION_ENABLE_SHORTAGE_REWARDS          = 0x4
 };
 
 enum LFGMgrEnum

@@ -232,7 +232,7 @@ class FC_GAME_API _SpellScript
 
             template <typename Derived = _SpellScript>
             EffectNameHookHandler(Derived* owner, HookType<Derived> hookFunction, uint8 effIndex, uint16 effName)
-                : BaseHookHandler(owner, hookFunction, effIndex, 
+                : BaseHookHandler(owner, hookFunction, effIndex,
                     [_effectName = effName](SpellEffectInfo const& effectInfo) {
                         return _effectName == SPELL_EFFECT_ANY || effectInfo.Effect == _effectName;
                     }), _effName(effName)
@@ -492,7 +492,7 @@ class FC_GAME_API SpellScript : public _SpellScript
     // internal use classes & functions
     // DO NOT OVERRIDE THESE IN SCRIPTS
     public:
-        
+
         using CheckCastHook   = HookHandler<SpellCastResult>;
         using EffectNameHook  = EffectNameHookHandler<void, SpellEffIndex>;
         using HitHook         = HookHandler<void>;
@@ -794,7 +794,7 @@ class FC_GAME_API AuraScript : public _SpellScript
         };
 
         using AuraEffectApplyHookHandler = AuraEffectHandleModeHookHandler<void, AuraEffect const*, AuraEffectHandleModes>;
-        
+
         struct FC_GAME_API AuraEffectAbsorbHookHandler : AuraNameHookHandler<void, AuraEffect*, DamageInfo&, uint32&>
         {
             //> Base type shorthand.

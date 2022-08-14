@@ -347,11 +347,11 @@ void BattlegroundTP::Reset()
 }
 
 void BattlegroundTP::FillInitialWorldStates(WorldPackets::WorldState::InitWorldStates& data)
-{ 
+{
     /// Show how many flags had been captured
     data.Worldstates.emplace_back(uint32(BG_TP_FLAG_CAPTURES_ALLIANCE), uint32(GetTeamScore(TEAM_ALLIANCE)));
     data.Worldstates.emplace_back(uint32(BG_TP_FLAG_CAPTURES_HORDE), uint32(GetTeamScore(TEAM_HORDE)));
-    
+
     /// Show MAX number of flags (x/3)
     data.Worldstates.emplace_back(uint32(BG_TP_FLAG_CAPTURES_MAX), uint32(BG_TP_MAX_TEAM_SCORE));
 
@@ -885,7 +885,7 @@ void BattlegroundTP::RespawnFlagAfterDrop(uint32 team)
         SpawnBGObject(BG_TP_OBJECT_H_FLAG, RESPAWN_IMMEDIATELY);
         SendBroadcastText(BG_TP_TEXT_FLAG_PLACED_HORDE, CHAT_MSG_BG_SYSTEM_NEUTRAL);
     }
-    
+
     PlaySoundToAll(BG_TP_SOUND_FLAGS_RESPAWNED);
 
     if (GameObject* obj = GetBgMap()->GetGameObject(GetDroppedFlagGUID(team)))

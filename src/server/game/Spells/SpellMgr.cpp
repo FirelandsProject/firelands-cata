@@ -3248,7 +3248,7 @@ void SpellMgr::LoadSpellInfoCorrections()
     // Tree of Life passives
     ApplySpellFix({
         5420,
-        81097 
+        81097
     }, [](SpellInfo* spellInfo)
     {
         spellInfo->Stances = UI64LIT(1) << (FORM_TREE - 1);
@@ -5040,7 +5040,7 @@ void SpellMgr::LoadSpellInfoCorrections()
     ApplySpellFix({ 96461 }, [](SpellInfo* spellInfo)
     {
         spellInfo->Effects[EFFECT_0].RadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_2_YARDS);
-    });  
+    });
 
     // Wave of Agony (Damage)
     ApplySpellFix({ 96460 }, [](SpellInfo* spellInfo)
@@ -5862,7 +5862,7 @@ void SpellMgr::LoadSpellInfoCorrections()
     {
         spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_DONE_BONUS;
     });
-    
+
     // Blood in the Water (Rank 1)
     ApplySpellFix({ 80318 }, [](SpellInfo* spellInfo)
     {
@@ -6007,7 +6007,7 @@ void SpellMgr::LoadSpellInfoCorrections()
             {
                 spellInfo->Effects[j].TargetA = SpellImplicitTargetInfo(TARGET_UNIT_CASTER);
                 spellInfo->Effects[j].TargetB = SpellImplicitTargetInfo(0);
-            } 
+            }
        }
 
         // disable proc for magnet auras, they're handled differently
