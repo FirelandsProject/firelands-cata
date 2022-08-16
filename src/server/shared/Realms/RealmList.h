@@ -26,49 +26,49 @@
 #include "Define.h"
 #include "Realm.h"
 
-namespace boost {
-namespace system {
-class error_code;
+namespace boost
+{
+    namespace system
+    {
+        class error_code;
+    }
 }
-}  // namespace boost
 
-namespace Firelands {
-namespace Asio {
-class IoContext;
-class DeadlineTimer;
-}  // namespace Asio
-}  // namespace Firelands
+namespace Firelands
+{
+    namespace Asio
+    {
+        class IoContext;
+        class DeadlineTimer;
+    }
+}
 
 /// Storage object for the list of realms on the server
-class RealmList {
- public:
-  typedef std::map<Battlenet::RealmHandle, Realm> RealmMap;
+class RealmList
+{
+public:
+    typedef std::map<Battlenet::RealmHandle, Realm> RealmMap;
 
-  static RealmList *Instance();
+    static RealmList* Instance();
 
-  ~RealmList();
+    ~RealmList();
 
-  void Initialize(Firelands::Asio::IoContext &ioContext, uint32 updateInterval);
-  void Close();
+    void Initialize(Firelands::Asio::IoContext& ioContext, uint32 updateInterval);
+    void Close();
 
-  RealmMap const &GetRealms() const { return _realms; }
-  Realm const *GetRealm(Battlenet::RealmHandle const &id) const;
+    RealmMap const& GetRealms() const { return _realms; }
+    Realm const* GetRealm(Battlenet::RealmHandle const& id) const;
 
- private:
-  RealmList();
+private:
+    RealmList();
 
-  void UpdateRealms(boost::system::error_code const &error);
-  void UpdateRealm(Battlenet::RealmHandle const &id, uint32 build,
-                   std::string const &name, boost::asio::ip::address &&address,
-                   boost::asio::ip::address &&localAddr,
-                   boost::asio::ip::address &&localSubmask, uint16 port,
-                   uint8 icon, RealmFlags flag, uint8 timezone,
-                   AccountTypes allowedSecurityLevel, float population);
+    void UpdateRealms(boost::system::error_code const& error);
+    void UpdateRealm(Battlenet::RealmHandle const& id, uint32 build, std::string const& name, boost::asio::ip::address&& address, boost::asio::ip::address&& localAddr, boost::asio::ip::address&& localSubmask, uint16 port, uint8 icon, RealmFlags flag, uint8 timezone, AccountTypes allowedSecurityLevel, float population);
 
-  RealmMap _realms;
-  uint32 _updateInterval;
-  std::unique_ptr<Firelands::Asio::DeadlineTimer> _updateTimer;
-  std::unique_ptr<Firelands::Asio::Resolver> _resolver;
+    RealmMap _realms;
+    uint32 _updateInterval;
+    std::unique_ptr<Firelands::Asio::DeadlineTimer> _updateTimer;
+    std::unique_ptr<Firelands::Asio::Resolver> _resolver;
 };
 
 #define sRealmList RealmList::Instance()
