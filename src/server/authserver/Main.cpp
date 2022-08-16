@@ -46,12 +46,8 @@
 #include <iostream>
 #include <csignal>
 
-using boost::asio::ip::tcp;
-using namespace boost::program_options;
-namespace fs = boost::filesystem;
-
 #ifndef _FIRELANDS_REALM_CONFIG
-# define _FIRELANDS_REALM_CONFIG  "authserver.conf"
+#define _FIRELANDS_REALM_CONFIG  "authserver.conf"
 #endif
 
 #if FC_PLATFORM == FC_PLATFORM_WINDOWS
@@ -66,9 +62,11 @@ char serviceDescription[] = "Firelands World of Warcraft emulator auth service";
 *  2 - paused
 */
 int m_ServiceStatus = -1;
-
-void ServiceStatusWatcher(std::weak_ptr<Firelands::Asio::DeadlineTimer> serviceStatusWatchTimerRef, std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error);
 #endif
+
+using boost::asio::ip::tcp;
+using namespace boost::program_options;
+namespace fs = boost::filesystem;
 
 bool StartDB();
 void StopDB();
@@ -84,23 +82,14 @@ int main(int argc, char** argv)
     auto configFile = fs::absolute(_FIRELANDS_REALM_CONFIG);
     std::string configService;
     auto vm = GetConsoleArguments(argc, argv, configFile, configService);
+
     // exit if help or version is enabled
-    if (vm.count("help") || vm.count("version"))
+    if (vm.count("help"))
         return 0;
 
-#if FC_PLATFORM == FC_PLATFORM_WINDOWS
-    if (configService.compare("install") == 0)
-        return WinServiceInstall() == true ? 0 : 1;
-    else if (configService.compare("uninstall") == 0)
-        return WinServiceUninstall() == true ? 0 : 1;
-    else if (configService.compare("run") == 0)
-        return WinServiceRun() ? 0 : 1;
-#endif
-
     std::string configError;
-    if (!sConfigMgr->LoadInitial(configFile.generic_string(),
-                                 std::vector<std::string>(argv, argv + argc),
-                                 configError))
+
+    if (!sConfigMgr->LoadInitial(configFile.generic_string(), std::vector<std::string>(argv, argv + argc), configError))
     {
         printf("Error in config file: %s\n", configError.c_str());
         return 1;
@@ -120,7 +109,7 @@ int main(int argc, char** argv)
             LOG_INFO("server.authserver", "Using SSL version: %s (library: %s)", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
             LOG_INFO("server.authserver", "Using Boost version: %i.%i.%i", BOOST_VERSION / 100000, BOOST_VERSION / 100 % 1000, BOOST_VERSION % 100);
         }
-    );
+        );
 
     // authserver PID file creation
     std::string pidFile = sConfigMgr->GetStringDefault("PidFile", "");
@@ -196,19 +185,6 @@ int main(int argc, char** argv)
     banExpiryCheckTimer->expires_from_now(boost::posix_time::seconds(banExpiryCheckInterval));
     banExpiryCheckTimer->async_wait(std::bind(&BanExpiryHandler, std::weak_ptr<Firelands::Asio::DeadlineTimer>(banExpiryCheckTimer), banExpiryCheckInterval, std::placeholders::_1));
 
-#if FC_PLATFORM == FC_PLATFORM_WINDOWS
-    std::shared_ptr<Firelands::Asio::DeadlineTimer> serviceStatusWatchTimer;
-    if (m_ServiceStatus != -1)
-    {
-        serviceStatusWatchTimer = std::make_shared<Firelands::Asio::DeadlineTimer>(*ioContext);
-        serviceStatusWatchTimer->expires_from_now(boost::posix_time::seconds(1));
-        serviceStatusWatchTimer->async_wait(std::bind(&ServiceStatusWatcher,
-            std::weak_ptr<Firelands::Asio::DeadlineTimer>(serviceStatusWatchTimer),
-            std::weak_ptr<Firelands::Asio::IoContext>(ioContext),
-            std::placeholders::_1));
-    }
-#endif
-
     // Start the io service worker loop
     ioContext->run();
 
@@ -252,8 +228,12 @@ void StopDB()
 void SignalHandler(std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error, int /*signalNumber*/)
 {
     if (!error)
+    {
         if (std::shared_ptr<Firelands::Asio::IoContext> ioContext = ioContextRef.lock())
+        {
             ioContext->stop();
+        }
+    }
 }
 
 void KeepDatabaseAliveHandler(std::weak_ptr<Firelands::Asio::DeadlineTimer> dbPingTimerRef, int32 dbPingInterval, boost::system::error_code const& error)
@@ -286,45 +266,16 @@ void BanExpiryHandler(std::weak_ptr<Firelands::Asio::DeadlineTimer> banExpiryChe
     }
 }
 
-#if FC_PLATFORM == FC_PLATFORM_WINDOWS
-void ServiceStatusWatcher(std::weak_ptr<Firelands::Asio::DeadlineTimer> serviceStatusWatchTimerRef, std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error)
-{
-    if (!error)
-    {
-        if (std::shared_ptr<Firelands::Asio::IoContext> ioContext = ioContextRef.lock())
-        {
-            if (m_ServiceStatus == 0)
-                ioContext->stop();
-            else if (std::shared_ptr<Firelands::Asio::DeadlineTimer> serviceStatusWatchTimer = serviceStatusWatchTimerRef.lock())
-            {
-                serviceStatusWatchTimer->expires_from_now(boost::posix_time::seconds(1));
-                serviceStatusWatchTimer->async_wait(std::bind(&ServiceStatusWatcher, serviceStatusWatchTimerRef, ioContextRef, std::placeholders::_1));
-            }
-        }
-    }
-}
-#endif
-
-variables_map GetConsoleArguments(int argc, char** argv, fs::path& configFile, std::string& configService)
+variables_map GetConsoleArguments(int argc, char** argv, fs::path& configFile, std::string& /*configService*/)
 {
     options_description all("Allowed options");
     all.add_options()
         ("help,h", "print usage message")
         ("version,v", "print version build info")
-        ("config,c", value<fs::path>(&configFile)->default_value(fs::absolute(_FIRELANDS_REALM_CONFIG)),
-                     "use <arg> as configuration file")
-        ;
-#if FC_PLATFORM == FC_PLATFORM_WINDOWS
-    options_description win("Windows platform specific options");
-    win.add_options()
-        ("service,s", value<std::string>(&configService)->default_value(""), "Windows service options: [install | uninstall]")
-        ;
+        ("config,c", value<fs::path>(&configFile)->default_value(fs::absolute(_FIRELANDS_REALM_CONFIG)), "use <arg> as configuration file");
 
-    all.add(win);
-#else
-    (void)configService;
-#endif
     variables_map variablesMap;
+
     try
     {
         store(command_line_parser(argc, argv).options(all).allow_unregistered().run(), variablesMap);
@@ -336,9 +287,13 @@ variables_map GetConsoleArguments(int argc, char** argv, fs::path& configFile, s
     }
 
     if (variablesMap.count("help"))
+    {
         std::cout << all << "\n";
+    }
     else if (variablesMap.count("version"))
+    {
         std::cout << GitRevision::GetFullVersion() << "\n";
+    }
 
     return variablesMap;
 }
