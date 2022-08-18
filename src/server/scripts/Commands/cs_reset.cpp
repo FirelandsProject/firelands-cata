@@ -31,7 +31,6 @@ EndScriptData */
 #include "ObjectAccessor.h"
 #include "Pet.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "World.h"
 #include "WorldSession.h"
 
@@ -44,17 +43,17 @@ public:
     {
         static std::vector<ChatCommand> resetCommandTable =
         {
-            { "achievements", rbac::RBAC_PERM_COMMAND_RESET_ACHIEVEMENTS, true, &HandleResetAchievementsCommand, "" },
-            { "honor",        rbac::RBAC_PERM_COMMAND_RESET_HONOR,        true, &HandleResetHonorCommand,        "" },
-            { "level",        rbac::RBAC_PERM_COMMAND_RESET_LEVEL,        true, &HandleResetLevelCommand,        "" },
-            { "spells",       rbac::RBAC_PERM_COMMAND_RESET_SPELLS,       true, &HandleResetSpellsCommand,       "" },
-            { "stats",        rbac::RBAC_PERM_COMMAND_RESET_STATS,        true, &HandleResetStatsCommand,        "" },
-            { "talents",      rbac::RBAC_PERM_COMMAND_RESET_TALENTS,      true, &HandleResetTalentsCommand,      "" },
-            { "all",          rbac::RBAC_PERM_COMMAND_RESET_ALL,          true, &HandleResetAllCommand,          "" },
+            { "achievements", SEC_CONSOLE,          true, &HandleResetAchievementsCommand, "" },
+            { "honor",        SEC_ADMINISTRATOR,    true, &HandleResetHonorCommand,        "" },
+            { "level",        SEC_ADMINISTRATOR,    true, &HandleResetLevelCommand,        "" },
+            { "spells",       SEC_ADMINISTRATOR,    true, &HandleResetSpellsCommand,       "" },
+            { "stats",        SEC_ADMINISTRATOR,    true, &HandleResetStatsCommand,        "" },
+            { "talents",      SEC_ADMINISTRATOR,    true, &HandleResetTalentsCommand,      "" },
+            { "all",          SEC_CONSOLE,          true, &HandleResetAllCommand,          "" },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "reset", rbac::RBAC_PERM_COMMAND_RESET, true, nullptr, "", resetCommandTable },
+            { "reset",        SEC_ADMINISTRATOR,    true, nullptr,                         "", resetCommandTable },
         };
         return commandTable;
     }

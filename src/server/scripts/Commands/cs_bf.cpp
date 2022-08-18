@@ -25,7 +25,6 @@ EndScriptData */
 #include "ScriptMgr.h"
 #include "BattlefieldMgr.h"
 #include "Chat.h"
-#include "RBAC.h"
 
 class bf_commandscript : public CommandScript
 {
@@ -36,15 +35,15 @@ public:
     {
         static std::vector<ChatCommand> battlefieldcommandTable =
         {
-            { "start",          rbac::RBAC_PERM_COMMAND_BF_START,  false, &HandleBattlefieldStart,  "" },
-            { "stop",           rbac::RBAC_PERM_COMMAND_BF_STOP,   false, &HandleBattlefieldEnd,    "" },
-            { "switch",         rbac::RBAC_PERM_COMMAND_BF_SWITCH, false, &HandleBattlefieldSwitch, "" },
-            { "timer",          rbac::RBAC_PERM_COMMAND_BF_TIMER,  false, &HandleBattlefieldTimer,  "" },
-            { "enable",         rbac::RBAC_PERM_COMMAND_BF_ENABLE, false, &HandleBattlefieldEnable, "" },
+            { "start",          SEC_ADMINISTRATOR,        false, &HandleBattlefieldStart,  "" },
+            { "stop",           SEC_ADMINISTRATOR,        false, &HandleBattlefieldEnd,    "" },
+            { "switch",         SEC_ADMINISTRATOR,        false, &HandleBattlefieldSwitch, "" },
+            { "timer",          SEC_ADMINISTRATOR,        false, &HandleBattlefieldTimer,  "" },
+            { "enable",         SEC_ADMINISTRATOR,        false, &HandleBattlefieldEnable, "" },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "bf",             rbac::RBAC_PERM_COMMAND_BF,        false, nullptr,                     "", battlefieldcommandTable },
+            { "bf",             SEC_ADMINISTRATOR,        false, nullptr,                 "", battlefieldcommandTable },
         };
         return commandTable;
     }

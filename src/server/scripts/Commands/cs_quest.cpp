@@ -30,7 +30,6 @@ EndScriptData */
 #include "ObjectMgr.h"
 #include "Player.h"
 #include "ReputationMgr.h"
-#include "RBAC.h"
 #include "World.h"
 
 class quest_commandscript : public CommandScript
@@ -42,14 +41,14 @@ public:
     {
         static std::vector<ChatCommand> questCommandTable =
         {
-            { "add",      rbac::RBAC_PERM_COMMAND_QUEST_ADD,      false, &HandleQuestAdd,      "" },
-            { "complete", rbac::RBAC_PERM_COMMAND_QUEST_COMPLETE, false, &HandleQuestComplete, "" },
-            { "remove",   rbac::RBAC_PERM_COMMAND_QUEST_REMOVE,   false, &HandleQuestRemove,   "" },
-            { "reward",   rbac::RBAC_PERM_COMMAND_QUEST_REWARD,   false, &HandleQuestReward,   "" },
+            { "add",      SEC_GAMEMASTER,   false, &HandleQuestAdd,      "" },
+            { "complete", SEC_GAMEMASTER,   false, &HandleQuestComplete, "" },
+            { "remove",   SEC_GAMEMASTER,   false, &HandleQuestRemove,   "" },
+            { "reward",   SEC_GAMEMASTER,   false, &HandleQuestReward,   "" },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "quest", rbac::RBAC_PERM_COMMAND_QUEST,  false, nullptr, "", questCommandTable },
+            { "quest",    SEC_GAMEMASTER,   false, nullptr,              "", questCommandTable },
         };
         return commandTable;
     }

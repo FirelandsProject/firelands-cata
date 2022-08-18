@@ -28,7 +28,6 @@ EndScriptData */
 #include "GameTime.h"
 #include "Language.h"
 #include "Player.h"
-#include "RBAC.h"
 
 class event_commandscript : public CommandScript
 {
@@ -39,14 +38,14 @@ public:
     {
         static std::vector<ChatCommand> eventCommandTable =
         {
-            { "activelist", rbac::RBAC_PERM_COMMAND_EVENT_ACTIVELIST, true, &HandleEventActiveListCommand, "" },
-            { "start",      rbac::RBAC_PERM_COMMAND_EVENT_START,      true, &HandleEventStartCommand,      "" },
-            { "stop",       rbac::RBAC_PERM_COMMAND_EVENT_STOP,       true, &HandleEventStopCommand,       "" },
-            { "info",       rbac::RBAC_PERM_COMMAND_EVENT,            true, &HandleEventInfoCommand,       "" },
+            { "activelist", SEC_GAMEMASTER,      true, &HandleEventActiveListCommand, "" },
+            { "start",      SEC_GAMEMASTER,      true, &HandleEventStartCommand,      "" },
+            { "stop",       SEC_GAMEMASTER,      true, &HandleEventStopCommand,       "" },
+            { "info",       SEC_GAMEMASTER,      true, &HandleEventInfoCommand,       "" },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "event", rbac::RBAC_PERM_COMMAND_EVENT, false, nullptr, "", eventCommandTable },
+            { "event",      SEC_GAMEMASTER,      false, nullptr,                      "", eventCommandTable },
         };
         return commandTable;
     }

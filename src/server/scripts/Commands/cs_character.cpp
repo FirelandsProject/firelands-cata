@@ -33,7 +33,6 @@ EndScriptData */
 #include "ObjectMgr.h"
 #include "Player.h"
 #include "PlayerDump.h"
-#include "RBAC.h"
 #include "ReputationMgr.h"
 #include "World.h"
 #include "WorldSession.h"
@@ -47,36 +46,36 @@ public:
     {
         static std::vector<ChatCommand> pdumpCommandTable =
         {
-            { "load",          rbac::RBAC_PERM_COMMAND_PDUMP_LOAD,                true,  &HandlePDumpLoadCommand,               "" },
-            { "write",         rbac::RBAC_PERM_COMMAND_PDUMP_WRITE,               true,  &HandlePDumpWriteCommand,              "" },
+            { "load",          SEC_ADMINISTRATOR,                               true,  &HandlePDumpLoadCommand,               "" },
+            { "write",         SEC_ADMINISTRATOR,                               true,  &HandlePDumpWriteCommand,              "" },
         };
         static std::vector<ChatCommand> characterDeletedCommandTable =
         {
-            { "delete",        rbac::RBAC_PERM_COMMAND_CHARACTER_DELETED_DELETE,  true,  &HandleCharacterDeletedDeleteCommand,  "" },
-            { "list",          rbac::RBAC_PERM_COMMAND_CHARACTER_DELETED_LIST,    true,  &HandleCharacterDeletedListCommand,    "" },
-            { "restore",       rbac::RBAC_PERM_COMMAND_CHARACTER_DELETED_RESTORE, true,  &HandleCharacterDeletedRestoreCommand, "" },
-            { "old",           rbac::RBAC_PERM_COMMAND_CHARACTER_DELETED_OLD,     true,  &HandleCharacterDeletedOldCommand,     "" },
+            { "delete",        SEC_CONSOLE,                                     true,  &HandleCharacterDeletedDeleteCommand,  "" },
+            { "list",          SEC_ADMINISTRATOR,                               true,  &HandleCharacterDeletedListCommand,    "" },
+            { "restore",       SEC_ADMINISTRATOR,                               true,  &HandleCharacterDeletedRestoreCommand, "" },
+            { "old",           SEC_CONSOLE,                                     true,  &HandleCharacterDeletedOldCommand,     "" },
         };
 
         static std::vector<ChatCommand> characterCommandTable =
         {
-            { "customize",     rbac::RBAC_PERM_COMMAND_CHARACTER_CUSTOMIZE,       true,  &HandleCharacterCustomizeCommand,      "", },
-            { "changefaction", rbac::RBAC_PERM_COMMAND_CHARACTER_CHANGEFACTION,   true,  &HandleCharacterChangeFactionCommand,  "", },
-            { "changerace",    rbac::RBAC_PERM_COMMAND_CHARACTER_CHANGERACE,      true,  &HandleCharacterChangeRaceCommand,     "", },
-            { "changeaccount", rbac::RBAC_PERM_COMMAND_CHARACTER_CHANGEACCOUNT,   true,  &HandleCharacterChangeAccountCommand,  "", },
-            { "deleted",       rbac::RBAC_PERM_COMMAND_CHARACTER_DELETED,         true,  nullptr,                                  "", characterDeletedCommandTable },
-            { "erase",         rbac::RBAC_PERM_COMMAND_CHARACTER_ERASE,           true,  &HandleCharacterEraseCommand,          "", },
-            { "level",         rbac::RBAC_PERM_COMMAND_CHARACTER_LEVEL,           true,  &HandleCharacterLevelCommand,          "", },
-            { "rename",        rbac::RBAC_PERM_COMMAND_CHARACTER_RENAME,          true,  &HandleCharacterRenameCommand,         "", },
-            { "reputation",    rbac::RBAC_PERM_COMMAND_CHARACTER_REPUTATION,      true,  &HandleCharacterReputationCommand,     "", },
-            { "titles",        rbac::RBAC_PERM_COMMAND_CHARACTER_TITLES,          true,  &HandleCharacterTitlesCommand,         "", },
+            { "customize",     SEC_GAMEMASTER,                                    true,  &HandleCharacterCustomizeCommand,      "", },
+            { "changefaction", SEC_GAMEMASTER,                                    true,  &HandleCharacterChangeFactionCommand,  "", },
+            { "changerace",    SEC_GAMEMASTER,                                    true,  &HandleCharacterChangeRaceCommand,     "", },
+            { "changeaccount", SEC_GAMEMASTER,                                    true,  &HandleCharacterChangeAccountCommand,  "", },
+            { "deleted",       SEC_GAMEMASTER,                                    true,  nullptr,                               "", characterDeletedCommandTable },
+            { "erase",         SEC_CONSOLE,                                       true,  &HandleCharacterEraseCommand,          "", },
+            { "level",         SEC_GAMEMASTER,                                    true,  &HandleCharacterLevelCommand,          "", },
+            { "rename",        SEC_GAMEMASTER,                                    true,  &HandleCharacterRenameCommand,         "", },
+            { "reputation",    SEC_GAMEMASTER,                                    true,  &HandleCharacterReputationCommand,     "", },
+            { "titles",        SEC_GAMEMASTER,                                    true,  &HandleCharacterTitlesCommand,         "", },
         };
 
         static std::vector<ChatCommand> commandTable =
         {
-            { "character",     rbac::RBAC_PERM_COMMAND_CHARACTER,                 true,  nullptr,                                  "", characterCommandTable },
-            { "levelup",       rbac::RBAC_PERM_COMMAND_LEVELUP,                   false, &HandleLevelUpCommand,                 "" },
-            { "pdump",         rbac::RBAC_PERM_COMMAND_PDUMP,                     true,  nullptr,                                  "", pdumpCommandTable },
+            { "character",     SEC_GAMEMASTER,                                    true,  nullptr,                               "", characterCommandTable },
+            { "levelup",       SEC_GAMEMASTER,                                    false, &HandleLevelUpCommand,                 "" },
+            { "pdump",         SEC_GAMEMASTER,                                    true,  nullptr,                               "", pdumpCommandTable },
         };
         return commandTable;
     }
@@ -351,7 +350,7 @@ public:
 
             if (WorldSession* session = handler->GetSession())
             {
-                if (!session->HasPermission(rbac::RBAC_PERM_SKIP_CHECK_CHARACTER_CREATION_RESERVEDNAME) && sObjectMgr->IsReservedName(newName))
+                if (sObjectMgr->IsReservedName(newName))
                 {
                     handler->SendSysMessage(LANG_RESERVED_NAME);
                     handler->SetSentErrorMessage(true);

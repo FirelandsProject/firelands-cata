@@ -31,7 +31,6 @@ EndScriptData */
 #include "Language.h"
 #include "ObjectAccessor.h"
 #include "Player.h"
-#include "RBAC.h"
 #include <iomanip>
 
 class guild_commandscript : public CommandScript
@@ -43,17 +42,17 @@ public:
     {
         static std::vector<ChatCommand> guildCommandTable =
         {
-            { "create",   rbac::RBAC_PERM_COMMAND_GUILD_CREATE,   true, &HandleGuildCreateCommand,           "" },
-            { "delete",   rbac::RBAC_PERM_COMMAND_GUILD_DELETE,   true, &HandleGuildDeleteCommand,           "" },
-            { "invite",   rbac::RBAC_PERM_COMMAND_GUILD_INVITE,   true, &HandleGuildInviteCommand,           "" },
-            { "uninvite", rbac::RBAC_PERM_COMMAND_GUILD_UNINVITE, true, &HandleGuildUninviteCommand,         "" },
-            { "rank",     rbac::RBAC_PERM_COMMAND_GUILD_RANK,     true, &HandleGuildRankCommand,             "" },
-            { "rename",   rbac::RBAC_PERM_COMMAND_GUILD_RENAME,   true, &HandleGuildRenameCommand,           "" },
-            { "info",     rbac::RBAC_PERM_COMMAND_GUILD_INFO,     true, &HandleGuildInfoCommand,             "" },
+            { "create",   SEC_GAMEMASTER,    true, &HandleGuildCreateCommand,           "" },
+            { "delete",   SEC_GAMEMASTER,    true, &HandleGuildDeleteCommand,           "" },
+            { "invite",   SEC_GAMEMASTER,    true, &HandleGuildInviteCommand,           "" },
+            { "uninvite", SEC_GAMEMASTER,    true, &HandleGuildUninviteCommand,         "" },
+            { "rank",     SEC_GAMEMASTER,    true, &HandleGuildRankCommand,             "" },
+            { "rename",   SEC_GAMEMASTER,    true, &HandleGuildRenameCommand,           "" },
+            { "info",     SEC_GAMEMASTER,    true, &HandleGuildInfoCommand,             "" },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "guild", rbac::RBAC_PERM_COMMAND_GUILD,  true, nullptr, "", guildCommandTable },
+            { "guild",    SEC_GAMEMASTER,    true, nullptr,                             "", guildCommandTable },
         };
         return commandTable;
     }

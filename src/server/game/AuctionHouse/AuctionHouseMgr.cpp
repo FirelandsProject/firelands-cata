@@ -131,34 +131,15 @@ void AuctionHouseMgr::SendAuctionWonMail(AuctionEntry* auction, CharacterDatabas
     Player* bidder = ObjectAccessor::FindConnectedPlayer(bidderGuid);
     // data for gm.log
     std::string bidderName;
-    bool logGmTrade = false;
 
     if (bidder)
     {
         bidderAccId = bidder->GetSession()->GetAccountId();
         bidderName = bidder->GetName();
-        logGmTrade = bidder->GetSession()->HasPermission(rbac::RBAC_PERM_LOG_GM_TRADE);
     }
     else
     {
         bidderAccId = sCharacterCache->GetCharacterAccountIdByGuid(bidderGuid);
-        logGmTrade = AccountMgr::HasPermission(bidderAccId, rbac::RBAC_PERM_LOG_GM_TRADE, realm.Id.Realm);
-
-        if (logGmTrade && !sCharacterCache->GetCharacterNameByGuid(bidderGuid, bidderName))
-            bidderName = sObjectMgr->GetFirelandsStringForDBCLocale(LANG_UNKNOWN);
-    }
-
-    if (logGmTrade)
-    {
-        ObjectGuid ownerGuid = ObjectGuid(HighGuid::Player, auction->owner);
-        std::string ownerName;
-        if (!sCharacterCache->GetCharacterNameByGuid(ownerGuid, ownerName))
-            ownerName = sObjectMgr->GetFirelandsStringForDBCLocale(LANG_UNKNOWN);
-
-        uint32 ownerAccId = sCharacterCache->GetCharacterAccountIdByGuid(ownerGuid);
-
-        sLog->outCommand(bidderAccId, "GM %s (Account: %u) won item in auction: %s (Entry: %u Count: %u) and pay money: " UI64FMTD ". Original owner %s (Account: %u)",
-            bidderName.c_str(), bidderAccId, pItem->GetTemplate()->GetDefaultLocaleName(), pItem->GetEntry(), pItem->GetCount(), auction->bid, ownerName.c_str(), ownerAccId);
     }
 
     // receiver exist

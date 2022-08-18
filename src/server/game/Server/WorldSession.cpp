@@ -132,7 +132,6 @@ WorldSession::WorldSession(uint32 id, std::string &&name,
       _filterAddonMessages(false),
       recruiterId(recruiter),
       isRecruiter(isARecruiter),
-      _RBACData(nullptr),
       expireTime(60000),  // 1 min after socket loss, session is deleted
       forceExit(false),
       m_currentBankerGUID(),
@@ -170,7 +169,6 @@ WorldSession::~WorldSession() {
   }
 
   delete _warden;
-  delete _RBACData;
 
   delete _gameClient;
 
@@ -345,7 +343,7 @@ bool WorldSession::Update(uint32 diff, PacketFilter &updater) {
   ///- Before we process anything:
   /// If necessary, kick the player from the character select screen
   if (IsConnectionIdle() &&
-      !HasPermission(rbac::RBAC_PERM_IGNORE_IDLE_CONNECTION))
+      sWorld->getBoolConfig(CONFIG_CLOSE_IDLE_CONNECTIONS))
     m_Socket->CloseSocket();
 
   ///- Retrieve packets from the receive queue and call the appropriate handlers
@@ -1165,27 +1163,6 @@ void WorldSession::InitWarden(BigNumber *k, std::string const &os) {
   }
 }
 
-void WorldSession::LoadPermissions() {
-  uint32 id = GetAccountId();
-  uint8 secLevel = GetSecurity();
-
-  _RBACData = new rbac::RBACData(id, _accountName, realm.Id.Realm, secLevel);
-  _RBACData->LoadFromDB();
-}
-
-QueryCallback WorldSession::LoadPermissionsAsync() {
-  uint32 id = GetAccountId();
-  uint8 secLevel = GetSecurity();
-
-  LOG_DEBUG("rbac",
-            "WorldSession::LoadPermissions [AccountId: %u, Name: %s, "
-            "realmId: %d, secLevel: %u]",
-            id, _accountName.c_str(), realm.Id.Realm, secLevel);
-
-  _RBACData = new rbac::RBACData(id, _accountName, realm.Id.Realm, secLevel);
-  return _RBACData->LoadFromDBAsync();
-}
-
 class AccountInfoQueryHolderPerRealm : public CharacterDatabaseQueryHolder {
  public:
   enum {
@@ -1247,29 +1224,6 @@ void WorldSession::InitializeSessionCallback(
   SendAddonsInfo();
   SendClientCacheVersion(sWorld->getIntConfig(CONFIG_CLIENTCACHE_VERSION));
   SendTutorialsData();
-}
-
-rbac::RBACData *WorldSession::GetRBACData() { return _RBACData; }
-
-bool WorldSession::HasPermission(uint32 permission) {
-  if (!_RBACData) LoadPermissions();
-
-  bool hasPermission = _RBACData->HasPermission(permission);
-  LOG_DEBUG(
-      "rbac",
-      "WorldSession::HasPermission [AccountId: %u, Name: %s, realmId: %d]",
-      _RBACData->GetId(), _RBACData->GetName().c_str(), realm.Id.Realm);
-
-  return hasPermission;
-}
-
-void WorldSession::InvalidateRBACData() {
-  LOG_DEBUG("rbac",
-            "WorldSession::Invalidaterbac::RBACData [AccountId: %u, Name: "
-            "%s, realmId: %d]",
-            _RBACData->GetId(), _RBACData->GetName().c_str(), realm.Id.Realm);
-  delete _RBACData;
-  _RBACData = nullptr;
 }
 
 bool WorldSession::DosProtection::EvaluateOpcode(WorldPacket &p,

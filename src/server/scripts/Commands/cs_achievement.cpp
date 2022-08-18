@@ -27,7 +27,7 @@ EndScriptData */
 #include "Chat.h"
 #include "Language.h"
 #include "Player.h"
-#include "RBAC.h"
+
 
 class achievement_commandscript : public CommandScript
 {
@@ -38,11 +38,11 @@ public:
     {
         static std::vector<ChatCommand> achievementCommandTable =
         {
-            { "add", rbac::RBAC_PERM_COMMAND_ACHIEVEMENT_ADD, false, &HandleAchievementAddCommand, "" },
+            { "add", SEC_GAMEMASTER, false, &HandleAchievementAddCommand, "" },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "achievement", rbac::RBAC_PERM_COMMAND_ACHIEVEMENT,  false, nullptr, "", achievementCommandTable },
+            { "achievement", SEC_GAMEMASTER,  false, nullptr, "", achievementCommandTable },
         };
         return commandTable;
     }

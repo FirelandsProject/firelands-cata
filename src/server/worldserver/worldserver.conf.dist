@@ -314,6 +314,15 @@ BaseMapLoadAllGrids = 0
 InstanceMapLoadAllGrids = 0
 
 #
+#    CloseIdleConnections
+#        Description: Automatically close idle connections.
+#                     SocketTimeOutTime and SocketTimeOutTimeActive determine when a connection is considered as idle.
+#        Default:     1 - (enable, Automatically close idle connections)
+#                     0 - (disable, Do not close idle connections)
+
+CloseIdleConnections = 1
+
+#
 #    SocketTimeOutTime
 #        Description: Time (in milliseconds) after which a connection being idle on the character
 #                     selection screen is disconnected.
@@ -866,6 +875,18 @@ RecruitAFriend.MaxLevel = 80
 RecruitAFriend.MaxDifference = 4
 
 #
+#    InstantLogout
+#        Description: Required security level for instantly logging out everywhere.
+#                     Does not work while in combat, dueling or falling.
+#        Default:     1  - (Enabled, Mods/GMs/Admins)
+#                     0  - (Enabled, Everyone)
+#                     2  - (Enabled, GMs/Admins)
+#                     3  - (Enabled, Admins)
+#                     4  - (Disabled)
+
+InstantLogout = 1
+
+#
 #    DisableWaterBreath
 #        Description: Required security level for water breathing.
 #        Default:     4  - (Disabled)
@@ -1272,7 +1293,6 @@ AccountInstancesPerHour = 5
 #        Description: Controls how secure the password changes are.
 #        Default:     0 - None (Old and new password)
 #                     1 - Email (Email confirmation necessary)
-#                     2 - RBAC (RBAC enable or disables email confirmation per group)
 
 Account.PasswordChangeSecurity = 0
 
@@ -1517,6 +1537,14 @@ Warden.BanDuration = 86400
 AllowTwoSide.Interaction.Calendar = 0
 
 #
+#    AllowTwoSide.Interaction.Chat
+#        Description: Allow say chat between factions.
+#        Default:     0 - (Disabled)
+#                     1 - (Enabled)
+
+AllowTwoSide.Interaction.Chat = 0
+
+#
 #    AllowTwoSide.Interaction.Channel
 #        Description: Allow channel chat between factions.
 #        Default:     0 - (Disabled)
@@ -1547,6 +1575,30 @@ AllowTwoSide.Interaction.Guild = 0
 #                     1 - (Enabled)
 
 AllowTwoSide.Interaction.Auction = 0
+
+#
+#    AllowTwoSide.Interaction.Mail
+#        Description: Allow sending mails between factions.
+#        Default:     0 - (Disabled)
+#                     1 - (Enabled)
+
+AllowTwoSide.Interaction.Mail = 0
+
+#
+#    AllowTwoSide.WhoList
+#        Description: Show characters from both factions in the /who list.
+#        Default:     0 - (Disabled)
+#                     1 - (Enabled)
+
+AllowTwoSide.WhoList = 0
+
+#
+#    AllowTwoSide.AddFriend
+#        Description: Allow adding friends from other faction the friends list.
+#        Default:     0 - (Disabled)
+#                     1 - (Enabled)
+
+AllowTwoSide.AddFriend = 0
 
 #
 #    AllowTwoSide.Trade
@@ -1942,6 +1994,15 @@ ChatFlood.MuteTime = 10
 #                     0 - (Disabled, Allow join to channel in any time)
 
 Channel.RestrictedLfg = 1
+
+#
+#    Channel.SilentlyGMJoin
+#        Description: Silently join GM characters to channels. If set to 1, channel kick and ban
+#                     commands issued by a GM will not be broadcasted.
+#        Default:     0 - (Disabled, Join with announcement)
+#                     1 - (Enabled, Join without announcement)
+
+Channel.SilentlyGMJoin = 0
 
 #
 #    ChatLevelReq.Channel
@@ -3962,7 +4023,6 @@ Logger.sql.updates=3,Console Server
 #Logger.outdoorpvp=3,Console Server
 #Logger.phase=3,Console Server
 #Logger.pool=3,Console Server
-#Logger.rbac=3,Console Server
 #Logger.scripts=3,Console Server
 #Logger.scripts.ai=3,Console Server
 #Logger.spells=3,Console Server
@@ -4234,27 +4294,6 @@ PacketSpoof.BanDuration = 86400
 #                     3000 - (3 seconds, Recommended)
 
 AntiCheat.PendingMoveChangesTimeoutTime = 0
-
-#
-###################################################################################################
-
-###################################################################################################
-# IPC SETTINGS
-#
-#    BnetServer.Address
-#        Description: Determines IP address of battle.net server to connect to.
-#        Default:     127.0.0.1
-#
-
-BnetServer.Address = 127.0.0.1
-
-#
-#    BnetServer.Port
-#        Description: Determines port to use when connecting to battle.net server.
-#        Default:     1118
-#
-
-BnetServer.Port = 1118
 
 #
 ###################################################################################################

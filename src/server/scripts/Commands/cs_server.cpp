@@ -34,7 +34,6 @@ EndScriptData */
 #include "MySQLThreading.h"
 #include "ObjectAccessor.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "Realm.h"
 #include "UpdateTime.h"
 #include "Util.h"
@@ -58,56 +57,56 @@ public:
     {
         static std::vector<ChatCommand> serverIdleRestartCommandTable =
         {
-            { "cancel", rbac::RBAC_PERM_COMMAND_SERVER_IDLERESTART_CANCEL, true, &HandleServerShutDownCancelCommand, "" },
-            { ""   ,    rbac::RBAC_PERM_COMMAND_SERVER_IDLERESTART,        true, &HandleServerIdleRestartCommand,    "" },
+            { "cancel",       SEC_ADMINISTRATOR,      true, &HandleServerShutDownCancelCommand, "" },
+            { ""   ,          SEC_CONSOLE,            true, &HandleServerIdleRestartCommand,    "" },
         };
 
         static std::vector<ChatCommand> serverIdleShutdownCommandTable =
         {
-            { "cancel", rbac::RBAC_PERM_COMMAND_SERVER_IDLESHUTDOWN_CANCEL, true, &HandleServerShutDownCancelCommand, "" },
-            { ""   ,    rbac::RBAC_PERM_COMMAND_SERVER_IDLESHUTDOWN,        true, &HandleServerIdleShutDownCommand,   "" },
+            { "cancel",       SEC_ADMINISTRATOR,      true, &HandleServerShutDownCancelCommand, "" },
+            { ""   ,          SEC_CONSOLE,            true, &HandleServerIdleShutDownCommand,   "" },
         };
 
         static std::vector<ChatCommand> serverRestartCommandTable =
         {
-            { "cancel", rbac::RBAC_PERM_COMMAND_SERVER_RESTART_CANCEL, true, &HandleServerShutDownCancelCommand, "" },
-            { "force",  rbac::RBAC_PERM_COMMAND_SERVER_RESTART_FORCE,  true, &HandleServerForceRestartCommand,   "" },
-            { ""   ,    rbac::RBAC_PERM_COMMAND_SERVER_RESTART,        true, &HandleServerRestartCommand,        "" },
+            { "cancel",       SEC_ADMINISTRATOR,      true, &HandleServerShutDownCancelCommand, "" },
+            { "force",        SEC_ADMINISTRATOR,      true, &HandleServerForceRestartCommand,   "" },
+            { ""   ,          SEC_ADMINISTRATOR,      true, &HandleServerRestartCommand,        "" },
         };
 
         static std::vector<ChatCommand> serverShutdownCommandTable =
         {
-            { "cancel", rbac::RBAC_PERM_COMMAND_SERVER_SHUTDOWN_CANCEL, true, &HandleServerShutDownCancelCommand, "" },
-            { "force",  rbac::RBAC_PERM_COMMAND_SERVER_SHUTDOWN_FORCE,  true, &HandleServerForceShutDownCommand,  "" },
-            { ""   ,    rbac::RBAC_PERM_COMMAND_SERVER_SHUTDOWN,        true, &HandleServerShutDownCommand,       "" },
+            { "cancel",       SEC_ADMINISTRATOR,      true, &HandleServerShutDownCancelCommand, "" },
+            { "force",        SEC_ADMINISTRATOR,      true, &HandleServerForceShutDownCommand,  "" },
+            { ""   ,          SEC_ADMINISTRATOR,      true, &HandleServerShutDownCommand,       "" },
         };
 
         static std::vector<ChatCommand> serverSetCommandTable =
         {
-            { "difftime", rbac::RBAC_PERM_COMMAND_SERVER_SET_DIFFTIME, true, &HandleServerSetDiffTimeCommand, "" },
-            { "loglevel", rbac::RBAC_PERM_COMMAND_SERVER_SET_LOGLEVEL, true, &HandleServerSetLogLevelCommand, "" },
-            { "motd",     rbac::RBAC_PERM_COMMAND_SERVER_SET_MOTD,     true, &HandleServerSetMotdCommand,     "" },
-            { "closed",   rbac::RBAC_PERM_COMMAND_SERVER_SET_CLOSED,   true, &HandleServerSetClosedCommand,   "" },
+            { "difftime",      SEC_CONSOLE,            true, &HandleServerSetDiffTimeCommand,    "" },
+            { "loglevel",     SEC_CONSOLE,            true, &HandleServerSetLogLevelCommand,   "" },
+            { "motd",         SEC_ADMINISTRATOR,      true, &HandleServerSetMotdCommand,       "" },
+            { "closed",       SEC_CONSOLE,            true, &HandleServerSetClosedCommand,     "" },
         };
 
         static std::vector<ChatCommand> serverCommandTable =
         {
-            { "corpses",      rbac::RBAC_PERM_COMMAND_SERVER_CORPSES,      true, &HandleServerCorpsesCommand, "" },
-            { "debug",        rbac::RBAC_PERM_COMMAND_SERVER_DEBUG,        true, &HandleServerDebugCommand,   "" },
-            { "exit",         rbac::RBAC_PERM_COMMAND_SERVER_EXIT,         true, &HandleServerExitCommand,    "" },
-            { "idlerestart",  rbac::RBAC_PERM_COMMAND_SERVER_IDLERESTART,  true, nullptr,                     "", serverIdleRestartCommandTable },
-            { "idleshutdown", rbac::RBAC_PERM_COMMAND_SERVER_IDLESHUTDOWN, true, nullptr,                     "", serverIdleShutdownCommandTable },
-            { "info",         rbac::RBAC_PERM_COMMAND_SERVER_INFO,         true, &HandleServerInfoCommand,    "" },
-            { "motd",         rbac::RBAC_PERM_COMMAND_SERVER_MOTD,         true, &HandleServerMotdCommand,    "" },
-            { "plimit",       rbac::RBAC_PERM_COMMAND_SERVER_PLIMIT,       true, &HandleServerPLimitCommand,  "" },
-            { "restart",      rbac::RBAC_PERM_COMMAND_SERVER_RESTART,      true, nullptr,                     "", serverRestartCommandTable },
-            { "shutdown",     rbac::RBAC_PERM_COMMAND_SERVER_SHUTDOWN,     true, nullptr,                     "", serverShutdownCommandTable },
-            { "set",          rbac::RBAC_PERM_COMMAND_SERVER_SET,          true, nullptr,                     "", serverSetCommandTable },
+            { "corpses",      SEC_GAMEMASTER,         true, &HandleServerCorpsesCommand,       "" },
+            { "debug",        SEC_ADMINISTRATOR,      true, &HandleServerDebugCommand,         "" },
+            { "exit",         SEC_CONSOLE,            true, &HandleServerExitCommand,          "" },
+            { "idlerestart",  SEC_ADMINISTRATOR,      true, nullptr,                           "", serverIdleRestartCommandTable },
+            { "idleshutdown", SEC_ADMINISTRATOR,      true, nullptr,                           "", serverIdleShutdownCommandTable },
+            { "info",         SEC_PLAYER,             true, &HandleServerInfoCommand,          "" },
+            { "motd",         SEC_PLAYER,             true, &HandleServerMotdCommand,          "" },
+            { "plimit",       SEC_ADMINISTRATOR,      true, &HandleServerPLimitCommand,        "" },
+            { "restart",      SEC_ADMINISTRATOR,      true, nullptr,                           "", serverRestartCommandTable },
+            { "shutdown",     SEC_ADMINISTRATOR,      true, nullptr,                           "", serverShutdownCommandTable },
+            { "set",          SEC_ADMINISTRATOR,      true, nullptr,                           "", serverSetCommandTable },
         };
 
         static std::vector<ChatCommand> commandTable =
         {
-            { "server", rbac::RBAC_PERM_COMMAND_SERVER, true, nullptr, "", serverCommandTable },
+            { "server",       SEC_PLAYER,             true, nullptr,                           "", serverCommandTable },
         };
         return commandTable;
     }

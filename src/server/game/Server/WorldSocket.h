@@ -128,7 +128,6 @@ class FC_GAME_API WorldSocket : public Socket<WorldSocket> {
   void HandleAuthContinuedSessionCallback(
       std::shared_ptr<WorldPackets::Auth::AuthContinuedSession> authSession,
       PreparedQueryResult result);
-  void LoadSessionPermissionsCallback(PreparedQueryResult result);
   bool HandlePing(WorldPackets::Auth::Ping& ping);
 
   uint32 _authSeed;

@@ -19,6 +19,7 @@
 #include "AreaBoundary.h"
 #include "Creature.h"
 #include "CreatureAI.h"
+#include "AccountMgr.h"
 #include "CreatureAIImpl.h"
 #include "DatabaseEnv.h"
 #include "DBCStores.h"
@@ -35,7 +36,6 @@
 #include "Pet.h"
 #include "PhasingHandler.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "ScriptMgr.h"
 #include "ScriptReloadMgr.h"
 #include "World.h"
@@ -409,7 +409,7 @@ bool InstanceScript::SetBossState(uint32 id, EncounterState state)
 
 bool InstanceScript::_SkipCheckRequiredBosses(Player const* player /*= nullptr*/) const
 {
-    return player && player->GetSession()->HasPermission(rbac::RBAC_PERM_SKIP_CHECK_INSTANCE_REQUIRED_BOSSES);
+    return player && AccountMgr::IsGMAccount(player->GetSession()->GetSecurity());
 }
 
 void InstanceScript::Create()

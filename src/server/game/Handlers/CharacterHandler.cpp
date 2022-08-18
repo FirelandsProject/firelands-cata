@@ -345,7 +345,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket &recvData) {
       createInfo->HairStyle >> createInfo->HairColor >>
       createInfo->FacialHair >> createInfo->OutfitId;
 
-  if (!HasPermission(rbac::RBAC_PERM_SKIP_CHECK_CHARACTER_CREATION_TEAMMASK)) {
+  if (AccountMgr::IsPlayerAccount(GetSecurity())) {
     if (uint32 mask =
             sWorld->getIntConfig(CONFIG_CHARACTER_CREATING_DISABLED)) {
       bool disabled = false;
@@ -410,16 +410,14 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket &recvData) {
     return;
   }
 
-  if (!HasPermission(rbac::RBAC_PERM_SKIP_CHECK_CHARACTER_CREATION_RACEMASK)) {
+  if (AccountMgr::IsPlayerAccount(GetSecurity())) {
     uint32 raceMaskDisabled =
         sWorld->getIntConfig(CONFIG_CHARACTER_CREATING_DISABLED_RACEMASK);
     if ((1 << (createInfo->Race - 1)) & raceMaskDisabled) {
       SendCharCreate(CHAR_CREATE_DISABLED);
       return;
     }
-  }
 
-  if (!HasPermission(rbac::RBAC_PERM_SKIP_CHECK_CHARACTER_CREATION_CLASSMASK)) {
     uint32 classMaskDisabled =
         sWorld->getIntConfig(CONFIG_CHARACTER_CREATING_DISABLED_CLASSMASK);
     if ((1 << (createInfo->Class - 1)) & classMaskDisabled) {
@@ -445,16 +443,14 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket &recvData) {
     return;
   }
 
-  if (!HasPermission(
-          rbac::RBAC_PERM_SKIP_CHECK_CHARACTER_CREATION_RESERVEDNAME) &&
+  if (AccountMgr::IsPlayerAccount(GetSecurity()) &&
       sObjectMgr->IsReservedName(createInfo->Name)) {
     SendCharCreate(CHAR_NAME_RESERVED);
     return;
   }
 
   if (createInfo->Class == CLASS_DEATH_KNIGHT &&
-      !HasPermission(
-          rbac::RBAC_PERM_SKIP_CHECK_CHARACTER_CREATION_DEATH_KNIGHT)) {
+      AccountMgr::IsPlayerAccount(GetSecurity())) {
     // speedup check for death knight class disabled case
     if (sWorld->getIntConfig(CONFIG_DEATH_KNIGHTS_PER_REALM) == 0) {
       SendCharCreate(CHAR_CREATE_UNIQUE_CLASS_LIMIT);
@@ -527,7 +523,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket &recvData) {
 
             bool allowTwoSideAccounts =
                 !sWorld->IsPvPRealm() ||
-                HasPermission(rbac::RBAC_PERM_TWO_SIDE_CHARACTER_CREATION);
+                !AccountMgr::IsPlayerAccount(GetSecurity());
             uint32 skipCinematics =
                 sWorld->getIntConfig(CONFIG_SKIP_CINEMATICS);
 
@@ -539,17 +535,14 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket &recvData) {
                   bool hasDeathKnightReqLevel = (deathKnightReqLevel == 0);
                   bool allowTwoSideAccounts =
                       !sWorld->IsPvPRealm() ||
-                      HasPermission(
-                          rbac::RBAC_PERM_TWO_SIDE_CHARACTER_CREATION);
+                      !AccountMgr::IsPlayerAccount(GetSecurity());
                   uint32 skipCinematics =
                       sWorld->getIntConfig(CONFIG_SKIP_CINEMATICS);
                   bool checkDeathKnightReqs =
                       createInfo->Class == CLASS_DEATH_KNIGHT &&
-                      !HasPermission(
-                          rbac::
-                              RBAC_PERM_SKIP_CHECK_CHARACTER_CREATION_DEATH_KNIGHT);
+                      AccountMgr::IsPlayerAccount(GetSecurity());
 
-                  if (result) {
+                          if (result) {
                     uint32 team = Player::TeamForRace(createInfo->Race);
                     uint32 freeDeathKnightSlots =
                         sWorld->getIntConfig(CONFIG_DEATH_KNIGHTS_PER_REALM);
@@ -1356,8 +1349,7 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket &recvData) {
   }
 
   // check name limitations
-  if (!HasPermission(
-          rbac::RBAC_PERM_SKIP_CHECK_CHARACTER_CREATION_RESERVEDNAME) &&
+  if (AccountMgr::IsPlayerAccount(GetSecurity()) &&
       sObjectMgr->IsReservedName(renameInfo->Name)) {
     SendCharRename(CHAR_NAME_RESERVED, renameInfo.get());
     return;
@@ -1693,8 +1685,7 @@ void WorldSession::HandleCharCustomizeCallback(
   }
 
   // check name limitations
-  if (!HasPermission(
-          rbac::RBAC_PERM_SKIP_CHECK_CHARACTER_CREATION_RESERVEDNAME) &&
+  if (AccountMgr::IsPlayerAccount(GetSecurity()) &&
       sObjectMgr->IsReservedName(customizeInfo->Name)) {
     SendCharCustomize(CHAR_NAME_RESERVED, customizeInfo.get());
     return;
@@ -1942,7 +1933,7 @@ void WorldSession::HandleCharFactionOrRaceChangeCallback(
     return;
   }
 
-  if (!HasPermission(rbac::RBAC_PERM_SKIP_CHECK_CHARACTER_CREATION_RACEMASK)) {
+  if (AccountMgr::IsPlayerAccount(GetSecurity())) {
     uint32 raceMaskDisabled =
         sWorld->getIntConfig(CONFIG_CHARACTER_CREATING_DISABLED_RACEMASK);
     if ((1 << (factionChangeInfo->Race - 1)) & raceMaskDisabled) {
@@ -1972,8 +1963,7 @@ void WorldSession::HandleCharFactionOrRaceChangeCallback(
   }
 
   // check name limitations
-  if (!HasPermission(
-          rbac::RBAC_PERM_SKIP_CHECK_CHARACTER_CREATION_RESERVEDNAME) &&
+  if (AccountMgr::IsPlayerAccount(GetSecurity()) &&
       sObjectMgr->IsReservedName(factionChangeInfo->Name)) {
     SendCharFactionChange(CHAR_NAME_RESERVED, factionChangeInfo.get());
     return;
@@ -2142,7 +2132,7 @@ void WorldSession::HandleCharFactionOrRaceChangeCallback(
         Player::LeaveAllArenaTeams(factionChangeInfo->Guid);
       }
 
-      if (!HasPermission(rbac::RBAC_PERM_TWO_SIDE_ADD_FRIEND)) {
+      if (!sWorld->getBoolConfig(CONFIG_ALLOW_TWO_SIDE_ADD_FRIEND)) {
         // Delete Friend List
         stmt = CharacterDatabase.GetPreparedStatement(
             CHAR_DEL_CHAR_SOCIAL_BY_GUID);

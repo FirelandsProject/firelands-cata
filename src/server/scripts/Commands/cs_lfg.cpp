@@ -26,7 +26,6 @@
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "Player.h"
-#include "RBAC.h"
 
 void GetPlayerInfo(ChatHandler* handler, Player* player)
 {
@@ -51,16 +50,16 @@ public:
     {
         static std::vector<ChatCommand> lfgCommandTable =
         {
-            {  "player", rbac::RBAC_PERM_COMMAND_LFG_PLAYER,  false, &HandleLfgPlayerInfoCommand, "" },
-            {   "group", rbac::RBAC_PERM_COMMAND_LFG_GROUP,   false, &HandleLfgGroupInfoCommand,  "" },
-            {   "queue", rbac::RBAC_PERM_COMMAND_LFG_QUEUE,   true,  &HandleLfgQueueInfoCommand,  "" },
-            {   "clean", rbac::RBAC_PERM_COMMAND_LFG_CLEAN,   true,  &HandleLfgCleanCommand,      "" },
-            { "options", rbac::RBAC_PERM_COMMAND_LFG_OPTIONS, true,  &HandleLfgOptionsCommand,    "" },
+            {  "player", SEC_MODERATOR,       false, &HandleLfgPlayerInfoCommand, "" },
+            {   "group", SEC_MODERATOR,       false, &HandleLfgGroupInfoCommand,  "" },
+            {   "queue", SEC_MODERATOR,       true,  &HandleLfgQueueInfoCommand,  "" },
+            {   "clean", SEC_ADMINISTRATOR,   true,  &HandleLfgCleanCommand,      "" },
+            { "options", SEC_GAMEMASTER,      true,  &HandleLfgOptionsCommand,    "" },
         };
 
         static std::vector<ChatCommand> commandTable =
         {
-            { "lfg", rbac::RBAC_PERM_COMMAND_LFG, true, nullptr, "", lfgCommandTable },
+            { "lfg",     SEC_MODERATOR,       true, nullptr,                       "", lfgCommandTable },
         };
         return commandTable;
     }

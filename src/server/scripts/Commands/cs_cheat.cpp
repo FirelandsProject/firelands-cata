@@ -26,7 +26,6 @@ EndScriptData */
 #include "Chat.h"
 #include "Language.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "WorldSession.h"
 
 class cheat_commandscript : public CommandScript
@@ -38,20 +37,20 @@ public:
     {
         static std::vector<ChatCommand> cheatCommandTable =
         {
-            { "god",            rbac::RBAC_PERM_COMMAND_CHEAT_GOD,       false, &HandleGodModeCheatCommand,   "" },
-            { "casttime",       rbac::RBAC_PERM_COMMAND_CHEAT_CASTTIME,  false, &HandleCasttimeCheatCommand,  "" },
-            { "cooldown",       rbac::RBAC_PERM_COMMAND_CHEAT_COOLDOWN,  false, &HandleCoolDownCheatCommand,  "" },
-            { "power",          rbac::RBAC_PERM_COMMAND_CHEAT_POWER,     false, &HandlePowerCheatCommand,     "" },
-            { "waterwalk",      rbac::RBAC_PERM_COMMAND_CHEAT_WATERWALK, false, &HandleWaterWalkCheatCommand, "" },
-            { "status",         rbac::RBAC_PERM_COMMAND_CHEAT_STATUS,    false, &HandleCheatStatusCommand,    "" },
-            { "taxi",           rbac::RBAC_PERM_COMMAND_CHEAT_TAXI,      false, &HandleTaxiCheatCommand,      "" },
-            { "explore",        rbac::RBAC_PERM_COMMAND_CHEAT_EXPLORE,   false, &HandleExploreCheatCommand,   "" },
+            { "god",            SEC_GAMEMASTER,       false, &HandleGodModeCheatCommand,   "" },
+            { "casttime",       SEC_GAMEMASTER,       false, &HandleCasttimeCheatCommand,  "" },
+            { "cooldown",       SEC_GAMEMASTER,       false, &HandleCoolDownCheatCommand,  "" },
+            { "power",          SEC_GAMEMASTER,       false, &HandlePowerCheatCommand,     "" },
+            { "waterwalk",      SEC_GAMEMASTER,       false, &HandleWaterWalkCheatCommand, "" },
+            { "status",         SEC_GAMEMASTER,       false, &HandleCheatStatusCommand,    "" },
+            { "taxi",           SEC_GAMEMASTER,       false, &HandleTaxiCheatCommand,      "" },
+            { "explore",        SEC_GAMEMASTER,       false, &HandleExploreCheatCommand,   "" },
 
         };
 
         static std::vector<ChatCommand> commandTable =
         {
-            { "cheat",          rbac::RBAC_PERM_COMMAND_CHEAT, false, nullptr, "", cheatCommandTable },
+            { "cheat",          SEC_GAMEMASTER,        false, nullptr, "", cheatCommandTable },
         };
         return commandTable;
     }

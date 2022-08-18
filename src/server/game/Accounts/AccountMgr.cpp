@@ -1,6 +1,6 @@
 /*
- * This file is part of the FirelandsCore Project. See AUTHORS file for Copyright
- * information
+ * This file is part of the FirelandsCore Project. See AUTHORS file for
+ * Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -17,6 +17,7 @@
  */
 
 #include "AccountMgr.h"
+
 #include "Config.h"
 #include "DatabaseEnv.h"
 #include "Log.h"
@@ -31,7 +32,7 @@
 
 AccountMgr::AccountMgr() {}
 
-AccountMgr::~AccountMgr() { ClearRBAC(); }
+AccountMgr::~AccountMgr() {}
 
 AccountMgr *AccountMgr::instance() {
   static AccountMgr instance;
@@ -42,18 +43,18 @@ AccountOpResult AccountMgr::CreateAccount(std::string username,
                                           std::string password,
                                           std::string email /*= ""*/) {
   if (utf8length(username) > MAX_ACCOUNT_STR)
-    return AccountOpResult::AOR_NAME_TOO_LONG; // username's too long
+    return AccountOpResult::AOR_NAME_TOO_LONG;  // username's too long
 
   if (utf8length(password) > MAX_PASS_STR)
-    return AccountOpResult::AOR_PASS_TOO_LONG; // password's too long
+    return AccountOpResult::AOR_PASS_TOO_LONG;  // password's too long
 
   Utf8ToUpperOnlyLatin(username);
   Utf8ToUpperOnlyLatin(password);
   Utf8ToUpperOnlyLatin(email);
 
   if (GetId(username))
-    return AccountOpResult::AOR_NAME_ALREADY_EXIST; // username does already
-                                                    // exist
+    return AccountOpResult::AOR_NAME_ALREADY_EXIST;  // username does already
+                                                     // exist
 
   LoginDatabasePreparedStatement *stmt =
       LoginDatabase.GetPreparedStatement(LOGIN_INS_ACCOUNT);
@@ -64,12 +65,12 @@ AccountOpResult AccountMgr::CreateAccount(std::string username,
   stmt->setString(3, email);
 
   LoginDatabase.DirectExecute(
-      stmt); // Enforce saving, otherwise AddGroup can fail
+      stmt);  // Enforce saving, otherwise AddGroup can fail
 
   stmt = LoginDatabase.GetPreparedStatement(LOGIN_INS_REALM_CHARACTERS_INIT);
   LoginDatabase.Execute(stmt);
 
-  return AccountOpResult::AOR_OK; // everything's fine
+  return AccountOpResult::AOR_OK;  // everything's fine
 }
 
 AccountOpResult AccountMgr::DeleteAccount(uint32 accountId) {
@@ -79,8 +80,7 @@ AccountOpResult AccountMgr::DeleteAccount(uint32 accountId) {
   loginStmt->setUInt32(0, accountId);
   PreparedQueryResult result = LoginDatabase.Query(loginStmt);
 
-  if (!result)
-    return AccountOpResult::AOR_NAME_NOT_EXIST;
+  if (!result) return AccountOpResult::AOR_NAME_NOT_EXIST;
 
   // Obtain accounts characters
   CharacterDatabasePreparedStatement *stmt =
@@ -97,13 +97,13 @@ AccountOpResult AccountMgr::DeleteAccount(uint32 accountId) {
       // Kick if player is online
       if (Player *p = ObjectAccessor::FindConnectedPlayer(guid)) {
         WorldSession *s = p->GetSession();
-        s->KickPlayer(); // mark session to remove at next session list update
+        s->KickPlayer();  // mark session to remove at next session list update
         s->LogoutPlayer(
-            false); // logout player without waiting next session list update
+            false);  // logout player without waiting next session list update
       }
 
       Player::DeleteFromDB(guid, accountId,
-                           false); // no need to update realm characters
+                           false);  // no need to update realm characters
     } while (result->NextRow());
   }
 
@@ -156,8 +156,7 @@ AccountOpResult AccountMgr::ChangeUsername(uint32 accountId,
   stmt->setUInt32(0, accountId);
   PreparedQueryResult result = LoginDatabase.Query(stmt);
 
-  if (!result)
-    return AccountOpResult::AOR_NAME_NOT_EXIST;
+  if (!result) return AccountOpResult::AOR_NAME_NOT_EXIST;
 
   if (utf8length(newUsername) > MAX_ACCOUNT_STR)
     return AccountOpResult::AOR_NAME_TOO_LONG;
@@ -185,7 +184,7 @@ AccountOpResult AccountMgr::ChangePassword(uint32 accountId,
 
   if (!GetName(accountId, username)) {
     sScriptMgr->OnFailedPasswordChange(accountId);
-    return AccountOpResult::AOR_NAME_NOT_EXIST; // account doesn't exist
+    return AccountOpResult::AOR_NAME_NOT_EXIST;  // account doesn't exist
   }
 
   if (utf8length(newPassword) > MAX_ACCOUNT_STR) {
@@ -222,7 +221,7 @@ AccountOpResult AccountMgr::ChangeEmail(uint32 accountId,
 
   if (!GetName(accountId, username)) {
     sScriptMgr->OnFailedEmailChange(accountId);
-    return AccountOpResult::AOR_NAME_NOT_EXIST; // account doesn't exist
+    return AccountOpResult::AOR_NAME_NOT_EXIST;  // account doesn't exist
   }
 
   if (utf8length(newEmail) > MAX_EMAIL_STR) {
@@ -250,7 +249,7 @@ AccountOpResult AccountMgr::ChangeRegEmail(uint32 accountId,
   std::string username;
 
   if (!GetName(accountId, username))
-    return AccountOpResult::AOR_NAME_NOT_EXIST; // account doesn't exist
+    return AccountOpResult::AOR_NAME_NOT_EXIST;  // account doesn't exist
 
   if (utf8length(newEmail) > MAX_EMAIL_STR) {
     sScriptMgr->OnFailedEmailChange(accountId);
@@ -291,9 +290,8 @@ uint32 AccountMgr::GetSecurity(uint32 accountId, int32 realmId) {
   return (result) ? (*result)[0].GetUInt8() : uint32(SEC_PLAYER);
 }
 
-QueryCallback
-AccountMgr::GetSecurityAsync(uint32 accountId, int32 realmId,
-                             std::function<void(uint32)> callback) {
+QueryCallback AccountMgr::GetSecurityAsync(
+    uint32 accountId, int32 realmId, std::function<void(uint32)> callback) {
   LoginDatabasePreparedStatement *stmt =
       LoginDatabase.GetPreparedStatement(LOGIN_GET_GMLEVEL_BY_REALMID);
   stmt->setUInt32(0, accountId);
@@ -335,8 +333,7 @@ bool AccountMgr::GetEmail(uint32 accountId, std::string &email) {
 bool AccountMgr::CheckPassword(uint32 accountId, std::string password) {
   std::string username;
 
-  if (!GetName(accountId, username))
-    return false;
+  if (!GetName(accountId, username)) return false;
 
   Utf8ToUpperOnlyLatin(username);
   Utf8ToUpperOnlyLatin(password);
@@ -354,14 +351,12 @@ bool AccountMgr::CheckEmail(uint32 accountId, std::string newEmail) {
   std::string oldEmail;
 
   // We simply return false for a non-existing email
-  if (!GetEmail(accountId, oldEmail))
-    return false;
+  if (!GetEmail(accountId, oldEmail)) return false;
 
   Utf8ToUpperOnlyLatin(oldEmail);
   Utf8ToUpperOnlyLatin(newEmail);
 
-  if (strcmp(oldEmail.c_str(), newEmail.c_str()) == 0)
-    return true;
+  if (strcmp(oldEmail.c_str(), newEmail.c_str()) == 0) return true;
 
   return false;
 }
@@ -394,14 +389,17 @@ bool AccountMgr::IsBannedAccount(std::string const &name) {
   stmt->setString(0, name);
   PreparedQueryResult result = LoginDatabase.Query(stmt);
 
-  if (!result)
-    return false;
+  if (!result) return false;
 
   return true;
 }
 
 bool AccountMgr::IsPlayerAccount(uint32 gmlevel) {
   return gmlevel == SEC_PLAYER;
+}
+
+bool AccountMgr::IsGMAccount(uint32 gmlevel) {
+  return gmlevel >= SEC_MODERATOR && gmlevel <= SEC_CONSOLE;
 }
 
 bool AccountMgr::IsAdminAccount(uint32 gmlevel) {
@@ -412,100 +410,8 @@ bool AccountMgr::IsConsoleAccount(uint32 gmlevel) {
   return gmlevel == SEC_CONSOLE;
 }
 
-void AccountMgr::LoadRBAC() {
-  ClearRBAC();
-
-  LOG_DEBUG("rbac", "AccountMgr::LoadRBAC");
-  uint32 oldMSTime = getMSTime();
-  uint32 count1 = 0;
-  uint32 count2 = 0;
-  uint32 count3 = 0;
-
-  LOG_DEBUG("rbac", "AccountMgr::LoadRBAC: Loading permissions");
-  QueryResult result =
-      LoginDatabase.Query("SELECT id, name FROM rbac_permissions");
-  if (!result) {
-    LOG_INFO("server.loading", ">> Loaded 0 account permission definitions. "
-                                  "DB table `rbac_permissions` is empty.");
-    return;
-  }
-
-  do {
-    Field *field = result->Fetch();
-    uint32 id = field[0].GetUInt32();
-    _permissions[id] = new rbac::RBACPermission(id, field[1].GetString());
-    ++count1;
-  } while (result->NextRow());
-
-  LOG_DEBUG("rbac", "AccountMgr::LoadRBAC: Loading linked permissions");
-  result = LoginDatabase.Query(
-      "SELECT id, linkedId FROM rbac_linked_permissions ORDER BY id ASC");
-  if (!result) {
-    LOG_INFO("server.loading", ">> Loaded 0 linked permissions. DB table "
-                                  "`rbac_linked_permissions` is empty.");
-    return;
-  }
-
-  uint32 permissionId = 0;
-  rbac::RBACPermission *permission = nullptr;
-
-  do {
-    Field *field = result->Fetch();
-    uint32 newId = field[0].GetUInt32();
-    if (permissionId != newId) {
-      permissionId = newId;
-      permission = _permissions[newId];
-    }
-
-    uint32 linkedPermissionId = field[1].GetUInt32();
-    if (linkedPermissionId == permissionId) {
-      LOG_ERROR(
-          "sql.sql",
-          "RBAC Permission %u has itself as linked permission. Ignored",
-          permissionId);
-      continue;
-    }
-    permission->AddLinkedPermission(linkedPermissionId);
-    ++count2;
-  } while (result->NextRow());
-
-  LOG_DEBUG("rbac", "AccountMgr::LoadRBAC: Loading default permissions");
-  result = LoginDatabase.PQuery(
-      "SELECT secId, permissionId FROM rbac_default_permissions WHERE (realmId "
-      "= %u OR realmId = -1) ORDER BY secId ASC",
-      realm.Id.Realm);
-  if (!result) {
-    LOG_INFO("server.loading",
-                ">> Loaded 0 default permission definitions. DB table "
-                "`rbac_default_permissions` is empty.");
-    return;
-  }
-
-  uint8 secId = 255;
-  rbac::RBACPermissionContainer *permissions = nullptr;
-  do {
-    Field *field = result->Fetch();
-    uint32 newId = field[0].GetUInt32();
-    if (secId != newId || permissions == nullptr) {
-      secId = newId;
-      permissions = &_defaultPermissions[secId];
-    }
-
-    permissions->insert(field[1].GetUInt32());
-    ++count3;
-  } while (result->NextRow());
-
-  LOG_INFO("server.loading",
-              ">> Loaded %u permission definitions, %u linked permissions and "
-              "%u default permissions in %u ms",
-              count1, count2, count3, GetMSTimeDiffToNow(oldMSTime));
-}
-
-void AccountMgr::UpdateAccountAccess(rbac::RBACData *rbac, uint32 accountId,
-                                     uint8 securityLevel, int32 realmId) {
-  if (rbac && securityLevel != rbac->GetSecurityLevel())
-    rbac->SetSecurityLevel(securityLevel);
-
+void AccountMgr::UpdateAccountAccess(uint32 accountId, uint8 securityLevel,
+                                     int32 realmId) {
   LoginDatabaseTransaction trans = LoginDatabase.BeginTransaction();
   // Delete old security level from DB
   if (realmId == -1) {
@@ -513,6 +419,7 @@ void AccountMgr::UpdateAccountAccess(rbac::RBACData *rbac, uint32 accountId,
         LoginDatabase.GetPreparedStatement(LOGIN_DEL_ACCOUNT_ACCESS);
     stmt->setUInt32(0, accountId);
     trans->Append(stmt);
+
   } else {
     LoginDatabasePreparedStatement *stmt =
         LoginDatabase.GetPreparedStatement(LOGIN_DEL_ACCOUNT_ACCESS_BY_REALM);
@@ -532,50 +439,4 @@ void AccountMgr::UpdateAccountAccess(rbac::RBACData *rbac, uint32 accountId,
   }
 
   LoginDatabase.CommitTransaction(trans);
-}
-
-rbac::RBACPermission const *
-AccountMgr::GetRBACPermission(uint32 permissionId) const {
-  LOG_TRACE("rbac", "AccountMgr::GetRBACPermission: %u", permissionId);
-  rbac::RBACPermissionsContainer::const_iterator it =
-      _permissions.find(permissionId);
-  if (it != _permissions.end())
-    return it->second;
-
-  return nullptr;
-}
-
-bool AccountMgr::HasPermission(uint32 accountId, uint32 permissionId,
-                               uint32 realmId) {
-  if (!accountId) {
-    LOG_ERROR("rbac", "AccountMgr::HasPermission: Wrong accountId 0");
-    return false;
-  }
-
-  rbac::RBACData rbac(accountId, "", realmId, GetSecurity(accountId, realmId));
-  rbac.LoadFromDB();
-  bool hasPermission = rbac.HasPermission(permissionId);
-
-  LOG_DEBUG("rbac",
-               "AccountMgr::HasPermission [AccountId: %u, PermissionId: %u, "
-               "realmId: %d]: %u",
-               accountId, permissionId, realmId, hasPermission);
-  return hasPermission;
-}
-
-void AccountMgr::ClearRBAC() {
-  for (rbac::RBACPermissionsContainer::iterator itr = _permissions.begin();
-       itr != _permissions.end(); ++itr)
-    delete itr->second;
-
-  _permissions.clear();
-  _defaultPermissions.clear();
-}
-
-rbac::RBACPermissionContainer const &
-AccountMgr::GetRBACDefaultPermissions(uint8 secLevel) {
-  LOG_TRACE("rbac",
-               "AccountMgr::GetRBACDefaultPermissions: secLevel %u - size: %u",
-               secLevel, uint32(_defaultPermissions[secLevel].size()));
-  return _defaultPermissions[secLevel];
 }

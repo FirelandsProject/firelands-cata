@@ -33,7 +33,6 @@ EndScriptData */
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "WorldSession.h"
 
 class instance_commandscript : public CommandScript
@@ -45,17 +44,17 @@ public:
     {
         static std::vector<ChatCommand> instanceCommandTable =
         {
-            { "listbinds",    rbac::RBAC_PERM_COMMAND_INSTANCE_LISTBINDS,     false, &HandleInstanceListBindsCommand,    "" },
-            { "unbind",       rbac::RBAC_PERM_COMMAND_INSTANCE_UNBIND,        false, &HandleInstanceUnbindCommand,       "" },
-            { "stats",        rbac::RBAC_PERM_COMMAND_INSTANCE_STATS,          true, &HandleInstanceStatsCommand,        "" },
-            { "savedata",     rbac::RBAC_PERM_COMMAND_INSTANCE_SAVEDATA,      false, &HandleInstanceSaveDataCommand,     "" },
-            { "setbossstate", rbac::RBAC_PERM_COMMAND_INSTANCE_SET_BOSS_STATE, true, &HandleInstanceSetBossStateCommand, "" },
-            { "getbossstate", rbac::RBAC_PERM_COMMAND_INSTANCE_GET_BOSS_STATE, true, &HandleInstanceGetBossStateCommand, "" },
+            { "listbinds",    SEC_MODERATOR,        false, &HandleInstanceListBindsCommand,    "" },
+            { "unbind",       SEC_GAMEMASTER,       false, &HandleInstanceUnbindCommand,       "" },
+            { "stats",        SEC_MODERATOR,        true,  &HandleInstanceStatsCommand,        "" },
+            { "savedata",     SEC_ADMINISTRATOR,    false, &HandleInstanceSaveDataCommand,     "" },
+            { "setbossstate", SEC_GAMEMASTER,       true,  &HandleInstanceSetBossStateCommand, "" },
+            { "getbossstate", SEC_MODERATOR,        true,  &HandleInstanceGetBossStateCommand, "" },
         };
 
         static std::vector<ChatCommand> commandTable =
         {
-            { "instance", rbac::RBAC_PERM_COMMAND_INSTANCE,  true, nullptr, "", instanceCommandTable },
+            { "instance",     SEC_MODERATOR,        true, nullptr,                             "", instanceCommandTable },
         };
 
         return commandTable;

@@ -30,7 +30,6 @@ EndScriptData */
 #include "Log.h"
 #include "ObjectMgr.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "WorldSession.h"
 
 class arena_commandscript : public CommandScript
@@ -42,16 +41,16 @@ public:
     {
         static std::vector<ChatCommand> arenaCommandTable =
         {
-            { "create",         rbac::RBAC_PERM_COMMAND_ARENA_CREATE,   true, &HandleArenaCreateCommand,   "" },
-            { "disband",        rbac::RBAC_PERM_COMMAND_ARENA_DISBAND,  true, &HandleArenaDisbandCommand,  "" },
-            { "rename",         rbac::RBAC_PERM_COMMAND_ARENA_RENAME,   true, &HandleArenaRenameCommand,   "" },
-            { "captain",        rbac::RBAC_PERM_COMMAND_ARENA_CAPTAIN, false, &HandleArenaCaptainCommand,  "" },
-            { "info",           rbac::RBAC_PERM_COMMAND_ARENA_INFO,     true, &HandleArenaInfoCommand,     "" },
-            { "lookup",         rbac::RBAC_PERM_COMMAND_ARENA_LOOKUP,  false, &HandleArenaLookupCommand,   "" },
+            { "create",         SEC_ADMINISTRATOR,    true, &HandleArenaCreateCommand,   "" },
+            { "disband",        SEC_ADMINISTRATOR,    true, &HandleArenaDisbandCommand,  "" },
+            { "rename",         SEC_ADMINISTRATOR,    true, &HandleArenaRenameCommand,   "" },
+            { "captain",        SEC_ADMINISTRATOR,    false, &HandleArenaCaptainCommand,  "" },
+            { "info",           SEC_GAMEMASTER,       true, &HandleArenaInfoCommand,     "" },
+            { "lookup",         SEC_GAMEMASTER,       false, &HandleArenaLookupCommand,   "" },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "arena",          rbac::RBAC_PERM_COMMAND_ARENA,     false, nullptr,                       "", arenaCommandTable },
+            { "arena",          SEC_GAMEMASTER,        false, nullptr,                       "", arenaCommandTable },
         };
         return commandTable;
     }

@@ -28,7 +28,6 @@ EndScriptData */
 #include "Language.h"
 #include "ObjectMgr.h"
 #include "Player.h"
-#include "RBAC.h"
 
 class titles_commandscript : public CommandScript
 {
@@ -39,18 +38,18 @@ public:
     {
         static std::vector<ChatCommand> titlesSetCommandTable =
         {
-            { "mask", rbac::RBAC_PERM_COMMAND_TITLES_SET_MASK, false, &HandleTitlesSetMaskCommand, "" },
+            { "mask",    SEC_GAMEMASTER,         false, &HandleTitlesSetMaskCommand, "" },
         };
         static std::vector<ChatCommand> titlesCommandTable =
         {
-            { "add",     rbac::RBAC_PERM_COMMAND_TITLES_ADD,     false, &HandleTitlesAddCommand,     "" },
-            { "current", rbac::RBAC_PERM_COMMAND_TITLES_CURRENT, false, &HandleTitlesCurrentCommand, "" },
-            { "remove",  rbac::RBAC_PERM_COMMAND_TITLES_REMOVE,  false, &HandleTitlesRemoveCommand,  "" },
-            { "set",     rbac::RBAC_PERM_COMMAND_TITLES_SET,     false, nullptr,       "", titlesSetCommandTable },
+            { "add",     SEC_GAMEMASTER,         false, &HandleTitlesAddCommand,     "" },
+            { "current", SEC_GAMEMASTER,         false, &HandleTitlesCurrentCommand, "" },
+            { "remove",  SEC_GAMEMASTER,         false, &HandleTitlesRemoveCommand,  "" },
+            { "set",     SEC_GAMEMASTER,         false, nullptr,                     "", titlesSetCommandTable },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "titles", rbac::RBAC_PERM_COMMAND_TITLES, false, nullptr, "", titlesCommandTable },
+            { "titles",  SEC_GAMEMASTER,          false, nullptr,                     "", titlesCommandTable },
         };
         return commandTable;
     }

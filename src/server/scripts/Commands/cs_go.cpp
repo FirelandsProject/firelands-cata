@@ -32,7 +32,6 @@ EndScriptData */
 #include "ObjectMgr.h"
 #include "PhasingHandler.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "TicketMgr.h"
 #include "Transport.h"
 #include "Util.h"
@@ -48,34 +47,34 @@ public:
     {
         static std::vector<ChatCommand> goCreatureCommandTable =
         {
-            { "id",     rbac::RBAC_PERM_COMMAND_GO,     false,      &HandleGoCreatureCIdCommand,            "" },
-            { "",       rbac::RBAC_PERM_COMMAND_GO,     false,      &HandleGoCreatureSpawnIdCommand,        "" }
+            { "id",                 SEC_MODERATOR,             false, &HandleGoCreatureCIdCommand,                 "" },
+            { "",                   SEC_MODERATOR,             false, &HandleGoCreatureSpawnIdCommand,             "" }
         };
 
         static std::vector<ChatCommand> goGameObjectCommandTable =
         {
-            { "id",     rbac::RBAC_PERM_COMMAND_GO,     false,      &HandleGoGameObjectGOIdCommand,         "" },
-            { "",       rbac::RBAC_PERM_COMMAND_GO,     false,      &HandleGoGameObjectSpawnIdCommand,      "" }
+            { "id",                 SEC_MODERATOR,             false, &HandleGoGameObjectGOIdCommand,              "" },
+            { "",                   SEC_MODERATOR,             false, &HandleGoGameObjectSpawnIdCommand,           "" }
         };
 
         static std::vector<ChatCommand> goCommandTable =
         {
-            { "creature",           rbac::RBAC_PERM_COMMAND_GO,             false, nullptr,                                     "", goCreatureCommandTable },
-            { "gameobject",         rbac::RBAC_PERM_COMMAND_GO,             false, nullptr,                                     "", goGameObjectCommandTable },
-            { "graveyard",          rbac::RBAC_PERM_COMMAND_GO,             false, &HandleGoGraveyardCommand,                   "" },
-            { "grid",               rbac::RBAC_PERM_COMMAND_GO,             false, &HandleGoGridCommand,                        "" },
-            { "taxinode",           rbac::RBAC_PERM_COMMAND_GO,             false, &HandleGoTaxinodeCommand,                    "" },
-            { "areatrigger",        rbac::RBAC_PERM_COMMAND_GO,             false, &HandleGoAreaTriggerCommand,                 "" },
-            { "zonexy",             rbac::RBAC_PERM_COMMAND_GO,             false, &HandleGoZoneXYCommand,                      "" },
-            { "xyz",                rbac::RBAC_PERM_COMMAND_GO,             false, &HandleGoXYZCommand,                         "" },
-            { "ticket",             rbac::RBAC_PERM_COMMAND_GO,             false, &HandleGoTicketCommand,                      "" },
-            { "offset",             rbac::RBAC_PERM_COMMAND_GO,             false, &HandleGoOffsetCommand,                      "" },
-            { "instance",           rbac::RBAC_PERM_COMMAND_GO,             false, &HandleGoInstanceCommand,                    "" }
+            { "creature",           SEC_MODERATOR,             false, nullptr,                                     "", goCreatureCommandTable },
+            { "gameobject",         SEC_MODERATOR,             false, nullptr,                                     "", goGameObjectCommandTable },
+            { "graveyard",          SEC_MODERATOR,             false, &HandleGoGraveyardCommand,                   "" },
+            { "grid",               SEC_MODERATOR,             false, &HandleGoGridCommand,                        "" },
+            { "taxinode",           SEC_MODERATOR,             false, &HandleGoTaxinodeCommand,                    "" },
+            { "areatrigger",        SEC_MODERATOR,             false, &HandleGoAreaTriggerCommand,                 "" },
+            { "zonexy",             SEC_MODERATOR,             false, &HandleGoZoneXYCommand,                      "" },
+            { "xyz",                SEC_MODERATOR,             false, &HandleGoXYZCommand,                         "" },
+            { "ticket",             SEC_GAMEMASTER,            false, &HandleGoTicketCommand,                      "" },
+            { "offset",              SEC_MODERATOR,             false, &HandleGoOffsetCommand,                       "" },
+            { "instance",           SEC_MODERATOR,             false, &HandleGoInstanceCommand,                    "" }
         };
 
         static std::vector<ChatCommand> commandTable =
         {
-            { "go", rbac::RBAC_PERM_COMMAND_GO, false, nullptr, "", goCommandTable },
+            { "go",                 SEC_MODERATOR,             false, nullptr, "", goCommandTable },
         };
         return commandTable;
     }

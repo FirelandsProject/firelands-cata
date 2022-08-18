@@ -29,7 +29,6 @@
 #include "ObjectMgr.h"
 #include "PhasingHandler.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "WorldSession.h"
 
 class group_commandscript : public CommandScript
@@ -41,26 +40,26 @@ public:
     {
         static std::vector<ChatCommand> groupSetCommandTable =
         {
-            { "leader",     rbac::RBAC_PERM_COMMAND_GROUP_LEADER,     false, &HandleGroupLeaderCommand,     "" },
-            { "assistant",  rbac::RBAC_PERM_COMMAND_GROUP_ASSISTANT,  false, &HandleGroupAssistantCommand,  "" },
-            { "maintank",   rbac::RBAC_PERM_COMMAND_GROUP_MAINTANK,   false, &HandleGroupMainTankCommand,   "" },
-            { "mainassist", rbac::RBAC_PERM_COMMAND_GROUP_MAINASSIST, false, &HandleGroupMainAssistCommand, "" },
+            { "leader",      SEC_GAMEMASTER,     false, &HandleGroupLeaderCommand,     "" },
+            { "assistant",   SEC_GAMEMASTER,     false, &HandleGroupAssistantCommand,  "" },
+            { "maintank",    SEC_GAMEMASTER,     false, &HandleGroupMainTankCommand,   "" },
+            { "mainassist",  SEC_GAMEMASTER,     false, &HandleGroupMainAssistCommand, "" },
         };
 
         static std::vector<ChatCommand> groupCommandTable =
         {
-            { "set",     rbac::RBAC_PERM_COMMAND_GROUP_SET,     false, nullptr,                    "", groupSetCommandTable },
-            { "leader",  rbac::RBAC_PERM_COMMAND_GROUP_LEADER,  false, &HandleGroupLeaderCommand,  "" },
-            { "disband", rbac::RBAC_PERM_COMMAND_GROUP_DISBAND, false, &HandleGroupDisbandCommand, "" },
-            { "remove",  rbac::RBAC_PERM_COMMAND_GROUP_REMOVE,  false, &HandleGroupRemoveCommand,  "" },
-            { "join",    rbac::RBAC_PERM_COMMAND_GROUP_JOIN,    false, &HandleGroupJoinCommand,    "" },
-            { "list",    rbac::RBAC_PERM_COMMAND_GROUP_LIST,    false, &HandleGroupListCommand,    "" },
-            { "summon",  rbac::RBAC_PERM_COMMAND_GROUP_SUMMON,  false, &HandleGroupSummonCommand,  "" },
+            { "set",         SEC_GAMEMASTER,     false, nullptr,                       "", groupSetCommandTable },
+            { "leader",      SEC_GAMEMASTER,     false, &HandleGroupLeaderCommand,     "" },
+            { "disband",     SEC_GAMEMASTER,     false, &HandleGroupDisbandCommand,    "" },
+            { "remove",      SEC_GAMEMASTER,     false, &HandleGroupRemoveCommand,     "" },
+            { "join",        SEC_GAMEMASTER,     false, &HandleGroupJoinCommand,       "" },
+            { "list",        SEC_GAMEMASTER,     false, &HandleGroupListCommand,       "" },
+            { "summon",      SEC_GAMEMASTER,     false, &HandleGroupSummonCommand,     "" },
         };
 
         static std::vector<ChatCommand> commandTable =
         {
-            { "group", rbac::RBAC_PERM_COMMAND_GROUP, false, nullptr, "", groupCommandTable },
+            { "group",       SEC_GAMEMASTER,     false, nullptr,                    "", groupCommandTable },
         };
         return commandTable;
     }

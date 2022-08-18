@@ -22,6 +22,7 @@
 
 #include <memory>
 
+#include "AccountMgr.h"
 #include "AuthenticationPackets.h"
 #include "BigNumber.h"
 #include "CharacterPackets.h"
@@ -31,7 +32,6 @@
 #include "Opcodes.h"
 #include "PacketLog.h"
 #include "QueryCallback.h"
-#include "RBAC.h"
 #include "Random.h"
 #include "Realm.h"
 #include "SHA1.h"
@@ -714,19 +714,7 @@ void WorldSocket::HandleAuthSessionCallback(
   // Initialize Warden system only if it is enabled by config
   if (wardenActive) _worldSession->InitWarden(&account.SessionKey, account.OS);
 
-  _queryProcessor.AddCallback(
-      _worldSession->LoadPermissionsAsync().WithPreparedCallback(
-          std::bind(&WorldSocket::LoadSessionPermissionsCallback, this,
-                    std::placeholders::_1)));
   AsyncRead();
-}
-
-void WorldSocket::LoadSessionPermissionsCallback(PreparedQueryResult result) {
-  // RBAC must be loaded before adding session to check for skip queue
-  // permission
-  _worldSession->GetRBACData()->LoadFromDBCallback(result);
-
-  sWorld->AddSession(_worldSession);
 }
 
 void WorldSocket::HandleAuthContinuedSession(
@@ -816,8 +804,8 @@ bool WorldSocket::HandlePing(WorldPackets::Auth::Ping& ping) {
       if (maxAllowed && _OverSpeedPings > maxAllowed) {
         std::unique_lock<std::mutex> sessionGuard(_worldSessionLock);
 
-        if (_worldSession && !_worldSession->HasPermission(
-                                 rbac::RBAC_PERM_SKIP_CHECK_OVERSPEED_PING)) {
+        if (_worldSession &&
+            AccountMgr::IsPlayerAccount(_worldSession->GetSecurity())) {
           LOG_ERROR("network",
                     "WorldSocket::HandlePing: %s kicked for over-speed pings "
                     "(address: %s)",

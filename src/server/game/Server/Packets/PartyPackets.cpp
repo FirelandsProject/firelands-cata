@@ -380,7 +380,6 @@ void WorldPackets::Party::PartyInvite::Initialize(Player* const inviter, int32 p
 
 WorldPacket const* WorldPackets::Party::PartyInvite::Write()
 {
-    _worldPacket.WriteBit(MustBeBNetFriend); // This bit automatically declines party invites so it's probably bnet friends parental control stuff
     _worldPacket.WriteBit(InviterGUID[0]);
     _worldPacket.WriteBit(InviterGUID[3]);
     _worldPacket.WriteBit(InviterGUID[2]);

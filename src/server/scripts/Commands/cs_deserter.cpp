@@ -26,7 +26,6 @@
 #include "Chat.h"
 #include "Language.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "SpellAuras.h"
 
 enum Spells
@@ -48,23 +47,23 @@ public:
     {
         static std::vector<ChatCommand> deserterInstanceCommandTable =
         {
-            { "add",      rbac::RBAC_PERM_COMMAND_DESERTER_INSTANCE_ADD,    false, &HandleDeserterInstanceAdd,    "" },
-            { "remove",   rbac::RBAC_PERM_COMMAND_DESERTER_INSTANCE_REMOVE, false, &HandleDeserterInstanceRemove, "" },
+            { "add",      SEC_ADMINISTRATOR,     false, &HandleDeserterInstanceAdd,    "" },
+            { "remove",   SEC_ADMINISTRATOR,     false, &HandleDeserterInstanceRemove, "" },
         };
         static std::vector<ChatCommand> deserterBGCommandTable =
         {
-            { "add",      rbac::RBAC_PERM_COMMAND_DESERTER_BG_ADD,    false, &HandleDeserterBGAdd,    "" },
-            { "remove",   rbac::RBAC_PERM_COMMAND_DESERTER_BG_REMOVE, false, &HandleDeserterBGRemove, "" },
+            { "add",      SEC_ADMINISTRATOR,     false, &HandleDeserterBGAdd,    "" },
+            { "remove",   SEC_ADMINISTRATOR,     false, &HandleDeserterBGRemove, "" },
         };
 
         static std::vector<ChatCommand> deserterCommandTable =
         {
-            { "instance", rbac::RBAC_PERM_COMMAND_DESERTER_INSTANCE, false, nullptr, "", deserterInstanceCommandTable },
-            { "bg",       rbac::RBAC_PERM_COMMAND_DESERTER_BG,       false, nullptr, "", deserterBGCommandTable },
+            { "instance", SEC_ADMINISTRATOR,     false, nullptr, "", deserterInstanceCommandTable },
+            { "bg",       SEC_ADMINISTRATOR,     false, nullptr, "", deserterBGCommandTable },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "deserter", rbac::RBAC_PERM_COMMAND_DESERTER, false, nullptr, "", deserterCommandTable },
+            { "deserter", SEC_ADMINISTRATOR,     false, nullptr, "", deserterCommandTable },
         };
         return commandTable;
     }

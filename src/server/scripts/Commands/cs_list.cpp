@@ -37,7 +37,6 @@ EndScriptData */
 #include "ObjectMgr.h"
 #include "PhasingHandler.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "SpawnData.h"
 #include "SpellAuraEffects.h"
 #include "WorldSession.h"
@@ -52,17 +51,17 @@ public:
     {
         static std::vector<ChatCommand> listCommandTable =
         {
-            { "creature",    rbac::RBAC_PERM_COMMAND_LIST_CREATURE,    true,  &HandleListCreatureCommand,    "" },
-            { "item",        rbac::RBAC_PERM_COMMAND_LIST_ITEM,        true,  &HandleListItemCommand,        "" },
-            { "object",      rbac::RBAC_PERM_COMMAND_LIST_OBJECT,      true,  &HandleListObjectCommand,      "" },
-            { "auras",       rbac::RBAC_PERM_COMMAND_LIST_AURAS,       false, &HandleListAurasCommand,       "" },
-            { "mail",        rbac::RBAC_PERM_COMMAND_LIST_MAIL,        true,  &HandleListMailCommand,        "" },
-            { "spawnpoints", rbac::RBAC_PERM_COMMAND_LIST_SPAWNPOINTS, false, &HandleListSpawnPointsCommand, "" },
-            { "respawns",    rbac::RBAC_PERM_COMMAND_LIST_MAIL,        false, &HandleListRespawnsCommand,    "" }
+            { "creature",    SEC_MODERATOR,        true,  &HandleListCreatureCommand,    "" },
+            { "item",        SEC_MODERATOR,        true,  &HandleListItemCommand,        "" },
+            { "object",      SEC_MODERATOR,        true,  &HandleListObjectCommand,      "" },
+            { "auras",       SEC_MODERATOR,        false, &HandleListAurasCommand,       "" },
+            { "mail",        SEC_MODERATOR,        true,  &HandleListMailCommand,        "" },
+            { "spawnpoints", SEC_MODERATOR,        false, &HandleListSpawnPointsCommand, "" },
+            { "respawns",    SEC_MODERATOR,        false, &HandleListRespawnsCommand,    "" }
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "list", rbac::RBAC_PERM_COMMAND_LIST,true, nullptr, "", listCommandTable },
+            { "list", SEC_MODERATOR,true, nullptr, "", listCommandTable },
         };
         return commandTable;
     }

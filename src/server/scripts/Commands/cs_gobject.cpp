@@ -38,7 +38,6 @@ EndScriptData */
 #include "PhasingHandler.h"
 #include "Player.h"
 #include "PoolMgr.h"
-#include "RBAC.h"
 #include "WorldSession.h"
 
 // definitions are over in cs_npc.cpp
@@ -54,31 +53,31 @@ public:
     {
         static std::vector<ChatCommand> gobjectAddCommandTable =
         {
-            { "temp", rbac::RBAC_PERM_COMMAND_GOBJECT_ADD_TEMP, false, &HandleGameObjectAddTempCommand,   "" },
-            { "",     rbac::RBAC_PERM_COMMAND_GOBJECT_ADD,      false, &HandleGameObjectAddCommand,       "" },
+            { "temp",         SEC_GAMEMASTER,         false, &HandleGameObjectAddTempCommand,   "" },
+            { "",             SEC_GAMEMASTER,         false, &HandleGameObjectAddCommand,       "" },
         };
         static std::vector<ChatCommand> gobjectSetCommandTable =
         {
-            { "phase", rbac::RBAC_PERM_COMMAND_GOBJECT_SET_PHASE, false, &HandleGameObjectSetPhaseCommand,  "" },
-            { "state", rbac::RBAC_PERM_COMMAND_GOBJECT_SET_STATE, false, &HandleGameObjectSetStateCommand,  "" },
+            { "phase",        SEC_ADMINISTRATOR,      false, &HandleGameObjectSetPhaseCommand,  "" },
+            { "state",        SEC_ADMINISTRATOR,      false, &HandleGameObjectSetStateCommand,  "" },
         };
         static std::vector<ChatCommand> gobjectCommandTable =
         {
-            { "activate",     rbac::RBAC_PERM_COMMAND_GOBJECT_ACTIVATE,     false, &HandleGameObjectActivateCommand,  ""       },
-            { "delete",       rbac::RBAC_PERM_COMMAND_GOBJECT_DELETE,       false, &HandleGameObjectDeleteCommand,    ""       },
-            { "info",         rbac::RBAC_PERM_COMMAND_GOBJECT_INFO,         false, &HandleGameObjectInfoCommand,      ""       },
-            { "move",         rbac::RBAC_PERM_COMMAND_GOBJECT_MOVE,         false, &HandleGameObjectMoveCommand,      ""       },
-            { "near",         rbac::RBAC_PERM_COMMAND_GOBJECT_NEAR,         false, &HandleGameObjectNearCommand,      ""       },
-            { "target",       rbac::RBAC_PERM_COMMAND_GOBJECT_TARGET,       false, &HandleGameObjectTargetCommand,    ""       },
-            { "turn",         rbac::RBAC_PERM_COMMAND_GOBJECT_TURN,         false, &HandleGameObjectTurnCommand,      ""       },
-            { "spawngroup",   rbac::RBAC_PERM_COMMAND_GOBJECT_SPAWNGROUP,   false, &HandleNpcSpawnGroup, "" },
-            { "despawngroup", rbac::RBAC_PERM_COMMAND_GOBJECT_DESPAWNGROUP, false, &HandleNpcDespawnGroup,""},
-            { "add",          rbac::RBAC_PERM_COMMAND_GOBJECT_ADD,          false, nullptr,            "", gobjectAddCommandTable },
-            { "set",          rbac::RBAC_PERM_COMMAND_GOBJECT_SET,          false, nullptr,            "", gobjectSetCommandTable },
+            { "activate",     SEC_GAMEMASTER,         false, &HandleGameObjectActivateCommand,  ""       },
+            { "delete",       SEC_ADMINISTRATOR,      false, &HandleGameObjectDeleteCommand,    ""       },
+            { "info",         SEC_MODERATOR,          false, &HandleGameObjectInfoCommand,      ""       },
+            { "move",         SEC_ADMINISTRATOR,      false, &HandleGameObjectMoveCommand,      ""       },
+            { "near",         SEC_MODERATOR,          false, &HandleGameObjectNearCommand,      ""       },
+            { "target",       SEC_MODERATOR,          false, &HandleGameObjectTargetCommand,    ""       },
+            { "turn",         SEC_ADMINISTRATOR,      false, &HandleGameObjectTurnCommand,      ""       },
+            { "spawngroup",   SEC_ADMINISTRATOR,      false, &HandleNpcSpawnGroup,              ""       },
+            { "despawngroup", SEC_ADMINISTRATOR,      false, &HandleNpcDespawnGroup,            ""       },
+            { "add",          SEC_ADMINISTRATOR,      false, nullptr,                           "", gobjectAddCommandTable },
+            { "set",          SEC_ADMINISTRATOR,      false, nullptr,                           "", gobjectSetCommandTable },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "gobject", rbac::RBAC_PERM_COMMAND_GOBJECT, false, nullptr, "", gobjectCommandTable },
+            { "gobject",      SEC_MODERATOR,          false, nullptr,                           "", gobjectCommandTable },
         };
         return commandTable;
     }

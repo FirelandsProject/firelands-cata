@@ -32,7 +32,6 @@ EndScriptData */
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "World.h"
 #include "WorldSession.h"
 
@@ -43,24 +42,20 @@ public:
 
     std::vector<ChatCommand> GetCommands() const override
     {
-        static std::vector<ChatCommand> channelSetCommandTable =
-        {
-            { "ownership", rbac::RBAC_PERM_COMMAND_CHANNEL_SET_OWNERSHIP, false, &HandleChannelSetOwnership, "" },
-        };
         static std::vector<ChatCommand> channelCommandTable =
         {
-            { "set", rbac::RBAC_PERM_COMMAND_CHANNEL_SET, true, nullptr, "", channelSetCommandTable },
+            { "set ownership",  SEC_GAMEMASTER,        true,  &HandleChannelSetOwnership,   ""  },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "channel",        rbac::RBAC_PERM_COMMAND_CHANNEL,        true, nullptr,                         "", channelCommandTable  },
-            { "nameannounce",   rbac::RBAC_PERM_COMMAND_NAMEANNOUNCE,   true, &HandleNameAnnounceCommand,   "" },
-            { "gmnameannounce", rbac::RBAC_PERM_COMMAND_GMNAMEANNOUNCE, true, &HandleGMNameAnnounceCommand, "" },
-            { "announce",       rbac::RBAC_PERM_COMMAND_ANNOUNCE,       true, &HandleAnnounceCommand,       "" },
-            { "gmannounce",     rbac::RBAC_PERM_COMMAND_GMANNOUNCE,     true, &HandleGMAnnounceCommand,     "" },
-            { "notify",         rbac::RBAC_PERM_COMMAND_NOTIFY,         true, &HandleNotifyCommand,         "" },
-            { "gmnotify",       rbac::RBAC_PERM_COMMAND_GMNOTIFY,       true, &HandleGMNotifyCommand,       "" },
-            { "whispers",       rbac::RBAC_PERM_COMMAND_WHISPERS,      false, &HandleWhispersCommand,       "" },
+            { "channel",        SEC_GAMEMASTER,        true,  nullptr,                      "", channelCommandTable  },
+            { "nameannounce",   SEC_GAMEMASTER,        true,  &HandleNameAnnounceCommand,   "" },
+            { "gmnameannounce", SEC_GAMEMASTER,        true,  &HandleGMNameAnnounceCommand, "" },
+            { "announce",       SEC_GAMEMASTER,        true,  &HandleAnnounceCommand,       "" },
+            { "gmannounce",     SEC_GAMEMASTER,        true,  &HandleGMAnnounceCommand,     "" },
+            { "notify",         SEC_GAMEMASTER,        true,  &HandleNotifyCommand,         "" },
+            { "gmnotify",       SEC_GAMEMASTER,        true,  &HandleGMNotifyCommand,       "" },
+            { "whispers",       SEC_MODERATOR,         false, &HandleWhispersCommand,       "" },
         };
         return commandTable;
     }

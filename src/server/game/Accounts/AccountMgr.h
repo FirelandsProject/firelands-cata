@@ -1,6 +1,6 @@
 /*
- * This file is part of the FirelandsCore Project. See AUTHORS file for Copyright
- * information
+ * This file is part of the FirelandsCore Project. See AUTHORS file for
+ * Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -19,8 +19,6 @@
 #ifndef _ACCMGR_H
 #define _ACCMGR_H
 
-#include "RBAC.h"
-
 enum class AccountOpResult : uint8 {
   AOR_OK,
   AOR_NAME_TOO_LONG,
@@ -32,24 +30,18 @@ enum class AccountOpResult : uint8 {
   AOR_ACCOUNT_BAD_LINK
 };
 
-enum PasswordChangeSecurity { PW_NONE, PW_EMAIL, PW_RBAC };
+enum PasswordChangeSecurity { PW_NONE, PW_EMAIL };
 
 #define MAX_PASS_STR 16
 #define MAX_ACCOUNT_STR 16
 #define MAX_EMAIL_STR 64
 
-namespace rbac {
-typedef std::map<uint32, rbac::RBACPermission *> RBACPermissionsContainer;
-typedef std::map<uint8, rbac::RBACPermissionContainer>
-    RBACDefaultPermissionsContainer;
-} // namespace rbac
-
 class FC_GAME_API AccountMgr {
-private:
+ private:
   AccountMgr();
   ~AccountMgr();
 
-public:
+ public:
   static AccountMgr *instance();
 
   AccountOpResult CreateAccount(std::string username, std::string password,
@@ -67,9 +59,8 @@ public:
 
   static uint32 GetId(std::string const &username);
   static uint32 GetSecurity(uint32 accountId, int32 realmId);
-  [[nodiscard]] static QueryCallback
-  GetSecurityAsync(uint32 accountId, int32 realmId,
-                   std::function<void(uint32)> callback);
+  [[nodiscard]] static QueryCallback GetSecurityAsync(
+      uint32 accountId, int32 realmId, std::function<void(uint32)> callback);
   static bool GetName(uint32 accountId, std::string &name);
   static bool GetEmail(uint32 accountId, std::string &email);
   static uint32 GetCharactersCount(uint32 accountId);
@@ -78,27 +69,12 @@ public:
                                           std::string const &password);
   static bool IsBannedAccount(std::string const &name);
   static bool IsPlayerAccount(uint32 gmlevel);
+  static bool IsGMAccount(uint32 gmlevel);
   static bool IsAdminAccount(uint32 gmlevel);
   static bool IsConsoleAccount(uint32 gmlevel);
-  static bool HasPermission(uint32 accountId, uint32 permission,
-                            uint32 realmId);
 
-  void UpdateAccountAccess(rbac::RBACData *rbac, uint32 accountId,
-                           uint8 securityLevel, int32 realmId);
-
-  void LoadRBAC();
-  rbac::RBACPermission const *GetRBACPermission(uint32 permission) const;
-
-  rbac::RBACPermissionsContainer const &GetRBACPermissionList() const {
-    return _permissions;
-  }
-  rbac::RBACPermissionContainer const &
-  GetRBACDefaultPermissions(uint8 secLevel);
-
-private:
-  void ClearRBAC();
-  rbac::RBACPermissionsContainer _permissions;
-  rbac::RBACDefaultPermissionsContainer _defaultPermissions;
+  void UpdateAccountAccess(uint32 accountId, uint8 securityLevel,
+                           int32 realmId);
 };
 
 #define sAccountMgr AccountMgr::instance()

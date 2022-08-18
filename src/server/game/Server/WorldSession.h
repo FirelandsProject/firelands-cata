@@ -70,10 +70,6 @@ struct LfgUpdateData;
 enum LfgTeleportResult : uint8;
 }  // namespace lfg
 
-namespace rbac {
-class RBACData;
-}
-
 namespace WorldPackets {
 namespace Archaeology {
 class RequestResearchHistory;
@@ -451,13 +447,6 @@ class FC_GAME_API WorldSession {
       CharacterDatabaseQueryHolder const& realmHolder);
 
   GameClient* GetGameClient() const { return _gameClient; };
-
-  rbac::RBACData* GetRBACData();
-  bool HasPermission(uint32 permissionId);
-  void LoadPermissions();
-  QueryCallback LoadPermissionsAsync();
-  void InvalidateRBACData();  // Used to force LoadPermissions at next
-                              // HasPermission check
 
   AccountTypes GetSecurity() const { return _security; }
   uint32 GetAccountId() const { return _accountId; }
@@ -1421,7 +1410,6 @@ class FC_GAME_API WorldSession {
   uint32 recruiterId;
   bool isRecruiter;
   LockedQueue<WorldPacket*> _recvQueue;
-  rbac::RBACData* _RBACData;
   uint32 expireTime;
   bool forceExit;
   ObjectGuid m_currentBankerGUID;

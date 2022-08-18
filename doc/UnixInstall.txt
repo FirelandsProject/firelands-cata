@@ -6,12 +6,10 @@ WARNING: THIS DOCUMENTATION IS NOT ALWAYS UP TO DATE.
 FOR MORE UP-TO-DATE INFORMATION, CHECK THE TRINITY WIKI.
 =========================================================
 
-CHECK https://www.trinitycore.info/display/tc/Requirements FOR FURTHER HELP
-
 These are instructions for installation in a Linux environment, if you are
-using Windows refer to https://trinitycore.atlassian.net/wiki/spaces/tc/pages/10977296/Windows+Requirements
+using Windows refer to {TBD}
 
-Installing TrinityCore is fairly simple on a Linux machine, assuming you 
+Installing Firelands Core is fairly simple on a Linux machine, assuming you
 have all required applications
 
 The most important ones are:
@@ -30,23 +28,23 @@ The most important ones are:
     patch
     build-essential
     mysql-client
-    
-Most of these are included on common Linux distros, others you may have 
+
+Most of these are included on common Linux distros, others you may have
 to install by your self. Please check your distro's repos.
 
-Make a directory to build in, you can call it anything you want like 
-build or bin etc, then go into the directory and cmake and make. E.G. 
-you created a dir named build ad want to have your finalcompiled product 
-installed in /home/trinity/server, an example sequence of commands can 
+Make a directory to build in, you can call it anything you want like
+build or bin etc, then go into the directory and cmake and make. E.G.
+you created a dir named build ad want to have your finalcompiled product
+installed in /home/firelands/server, an example sequence of commands can
 be :
 
-    cmake ../ -DPREFIX=/home/trinity/server -DTOOLS=1 -DWITH_WARNINGS=1
+    cmake ../ -DPREFIX=/home/firelands/server -DTOOLS=1 -DWITH_WARNINGS=1
     make
     make install
-    
-Thats just about all thats needed. You can however tweak more settings 
-than where to install using flags built into our cmake files. Just open 
-up CMakeLists.txt in the main folder and take a look at some of the 
+
+Thats just about all thats needed. You can however tweak more settings
+than where to install using flags built into our cmake files. Just open
+up CMakeLists.txt in the main folder and take a look at some of the
 flags like
 
     SERVERS             Build worldserver and bnetserver
@@ -66,9 +64,9 @@ flags like
                         Release, MinSizeRel, RelWithDebInfo, Debug
 
 Of course, replace the paths in PREFIX, CONF_DIR and LIBSDIR with the
-directories you wish to install TrinityCore to. The datadir is where maps,
+directories you wish to install Firelands Core to. The datadir is where maps,
 DBCs, and SQLs are stored. The sysconfdir is where configuration files are stored.
 
-Once TrinityCore is installed you will need to apply database updates 
-where necessary. Furthermore, you must configure your installation by 
+Once Firelands Core is installed you will need to apply database updates
+where necessary. Furthermore, you must configure your installation by
 editing the config files in the sysconfdir.

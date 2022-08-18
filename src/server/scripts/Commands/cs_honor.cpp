@@ -27,7 +27,6 @@ EndScriptData */
 #include "Language.h"
 #include "ObjectMgr.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "WorldSession.h"
 
 class honor_commandscript : public CommandScript
@@ -39,19 +38,19 @@ public:
     {
         static std::vector<ChatCommand> honorAddCommandTable =
         {
-            { "kill", rbac::RBAC_PERM_COMMAND_HONOR_ADD_KILL, false, &HandleHonorAddKillCommand,         "" },
-            { "",     rbac::RBAC_PERM_COMMAND_HONOR_ADD,      false, &HandleHonorAddCommand,             "" },
+            { "kill", SEC_GAMEMASTER,      false, &HandleHonorAddKillCommand,         "" },
+            { "",     SEC_GAMEMASTER,      false, &HandleHonorAddCommand,             "" },
         };
 
         static std::vector<ChatCommand> honorCommandTable =
         {
-            { "add",    rbac::RBAC_PERM_COMMAND_HONOR_ADD,    false, nullptr,               "", honorAddCommandTable },
-            { "update", rbac::RBAC_PERM_COMMAND_HONOR_UPDATE, false, &HandleHonorUpdateCommand,          "" },
+            { "add",    SEC_GAMEMASTER,    false, nullptr,                            "", honorAddCommandTable },
+            { "update", SEC_GAMEMASTER,    false, &HandleHonorUpdateCommand,          "" },
         };
 
         static std::vector<ChatCommand> commandTable =
         {
-            { "honor", rbac::RBAC_PERM_COMMAND_HONOR, false, nullptr, "", honorCommandTable },
+            { "honor", SEC_GAMEMASTER,     false, nullptr,                            "", honorCommandTable },
         };
         return commandTable;
     }

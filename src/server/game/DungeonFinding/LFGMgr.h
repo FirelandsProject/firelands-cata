@@ -64,6 +64,10 @@ enum LFGMgrEnum
     LFR_GROUP_KICK_VOTES_NEEDED                  = 15
 };
 
+enum LFGSpecialAuras: uint32 {
+    FREEZE_DEBUFF = 9454
+};
+
 enum LfgFlags
 {
     LFG_FLAG_UNK1                                = 0x1,

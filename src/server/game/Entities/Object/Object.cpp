@@ -1938,7 +1938,7 @@ void WorldObject::SendMessageToSet(WorldPacket const* data, bool self) const
         SendMessageToSetInRange(data, GetVisibilityRange(), self);
 }
 
-void WorldObject::SendMessageToSetInRange(WorldPacket const* data, float dist, bool /*self*/) const
+void WorldObject::SendMessageToSetInRange(WorldPacket const* data, float dist, bool self) const
 {
     Firelands::MessageDistDeliverer notifier(this, data, dist);
     Cell::VisitWorldObjects(this, notifier, dist);

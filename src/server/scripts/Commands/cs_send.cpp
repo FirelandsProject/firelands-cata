@@ -24,7 +24,6 @@
 #include "ObjectMgr.h"
 #include "Pet.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "WorldSession.h"
 
 class send_commandscript : public CommandScript
@@ -36,15 +35,15 @@ public:
     {
         static std::vector<ChatCommand> sendCommandTable =
         {
-            { "items",   rbac::RBAC_PERM_COMMAND_SEND_ITEMS,   true, &HandleSendItemsCommand,   "" },
-            { "mail",    rbac::RBAC_PERM_COMMAND_SEND_MAIL,    true, &HandleSendMailCommand,    "" },
-            { "message", rbac::RBAC_PERM_COMMAND_SEND_MESSAGE, true, &HandleSendMessageCommand, "" },
-            { "money",   rbac::RBAC_PERM_COMMAND_SEND_MONEY,   true, &HandleSendMoneyCommand,   "" },
+            { "items",   SEC_GAMEMASTER,    true, &HandleSendItemsCommand,   "" },
+            { "mail",    SEC_GAMEMASTER,    true, &HandleSendMailCommand,    "" },
+            { "message", SEC_ADMINISTRATOR, true, &HandleSendMessageCommand, "" },
+            { "money",   SEC_GAMEMASTER,    true, &HandleSendMoneyCommand,   "" },
         };
 
         static std::vector<ChatCommand> commandTable =
         {
-            { "send", rbac::RBAC_PERM_COMMAND_SEND, false, nullptr, "", sendCommandTable },
+            { "send",    SEC_GAMEMASTER,    false, nullptr,                  "", sendCommandTable },
         };
         return commandTable;
     }

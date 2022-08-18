@@ -46,39 +46,39 @@ public:
     {
         static std::vector<ChatCommand> lookupPlayerCommandTable =
         {
-            { "ip",      rbac::RBAC_PERM_COMMAND_LOOKUP_PLAYER_IP,      true, &HandleLookupPlayerIpCommand,        "" },
-            { "account", rbac::RBAC_PERM_COMMAND_LOOKUP_PLAYER_ACCOUNT, true, &HandleLookupPlayerAccountCommand,   "" },
-            { "email",   rbac::RBAC_PERM_COMMAND_LOOKUP_PLAYER_EMAIL,   true, &HandleLookupPlayerEmailCommand,     "" },
+            { "ip",       SEC_GAMEMASTER,       true, &HandleLookupPlayerIpCommand,        "" },
+            { "account",  SEC_GAMEMASTER,       true, &HandleLookupPlayerAccountCommand,   "" },
+            { "email",    SEC_GAMEMASTER,       true, &HandleLookupPlayerEmailCommand,     "" },
         };
 
         static std::vector<ChatCommand> lookupSpellCommandTable =
         {
-            { "id", rbac::RBAC_PERM_COMMAND_LOOKUP_SPELL_ID, true, &HandleLookupSpellIdCommand,         "" },
-            { "",   rbac::RBAC_PERM_COMMAND_LOOKUP_SPELL,    true, &HandleLookupSpellCommand,           "" },
+            { "id",       SEC_MODERATOR,        true, &HandleLookupSpellIdCommand,         "" },
+            { "",         SEC_MODERATOR,        true, &HandleLookupSpellCommand,           "" },
         };
 
         static std::vector<ChatCommand> lookupCommandTable =
         {
-            { "area",     rbac::RBAC_PERM_COMMAND_LOOKUP_AREA,     true, &HandleLookupAreaCommand,     "" },
-            { "creature", rbac::RBAC_PERM_COMMAND_LOOKUP_CREATURE, true, &HandleLookupCreatureCommand, "" },
-            { "event",    rbac::RBAC_PERM_COMMAND_LOOKUP_EVENT,    true, &HandleLookupEventCommand,    "" },
-            { "faction",  rbac::RBAC_PERM_COMMAND_LOOKUP_FACTION,  true, &HandleLookupFactionCommand,  "" },
-            { "item",     rbac::RBAC_PERM_COMMAND_LOOKUP_ITEM,     true, &HandleLookupItemCommand,     "" },
-            { "itemset",  rbac::RBAC_PERM_COMMAND_LOOKUP_ITEMSET,  true, &HandleLookupItemSetCommand,  "" },
-            { "object",   rbac::RBAC_PERM_COMMAND_LOOKUP_OBJECT,   true, &HandleLookupObjectCommand,   "" },
-            { "quest",    rbac::RBAC_PERM_COMMAND_LOOKUP_QUEST,    true, &HandleLookupQuestCommand,    "" },
-            { "player",   rbac::RBAC_PERM_COMMAND_LOOKUP_PLAYER,   true, nullptr,                         "", lookupPlayerCommandTable },
-            { "skill",    rbac::RBAC_PERM_COMMAND_LOOKUP_SKILL,    true, &HandleLookupSkillCommand,    "" },
-            { "spell",    rbac::RBAC_PERM_COMMAND_LOOKUP_SPELL,    true, nullptr,                         "", lookupSpellCommandTable },
-            { "taxinode", rbac::RBAC_PERM_COMMAND_LOOKUP_TAXINODE, true, &HandleLookupTaxiNodeCommand, "" },
-            { "tele",     rbac::RBAC_PERM_COMMAND_LOOKUP_TELE,     true, &HandleLookupTeleCommand,     "" },
-            { "title",    rbac::RBAC_PERM_COMMAND_LOOKUP_TITLE,    true, &HandleLookupTitleCommand,    "" },
-            { "map",      rbac::RBAC_PERM_COMMAND_LOOKUP_MAP,      true, &HandleLookupMapCommand,      "" },
+            { "area",     SEC_MODERATOR,        true, &HandleLookupAreaCommand,            "" },
+            { "creature", SEC_MODERATOR,        true, &HandleLookupCreatureCommand,        "" },
+            { "event",    SEC_MODERATOR,        true, &HandleLookupEventCommand,           "" },
+            { "faction",  SEC_MODERATOR,        true, &HandleLookupFactionCommand,         "" },
+            { "item",     SEC_MODERATOR,        true, &HandleLookupItemCommand,            "" },
+            { "itemset",  SEC_MODERATOR,        true, &HandleLookupItemSetCommand,         "" },
+            { "object",   SEC_MODERATOR,        true, &HandleLookupObjectCommand,          "" },
+            { "quest",    SEC_MODERATOR,        true, &HandleLookupQuestCommand,           "" },
+            { "player",   SEC_MODERATOR,        true, nullptr,                             "", lookupPlayerCommandTable },
+            { "skill",    SEC_MODERATOR,        true, &HandleLookupSkillCommand,           "" },
+            { "spell",    SEC_MODERATOR,        true, nullptr,                             "", lookupSpellCommandTable },
+            { "taxinode", SEC_MODERATOR,        true, &HandleLookupTaxiNodeCommand,        "" },
+            { "tele",     SEC_MODERATOR,        true, &HandleLookupTeleCommand,            "" },
+            { "title",    SEC_MODERATOR,        true, &HandleLookupTitleCommand,           "" },
+            { "map",      SEC_MODERATOR,        true, &HandleLookupMapCommand,             "" },
         };
 
         static std::vector<ChatCommand> commandTable =
         {
-            { "lookup", rbac::RBAC_PERM_COMMAND_LOOKUP,  true, nullptr, "", lookupCommandTable },
+            { "lookup",   SEC_MODERATOR,        true, nullptr,                             "", lookupCommandTable },
         };
         return commandTable;
     }

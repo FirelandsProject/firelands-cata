@@ -550,7 +550,6 @@ void OpcodeTable::Initialize()
     DEFINE_HANDLER(CMSG_SELL_ITEM,                                        STATUS_LOGGEDIN,  PROCESS_INPLACE,      &WorldSession::HandleSellItemOpcode            );
     DEFINE_HANDLER(CMSG_SEND_MAIL,                                        STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleSendMail                  );
     DEFINE_HANDLER(CMSG_SEND_SOR_REQUEST_VIA_ADDRESS,                     STATUS_UNHANDLED, PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
-    DEFINE_HANDLER(CMSG_SEND_SOR_REQUEST_VIA_BNET_ACCOUNT_ID,             STATUS_UNHANDLED, PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     DEFINE_HANDLER(CMSG_SET_SHEATHED,                                     STATUS_LOGGEDIN,  PROCESS_INPLACE,      &WorldSession::HandleSetSheathedOpcode         );
     DEFINE_HANDLER(CMSG_SET_ACTIONBAR_TOGGLES,                            STATUS_AUTHED,    PROCESS_THREADUNSAFE, &WorldSession::HandleSetActionBarToggles       );
     DEFINE_HANDLER(CMSG_SET_ACTION_BUTTON,                                STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleSetActionButtonOpcode     );

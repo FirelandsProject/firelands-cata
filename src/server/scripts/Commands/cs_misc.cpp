@@ -64,55 +64,55 @@ public:
     {
         static std::vector<ChatCommand> commandTable =
         {
-            { "additem",          rbac::RBAC_PERM_COMMAND_ADDITEM,          false, &HandleAddItemCommand,          "" },
-            { "additemset",       rbac::RBAC_PERM_COMMAND_ADDITEMSET,       false, &HandleAddItemSetCommand,       "" },
-            { "appear",           rbac::RBAC_PERM_COMMAND_APPEAR,           false, &HandleAppearCommand,           "" },
-            { "aura",             rbac::RBAC_PERM_COMMAND_AURA,             false, &HandleAuraCommand,             "" },
-            { "bank",             rbac::RBAC_PERM_COMMAND_BANK,             false, &HandleBankCommand,             "" },
-            { "bindsight",        rbac::RBAC_PERM_COMMAND_BINDSIGHT,        false, &HandleBindSightCommand,        "" },
-            { "combatstop",       rbac::RBAC_PERM_COMMAND_COMBATSTOP,        true, &HandleCombatStopCommand,       "" },
-            { "cometome",         rbac::RBAC_PERM_COMMAND_COMETOME,         false, &HandleComeToMeCommand,         "" },
-            { "commands",         rbac::RBAC_PERM_COMMAND_COMMANDS,          true, &HandleCommandsCommand,         "" },
-            { "cooldown",         rbac::RBAC_PERM_COMMAND_COOLDOWN,         false, &HandleCooldownCommand,         "" },
-            { "damage",           rbac::RBAC_PERM_COMMAND_DAMAGE,           false, &HandleDamageCommand,           "" },
-            { "dev",              rbac::RBAC_PERM_COMMAND_DEV,              false, &HandleDevCommand,              "" },
-            { "die",              rbac::RBAC_PERM_COMMAND_DIE,              false, &HandleDieCommand,              "" },
-            { "dismount",         rbac::RBAC_PERM_COMMAND_DISMOUNT,         false, &HandleDismountCommand,         "" },
-            { "distance",         rbac::RBAC_PERM_COMMAND_DISTANCE,         false, &HandleGetDistanceCommand,      "" },
-            { "freeze",           rbac::RBAC_PERM_COMMAND_FREEZE,           false, &HandleFreezeCommand,           "" },
-            { "gps",              rbac::RBAC_PERM_COMMAND_GPS,              false, &HandleGPSCommand,              "" },
-            { "guid",             rbac::RBAC_PERM_COMMAND_GUID,             false, &HandleGUIDCommand,             "" },
-            { "help",             rbac::RBAC_PERM_COMMAND_HELP,              true, &HandleHelpCommand,             "" },
-            { "hidearea",         rbac::RBAC_PERM_COMMAND_HIDEAREA,         false, &HandleHideAreaCommand,         "" },
-            { "itemmove",         rbac::RBAC_PERM_COMMAND_ITEMMOVE,         false, &HandleItemMoveCommand,         "" },
-            { "kick",             rbac::RBAC_PERM_COMMAND_KICK,              true, &HandleKickPlayerCommand,       "" },
-            { "linkgrave",        rbac::RBAC_PERM_COMMAND_LINKGRAVE,        false, &HandleLinkGraveCommand,        "" },
-            { "listfreeze",       rbac::RBAC_PERM_COMMAND_LISTFREEZE,       false, &HandleListFreezeCommand,       "" },
-            { "movegens",         rbac::RBAC_PERM_COMMAND_MOVEGENS,         false, &HandleMovegensCommand,         "" },
-            { "mute",             rbac::RBAC_PERM_COMMAND_MUTE,              true, &HandleMuteCommand,             "" },
-            { "mutehistory",      rbac::RBAC_PERM_COMMAND_MUTEHISTORY,       true, &HandleMuteInfoCommand,         "" },
-            { "neargrave",        rbac::RBAC_PERM_COMMAND_NEARGRAVE,        false, &HandleNearGraveCommand,        "" },
-            { "pinfo",            rbac::RBAC_PERM_COMMAND_PINFO,             true, &HandlePInfoCommand,            "" },
-            { "playall",          rbac::RBAC_PERM_COMMAND_PLAYALL,          false, &HandlePlayAllCommand,          "" },
-            { "possess",          rbac::RBAC_PERM_COMMAND_POSSESS,          false, &HandlePossessCommand,          "" },
-            { "pvpstats",         rbac::RBAC_PERM_COMMAND_PVPSTATS,          true, &HandlePvPstatsCommand,         "" },
-            { "recall",           rbac::RBAC_PERM_COMMAND_RECALL,           false, &HandleRecallCommand,           "" },
-            { "repairitems",      rbac::RBAC_PERM_COMMAND_REPAIRITEMS,       true, &HandleRepairitemsCommand,      "" },
-            { "respawn",          rbac::RBAC_PERM_COMMAND_RESPAWN,          false, &HandleRespawnCommand,          "" },
-            { "revive",           rbac::RBAC_PERM_COMMAND_REVIVE,            true, &HandleReviveCommand,           "" },
-            { "saveall",          rbac::RBAC_PERM_COMMAND_SAVEALL,           true, &HandleSaveAllCommand,          "" },
-            { "save",             rbac::RBAC_PERM_COMMAND_SAVE,             false, &HandleSaveCommand,             "" },
-            { "setskill",         rbac::RBAC_PERM_COMMAND_SETSKILL,         false, &HandleSetSkillCommand,         "" },
-            { "showarea",         rbac::RBAC_PERM_COMMAND_SHOWAREA,         false, &HandleShowAreaCommand,         "" },
-            { "summon",           rbac::RBAC_PERM_COMMAND_SUMMON,           false, &HandleSummonCommand,           "" },
-            { "unaura",           rbac::RBAC_PERM_COMMAND_UNAURA,           false, &HandleUnAuraCommand,           "" },
-            { "unbindsight",      rbac::RBAC_PERM_COMMAND_UNBINDSIGHT,      false, HandleUnbindSightCommand,       "" },
-            { "unfreeze",         rbac::RBAC_PERM_COMMAND_UNFREEZE,         false, &HandleUnFreezeCommand,         "" },
-            { "unmute",           rbac::RBAC_PERM_COMMAND_UNMUTE,            true, &HandleUnmuteCommand,           "" },
-            { "unpossess",        rbac::RBAC_PERM_COMMAND_UNPOSSESS,        false, &HandleUnPossessCommand,        "" },
-            { "unstuck",          rbac::RBAC_PERM_COMMAND_UNSTUCK,           true, &HandleUnstuckCommand,          "" },
-            { "wchange",          rbac::RBAC_PERM_COMMAND_WCHANGE,          false, &HandleChangeWeather,           "" },
-            { "mailbox",          rbac::RBAC_PERM_COMMAND_MAILBOX,          false, &HandleMailBoxCommand,          "" },
+            { "additem",          SEC_GAMEMASTER,             false, &HandleAddItemCommand,          "" },
+            { "additemset",       SEC_GAMEMASTER,             false, &HandleAddItemSetCommand,       "" },
+            { "appear",           SEC_MODERATOR,              false, &HandleAppearCommand,           "" },
+            { "aura",             SEC_GAMEMASTER,             false, &HandleAuraCommand,             "" },
+            { "bank",             SEC_GAMEMASTER,             false, &HandleBankCommand,             "" },
+            { "bindsight",        SEC_ADMINISTRATOR,          false, &HandleBindSightCommand,        "" },
+            { "combatstop",       SEC_GAMEMASTER,             true,  &HandleCombatStopCommand,       "" },
+            { "cometome",         SEC_ADMINISTRATOR,          false, &HandleComeToMeCommand,         "" },
+            { "commands",         SEC_PLAYER,                 true,  &HandleCommandsCommand,         "" },
+            { "cooldown",         SEC_GAMEMASTER,             false, &HandleCooldownCommand,         "" },
+            { "damage",           SEC_GAMEMASTER,             false, &HandleDamageCommand,           "" },
+            { "dev",              SEC_ADMINISTRATOR,          false, &HandleDevCommand,              "" },
+            { "die",              SEC_GAMEMASTER,             false, &HandleDieCommand,              "" },
+            { "dismount",         SEC_PLAYER,                 false, &HandleDismountCommand,         "" },
+            { "distance",         SEC_ADMINISTRATOR,          false, &HandleGetDistanceCommand,      "" },
+            { "freeze",           SEC_GAMEMASTER,             false, &HandleFreezeCommand,           "" },
+            { "gps",              SEC_MODERATOR,              false, &HandleGPSCommand,              "" },
+            { "guid",             SEC_GAMEMASTER,             false, &HandleGUIDCommand,             "" },
+            { "help",             SEC_PLAYER,                 true,  &HandleHelpCommand,             "" },
+            { "hidearea",         SEC_ADMINISTRATOR,          false, &HandleHideAreaCommand,         "" },
+            { "itemmove",         SEC_GAMEMASTER,             false, &HandleItemMoveCommand,         "" },
+            { "kick",             SEC_GAMEMASTER,             true,  &HandleKickPlayerCommand,       "" },
+            { "linkgrave",        SEC_ADMINISTRATOR,          false, &HandleLinkGraveCommand,        "" },
+            { "listfreeze",       SEC_GAMEMASTER,             false, &HandleListFreezeCommand,       "" },
+            { "movegens",         SEC_ADMINISTRATOR,          false, &HandleMovegensCommand,         "" },
+            { "mute",             SEC_GAMEMASTER,             true,  &HandleMuteCommand,             "" },
+            { "mutehistory",      SEC_GAMEMASTER,             true,  &HandleMuteInfoCommand,         "" },
+            { "neargrave",        SEC_GAMEMASTER,             false, &HandleNearGraveCommand,        "" },
+            { "pinfo",            SEC_GAMEMASTER,             true,  &HandlePInfoCommand,            "" },
+            { "playall",          SEC_GAMEMASTER,             false, &HandlePlayAllCommand,          "" },
+            { "possess",          SEC_GAMEMASTER,             false, &HandlePossessCommand,          "" },
+            { "pvpstats",         SEC_GAMEMASTER,             true,  &HandlePvPstatsCommand,         "" },
+            { "recall",           SEC_GAMEMASTER,             false, &HandleRecallCommand,           "" },
+            { "repairitems",      SEC_GAMEMASTER,             true,  &HandleRepairitemsCommand,      "" },
+            { "respawn",          SEC_GAMEMASTER,             false, &HandleRespawnCommand,          "" },
+            { "revive",           SEC_GAMEMASTER,             true,  &HandleReviveCommand,           "" },
+            { "saveall",          SEC_GAMEMASTER,             true,  &HandleSaveAllCommand,          "" },
+            { "save",             SEC_PLAYER,                 false, &HandleSaveCommand,             "" },
+            { "setskill",         SEC_GAMEMASTER,             false, &HandleSetSkillCommand,         "" },
+            { "showarea",         SEC_GAMEMASTER,             false, &HandleShowAreaCommand,         "" },
+            { "summon",           SEC_GAMEMASTER,             false, &HandleSummonCommand,           "" },
+            { "unaura",           SEC_GAMEMASTER,             false, &HandleUnAuraCommand,           "" },
+            { "unbindsight",      SEC_ADMINISTRATOR,          false, &HandleUnbindSightCommand,      "" },
+            { "unfreeze",         SEC_GAMEMASTER,             false, &HandleUnFreezeCommand,         "" },
+            { "unmute",           SEC_GAMEMASTER,             true,  &HandleUnmuteCommand,           "" },
+            { "unpossess",        SEC_GAMEMASTER,             false, &HandleUnPossessCommand,        "" },
+            { "unstuck",          SEC_GAMEMASTER,             true,  &HandleUnstuckCommand,          "" },
+            { "wchange",          SEC_ADMINISTRATOR,          false, &HandleChangeWeather,           "" },
+            { "mailbox",          SEC_MODERATOR,              false, &HandleMailBoxCommand,          "" },
         };
         return commandTable;
     }
@@ -655,7 +655,7 @@ public:
 
         if (target)
         {
-            target->ResurrectPlayer(target->GetSession()->HasPermission(rbac::RBAC_PERM_RESURRECT_WITH_FULL_HPS) ? 1.0f : 0.5f);
+            target->ResurrectPlayer(!AccountMgr::IsPlayerAccount(target->GetSession()->GetSecurity()) ? 1.0f : 0.5f);
             target->SpawnCorpseBones();
             target->SaveToDB();
         }
@@ -897,7 +897,7 @@ public:
         Player* player = handler->GetSession()->GetPlayer();
 
         // save GM account without delay and output message
-        if (handler->GetSession()->HasPermission(rbac::RBAC_PERM_COMMANDS_SAVE_WITHOUT_DELAY))
+        if (handler->GetSession()->GetSecurity() >= SEC_GAMEMASTER)
         {
             if (Player* target = handler->getSelectedPlayer())
                 target->SaveToDB();
@@ -963,7 +963,7 @@ public:
     static bool HandleUnstuckCommand(ChatHandler* handler, char const* args)
     {
         // No args required for players
-        if (handler->GetSession() && !handler->GetSession()->HasPermission(rbac::RBAC_PERM_COMMANDS_USE_UNSTUCK_WITH_ARGS))
+        if (handler->GetSession() && AccountMgr::IsPlayerAccount(handler->GetSession()->GetSecurity()))
         {
             // 7355: "Stuck"
             if (Player* player = handler->GetSession()->GetPlayer())
@@ -1678,8 +1678,7 @@ public:
             security      = fields[1].GetUInt8();
 
             // Only fetch these fields if commander has sufficient rights)
-            if (handler->HasPermission(rbac::RBAC_PERM_COMMANDS_PINFO_CHECK_PERSONAL_DATA) && // RBAC Perm. 48, Role 39
-               (!handler->GetSession() || handler->GetSession()->GetSecurity() >= AccountTypes(security)))
+            if (!handler->GetSession() || handler->GetSession()->GetSecurity() >= AccountTypes(security))
             {
                 eMail     = fields[2].GetString();
                 regMail   = fields[3].GetString();

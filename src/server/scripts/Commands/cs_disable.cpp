@@ -31,7 +31,6 @@ EndScriptData */
 #include "ObjectMgr.h"
 #include "OutdoorPvP.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "SpellMgr.h"
 
 class disable_commandscript : public CommandScript
@@ -43,34 +42,34 @@ public:
     {
         static std::vector<ChatCommand> removeDisableCommandTable =
         {
-            { "spell",                rbac::RBAC_PERM_COMMAND_DISABLE_REMOVE_SPELL,                true, &HandleRemoveDisableSpellCommand,               "" },
-            { "quest",                rbac::RBAC_PERM_COMMAND_DISABLE_REMOVE_QUEST,                true, &HandleRemoveDisableQuestCommand,               "" },
-            { "map",                  rbac::RBAC_PERM_COMMAND_DISABLE_REMOVE_MAP,                  true, &HandleRemoveDisableMapCommand,                 "" },
-            { "battleground",         rbac::RBAC_PERM_COMMAND_DISABLE_REMOVE_BATTLEGROUND,         true, &HandleRemoveDisableBattlegroundCommand,        "" },
-            { "achievement_criteria", rbac::RBAC_PERM_COMMAND_DISABLE_REMOVE_ACHIEVEMENT_CRITERIA, true, &HandleRemoveDisableAchievementCriteriaCommand, "" },
-            { "outdoorpvp",           rbac::RBAC_PERM_COMMAND_DISABLE_REMOVE_OUTDOORPVP,           true, &HandleRemoveDisableOutdoorPvPCommand,          "" },
-            { "vmap",                 rbac::RBAC_PERM_COMMAND_DISABLE_REMOVE_VMAP,                 true, &HandleRemoveDisableVmapCommand,                "" },
-            { "mmap",                 rbac::RBAC_PERM_COMMAND_DISABLE_REMOVE_MMAP,                 true, &HandleRemoveDisableMMapCommand,                "" },
+            { "spell",                SEC_ADMINISTRATOR,                true, &HandleRemoveDisableSpellCommand,               "" },
+            { "quest",                SEC_ADMINISTRATOR,                true, &HandleRemoveDisableQuestCommand,               "" },
+            { "map",                  SEC_ADMINISTRATOR,                true, &HandleRemoveDisableMapCommand,                 "" },
+            { "battleground",         SEC_ADMINISTRATOR,                true, &HandleRemoveDisableBattlegroundCommand,        "" },
+            { "achievement_criteria", SEC_ADMINISTRATOR,                true, &HandleRemoveDisableAchievementCriteriaCommand, "" },
+            { "outdoorpvp",           SEC_ADMINISTRATOR,                true, &HandleRemoveDisableOutdoorPvPCommand,          "" },
+            { "vmap",                 SEC_ADMINISTRATOR,                true, &HandleRemoveDisableVmapCommand,                "" },
+            { "mmap",                 SEC_ADMINISTRATOR,                true, &HandleRemoveDisableMMapCommand,                "" },
         };
         static std::vector<ChatCommand> addDisableCommandTable =
         {
-            { "spell",                rbac::RBAC_PERM_COMMAND_DISABLE_ADD_SPELL,                true, &HandleAddDisableSpellCommand,                  "" },
-            { "quest",                rbac::RBAC_PERM_COMMAND_DISABLE_ADD_QUEST,                true, &HandleAddDisableQuestCommand,                  "" },
-            { "map",                  rbac::RBAC_PERM_COMMAND_DISABLE_ADD_MAP,                  true, &HandleAddDisableMapCommand,                    "" },
-            { "battleground",         rbac::RBAC_PERM_COMMAND_DISABLE_ADD_BATTLEGROUND,         true, &HandleAddDisableBattlegroundCommand,           "" },
-            { "achievement_criteria", rbac::RBAC_PERM_COMMAND_DISABLE_ADD_ACHIEVEMENT_CRITERIA, true, &HandleAddDisableAchievementCriteriaCommand,    "" },
-            { "outdoorpvp",           rbac::RBAC_PERM_COMMAND_DISABLE_ADD_OUTDOORPVP,           true, &HandleAddDisableOutdoorPvPCommand,             "" },
-            { "vmap",                 rbac::RBAC_PERM_COMMAND_DISABLE_ADD_VMAP,                 true, &HandleAddDisableVmapCommand,                   "" },
-            { "mmap",                 rbac::RBAC_PERM_COMMAND_DISABLE_ADD_MMAP,                 true, &HandleAddDisableMMapCommand,                   "" },
+            { "spell",                SEC_ADMINISTRATOR,                true, &HandleAddDisableSpellCommand,                  "" },
+            { "quest",                SEC_ADMINISTRATOR,                true, &HandleAddDisableQuestCommand,                  "" },
+            { "map",                  SEC_ADMINISTRATOR,                true, &HandleAddDisableMapCommand,                    "" },
+            { "battleground",         SEC_ADMINISTRATOR,                true, &HandleAddDisableBattlegroundCommand,           "" },
+            { "achievement_criteria", SEC_ADMINISTRATOR,                true, &HandleAddDisableAchievementCriteriaCommand,    "" },
+            { "outdoorpvp",           SEC_ADMINISTRATOR,                true, &HandleAddDisableOutdoorPvPCommand,             "" },
+            { "vmap",                 SEC_ADMINISTRATOR,                true, &HandleAddDisableVmapCommand,                   "" },
+            { "mmap",                 SEC_ADMINISTRATOR,                true, &HandleAddDisableMMapCommand,                   "" },
         };
         static std::vector<ChatCommand> disableCommandTable =
         {
-            { "add",    rbac::RBAC_PERM_COMMAND_DISABLE_ADD,    true, nullptr, "", addDisableCommandTable },
-            { "remove", rbac::RBAC_PERM_COMMAND_DISABLE_REMOVE, true, nullptr, "", removeDisableCommandTable },
+            { "add",                  SEC_ADMINISTRATOR,                true, nullptr,                                        "", addDisableCommandTable },
+            { "remove",               SEC_ADMINISTRATOR,                true, nullptr,                                        "", removeDisableCommandTable },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "disable", rbac::RBAC_PERM_COMMAND_DISABLE, false, nullptr, "", disableCommandTable },
+            { "disable",              SEC_ADMINISTRATOR,                false, nullptr,                                       "", disableCommandTable },
         };
         return commandTable;
     }

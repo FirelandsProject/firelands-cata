@@ -27,7 +27,6 @@ EndScriptData */
 #include "Creature.h"
 #include "Language.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "SpellMgr.h"
 #include "WorldSession.h"
 
@@ -40,16 +39,16 @@ public:
     {
         static std::vector<ChatCommand> castCommandTable =
         {
-            { "back",   rbac::RBAC_PERM_COMMAND_CAST_BACK,   false, &HandleCastBackCommand,  "" },
-            { "dist",   rbac::RBAC_PERM_COMMAND_CAST_DIST,   false, &HandleCastDistCommand,  "" },
-            { "self",   rbac::RBAC_PERM_COMMAND_CAST_SELF,   false, &HandleCastSelfCommand,  "" },
-            { "target", rbac::RBAC_PERM_COMMAND_CAST_TARGET, false, &HandleCastTargetCommad, "" },
-            { "dest",   rbac::RBAC_PERM_COMMAND_CAST_DEST,   false, &HandleCastDestCommand,  "" },
-            { "",       rbac::RBAC_PERM_COMMAND_CAST,        false, &HandleCastCommand,      "" },
+            { "back",   SEC_GAMEMASTER,     false, &HandleCastBackCommand,  "" },
+            { "dist",   SEC_GAMEMASTER,     false, &HandleCastDistCommand,  "" },
+            { "self",   SEC_GAMEMASTER,     false, &HandleCastSelfCommand,  "" },
+            { "target", SEC_GAMEMASTER,     false, &HandleCastTargetCommad, "" },
+            { "dest",   SEC_GAMEMASTER,     false, &HandleCastDestCommand,  "" },
+            { "",       SEC_GAMEMASTER,     false, &HandleCastCommand,      "" },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "cast",   rbac::RBAC_PERM_COMMAND_CAST,        false, nullptr,                    "", castCommandTable },
+            { "cast",   SEC_GAMEMASTER,     false, nullptr,                    "", castCommandTable },
         };
         return commandTable;
     }

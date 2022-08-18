@@ -41,7 +41,6 @@ EndScriptData */
 #include "PhasingHandler.h"
 #include "PoolMgr.h"
 #include "QuestPools.h"
-#include "RBAC.h"
 #include "SpellMgr.h"
 #include "Transport.h"
 #include "WorldSession.h"
@@ -59,64 +58,64 @@ public:
     {
         static std::vector<ChatCommand> debugPlayCommandTable =
         {
-            { "cinematic",     rbac::RBAC_PERM_COMMAND_DEBUG_PLAY_CINEMATIC, false, &HandleDebugPlayCinematicCommand,   "" },
-            { "movie",         rbac::RBAC_PERM_COMMAND_DEBUG_PLAY_MOVIE,     false, &HandleDebugPlayMovieCommand,       "" },
-            { "sound",         rbac::RBAC_PERM_COMMAND_DEBUG_PLAY_SOUND,     false, &HandleDebugPlaySoundCommand,       "" },
-            { "music",         rbac::RBAC_PERM_COMMAND_DEBUG_PLAY_MUSIC,     false, &HandleDebugPlayMusicCommand,       "" },
+            { "cinematic",     SEC_ADMINISTRATOR,        false, &HandleDebugPlayCinematicCommand,   "" },
+            { "movie",         SEC_ADMINISTRATOR,        false, &HandleDebugPlayMovieCommand,       "" },
+            { "sound",         SEC_ADMINISTRATOR,        false, &HandleDebugPlaySoundCommand,       "" },
+            { "music",         SEC_ADMINISTRATOR,        false, &HandleDebugPlayMusicCommand,       "" },
         };
         static std::vector<ChatCommand> debugSendCommandTable =
         {
-            { "buyerror",      rbac::RBAC_PERM_COMMAND_DEBUG_SEND_BUYERROR,      false, &HandleDebugSendBuyErrorCommand,        "" },
-            { "channelnotify", rbac::RBAC_PERM_COMMAND_DEBUG_SEND_CHANNELNOTIFY, false, &HandleDebugSendChannelNotifyCommand,   "" },
-            { "chatmessage",   rbac::RBAC_PERM_COMMAND_DEBUG_SEND_CHATMESSAGE,   false, &HandleDebugSendChatMsgCommand,         "" },
-            { "equiperror",    rbac::RBAC_PERM_COMMAND_DEBUG_SEND_EQUIPERROR,    false, &HandleDebugSendEquipErrorCommand,      "" },
-            { "largepacket",   rbac::RBAC_PERM_COMMAND_DEBUG_SEND_LARGEPACKET,   false, &HandleDebugSendLargePacketCommand,     "" },
-            { "opcode",        rbac::RBAC_PERM_COMMAND_DEBUG_SEND_OPCODE,        false, &HandleDebugSendOpcodeCommand,          "" },
-            { "qpartymsg",     rbac::RBAC_PERM_COMMAND_DEBUG_SEND_QPARTYMSG,     false, &HandleDebugSendQuestPartyMsgCommand,   "" },
-            { "qinvalidmsg",   rbac::RBAC_PERM_COMMAND_DEBUG_SEND_QINVALIDMSG,   false, &HandleDebugSendQuestInvalidMsgCommand, "" },
-            { "sellerror",     rbac::RBAC_PERM_COMMAND_DEBUG_SEND_SELLERROR,     false, &HandleDebugSendSellErrorCommand,       "" },
-            { "setphaseshift", rbac::RBAC_PERM_COMMAND_DEBUG_SEND_SETPHASESHIFT, false, &HandleDebugSendSetPhaseShiftCommand,   "" },
-            { "spellfail",     rbac::RBAC_PERM_COMMAND_DEBUG_SEND_SPELLFAIL,     false, &HandleDebugSendSpellFailCommand,       "" },
+            { "buyerror",      SEC_ADMINISTRATOR,        false, &HandleDebugSendBuyErrorCommand,        "" },
+            { "channelnotify", SEC_ADMINISTRATOR,        false, &HandleDebugSendChannelNotifyCommand,   "" },
+            { "chatmessage",   SEC_ADMINISTRATOR,        false, &HandleDebugSendChatMsgCommand,         "" },
+            { "equiperror",    SEC_ADMINISTRATOR,        false, &HandleDebugSendEquipErrorCommand,      "" },
+            { "largepacket",   SEC_ADMINISTRATOR,        false, &HandleDebugSendLargePacketCommand,     "" },
+            { "opcode",        SEC_ADMINISTRATOR,        false, &HandleDebugSendOpcodeCommand,          "" },
+            { "qpartymsg",     SEC_ADMINISTRATOR,        false, &HandleDebugSendQuestPartyMsgCommand,   "" },
+            { "qinvalidmsg",   SEC_ADMINISTRATOR,        false, &HandleDebugSendQuestInvalidMsgCommand, "" },
+            { "sellerror",     SEC_ADMINISTRATOR,        false, &HandleDebugSendSellErrorCommand,       "" },
+            { "setphaseshift", SEC_ADMINISTRATOR,        false, &HandleDebugSendSetPhaseShiftCommand,   "" },
+            { "spellfail",     SEC_ADMINISTRATOR,        false, &HandleDebugSendSpellFailCommand,       "" },
         };
         static std::vector<ChatCommand> debugCommandTable =
         {
-            { "setbit",        rbac::RBAC_PERM_COMMAND_DEBUG_SETBIT,        false, &HandleDebugSet32BitCommand,         "" },
-            { "threat",        rbac::RBAC_PERM_COMMAND_DEBUG_THREAT,        false, &HandleDebugThreatListCommand,       "" },
-            { "threatinfo",    rbac::RBAC_PERM_COMMAND_DEBUG_THREATINFO,    false, &HandleDebugThreatInfoCommand,       "" },
-            { "combat",        rbac::RBAC_PERM_COMMAND_DEBUG_COMBAT,        false, &HandleDebugCombatListCommand,       "" },
-            { "anim",          rbac::RBAC_PERM_COMMAND_DEBUG_ANIM,          false, &HandleDebugAnimCommand,             "" },
-            { "arena",         rbac::RBAC_PERM_COMMAND_DEBUG_ARENA,         true,  &HandleDebugArenaCommand,            "" },
-            { "bg",            rbac::RBAC_PERM_COMMAND_DEBUG_BG,            true,  &HandleDebugBattlegroundCommand,     "" },
-            { "getitemstate",  rbac::RBAC_PERM_COMMAND_DEBUG_GETITEMSTATE,  false, &HandleDebugGetItemStateCommand,     "" },
-            { "lootrecipient", rbac::RBAC_PERM_COMMAND_DEBUG_LOOTRECIPIENT, false, &HandleDebugGetLootRecipientCommand, "" },
-            { "getvalue",      rbac::RBAC_PERM_COMMAND_DEBUG_GETVALUE,      false, &HandleDebugGetValueCommand,         "" },
-            { "getitemvalue",  rbac::RBAC_PERM_COMMAND_DEBUG_GETITEMVALUE,  false, &HandleDebugGetItemValueCommand,     "" },
-            { "Mod32Value",    rbac::RBAC_PERM_COMMAND_DEBUG_MOD32VALUE,    false, &HandleDebugMod32ValueCommand,       "" },
-            { "play",          rbac::RBAC_PERM_COMMAND_DEBUG_PLAY,          false, nullptr,                             "", debugPlayCommandTable },
-            { "send",          rbac::RBAC_PERM_COMMAND_DEBUG_SEND,          false, nullptr,                             "", debugSendCommandTable },
-            { "setaurastate",  rbac::RBAC_PERM_COMMAND_DEBUG_SETAURASTATE,  false, &HandleDebugSetAuraStateCommand,     "" },
-            { "setitemvalue",  rbac::RBAC_PERM_COMMAND_DEBUG_SETITEMVALUE,  false, &HandleDebugSetItemValueCommand,     "" },
-            { "setvalue",      rbac::RBAC_PERM_COMMAND_DEBUG_SETVALUE,      false, &HandleDebugSetValueCommand,         "" },
-            { "spawnvehicle",  rbac::RBAC_PERM_COMMAND_DEBUG_SPAWNVEHICLE,  false, &HandleDebugSpawnVehicleCommand,     "" },
-            { "setvid",        rbac::RBAC_PERM_COMMAND_DEBUG_SETVID,        false, &HandleDebugSetVehicleIdCommand,     "" },
-            { "entervehicle",  rbac::RBAC_PERM_COMMAND_DEBUG_ENTERVEHICLE,  false, &HandleDebugEnterVehicleCommand,     "" },
-            { "worldstate",    rbac::RBAC_PERM_COMMAND_DEBUG_WORLDSTATE,    false, &HandleDebugUpdateWorldStateCommand, "" },
-            { "update",        rbac::RBAC_PERM_COMMAND_DEBUG_UPDATE,        false, &HandleDebugUpdateCommand,           "" },
-            { "itemexpire",    rbac::RBAC_PERM_COMMAND_DEBUG_ITEMEXPIRE,    false, &HandleDebugItemExpireCommand,       "" },
-            { "areatriggers",  rbac::RBAC_PERM_COMMAND_DEBUG_AREATRIGGERS,  false, &HandleDebugAreaTriggersCommand,     "" },
-            { "los",           rbac::RBAC_PERM_COMMAND_DEBUG_LOS,           false, &HandleDebugLoSCommand,              "" },
-            { "moveflags",     rbac::RBAC_PERM_COMMAND_DEBUG_MOVEFLAGS,     false, &HandleDebugMoveflagsCommand,        "" },
-            { "transport",     rbac::RBAC_PERM_COMMAND_DEBUG_TRANSPORT,     false, &HandleDebugTransportCommand,        "" },
-            { "phase",         rbac::RBAC_PERM_COMMAND_DEBUG_PHASE,         false, &HandleDebugPhaseCommand,            "" },
-            { "loadcells",     rbac::RBAC_PERM_COMMAND_DEBUG_LOADCELLS,     false, &HandleDebugLoadCellsCommand,        "" },
-            { "boundary",      rbac::RBAC_PERM_COMMAND_DEBUG_BOUNDARY,      false, &HandleDebugBoundaryCommand,         "" },
-            { "raidreset",     rbac::RBAC_PERM_COMMAND_INSTANCE_UNBIND,     false, &HandleDebugRaidResetCommand,        "" },
-            { "neargraveyard", rbac::RBAC_PERM_COMMAND_NEARGRAVEYARD,       false, &HandleDebugNearGraveyard,           "" },
+            { "setbit",        SEC_ADMINISTRATOR,        false, &HandleDebugSet32BitCommand,         "" },
+            { "threat",        SEC_ADMINISTRATOR,        false, &HandleDebugThreatListCommand,       "" },
+            { "threatinfo",    SEC_ADMINISTRATOR,        false, &HandleDebugThreatInfoCommand,       "" },
+            { "combat",        SEC_ADMINISTRATOR,        false, &HandleDebugCombatListCommand,       "" },
+            { "anim",          SEC_ADMINISTRATOR,        false, &HandleDebugAnimCommand,             "" },
+            { "arena",         SEC_ADMINISTRATOR,        true,  &HandleDebugArenaCommand,            "" },
+            { "bg",            SEC_ADMINISTRATOR,        true,  &HandleDebugBattlegroundCommand,     "" },
+            { "getitemstate",  SEC_ADMINISTRATOR,        false, &HandleDebugGetItemStateCommand,     "" },
+            { "lootrecipient", SEC_ADMINISTRATOR,        false, &HandleDebugGetLootRecipientCommand, "" },
+            { "getvalue",      SEC_ADMINISTRATOR,        false, &HandleDebugGetValueCommand,         "" },
+            { "getitemvalue",  SEC_ADMINISTRATOR,        false, &HandleDebugGetItemValueCommand,     "" },
+            { "Mod32Value",    SEC_ADMINISTRATOR,        false, &HandleDebugMod32ValueCommand,       "" },
+            { "play",          SEC_ADMINISTRATOR,        false, nullptr,                             "", debugPlayCommandTable },
+            { "send",          SEC_ADMINISTRATOR,        false, nullptr,                             "", debugSendCommandTable },
+            { "setaurastate",  SEC_ADMINISTRATOR,        false, &HandleDebugSetAuraStateCommand,     "" },
+            { "setitemvalue",  SEC_ADMINISTRATOR,        false, &HandleDebugSetItemValueCommand,     "" },
+            { "setvalue",      SEC_ADMINISTRATOR,        false, &HandleDebugSetValueCommand,         "" },
+            { "spawnvehicle",  SEC_ADMINISTRATOR,        false, &HandleDebugSpawnVehicleCommand,     "" },
+            { "setvid",        SEC_ADMINISTRATOR,        false, &HandleDebugSetVehicleIdCommand,     "" },
+            { "entervehicle",  SEC_ADMINISTRATOR,        false, &HandleDebugEnterVehicleCommand,     "" },
+            { "worldstate",    SEC_ADMINISTRATOR,        false, &HandleDebugUpdateWorldStateCommand, "" },
+            { "update",        SEC_ADMINISTRATOR,        false, &HandleDebugUpdateCommand,           "" },
+            { "itemexpire",    SEC_ADMINISTRATOR,        false, &HandleDebugItemExpireCommand,       "" },
+            { "areatriggers",  SEC_ADMINISTRATOR,        false, &HandleDebugAreaTriggersCommand,     "" },
+            { "los",           SEC_ADMINISTRATOR,        false, &HandleDebugLoSCommand,              "" },
+            { "moveflags",      SEC_ADMINISTRATOR,        false, &HandleDebugMoveflagsCommand,        "" },
+            { "transport",     SEC_ADMINISTRATOR,        false, &HandleDebugTransportCommand,        "" },
+            { "phase",         SEC_ADMINISTRATOR,        false, &HandleDebugPhaseCommand,            "" },
+            { "loadcells",     SEC_ADMINISTRATOR,        false, &HandleDebugLoadCellsCommand,        "" },
+            { "boundary",      SEC_ADMINISTRATOR,        false, &HandleDebugBoundaryCommand,         "" },
+            { "raidreset",     SEC_ADMINISTRATOR,        false, &HandleDebugRaidResetCommand,        "" },
+            { "neargraveyard", SEC_ADMINISTRATOR,        false, &HandleDebugNearGraveyard,           "" },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "debug",         rbac::RBAC_PERM_COMMAND_DEBUG,               true,  nullptr,                             "", debugCommandTable },
-            { "wpgps",         rbac::RBAC_PERM_COMMAND_WPGPS,               false, &HandleWPGPSCommand,                 "" },
+            { "debug",         SEC_ADMINISTRATOR,        true,  nullptr,                             "", debugCommandTable },
+            { "wpgps",         SEC_ADMINISTRATOR,        false, &HandleWPGPSCommand,                 "" },
         };
         return commandTable;
     }

@@ -35,7 +35,6 @@
 #include "PhasingHandler.h"
 #include "Player.h"
 #include "PointMovementGenerator.h"
-#include "RBAC.h"
 #include "WorldSession.h"
 
 class mmaps_commandscript : public CommandScript
@@ -47,16 +46,16 @@ public:
     {
         static std::vector<ChatCommand> mmapCommandTable =
         {
-            { "loadedtiles", rbac::RBAC_PERM_COMMAND_MMAP_LOADEDTILES, false, &HandleMmapLoadedTilesCommand, "" },
-            { "loc",         rbac::RBAC_PERM_COMMAND_MMAP_LOC,         false, &HandleMmapLocCommand,         "" },
-            { "path",        rbac::RBAC_PERM_COMMAND_MMAP_PATH,        false, &HandleMmapPathCommand,        "" },
-            { "stats",       rbac::RBAC_PERM_COMMAND_MMAP_STATS,       false, &HandleMmapStatsCommand,       "" },
-            { "testarea",    rbac::RBAC_PERM_COMMAND_MMAP_TESTAREA,    false, &HandleMmapTestArea,           "" },
+            { "loadedtiles", SEC_ADMINISTRATOR,      false, &HandleMmapLoadedTilesCommand, "" },
+            { "loc",         SEC_ADMINISTRATOR,      false, &HandleMmapLocCommand,         "" },
+            { "path",        SEC_ADMINISTRATOR,      false, &HandleMmapPathCommand,        "" },
+            { "stats",       SEC_ADMINISTRATOR,      false, &HandleMmapStatsCommand,       "" },
+            { "testarea",    SEC_ADMINISTRATOR,      false, &HandleMmapTestArea,           "" },
         };
 
         static std::vector<ChatCommand> commandTable =
         {
-            { "mmap", rbac::RBAC_PERM_COMMAND_MMAP, true, nullptr, "", mmapCommandTable },
+            { "mmap", SEC_ADMINISTRATOR,              true, nullptr,                       "", mmapCommandTable },
         };
         return commandTable;
     }

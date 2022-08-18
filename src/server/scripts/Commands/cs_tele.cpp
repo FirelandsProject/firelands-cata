@@ -33,7 +33,6 @@ EndScriptData */
 #include "ObjectMgr.h"
 #include "PhasingHandler.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "WorldSession.h"
 
 using namespace Firelands::ChatCommands;
@@ -47,15 +46,15 @@ public:
     {
         static std::vector<ChatCommand> teleCommandTable =
         {
-            { "add",   rbac::RBAC_PERM_COMMAND_TELE_ADD,   false, &HandleTeleAddCommand,   "" },
-            { "del",   rbac::RBAC_PERM_COMMAND_TELE_DEL,    true, &HandleTeleDelCommand,   "" },
-            { "name",  rbac::RBAC_PERM_COMMAND_TELE_NAME,   true, &HandleTeleNameCommand,  "" },
-            { "group", rbac::RBAC_PERM_COMMAND_TELE_GROUP, false, &HandleTeleGroupCommand, "" },
-            { "",      rbac::RBAC_PERM_COMMAND_TELE,       false, &HandleTeleCommand,      "" },
+            { "add",   SEC_ADMINISTRATOR,   false, &HandleTeleAddCommand,   "" },
+            { "del",   SEC_ADMINISTRATOR,   true,  &HandleTeleDelCommand,   "" },
+            { "name",  SEC_GAMEMASTER,      true,  &HandleTeleNameCommand,  "" },
+            { "group", SEC_GAMEMASTER,      false, &HandleTeleGroupCommand, "" },
+            { "",      SEC_GAMEMASTER,      false, &HandleTeleCommand,      "" },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "tele", rbac::RBAC_PERM_COMMAND_TELE, false, nullptr, "", teleCommandTable },
+            { "tele", SEC_GAMEMASTER,       false, nullptr,                 "", teleCommandTable },
         };
         return commandTable;
     }
@@ -307,7 +306,7 @@ public:
             return false;
         }
 
-        if (me->IsInCombat() && !handler->GetSession()->HasPermission(rbac::RBAC_PERM_COMMAND_TELE_NAME))
+        if (me->IsInCombat())
         {
             handler->SendSysMessage(LANG_YOU_IN_COMBAT);
             handler->SetSentErrorMessage(true);

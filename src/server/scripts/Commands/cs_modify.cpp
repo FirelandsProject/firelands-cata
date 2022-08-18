@@ -31,7 +31,6 @@ EndScriptData */
 #include "Pet.h"
 #include "PhasingHandler.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "ReputationMgr.h"
 #include "WorldSession.h"
 
@@ -44,42 +43,42 @@ public:
     {
         static std::vector<ChatCommand> modifyspeedCommandTable =
         {
-            { "all",      rbac::RBAC_PERM_COMMAND_MODIFY_SPEED_ALL,      false, &HandleModifyASpeedCommand, "" },
-            { "backwalk", rbac::RBAC_PERM_COMMAND_MODIFY_SPEED_BACKWALK, false, &HandleModifyBWalkCommand,  "" },
-            { "fly",      rbac::RBAC_PERM_COMMAND_MODIFY_SPEED_FLY,      false, &HandleModifyFlyCommand,    "" },
-            { "walk",     rbac::RBAC_PERM_COMMAND_MODIFY_SPEED_WALK,     false, &HandleModifySpeedCommand,  "" },
-            { "swim",     rbac::RBAC_PERM_COMMAND_MODIFY_SPEED_SWIM,     false, &HandleModifySwimCommand,   "" },
-            { "",         rbac::RBAC_PERM_COMMAND_MODIFY_SPEED,          false, &HandleModifyASpeedCommand, "" },
+            { "all",      SEC_GAMEMASTER,      false, &HandleModifyASpeedCommand, "" },
+            { "backwalk", SEC_GAMEMASTER,      false, &HandleModifyBWalkCommand,  "" },
+            { "fly",       SEC_GAMEMASTER,      false, &HandleModifyFlyCommand,    "" },
+            { "walk",     SEC_GAMEMASTER,      false, &HandleModifySpeedCommand,  "" },
+            { "swim",     SEC_GAMEMASTER,      false, &HandleModifySwimCommand,   "" },
+            { "",         SEC_GAMEMASTER,      false, &HandleModifyASpeedCommand, "" },
         };
         static std::vector<ChatCommand> modifyCommandTable =
         {
-            { "bit",          rbac::RBAC_PERM_COMMAND_MODIFY_BIT,          false, &HandleModifyBitCommand,           "" },
-            { "currency",     rbac::RBAC_PERM_COMMAND_MODIFY_CURRENCY,     false, &HandleModifyCurrencyCommand,      "" },
-            { "drunk",        rbac::RBAC_PERM_COMMAND_MODIFY_DRUNK,        false, &HandleModifyDrunkCommand,         "" },
-            { "energy",       rbac::RBAC_PERM_COMMAND_MODIFY_ENERGY,       false, &HandleModifyEnergyCommand,        "" },
-            { "faction",      rbac::RBAC_PERM_COMMAND_MODIFY_FACTION,      false, &HandleModifyFactionCommand,       "" },
-            { "gender",       rbac::RBAC_PERM_COMMAND_MODIFY_GENDER,       false, &HandleModifyGenderCommand,        "" },
-            { "honor",        rbac::RBAC_PERM_COMMAND_MODIFY_HONOR,        false, &HandleModifyHonorCommand,         "" },
-            { "hp",           rbac::RBAC_PERM_COMMAND_MODIFY_HP,           false, &HandleModifyHPCommand,            "" },
-            { "mana",         rbac::RBAC_PERM_COMMAND_MODIFY_MANA,         false, &HandleModifyManaCommand,          "" },
-            { "money",        rbac::RBAC_PERM_COMMAND_MODIFY_MONEY,        false, &HandleModifyMoneyCommand,         "" },
-            { "mount",        rbac::RBAC_PERM_COMMAND_MODIFY_MOUNT,        false, &HandleModifyMountCommand,         "" },
-            { "phase",        rbac::RBAC_PERM_COMMAND_MODIFY_PHASE,        false, &HandleModifyPhaseCommand,         "" },
-            { "rage",         rbac::RBAC_PERM_COMMAND_MODIFY_RAGE,         false, &HandleModifyRageCommand,          "" },
-            { "reputation",   rbac::RBAC_PERM_COMMAND_MODIFY_REPUTATION,   false, &HandleModifyRepCommand,           "" },
-            { "runicpower",   rbac::RBAC_PERM_COMMAND_MODIFY_RUNICPOWER,   false, &HandleModifyRunicPowerCommand,    "" },
-            { "scale",        rbac::RBAC_PERM_COMMAND_MODIFY_SCALE,        false, &HandleModifyScaleCommand,         "" },
-            { "speed",        rbac::RBAC_PERM_COMMAND_MODIFY_SPEED,        false, nullptr,           "", modifyspeedCommandTable },
-            { "spell",        rbac::RBAC_PERM_COMMAND_MODIFY_SPELL,        false, &HandleModifySpellCommand,         "" },
-            { "standstate",   rbac::RBAC_PERM_COMMAND_MODIFY_STANDSTATE,   false, &HandleModifyStandStateCommand,    "" },
-            { "talentpoints", rbac::RBAC_PERM_COMMAND_MODIFY_TALENTPOINTS, false, &HandleModifyTalentCommand,        "" },
-            { "xp",           rbac::RBAC_PERM_COMMAND_MODIFY_XP,           false, &HandleModifyXPCommand,            "" },
+            { "bit",          SEC_GAMEMASTER,       false, &HandleModifyBitCommand,           "" },
+            { "currency",     SEC_GAMEMASTER,       false, &HandleModifyCurrencyCommand,      "" },
+            { "drunk",        SEC_GAMEMASTER,       false, &HandleModifyDrunkCommand,         "" },
+            { "energy",       SEC_GAMEMASTER,       false, &HandleModifyEnergyCommand,        "" },
+            { "faction",      SEC_ADMINISTRATOR,    false, &HandleModifyFactionCommand,       "" },
+            { "gender",       SEC_GAMEMASTER,       false, &HandleModifyGenderCommand,        "" },
+            { "honor",        SEC_GAMEMASTER,       false, &HandleModifyHonorCommand,         "" },
+            { "hp",           SEC_GAMEMASTER,       false, &HandleModifyHPCommand,            "" },
+            { "mana",         SEC_GAMEMASTER,       false, &HandleModifyManaCommand,          "" },
+            { "money",        SEC_GAMEMASTER,       false, &HandleModifyMoneyCommand,         "" },
+            { "mount",        SEC_GAMEMASTER,       false, &HandleModifyMountCommand,         "" },
+            { "phase",        SEC_GAMEMASTER,       false, &HandleModifyPhaseCommand,         "" },
+            { "rage",         SEC_GAMEMASTER,       false, &HandleModifyRageCommand,          "" },
+            { "reputation",   SEC_GAMEMASTER,       false, &HandleModifyRepCommand,           "" },
+            { "runicpower",   SEC_GAMEMASTER,       false, &HandleModifyRunicPowerCommand,    "" },
+            { "scale",        SEC_GAMEMASTER,       false, &HandleModifyScaleCommand,         "" },
+            { "speed",        SEC_GAMEMASTER,       false, nullptr,                           "", modifyspeedCommandTable },
+            { "spell",        SEC_CONSOLE,          false, &HandleModifySpellCommand,         "" },
+            { "standstate",   SEC_GAMEMASTER,       false, &HandleModifyStandStateCommand,    "" },
+            { "talentpoints", SEC_GAMEMASTER,       false, &HandleModifyTalentCommand,        "" },
+            { "xp",           SEC_GAMEMASTER,       false, &HandleModifyXPCommand,            "" },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "morph",   rbac::RBAC_PERM_COMMAND_MORPH,   false, &HandleModifyMorphCommand,          "" },
-            { "demorph", rbac::RBAC_PERM_COMMAND_DEMORPH, false, &HandleDeMorphCommand,              "" },
-            { "modify",  rbac::RBAC_PERM_COMMAND_MODIFY,  false, nullptr,                 "", modifyCommandTable },
+            { "morph",        SEC_MODERATOR,        false, &HandleModifyMorphCommand,          "" },
+            { "demorph",      SEC_MODERATOR,        false, &HandleDeMorphCommand,              "" },
+            { "modify",       SEC_GAMEMASTER,       false, nullptr,                            "", modifyCommandTable },
         };
         return commandTable;
     }

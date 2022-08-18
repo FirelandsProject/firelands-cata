@@ -221,6 +221,11 @@ template <typename T> struct ChatCommandStoreLastArg { static void store(T&, Com
 template <> struct ChatCommandStoreLastArg<char const*> { static void store(char const*& arg, CommandArgs& args) { arg = args.GetRemainingArgs(); } };
 template <> struct ChatCommandStoreLastArg<CommandArgs*> { static void store(CommandArgs*& arg, CommandArgs& args) { arg = &args; } };
 
+enum class Console: bool {
+    No = false,
+    Yes = true
+};
+
 class FC_GAME_API ChatCommand
 {
     using wrapper_func = bool(void*, ChatHandler*, char const*);

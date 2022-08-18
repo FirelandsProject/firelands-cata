@@ -38,7 +38,6 @@ EndScriptData */
 #include "Pet.h"
 #include "PhasingHandler.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "Transport.h"
 #include "World.h"
 #include "WorldSession.h"
@@ -273,62 +272,62 @@ public:
     {
         static std::vector<ChatCommand> npcAddCommandTable =
         {
-            { "formation", rbac::RBAC_PERM_COMMAND_NPC_ADD_FORMATION, false, &HandleNpcAddFormationCommand,      "" },
-            { "item",      rbac::RBAC_PERM_COMMAND_NPC_ADD_ITEM,      false, &HandleNpcAddVendorItemCommand,     "" },
-            { "move",      rbac::RBAC_PERM_COMMAND_NPC_ADD_MOVE,      false, &HandleNpcAddMoveCommand,           "" },
-            { "temp",      rbac::RBAC_PERM_COMMAND_NPC_ADD_TEMP,      false, &HandleNpcAddTempSpawnCommand,      "" },
-            //{ "weapon",    rbac::RBAC_PERM_COMMAND_NPC_ADD_WEAPON,    false, &HandleNpcAddWeaponCommand,         "" },
-            { "",          rbac::RBAC_PERM_COMMAND_NPC_ADD,           false, &HandleNpcAddCommand,               "" },
+            { "formation", SEC_ADMINISTRATOR,     false, &HandleNpcAddFormationCommand,      "" },
+            { "item",      SEC_ADMINISTRATOR,     false, &HandleNpcAddVendorItemCommand,     "" },
+            { "move",      SEC_ADMINISTRATOR,     false, &HandleNpcAddMoveCommand,           "" },
+            { "temp",      SEC_ADMINISTRATOR,     false, &HandleNpcAddTempSpawnCommand,      "" },
+          //{ "weapon",    SEC_ADMINISTRATOR,     false, &HandleNpcAddWeaponCommand,         "" },
+            { "",          SEC_ADMINISTRATOR,     false, &HandleNpcAddCommand,               "" },
         };
         static std::vector<ChatCommand> npcDeleteCommandTable =
         {
-            { "item", rbac::RBAC_PERM_COMMAND_NPC_DELETE_ITEM, false, &HandleNpcDeleteVendorItemCommand,  "" },
-            { "",     rbac::RBAC_PERM_COMMAND_NPC_DELETE,      false, &HandleNpcDeleteCommand,            "" },
+            { "item",      SEC_ADMINISTRATOR,     false, &HandleNpcDeleteVendorItemCommand,  "" },
+            { "",          SEC_ADMINISTRATOR,     false, &HandleNpcDeleteCommand,            "" },
         };
         static std::vector<ChatCommand> npcFollowCommandTable =
         {
-            { "stop", rbac::RBAC_PERM_COMMAND_NPC_FOLLOW_STOP, false, &HandleNpcUnFollowCommand,          "" },
-            { "",     rbac::RBAC_PERM_COMMAND_NPC_FOLLOW,      false, &HandleNpcFollowCommand,            "" },
+            { "stop",      SEC_GAMEMASTER,        false, &HandleNpcUnFollowCommand,          "" },
+            { "",          SEC_GAMEMASTER,        false, &HandleNpcFollowCommand,            "" },
         };
         static std::vector<ChatCommand> npcSetCommandTable =
         {
-            { "allowmove",  rbac::RBAC_PERM_COMMAND_NPC_SET_ALLOWMOVE, false, &HandleNpcSetAllowMovementCommand, "" },
-            { "entry",      rbac::RBAC_PERM_COMMAND_NPC_SET_ENTRY,     false, &HandleNpcSetEntryCommand,         "" },
-            { "factionid",  rbac::RBAC_PERM_COMMAND_NPC_SET_FACTIONID, false, &HandleNpcSetFactionIdCommand,     "" },
-            { "flag",       rbac::RBAC_PERM_COMMAND_NPC_SET_FLAG,      false, &HandleNpcSetFlagCommand,          "" },
-            { "level",      rbac::RBAC_PERM_COMMAND_NPC_SET_LEVEL,     false, &HandleNpcSetLevelCommand,         "" },
-            { "link",       rbac::RBAC_PERM_COMMAND_NPC_SET_LINK,      false, &HandleNpcSetLinkCommand,          "" },
-            { "model",      rbac::RBAC_PERM_COMMAND_NPC_SET_MODEL,     false, &HandleNpcSetModelCommand,         "" },
-            { "movetype",   rbac::RBAC_PERM_COMMAND_NPC_SET_MOVETYPE,  false, &HandleNpcSetMoveTypeCommand,      "" },
-            { "phase",      rbac::RBAC_PERM_COMMAND_NPC_SET_PHASE,     false, &HandleNpcSetPhaseCommand,         "" },
-            { "phasegroup", rbac::RBAC_PERM_COMMAND_NPC_SET_PHASE,     false, &HandleNpcSetPhaseGroup,           "" },
-            { "spawndist",  rbac::RBAC_PERM_COMMAND_NPC_SET_SPAWNDIST, false, &HandleNpcSetSpawnDistCommand,     "" },
-            { "spawntime",  rbac::RBAC_PERM_COMMAND_NPC_SET_SPAWNTIME, false, &HandleNpcSetSpawnTimeCommand,     "" },
-            { "data",       rbac::RBAC_PERM_COMMAND_NPC_SET_DATA,      false, &HandleNpcSetDataCommand,          "" },
+            { "allowmove",  SEC_ADMINISTRATOR,    false, &HandleNpcSetAllowMovementCommand, "" },
+            { "entry",      SEC_ADMINISTRATOR,    false, &HandleNpcSetEntryCommand,         "" },
+            { "factionid",  SEC_ADMINISTRATOR,    false, &HandleNpcSetFactionIdCommand,     "" },
+            { "flag",        SEC_ADMINISTRATOR,    false, &HandleNpcSetFlagCommand,          "" },
+            { "level",      SEC_ADMINISTRATOR,    false, &HandleNpcSetLevelCommand,         "" },
+            { "link",       SEC_ADMINISTRATOR,    false, &HandleNpcSetLinkCommand,          "" },
+            { "model",      SEC_ADMINISTRATOR,    false, &HandleNpcSetModelCommand,         "" },
+            { "movetype",   SEC_ADMINISTRATOR,    false, &HandleNpcSetMoveTypeCommand,      "" },
+            { "phase",      SEC_ADMINISTRATOR,    false, &HandleNpcSetPhaseCommand,         "" },
+            { "phasegroup", SEC_ADMINISTRATOR,    false, &HandleNpcSetPhaseGroup,           "" },
+            { "spawndist",  SEC_ADMINISTRATOR,    false, &HandleNpcSetSpawnDistCommand,     "" },
+            { "spawntime",  SEC_ADMINISTRATOR,    false, &HandleNpcSetSpawnTimeCommand,     "" },
+            { "data",       SEC_ADMINISTRATOR,    false, &HandleNpcSetDataCommand,          "" },
         };
         static std::vector<ChatCommand> npcCommandTable =
         {
-            { "info",         rbac::RBAC_PERM_COMMAND_NPC_INFO,         false, &HandleNpcInfoCommand,              ""       },
-            { "near",         rbac::RBAC_PERM_COMMAND_NPC_NEAR,         false, &HandleNpcNearCommand,              ""       },
-            { "move",         rbac::RBAC_PERM_COMMAND_NPC_MOVE,         false, &HandleNpcMoveCommand,              ""       },
-            { "playemote",    rbac::RBAC_PERM_COMMAND_NPC_PLAYEMOTE,    false, &HandleNpcPlayEmoteCommand,         ""       },
-            { "say",          rbac::RBAC_PERM_COMMAND_NPC_SAY,          false, &HandleNpcSayCommand,               ""       },
-            { "textemote",    rbac::RBAC_PERM_COMMAND_NPC_TEXTEMOTE,    false, &HandleNpcTextEmoteCommand,         ""       },
-            { "whisper",      rbac::RBAC_PERM_COMMAND_NPC_WHISPER,      false, &HandleNpcWhisperCommand,           ""       },
-            { "yell",         rbac::RBAC_PERM_COMMAND_NPC_YELL,         false, &HandleNpcYellCommand,              ""       },
-            { "tame",         rbac::RBAC_PERM_COMMAND_NPC_TAME,         false, &HandleNpcTameCommand,              ""       },
-            { "spawngroup",   rbac::RBAC_PERM_COMMAND_NPC_SPAWNGROUP,   false, &HandleNpcSpawnGroup,               ""       },
-            { "despawngroup", rbac::RBAC_PERM_COMMAND_NPC_DESPAWNGROUP, false, &HandleNpcDespawnGroup,             ""       },
-            { "add",          rbac::RBAC_PERM_COMMAND_NPC_ADD,          false, nullptr,              "", npcAddCommandTable },
-            { "delete",       rbac::RBAC_PERM_COMMAND_NPC_DELETE,       false, nullptr,           "", npcDeleteCommandTable },
-            { "follow",       rbac::RBAC_PERM_COMMAND_NPC_FOLLOW,       false, nullptr,           "", npcFollowCommandTable },
-            { "set",          rbac::RBAC_PERM_COMMAND_NPC_SET,          false, nullptr,              "", npcSetCommandTable },
-            { "evade",        rbac::RBAC_PERM_COMMAND_NPC_EVADE,        false, &HandleNpcEvadeCommand,             ""       },
-            { "showloot",     rbac::RBAC_PERM_COMMAND_NPC_SHOWLOOT,     false, &HandleNpcShowLootCommand,          ""       },
+            { "info",         SEC_GAMEMASTER,     false, &HandleNpcInfoCommand,              "" },
+            { "near",         SEC_GAMEMASTER,     false, &HandleNpcNearCommand,              "" },
+            { "move",         SEC_GAMEMASTER,     false, &HandleNpcMoveCommand,              "" },
+            { "playemote",    SEC_GAMEMASTER,     false, &HandleNpcPlayEmoteCommand,         "" },
+            { "say",          SEC_GAMEMASTER,     false, &HandleNpcSayCommand,               "" },
+            { "textemote",    SEC_GAMEMASTER,     false, &HandleNpcTextEmoteCommand,         "" },
+            { "whisper",      SEC_GAMEMASTER,     false, &HandleNpcWhisperCommand,           "" },
+            { "yell",         SEC_GAMEMASTER,     false, &HandleNpcYellCommand,              "" },
+            { "tame",         SEC_GAMEMASTER,     false, &HandleNpcTameCommand,              "" },
+            { "spawngroup",   SEC_ADMINISTRATOR,  false, &HandleNpcSpawnGroup,               "" },
+            { "despawngroup", SEC_ADMINISTRATOR,  false, &HandleNpcDespawnGroup,             "" },
+            { "add",          SEC_ADMINISTRATOR,  false, nullptr,                            "", npcAddCommandTable },
+            { "delete",       SEC_ADMINISTRATOR,  false, nullptr,                            "", npcDeleteCommandTable },
+            { "follow",       SEC_GAMEMASTER,     false, nullptr,                            "", npcFollowCommandTable },
+            { "set",          SEC_ADMINISTRATOR,  false, nullptr,                            "", npcSetCommandTable },
+            { "evade",        SEC_ADMINISTRATOR,  false, &HandleNpcEvadeCommand,             "" },
+            { "showloot",     SEC_ADMINISTRATOR,  false, &HandleNpcShowLootCommand,          "" },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "npc", rbac::RBAC_PERM_COMMAND_NPC, false, nullptr, "", npcCommandTable },
+            { "npc",          SEC_GAMEMASTER,     false, nullptr,                            "", npcCommandTable },
         };
         return commandTable;
     }

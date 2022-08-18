@@ -23,7 +23,6 @@
 #include "ObjectMgr.h"
 #include "Pet.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "SpellMgr.h"
 #include "WorldSession.h"
 
@@ -50,15 +49,15 @@ public:
     {
         static std::vector<ChatCommand> petCommandTable =
         {
-            { "create",  rbac::RBAC_PERM_COMMAND_PET_CREATE,  false, &HandlePetCreateCommand,  "" },
-            { "learn",   rbac::RBAC_PERM_COMMAND_PET_LEARN,   false, &HandlePetLearnCommand,   "" },
-            { "unlearn", rbac::RBAC_PERM_COMMAND_PET_UNLEARN, false, &HandlePetUnlearnCommand, "" },
-            { "level",   rbac::RBAC_PERM_COMMAND_PET_LEVEL,   false, &HandlePetLevelCommand,   "" },
+            { "create",  SEC_GAMEMASTER,  false, &HandlePetCreateCommand,  "" },
+            { "learn",   SEC_GAMEMASTER,  false, &HandlePetLearnCommand,   "" },
+            { "unlearn", SEC_GAMEMASTER,  false, &HandlePetUnlearnCommand, "" },
+            { "level",   SEC_GAMEMASTER,  false, &HandlePetLevelCommand,   "" },
         };
 
         static std::vector<ChatCommand> commandTable =
         {
-            { "pet", rbac::RBAC_PERM_COMMAND_PET, false, nullptr, "", petCommandTable },
+            { "pet",     SEC_GAMEMASTER,  false, nullptr,                  "", petCommandTable },
         };
         return commandTable;
     }

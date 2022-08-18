@@ -32,7 +32,6 @@ EndScriptData */
 #include "ObjectMgr.h"
 #include "PhasingHandler.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "WaypointDefines.h"
 #include "WaypointManager.h"
 #include "WorldSession.h"
@@ -46,17 +45,17 @@ public:
     {
         static std::vector<ChatCommand> wpCommandTable =
         {
-            { "add",    rbac::RBAC_PERM_COMMAND_WP_ADD,    false, &HandleWpAddCommand,    "" },
-            { "event",  rbac::RBAC_PERM_COMMAND_WP_EVENT,  false, &HandleWpEventCommand,  "" },
-            { "load",   rbac::RBAC_PERM_COMMAND_WP_LOAD,   false, &HandleWpLoadCommand,   "" },
-            { "modify", rbac::RBAC_PERM_COMMAND_WP_MODIFY, false, &HandleWpModifyCommand, "" },
-            { "unload", rbac::RBAC_PERM_COMMAND_WP_UNLOAD, false, &HandleWpUnLoadCommand, "" },
-            { "reload", rbac::RBAC_PERM_COMMAND_WP_RELOAD, false, &HandleWpReloadCommand, "" },
-            { "show",   rbac::RBAC_PERM_COMMAND_WP_SHOW,   false, &HandleWpShowCommand,   "" },
+            { "add",    SEC_ADMINISTRATOR,    false, &HandleWpAddCommand,    "" },
+            { "event",  SEC_ADMINISTRATOR,    false, &HandleWpEventCommand,  "" },
+            { "load",   SEC_ADMINISTRATOR,    false, &HandleWpLoadCommand,   "" },
+            { "modify", SEC_ADMINISTRATOR,    false, &HandleWpModifyCommand, "" },
+            { "unload", SEC_ADMINISTRATOR,    false, &HandleWpUnLoadCommand, "" },
+            { "reload", SEC_ADMINISTRATOR,    false, &HandleWpReloadCommand, "" },
+            { "show",   SEC_ADMINISTRATOR,    false, &HandleWpShowCommand,   "" },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "wp", rbac::RBAC_PERM_COMMAND_WP, false, nullptr, "", wpCommandTable },
+            { "wp",     SEC_ADMINISTRATOR,    false, nullptr,                "", wpCommandTable },
         };
         return commandTable;
     }

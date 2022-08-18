@@ -1167,7 +1167,7 @@ void LoadLootTemplates_Reference()
     // output error for any still listed ids (not referenced from any loot table)
     LootTemplates_Reference.ReportUnusedIds(lootIdSet, LOOT_TYPE_NONE);
 
-    LOG_INFO("server.loading", ">> Loaded %u LootType 10 Loot Table (Reference) in %u ms", GetMSTimeDiffToNow(oldMSTime));
+    LOG_INFO("server.loading", ">> Loaded LootType 10 Loot Table (Reference) in %u ms", GetMSTimeDiffToNow(oldMSTime));
 }
 
 void LoadLootTables()

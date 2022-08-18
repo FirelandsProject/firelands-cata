@@ -92,23 +92,6 @@ enum FirelandsStrings
     LANG_CONNECTED_PLAYERS              = 60,
     LANG_ACCOUNT_ADDON                  = 61,
     LANG_IMPROPER_VALUE                 = 62,
-    LANG_RBAC_WRONG_PARAMETER_ID        = 63,
-    LANG_RBAC_WRONG_PARAMETER_REALM     = 64,
-    LANG_RBAC_LIST_HEADER_GRANTED       = 65,
-    LANG_RBAC_LIST_HEADER_DENIED        = 66,
-    LANG_RBAC_LIST_HEADER_BY_SEC_LEVEL  = 67,
-    LANG_RBAC_LIST_PERMISSIONS_HEADER   = 68,
-    LANG_RBAC_LIST_PERMS_LINKED_HEADER  = 69,
-    LANG_RBAC_LIST_EMPTY                = 70,
-    LANG_RBAC_LIST_ELEMENT              = 71,
-    LANG_RBAC_PERM_GRANTED_IN_LIST      = 72,
-    LANG_RBAC_PERM_GRANTED_IN_DENIED_LIST = 73,
-    LANG_RBAC_PERM_GRANTED              = 74,
-    LANG_RBAC_PERM_DENIED_IN_LIST       = 75,
-    LANG_RBAC_PERM_DENIED_IN_GRANTED_LIST = 76,
-    LANG_RBAC_PERM_DENIED               = 77,
-    LANG_RBAC_PERM_REVOKED              = 78,
-    LANG_RBAC_PERM_REVOKED_NOT_IN_LIST  = 79,
     LANG_PVPSTATS                       = 80,
     LANG_PVPSTATS_DISABLED              = 81,
     LANG_COMMAND_NEARGRAVEYARD          = 82,
@@ -796,7 +779,6 @@ enum FirelandsStrings
     LANG_COMMAND_EMAIL_OUTPUT           = 878,
     //                                  = 879, see LANG_PINFO_CHR_REGMAILS
     LANG_ACCOUNT_SEC_TYPE               = 880,
-    LANG_RBAC_EMAIL_REQUIRED            = 881,
     // Room for in-game strings           882-999 not used
 
     // Level 4 (CLI only commands)
@@ -829,18 +811,8 @@ enum FirelandsStrings
     LANG_CHARACTER_DELETED_LIST_LINE_CHAT = 1026,
     LANG_SQLDRIVER_QUERY_LOGGING_ENABLED  = 1027,
     LANG_SQLDRIVER_QUERY_LOGGING_DISABLED = 1028,
-    LANG_ACCOUNT_INVALID_BNET_NAME      = 1029,
-    LANG_ACCOUNT_USE_BNET_COMMANDS      = 1030,
     LANG_ACCOUNT_PASS_TOO_LONG          = 1031,
-    LANG_ACCOUNT_CREATED_BNET_WITH_GAME = 1032,
-    LANG_ACCOUNT_CREATED_BNET           = 1033,
-    LANG_ACCOUNT_BNET_LIST_HEADER       = 1034,
-    LANG_ACCOUNT_BNET_LIST_NO_ACCOUNTS  = 1035,
-    LANG_ACCOUNT_BNET_LINKED            = 1036,
-    LANG_ACCOUNT_OR_BNET_DOES_NOT_EXIST = 1037,
-    LANG_ACCOUNT_ALREADY_LINKED         = 1038,
-    LANG_ACCOUNT_BNET_UNLINKED          = 1039,
-    LANG_ACCOUNT_BNET_NOT_LINKED        = 1040,
+
     // Room for more level 4              1041-1099 not used
 
     // Level 3 (continue)

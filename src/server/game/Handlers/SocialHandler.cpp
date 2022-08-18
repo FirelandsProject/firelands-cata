@@ -23,7 +23,6 @@
 #include "ObjectMgr.h"
 #include "Player.h"
 #include "QueryCallback.h"
-#include "RBAC.h"
 #include "Realm.h"
 #include "SocialMgr.h"
 #include "World.h"
@@ -65,7 +64,7 @@ void WorldSession::HandleAddFriendOpcode(WorldPacket& recvData)
         FriendsResult friendResult = FRIEND_NOT_FOUND;
         if (friendGuid == GetPlayer()->GetGUID())
             friendResult = FRIEND_SELF;
-        else if (GetPlayer()->GetTeam() != team && !HasPermission(rbac::RBAC_PERM_TWO_SIDE_ADD_FRIEND))
+        else if (GetPlayer()->GetTeam() != team && !sWorld->getBoolConfig(CONFIG_ALLOW_TWO_SIDE_ADD_FRIEND))
             friendResult = FRIEND_ENEMY;
         else if (GetPlayer()->GetSocial()->HasFriend(friendGuid))
             friendResult = FRIEND_ALREADY;
@@ -85,7 +84,7 @@ void WorldSession::HandleAddFriendOpcode(WorldPacket& recvData)
         sSocialMgr->SendFriendStatus(GetPlayer(), friendResult, friendGuid);
     };
 
-    if (HasPermission(rbac::RBAC_PERM_ALLOW_GM_FRIEND))
+    if (!AccountMgr::IsPlayerAccount(GetSecurity()))
     {
         processFriendRequest();
         return;
