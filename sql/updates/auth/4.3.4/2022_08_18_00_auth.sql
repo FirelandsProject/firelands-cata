@@ -1,0 +1,1 @@
+DELETE FROM `command` WHERE `name` IN ('bnetaccount', 'bnetaccount create', 'bnetaccount gameaccountcreate', 'bnetaccount link', 'bnetaccount listgameaccounts', 'bnetaccount lock country', 'bnetaccount lock ip', 'bnetaccount password', 'bnetaccount set', 'bnetaccount set password', 'bnetaccount unlink' );
