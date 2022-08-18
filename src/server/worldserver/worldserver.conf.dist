@@ -3894,7 +3894,7 @@ AuctionHouseBot.Buyer.Recheck.Interval = 20
 #                         Example:  536870912 (512 mb)
 #
 
-Appender.Console=1,3,0
+Appender.Console=1,3,0,"1 9 3 4 14 14"
 Appender.Server=2,2,0,Server.log,w
 Appender.GM=2,2,15,gm/gm_%s.log
 Appender.DBErrors=2,2,0,DBErrors.log
@@ -4234,27 +4234,6 @@ PacketSpoof.BanDuration = 86400
 #                     3000 - (3 seconds, Recommended)
 
 AntiCheat.PendingMoveChangesTimeoutTime = 0
-
-#
-###################################################################################################
-
-###################################################################################################
-# IPC SETTINGS
-#
-#    BnetServer.Address
-#        Description: Determines IP address of battle.net server to connect to.
-#        Default:     127.0.0.1
-#
-
-BnetServer.Address = 127.0.0.1
-
-#
-#    BnetServer.Port
-#        Description: Determines port to use when connecting to battle.net server.
-#        Default:     1118
-#
-
-BnetServer.Port = 1118
 
 #
 ###################################################################################################

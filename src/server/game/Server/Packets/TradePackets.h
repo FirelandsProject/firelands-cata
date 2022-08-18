@@ -54,7 +54,6 @@ namespace WorldPackets
             uint32 ID = 0;
             uint8 TradeSlot = 0;
             bool FailureForYou = false;
-            bool PartnerIsSameBnetAccount = false;
         };
 
         struct UnwrappedTradeItem

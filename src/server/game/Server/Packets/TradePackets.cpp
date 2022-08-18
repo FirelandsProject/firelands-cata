@@ -40,7 +40,6 @@ void WorldPackets::Trade::InitiateTrade::Read()
 
 WorldPacket const* WorldPackets::Trade::TradeStatus::Write()
 {
-    _worldPacket.WriteBit(PartnerIsSameBnetAccount);
     _worldPacket.WriteBits(Status, 5);
 
     switch (Status)
