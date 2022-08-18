@@ -111,7 +111,7 @@ class FC_GAME_API ChatHandler {
   // function with different implementation for chat/console
   virtual bool isAvailable(ChatCommand const& cmd) const;
   virtual bool IsHumanReadable() const { return true; }
-  virtual bool HasPermission(uint32 permission) const;
+
   virtual std::string GetNameLink() const;
   virtual bool needReportToTarget(Player* chr) const;
   virtual LocaleConstant GetSessionDbcLocale() const;
@@ -197,7 +197,6 @@ class FC_GAME_API CliHandler : public ChatHandler {
   // overwrite functions
   char const* GetFirelandsString(uint32 entry) const override;
   bool isAvailable(ChatCommand const& cmd) const override;
-  bool HasPermission(uint32 /*permission*/) const override { return true; }
   void SendSysMessage(const char* str, bool escapeCharacters) override;
   bool ParseCommands(char const* str) override;
   std::string GetNameLink() const override;
