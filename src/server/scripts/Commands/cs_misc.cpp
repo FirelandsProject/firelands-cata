@@ -1677,6 +1677,16 @@ public:
             userName      = fields[0].GetString();
             security      = fields[1].GetUInt8();
 
+            if(security == 0){
+                if(handler->HasPermission(rbac::RBAC_PERM_SEC_ADMINISTRATOR)){
+                    security = SEC_ADMINISTRATOR;
+                } else if (handler->HasPermission(rbac::RBAC_PERM_SEC_GAMEMASTER)){
+                    security = SEC_GAMEMASTER;
+                } else if (handler->HasPermission(rbac::RBAC_PERM_SEC_MODERATOR)){
+                    security = SEC_MODERATOR;
+                }
+            }
+
             // Only fetch these fields if commander has sufficient rights)
             if (handler->HasPermission(rbac::RBAC_PERM_COMMANDS_PINFO_CHECK_PERSONAL_DATA) && // RBAC Perm. 48, Role 39
                (!handler->GetSession() || handler->GetSession()->GetSecurity() >= AccountTypes(security)))

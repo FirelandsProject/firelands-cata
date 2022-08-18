@@ -104,6 +104,10 @@ enum RBACPermissions
     RBAC_PERM_ALLOW_TWO_SIDE_TRADE                           = 51,
 
     // Free space for core permissions (till 149)
+    RBAC_PERM_SEC_ADMINISTRATOR                              = 192,
+    RBAC_PERM_SEC_GAMEMASTER                                 = 193,
+    RBAC_PERM_SEC_MODERATOR                                  = 194,
+    RBAC_PERM_SEC_PLAYER                                     = 195,
     // Roles (Permissions with delegated permissions) use 199 and descending
     RBAC_PERM_COMMAND_RBAC                                   = 200,
     RBAC_PERM_COMMAND_RBAC_ACC                               = 201,
@@ -112,16 +116,6 @@ enum RBACPermissions
     RBAC_PERM_COMMAND_RBAC_ACC_PERM_DENY                     = 204,
     RBAC_PERM_COMMAND_RBAC_ACC_PERM_REVOKE                   = 205,
     RBAC_PERM_COMMAND_RBAC_LIST                              = 206,
-    RBAC_PERM_COMMAND_BNET_ACCOUNT                           = 207, // not on 3.3.5a
-    RBAC_PERM_COMMAND_BNET_ACCOUNT_CREATE                    = 208, // not on 3.3.5a
-    RBAC_PERM_COMMAND_BNET_ACCOUNT_LOCK_COUNTRY              = 209, // not on 3.3.5a
-    RBAC_PERM_COMMAND_BNET_ACCOUNT_LOCK_IP                   = 210, // not on 3.3.5a
-    RBAC_PERM_COMMAND_BNET_ACCOUNT_PASSWORD                  = 211, // not on 3.3.5a
-    RBAC_PERM_COMMAND_BNET_ACCOUNT_SET                       = 212, // not on 3.3.5a
-    RBAC_PERM_COMMAND_BNET_ACCOUNT_SET_PASSWORD              = 213, // not on 3.3.5a
-    RBAC_PERM_COMMAND_BNET_ACCOUNT_LINK                      = 214, // not on 3.3.5a
-    RBAC_PERM_COMMAND_BNET_ACCOUNT_UNLINK                    = 215, // not on 3.3.5a
-    RBAC_PERM_COMMAND_BNET_ACCOUNT_CREATE_GAME               = 216, // not on 3.3.5a
     RBAC_PERM_COMMAND_ACCOUNT                                = 217,
     RBAC_PERM_COMMAND_ACCOUNT_ADDON                          = 218,
     RBAC_PERM_COMMAND_ACCOUNT_CREATE                         = 219,
@@ -727,7 +721,6 @@ enum RBACPermissions
     RBAC_PERM_COMMAND_TICKET_SUGGESTION_UNASSIGN             = 827, // not on 3.3.5a or 4.3.4
     RBAC_PERM_COMMAND_TICKET_SUGGESTION_VIEW                 = 828, // not on 3.3.5a or 4.3.4
     RBAC_PERM_COMMAND_TICKET_RESET_ALL                       = 829, // not on 3.3.5a or 4.3.4
-    RBAC_PERM_COMMAND_BNET_ACCOUNT_LIST_GAME_ACCOUNTS        = 830,
     RBAC_PERM_COMMAND_TICKET_RESET_BUG                       = 831, // not on 3.3.5a or 4.3.4
     RBAC_PERM_COMMAND_TICKET_RESET_COMPLAINT                 = 832, // not on 3.3.5a or 4.3.4
     RBAC_PERM_COMMAND_TICKET_RESET_SUGGESTION                = 833, // not on 3.3.5a or 4.3.4

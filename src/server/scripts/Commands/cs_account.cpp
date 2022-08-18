@@ -102,13 +102,6 @@ public:
     /// Create an account
     static bool HandleAccountCreateCommand(ChatHandler* handler, std::string const& accountName, std::string const& password, Optional<std::string> const& email)
     {
-        if (accountName.find('@') != std::string::npos)
-        {
-            handler->PSendSysMessage(LANG_ACCOUNT_USE_BNET_COMMANDS);
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
         switch (sAccountMgr->CreateAccount(accountName, password, email.value_or("")))
         {
             case AccountOpResult::AOR_OK:
