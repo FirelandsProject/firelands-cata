@@ -1,8 +1,8 @@
- The purpose of the CharacterDB cleanup routines is to remove old, non- 
-existent and erranous/defunct skills, talents, spells, and achievements 
+ The purpose of the CharacterDB cleanup routines is to remove old, non-
+existent and erranous/defunct skills, talents, spells, and achievements
 from characters in the database.
 
- To achieve this, add an entry (number) in the worldstate-table 
+ To achieve this, add an entry (number) in the worldstate-table
 (id:20004), combining the following arguments (bitmasked):
 
     CLEANING_FLAG_ACHIEVEMENT_PROGRESS  = 0x1
@@ -12,13 +12,13 @@ from characters in the database.
     CLEANING_FLAG_QUESTSTATUS           = 0x10
 
 Example:
- We want to clean up old talents, spells and skills, but leave 
-achivements alone - ie. NOT touching those. We'd then need to combine 
+ We want to clean up old talents, spells and skills, but leave
+achivements alone - ie. NOT touching those. We'd then need to combine
 the numbers from each of the above fields:
 
   CLEANING_FLAG_SKILLS + CLEANING_FLAG_SPELLS + CLEANING_FLAG_TALENTS
 
-This comes out as 2+4+8 => 14, and we now put an entry in for this in 
+This comes out as 2+4+8 => 14, and we now put an entry in for this in
 the worldstate table (this is done on the CHARACTERS database) :
 
   UPDATE worldstates SET value=14 WHERE entry=20004;
@@ -26,9 +26,7 @@ the worldstate table (this is done on the CHARACTERS database) :
 This will then (when the core is restarting) clean up old and missing
 skills, spells and talents.
 
-Please note that we are not responsible for any issues that might come 
-from this, and that you are (as the owner of the database), responsible 
-for doing proper backups prior to doing the above in case of anything 
+Please note that we are not responsible for any issues that might come
+from this, and that you are (as the owner of the database), responsible
+for doing proper backups prior to doing the above in case of anything
 going wrong.
-
--- The TrinityCore developer team
