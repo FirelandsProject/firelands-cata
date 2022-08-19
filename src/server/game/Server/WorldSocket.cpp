@@ -280,10 +280,8 @@ struct AccountInfo {
     // aa.gmLevel,
     //                                                              12 13    14
     // ab.unbandate > UNIX_TIMESTAMP() OR ab.unbandate = ab.bandate, r.id
-    // FROM account a LEFT JOIN battlenet_accounts ba ON a.battlenet_account =
-    // ba.id LEFT JOIN account_access aa ON a.id = aa.id AND aa.RealmID IN (-1,
-    // ?) LEFT JOIN battlenet_account_bans bab ON ba.id = bab.id LEFT JOIN
-    // account_banned ab ON a.id = ab.id LEFT JOIN account r ON a.id =
+    // FROM account a LEFT JOIN account_access aa ON a.id = aa.id AND aa.RealmID IN (-1,
+    // ?) LEFT JOIN account_banned ab ON a.id = ab.id LEFT JOIN account r ON a.id =
     // r.recruiter WHERE a.username = ? ORDER BY aa.RealmID DESC LIMIT 1
     Id = fields[0].GetUInt32();
     SessionKey.SetHexStr(fields[1].GetCString());

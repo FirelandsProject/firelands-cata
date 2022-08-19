@@ -29,7 +29,7 @@ Loggers may be assigned levels. The set of possible levels are TRACE, DEBUG,
 INFO, WARN, ERROR AND FATAL, or be disabled using level DISABLED.
 
 By definition the printing method determines the level of a logging request.
-For example, TC_LOG_INFO(...) is a logging request of level INFO.
+For example, LOG_INFO(...) is a logging request of level INFO.
 
 A logging request is said to be enabled if its level is higher than or equal to
 the level of its logger. Otherwise, the request is said to be disabled. A logger
@@ -171,7 +171,7 @@ the messages. Console should prefix type and log level.
     Logger.root=5,Console Server
 
 Lets trace how system will log two different messages:
-    1) TC_LOG_ERROR(LOG_FILTER_GUILD, "Guild 1 created");
+    1) LOG_ERROR(LOG_FILTER_GUILD, "Guild 1 created");
     System will try to find logger of type GUILD, as no logger is configured
     for GUILD it will use Root logger. As message Log Level is equal or higher
     than the Log level of logger the message is sent to the Appenders
@@ -179,7 +179,7 @@ Lets trace how system will log two different messages:
     Console will write: "ERROR [GUILD     ] Guild 1 created"
     Server will write to file "2012-08-15 ERROR [GUILD     ] Guild 1 created"
 
-    2) TC_LOG_INFO(LOG_FILTER_CHARACTER, "Player Name Logged in");
+    2) LOG_INFO(LOG_FILTER_CHARACTER, "Player Name Logged in");
     System will try to find logger of type CHARACTER, as no logger is
     configured for CHARACTER it will use Root logger. As message Log Level is
     not equal or higher than the Log level of logger the message its discarted.
@@ -194,9 +194,9 @@ file and server file should add timestamp on creation.
     Logger.root=4,Console Server
 
 Lets trace how system will log two different messages:
-    1) TC_LOG_ERROR(LOG_FILTER_GUILD, "Guild 1 created");
+    1) LOG_ERROR(LOG_FILTER_GUILD, "Guild 1 created");
     Performs exactly as example 1.
-    2) TC_LOG_INFO(LOG_FILTER_CHARACTER, "Player Name Logged in");
+    2) LOG_INFO(LOG_FILTER_CHARACTER, "Player Name Logged in");
     System will try to find logger of type CHARACTER, as no logger is
     configured for CHARACTER it will use Root logger. As message Log Level is
     equal or higher than the Log level of logger the message is sent to the

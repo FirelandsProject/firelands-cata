@@ -556,7 +556,9 @@ void WorldSession::LogoutPlayer(bool save) {
   m_playerSave = save;
 
   if (_player) {
-    if (ObjectGuid lguid = _player->GetLootGUID()) DoLootRelease(lguid);
+    if (ObjectGuid lguid = _player->GetLootGUID()) {
+      DoLootRelease(lguid);
+    }
 
     ///- If the player just died before logging out, make him appear as a ghost
     if (_player->GetDeathTimer()) {
@@ -579,10 +581,11 @@ void WorldSession::LogoutPlayer(bool save) {
       bg->EventPlayerLoggedOut(_player);
 
     ///- Teleport to home if the player is in an invalid instance
-    if (!_player->m_InstanceValid && !_player->IsGameMaster())
+    if (!_player->m_InstanceValid && !_player->IsGameMaster()) {
       _player->TeleportTo(_player->m_homebindMapId, _player->m_homebindX,
                           _player->m_homebindY, _player->m_homebindZ,
                           _player->GetOrientation());
+    }
 
     sOutdoorPvPMgr->HandlePlayerLeaveZone(_player, _player->GetZoneId());
 
@@ -665,6 +668,11 @@ void WorldSession::LogoutPlayer(bool save) {
     sScriptMgr->OnPlayerLogout(_player);
 
     FC_METRIC_EVENT("player_events", "Logout", _player->GetName());
+    LOG_INFO("entities.player.character",
+             "Account: %d (IP: %s) Logout Character:[%s] (GUID: %u) Level: %d",
+             GetAccountId(), GetRemoteAddress().c_str(),
+             _player->GetName().c_str(), _player->GetGUID().GetCounter(),
+             _player->getLevel());
 
     //! Remove the player from the world
     // the player may not be in the world when logging out
@@ -672,11 +680,6 @@ void WorldSession::LogoutPlayer(bool save) {
     // calls to GetMap in this case may cause crashes
     _player->SetDestroyedObject(true);
     _player->CleanupsBeforeDelete();
-    LOG_INFO("entities.player.character",
-             "Account: %d (IP: %s) Logout Character:[%s] (GUID: %u) Level: %d",
-             GetAccountId(), GetRemoteAddress().c_str(),
-             _player->GetName().c_str(), _player->GetGUID().GetCounter(),
-             _player->getLevel());
 
     if (Map *_map = _player->FindMap())
       _map->RemovePlayerFromMap(_player, true);
