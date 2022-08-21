@@ -632,3 +632,8 @@ float DegToRad(float degrees)
 {
     return degrees * (2.f * float(M_PI) / 360.f);
 }
+
+bool StringEqualI(std::string_view a, std::string_view b)
+{
+    return std::equal(a.begin(), a.end(), b.begin(), b.end(), [](char c1, char c2) { return std::tolower(c1) == std::tolower(c2); });
+}

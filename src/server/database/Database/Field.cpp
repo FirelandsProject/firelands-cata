@@ -20,6 +20,7 @@
 
 #include "Log.h"
 #include "MySQLHacks.h"
+#include "StringConvert.h"
 
 Field::Field() {
   data.value = nullptr;
@@ -124,17 +125,11 @@ uint64 Field::GetUInt64() const {
   }
 #endif
 
-  uint64 result;
   if (data.raw) {
-    result = *reinterpret_cast<uint64 const*>(data.value);
+    return *reinterpret_cast<uint64 const*>(data.value);
   } else {
-    result = static_cast<uint64>(strtoull(data.value, nullptr, 10));
+    return Firelands::StringTo<uint64>(data.value) || 0;
   }
-
-  if (!result) {
-    return 0;
-  }
-  return result;
 }
 
 int64 Field::GetInt64() const {
