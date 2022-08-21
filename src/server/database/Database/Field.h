@@ -116,7 +116,7 @@ class FC_DATABASE_API Field
             char const* value;          // Actual data in memory
             uint32 length;              // Length
             bool raw;                   // Raw bytes? (Prepared statement or ad hoc)
-         } data;
+        } data;
 
         void SetByteValue(char const* newValue, uint32 length);
         void SetStructuredValue(char const* newValue, uint32 length);
