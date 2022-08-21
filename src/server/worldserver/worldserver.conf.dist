@@ -1316,7 +1316,7 @@ CacheDataQueries = 1
 #                     4  - (Enable world only)
 #                     0  - (All Disabled)
 
-Updates.EnableDatabases = 15
+Updates.EnableDatabases = 0
 
 #
 #    Updates.AutoSetup
@@ -1324,7 +1324,7 @@ Updates.EnableDatabases = 15
 #        Default:     1 - (Enabled)
 #                     0 - (Disabled)
 
-Updates.AutoSetup   = 1
+Updates.AutoSetup   = 0
 
 #
 #    Updates.Redundancy
@@ -1333,7 +1333,7 @@ Updates.AutoSetup   = 1
 #        Default:     1 - (Enabled)
 #                     0 - (Disabled)
 
-Updates.Redundancy  = 1
+Updates.Redundancy  = 0
 
 #
 #    Updates.ArchivedRedundancy
@@ -1350,7 +1350,7 @@ Updates.ArchivedRedundancy = 0
 #        Default:     1 - (Enabled)
 #                     0 - (Disabled)
 
-Updates.AllowRehash = 1
+Updates.AllowRehash = 0
 
 #
 #    Updates.CleanDeadRefMaxCount
@@ -1362,7 +1362,7 @@ Updates.AllowRehash = 1
 #                     0 - (Disabled)
 #                    -1 - (Enabled - unlimited)
 
-Updates.CleanDeadRefMaxCount = 3
+Updates.CleanDeadRefMaxCount = 0
 
 #
 ###################################################################################################
