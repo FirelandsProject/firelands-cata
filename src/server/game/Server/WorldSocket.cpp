@@ -293,9 +293,9 @@ struct AccountInfo {
     Locale = LocaleConstant(fields[7].GetUInt8());
     Recruiter = fields[8].GetUInt32();
     OS = fields[9].GetString();
-    Security = AccountTypes(fields[11].GetUInt8());
-    IsBanned = fields[13].GetUInt64() != 0;
-    IsRecruiter = fields[14].GetUInt32() != 0;
+    Security = AccountTypes(fields[10].GetUInt8());
+    IsBanned = fields[11].GetUInt64() != 0;
+    //IsRecruiter = fields[14].GetUInt32() != 0;
 
     uint32 world_expansion = sWorld->getIntConfig(CONFIG_EXPANSION);
     if (Expansion > world_expansion) Expansion = world_expansion;
