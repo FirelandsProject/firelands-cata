@@ -127,7 +127,7 @@ namespace Firelands::Impl::StringConvertImpl
         }
     };
 
-#if AC_COMPILER == AC_COMPILER_MICROSOFT
+#if FC_COMPILER == FC_COMPILER_MICROSOFT
     template <typename T>
     struct For<T, std::enable_if_t<std::is_floating_point_v<T>>>
     {
