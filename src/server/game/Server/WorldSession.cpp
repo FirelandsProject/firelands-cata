@@ -701,11 +701,6 @@ void WorldSession::LogoutPlayer(bool save) {
     CharacterDatabase.Execute(stmt);
   }
 
-  if (m_Socket) {
-    m_Socket->CloseSocket();
-    m_Socket.reset();
-  }
-
   m_playerLogout = false;
   m_playerSave = false;
   m_playerRecentlyLogout = true;
