@@ -81,7 +81,7 @@ template <>
 std::string DBUpdater<LoginDatabaseConnection>::GetBaseDirectory()
 {
     return BuiltInConfig::GetSourceDirectory() +
-           "/sql/base/db_auth/";
+           "/data/sql/base/db_auth/";
 }
 
 template <>
@@ -108,7 +108,7 @@ template <>
 std::string DBUpdater<WorldDatabaseConnection>::GetBaseDirectory()
 {
     return BuiltInConfig::GetSourceDirectory() +
-           "/sql/base/db_world/";
+           "/data/sql/base/db_world/";
 }
 
 template <>
@@ -141,7 +141,7 @@ template <>
 std::string DBUpdater<CharacterDatabaseConnection>::GetBaseDirectory()
 {
     return BuiltInConfig::GetSourceDirectory() +
-           "/sql/base/db_characters";
+           "/data/sql/base/db_characters";
 }
 
 template <>
@@ -168,7 +168,7 @@ template <>
 std::string DBUpdater<HotfixDatabaseConnection>::GetBaseDirectory()
 {
     return BuiltInConfig::GetSourceDirectory() +
-           "/sql/base/db_hotfixes/";
+           "/data/sql/base/db_hotfixes/";
 }
 
 template <>
