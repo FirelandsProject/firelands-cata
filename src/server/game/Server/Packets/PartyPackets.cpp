@@ -367,6 +367,10 @@ void WorldPackets::Party::PartyInvite::Initialize(Player* const inviter,
 }
 
 WorldPacket const* WorldPackets::Party::PartyInvite::Write() {
+  _worldPacket.WriteBit(
+      MustBeFriend);  // This flag is required because if the flag doesnt
+                      // exists, the client revokes the packet and the party is
+                      // automatically declined. (Parental control stuff).
   _worldPacket.WriteBit(InviterGUID[0]);
   _worldPacket.WriteBit(InviterGUID[3]);
   _worldPacket.WriteBit(InviterGUID[2]);
@@ -377,8 +381,8 @@ WorldPacket const* WorldPackets::Party::PartyInvite::Write() {
   _worldPacket.WriteBit(InviterGUID[4]);
   _worldPacket.WriteBits(InviterName.length(), 7);
   _worldPacket.WriteBits(LfgSlots.size(), 24);
-  _worldPacket.WriteBit(IsXRealm);  // @todo: validate. Just seen it once in a
-                                    // firelands raid sniff.
+  // TODO: validate. Just seen it once in a firelands raid sniff.
+  _worldPacket.WriteBit(IsXRealm);
   _worldPacket.WriteBit(InviterGUID[1]);
   _worldPacket.WriteBit(InviterGUID[7]);
   _worldPacket.FlushBits();
