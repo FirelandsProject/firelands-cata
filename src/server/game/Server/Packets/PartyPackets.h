@@ -142,6 +142,7 @@ namespace WorldPackets
             void Initialize(Player* const inviter, int32 proposedRoles, bool canAccept);
 
             bool IsXRealm = false;
+            bool MustBeFriend = false;
             bool CanAccept = false;
             uint32 InviterCfgRealmID = 0;
             uint32 LfgCompletedMask = 0;
