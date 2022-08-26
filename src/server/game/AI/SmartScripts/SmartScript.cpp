@@ -38,6 +38,7 @@
 #include "SmartAI.h"
 #include "SpellAuras.h"
 #include "SpellMgr.h"
+#include "ScriptedCreature.h"
 #include "TemporarySummon.h"
 #include "Vehicle.h"
 #include "WaypointDefines.h"
@@ -2809,7 +2810,20 @@ void SmartScript::GetTargets(ObjectVector& targets, SmartScriptHolder const& e, 
         }
         case SMART_TARGET_CLOSEST_CREATURE:
         {
-            if (Creature* target = baseObject->FindNearestCreature(e.target.closest.entry, float(e.target.closest.dist ? e.target.closest.dist : 100), !e.target.closest.dead))
+            WorldObject* ref = baseObject;
+
+            if (!ref)
+                ref = scriptTrigger;
+
+            if (!ref)
+            {
+                LOG_ERROR("scripts.ai.sai", "SMART_TARGET_CLOSEST_CREATURE: Entry %u SourceType %s Event %u Action %u Target %u is missing base object or invoker.",
+                    e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType(), e.GetTargetType());
+                break;
+            }
+
+            Creature* target = GetClosestCreatureWithEntry(ref, e.target.closest.entry, (float)(e.target.closest.dist ? e.target.closest.dist : 100), !e.target.closest.dead);
+            if (target)
                 targets.push_back(target);
             break;
         }
