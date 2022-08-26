@@ -395,7 +395,7 @@ void DBUpdater<T>::ApplyFile(DatabaseWorkerPool<T> &pool, std::string const &hos
                              std::string const &password, std::string const &port_or_socket, std::string const &database, Path const &path)
 {
     std::vector<std::string> args;
-    args.reserve(7);
+    args.reserve(9);
 
     // CLI Client connection info
     args.emplace_back("-h" + host);
@@ -433,13 +433,17 @@ void DBUpdater<T>::ApplyFile(DatabaseWorkerPool<T> &pool, std::string const &hos
     // Set max allowed packet to 1 GB
     args.emplace_back("--max-allowed-packet=1GB");
 
+    // Excute SQL file
+    args.emplace_back("-e");
+    args.emplace_back(Firelands::StringFormat("BEGIN; SOURCE %s; COMMIT;", path.generic_string().c_str()));
+
     // Database
     if (!database.empty())
         args.emplace_back(database);
 
     // Invokes a mysql process which doesn't leak credentials to logs
     int const ret = Firelands::StartProcess(DBUpdaterUtil::GetCorrectedMySQLExecutable(), args,
-                                            "sql.updates", path.generic_string(), true);
+        "sql.updates", "", true);
 
     if (ret != EXIT_SUCCESS)
     {
