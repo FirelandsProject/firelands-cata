@@ -2817,8 +2817,7 @@ void SmartScript::GetTargets(ObjectVector& targets, SmartScriptHolder const& e, 
 
             if (!ref)
             {
-                LOG_ERROR("scripts.ai.sai", "SMART_TARGET_CLOSEST_CREATURE: Entry %u SourceType %s Event %u Action %u Target %u is missing base object or invoker.",
-                    e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType(), e.GetTargetType());
+                LOG_ERROR("scripts.ai.sai", "SMART_TARGET_CLOSEST_CREATURE: Entry %i SourceType %u Event %u Action %u Target %u is missing base object or invoker.", e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType(), e.GetTargetType());
                 break;
             }
 
