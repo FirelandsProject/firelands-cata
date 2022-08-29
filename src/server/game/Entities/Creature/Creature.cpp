@@ -3466,32 +3466,32 @@ void Creature::Reload(bool skipDatabase)
         LOG_ERROR("entities.unit", "Creature::Create(): given coordinates for creature (SpawnID " UI64FMTD ", entry %d) are not valid (X: %f, Y: %f, Z: %f, O: %f)",
             GetSpawnId(), GetEntry(), data->spawnPoint.GetPositionX(), data->spawnPoint.GetPositionY(), data->spawnPoint.GetPositionZ(), data->spawnPoint.GetOrientation());
         return;
-    }   
+    }
 
     if (!CreateFromProto(GetGUID().GetCounter(), entry, data, cInfo->VehicleId))
         return;
 
     switch (GetCreatureTemplate()->rank)
     {
-	    case CREATURE_ELITE_RARE:
-		    m_corpseDelay = sWorld->getIntConfig(CONFIG_CORPSE_DECAY_RARE);
-		    break;
+        case CREATURE_ELITE_RARE:
+            m_corpseDelay = sWorld->getIntConfig(CONFIG_CORPSE_DECAY_RARE);
+            break;
 
-	    case CREATURE_ELITE_ELITE:
-		    m_corpseDelay = sWorld->getIntConfig(CONFIG_CORPSE_DECAY_ELITE);
-		    break;
+        case CREATURE_ELITE_ELITE:
+            m_corpseDelay = sWorld->getIntConfig(CONFIG_CORPSE_DECAY_ELITE);
+            break;
 
-	    case CREATURE_ELITE_RAREELITE:
-		    m_corpseDelay = sWorld->getIntConfig(CONFIG_CORPSE_DECAY_RAREELITE);
-		    break;
+        case CREATURE_ELITE_RAREELITE:
+            m_corpseDelay = sWorld->getIntConfig(CONFIG_CORPSE_DECAY_RAREELITE);
+            break;
 
-	    case CREATURE_ELITE_WORLDBOSS:
-		    m_corpseDelay = sWorld->getIntConfig(CONFIG_CORPSE_DECAY_WORLDBOSS);
-		    break;
+        case CREATURE_ELITE_WORLDBOSS:
+            m_corpseDelay = sWorld->getIntConfig(CONFIG_CORPSE_DECAY_WORLDBOSS);
+            break;
 
-	    default:
-		    m_corpseDelay = sWorld->getIntConfig(CONFIG_CORPSE_DECAY_NORMAL);
-		    break;
+        default:
+            m_corpseDelay = sWorld->getIntConfig(CONFIG_CORPSE_DECAY_NORMAL);
+            break;
     }
 
     LoadCreaturesAddon();
