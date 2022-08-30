@@ -36,7 +36,6 @@
 
 void WorldSession::SendTradeStatus(WorldPackets::Trade::TradeStatus &info) {
   info.Clear(); // reuse packet
-  Player *trader = _player->GetTrader();
   SendPacket(info.Write());
 }
 

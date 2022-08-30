@@ -492,10 +492,10 @@ void LootTemplate::LootGroup::Verify(LootStore const& lootstore, uint32 id, uint
 {
     float chance = RawTotalChance();
     if (chance > 101.0f)                                    /// @todo replace with 100% when DBs will be ready
-        LOG_ERROR("sql.sql", "Table 'world_loot_template' LootType: %d Entry: %u Name: %s Group: %d has total chance > 100%% (%f)", lootTypeId, lootstore.GetEntryName(), id, group_id, chance);
+        LOG_ERROR("sql.sql", "Table 'world_loot_template' LootType: %d Name: %s id %u Group: %u has total chance > 100%% (%f)", lootTypeId, lootstore.GetEntryName(), id, group_id, chance);
 
     if (chance >= 100.0f && !EqualChanced.empty())
-        LOG_ERROR("sql.sql", "Table 'world_loot_template' LootType: %d Entry: %u Name: %s Group: %d has items with chance = 0%% but group total chance >= 100%% (%f)", lootTypeId, lootstore.GetEntryName(), id, group_id, chance);
+        LOG_ERROR("sql.sql", "Table 'world_loot_template' LootType: %d Name: %s id %u Group: %u has items with chance = 0%% but group total chance >= 100%% (%f)", lootTypeId, lootstore.GetEntryName(), id, group_id, chance);
 }
 
 void LootTemplate::LootGroup::CheckLootRefs(LootTemplateMap const& /*store*/, LootTypeId lootTypeId, LootIdSet* ref_set) const
@@ -1167,7 +1167,7 @@ void LoadLootTemplates_Reference()
     // output error for any still listed ids (not referenced from any loot table)
     LootTemplates_Reference.ReportUnusedIds(lootIdSet, LOOT_TYPE_NONE);
 
-    LOG_INFO("server.loading", ">> Loaded %u LootType 10 Loot Table (Reference) in %u ms", GetMSTimeDiffToNow(oldMSTime));
+    LOG_INFO("server.loading", ">> Loaded LootType 10 Loot Table (Reference) in %u ms", GetMSTimeDiffToNow(oldMSTime));
 }
 
 void LoadLootTables()
