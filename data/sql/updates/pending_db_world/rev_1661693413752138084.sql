@@ -1,5 +1,3 @@
---
---
 DELETE FROM firelands_string WHERE entry IN (11020, 11021);
 INSERT INTO firelands_string (entry, content_default) VALUES
 (11020, 'Selected creature reloaded.'),
