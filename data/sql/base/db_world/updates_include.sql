@@ -13,10 +13,7 @@ CREATE TABLE IF NOT EXISTS `updates_include` (
 DELETE FROM `updates_include`;
 /*!40000 ALTER TABLE `updates_include` DISABLE KEYS */;
 INSERT INTO `updates_include` (`path`, `state`) VALUES
-	('$/sql/custom/world', 'RELEASED'),
-	('$/sql/old/4.3.4/world', 'ARCHIVED'),
-	('$/sql/old/custom/world', 'ARCHIVED'),
-	('$/sql/updates/world', 'RELEASED');
+	('$/data/sql/updates/world', 'RELEASED');
 /*!40000 ALTER TABLE `updates_include` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
