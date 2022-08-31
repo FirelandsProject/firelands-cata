@@ -79,6 +79,7 @@ class FC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         void UpdateLevelDependantStats();
         void LoadEquipment(int8 id = 1, bool force = false);
         void SetSpawnHealth();
+        void Reload(bool skipDatabase);
 
         ObjectGuid::LowType GetSpawnId() const { return m_spawnId; }
 
