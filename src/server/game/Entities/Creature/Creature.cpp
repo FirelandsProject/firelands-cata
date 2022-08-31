@@ -3385,3 +3385,162 @@ void Creature::MakeInterruptable(bool apply)
     ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_INTERRUPT, !apply);
     ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_INTERRUPT_CAST, !apply);
 }
+
+/**
+ * It reloads the creature's data from the database
+ *
+ * @param skipDatabase If true, the creature will not be reloaded from the database.
+ *
+ * @return The creature's entry.
+ */
+void Creature::Reload(bool skipDatabase)
+{
+    uint32 entry = GetEntry();
+
+    InterruptNonMeleeSpells(false);
+    RemoveAllAuras();
+
+    PreparedQueryResult result;
+    if (!skipDatabase)
+    {
+        WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_SEL_CREATURE_TEMPLATE);
+        stmt->setUInt32(0, entry);
+        result = WorldDatabase.Query(stmt);
+
+        if (!result)
+        {
+            LOG_ERROR("sql.sql", "Creature template %u not found for reload...", GetEntry());
+            return;
+        }
+
+        Field* fields = result->Fetch();
+        sObjectMgr->LoadCreatureTemplate(fields);
+        sObjectMgr->LoadCreatureModelInfo();
+        sObjectMgr->LoadCreatureAddons();
+        sObjectMgr->LoadCreatureTemplateAddons();
+        sObjectMgr->LoadCreatureMovementInfo();
+        sObjectMgr->LoadCreatureMovementOverrides();
+    }
+
+    CreatureTemplate const* cInfo = sObjectMgr->GetCreatureTemplate(entry);
+    if (!cInfo)
+    {
+        LOG_ERROR("sql.sql", "Creature template info %u not found for reload...", GetEntry());
+        return;
+    }
+
+    CreatureData const* data = sObjectMgr->GetCreatureData(GetSpawnId());
+    if (!data)
+    {
+        LOG_ERROR("sql.sql", "Creature SpawnID (" SI64FMTD ") does not exist, skipped re-loading.", GetSpawnId());
+        return;
+    }
+
+    if (!skipDatabase)
+    {
+        sObjectMgr->CheckCreatureTemplate(cInfo);
+
+        QueryResult scriptQuery = WorldDatabase.PQuery("SELECT ScriptName FROM creature WHERE guid = %u", GetSpawnId());
+        if (!scriptQuery)
+        {
+            LOG_ERROR("sql.sql", "Creature SpawnID (" SI64FMTD ") not found in creature table, skipped re-loading.", GetSpawnId());
+            return;
+        }
+
+        Field* fields = scriptQuery->Fetch();
+        CreatureData& cdata = sObjectMgr->NewOrExistCreatureData(GetSpawnId());
+        cdata.scriptId = sObjectMgr->GetScriptId(fields[0].GetString());
+
+        if (!cdata.scriptId)
+        {
+            cdata.scriptId = cInfo->ScriptID;
+        }
+    }
+
+    Relocate(data->spawnPoint.GetPositionX(), data->spawnPoint.GetPositionY(), data->spawnPoint.GetPositionZ(), data->spawnPoint.GetOrientation());
+
+    // Check if the position is valid before calling from CreateFromProto(), otherwise we might add Auras to Creatures at invalid position
+    // and triggering a crash about Auras not removed in the destructor
+    if (!IsPositionValid())
+    {
+        LOG_ERROR("entities.unit", "Creature::Create(): given coordinates for creature (SpawnID " UI64FMTD ", entry %d) are not valid (X: %f, Y: %f, Z: %f, O: %f)",
+            GetSpawnId(), GetEntry(), data->spawnPoint.GetPositionX(), data->spawnPoint.GetPositionY(), data->spawnPoint.GetPositionZ(), data->spawnPoint.GetOrientation());
+        return;
+    }
+
+    if (!CreateFromProto(GetGUID().GetCounter(), entry, data, cInfo->VehicleId))
+        return;
+
+    switch (GetCreatureTemplate()->rank)
+    {
+        case CREATURE_ELITE_RARE:
+            m_corpseDelay = sWorld->getIntConfig(CONFIG_CORPSE_DECAY_RARE);
+            break;
+
+        case CREATURE_ELITE_ELITE:
+            m_corpseDelay = sWorld->getIntConfig(CONFIG_CORPSE_DECAY_ELITE);
+            break;
+
+        case CREATURE_ELITE_RAREELITE:
+            m_corpseDelay = sWorld->getIntConfig(CONFIG_CORPSE_DECAY_RAREELITE);
+            break;
+
+        case CREATURE_ELITE_WORLDBOSS:
+            m_corpseDelay = sWorld->getIntConfig(CONFIG_CORPSE_DECAY_WORLDBOSS);
+            break;
+
+        default:
+            m_corpseDelay = sWorld->getIntConfig(CONFIG_CORPSE_DECAY_NORMAL);
+            break;
+    }
+
+    LoadCreaturesAddon();
+
+    // Need to be called before LoadCreatureAddon - MOVEMENTFLAG_HOVER is set there
+    if (HasUnitMovementFlag(MOVEMENTFLAG_HOVER))
+    {
+        float z = data->spawnPoint.GetPositionZ() + GetFloatValue(UNIT_FIELD_HOVERHEIGHT);
+
+        // Relocate again with updated Z coord
+        Relocate(data->spawnPoint.GetPositionX(), data->spawnPoint.GetPositionY(), z, data->spawnPoint.GetOrientation());
+    }
+
+    uint32 displayId = GetNativeDisplayId();
+    CreatureModelInfo const* mInfo = sObjectMgr->GetCreatureModelRandomGender(&displayId);
+    if (mInfo && !IsTotem())
+    {
+        SetDisplayId(displayId);
+        SetNativeDisplayId(displayId);
+        SetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_GENDER, mInfo->gender);
+    }
+
+    LastUsedScriptID = GetScriptId();
+
+    if (IsSpiritHealer() || IsSpiritGuide())
+    {
+        m_serverSideVisibility.SetValue(SERVERSIDE_VISIBILITY_GHOST, GHOST_VISIBILITY_GHOST);
+        m_serverSideVisibilityDetect.SetValue(SERVERSIDE_VISIBILITY_GHOST, GHOST_VISIBILITY_GHOST);
+    }
+
+    if (GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_IGNORE_PATHFINDING)
+    {
+        AddUnitState(UNIT_STATE_IGNORE_PATHFINDING);
+    }
+
+    if (GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_IMMUNITY_KNOCKBACK)
+    {
+        ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
+        ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK_DEST, true);
+    }
+
+    AIM_Initialize();
+
+    Respawn();
+
+    if (IsAIEnabled())
+    {
+        AI()->EnterEvadeMode();
+    }
+
+    LOG_DEBUG("sql.sql", "Creature SpawnId (" SI64FMTD ") reloaded.", GetSpawnId());
+}
