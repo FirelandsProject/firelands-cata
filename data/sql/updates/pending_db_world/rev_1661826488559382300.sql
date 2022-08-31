@@ -1,5 +1,4 @@
 DELETE FROM `creature_template_locale` WHERE `entry`=34830 AND `locale` IN ('esMX', 'esES');
-
 INSERT INTO `creature_template_locale` (`entry`, `locale`, `Name`, `FemaleName`, `Title`, `VerifiedBuild`) VALUES
 (34830, 'esMX', 'Trol desafiante', '', '', 18019),
 (34830, 'esES', 'Trol desafiante', '', '', 18019);
