@@ -12,7 +12,7 @@ UPDATE `creature_text` SET `BroadcastTextId`=35112 WHERE `CreatureID`=34830 AND 
 UPDATE `creature_text` SET `BroadcastTextId`=40313 WHERE `CreatureID`=34830 AND `GroupID`=0 AND `ID`=5;
 UPDATE `creature_text` SET `BroadcastTextId`=40312 WHERE `CreatureID`=34830 AND `GroupID`=0 AND `ID`=6;
 
-DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=19 AND `SourceEntry` IN (14069 ,14075 ,25473 ,28349 ,14071 ,24567 ,24488 ,24502 ,24503 ,24520 ,14070 ,26712 ,14113 ,14153 ,14115 ,14116 ,14120 ,14121 ,14122 ,14123 ,14124 ,14125 ,14126 );
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=19 AND `SourceEntry` IN (14069 ,14075 ,25473 ,28349 ,14071 ,24567 ,24488 ,24502 ,24503 ,24520 ,14070 ,26712 ,14113 ,14153 ,14115 ,14116 ,14120 ,14121 ,14122 ,14123 ,14124 ,14125 ,14126);
 
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
 (19, 0, 14069, 0, 0, 8, 0, 14138, 0, 0, 0, 0, 0, '', 'Enable quest 14069, only if the player has completed quest 14138.'),
