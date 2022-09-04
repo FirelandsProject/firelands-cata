@@ -31,6 +31,7 @@
 #include "Vehicle.h"
 #include "GameObjectAI.h"
 #include "GameObject.h"
+#include "SpellMgr.h"
 
 enum GilneasInvasionCamera
 {
@@ -621,6 +622,31 @@ class spell_gilneas_worgen_intro_completion : public SpellScript
     }
 };
 
+//Round Up Horse
+class spell_round_up_horse : public SpellScript
+{
+    bool Validate(SpellInfo const* /*spellInfo*/)
+    {
+        if (!sSpellMgr->GetSpellInfo(68903)) return false;
+        return true;
+    }
+
+    void HandleEffectDummy(SpellEffIndex /*effIndex*/)
+    {
+        if (GetHitUnit()->GetTypeId() != TYPEID_UNIT ||
+            GetCaster()->GetTypeId() != TYPEID_PLAYER ||
+            GetCaster()->ToPlayer()->GetQuestStatus(14416) !=
+                QUEST_STATUS_INCOMPLETE)
+            return;
+        GetHitUnit()->ToCreature()->DespawnOrUnsummon(1);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget.Register(&spell_round_up_horse::HandleEffectDummy,EFFECT_1, SPELL_EFFECT_DUMMY);
+    }
+};
+
 void AddSC_gilneas_chapter_2()
 {
     RegisterGameObjectAI(go_gilneas_invasion_camera);
@@ -633,4 +659,5 @@ void AddSC_gilneas_chapter_2()
     RegisterSpellScript(spell_gilneas_call_attack_mastiff);
     RegisterSpellScript(spell_gilneas_forcecast_cataclysm_1);
     RegisterSpellScript(spell_gilneas_worgen_intro_completion);
+    RegisterSpellScript(spell_round_up_horse);
 }
