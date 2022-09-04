@@ -15,7 +15,7 @@ DELETE FROM `updates_include`;
 INSERT INTO `updates_include` (`path`, `state`) VALUES
 	('$/sql/custom/auth', 'RELEASED'),
 	('$/sql/old/4.3.4/auth', 'ARCHIVED'),
-	('$/sql/updates/auth', 'RELEASED');
+	('$/sql/updates/db_auth', 'RELEASED');
 /*!40000 ALTER TABLE `updates_include` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
