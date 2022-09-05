@@ -1134,6 +1134,25 @@ class GenericGameObjectScript : public GameObjectScript
 };
 #define RegisterGameObjectAI(ai_name) new GenericGameObjectScript<ai_name>(#ai_name)
 
+template <class AI>
+class GenericInstanceMapScript : public InstanceMapScript
+{
+public:
+    GenericInstanceMapScript(char const* name, uint32 mapId) : InstanceMapScript(name, mapId) { }
+    InstanceScript* GetInstanceScript(InstanceMap* map) const override { return new AI(map); }
+};
+#define RegisterInstanceScript(ai_name, mapId) new GenericInstanceMapScript<ai_name>(#ai_name, mapId)
+
+#define RegisterAchievementCriteriaScript(script) new script()
+#define RegisterAreaTriggerScript(script) new script()
+#define RegisterBattlegroundScript(script) new script()
+#define RegisterItemScript(script) new script()
+#define RegisterOnlyOnceAreaTriggerScript(script) new script()
+#define RegisterOutdoorPvPScript(script) new script()
+#define RegisterPlayerScript(script) new script()
+#define RegisterTransportScript(script) new script()
+#define RegisterVehicleScript(script) new script()
+
 #define sScriptMgr ScriptMgr::instance()
 
 #endif
