@@ -726,4 +726,5 @@ void AddSC_azuremyst_isle()
     new npc_magwin();
     new npc_death_ravager();
     new go_ravager_cage();
+	new npc_geezle();
 }
