@@ -1316,7 +1316,7 @@ CacheDataQueries = 1
 #                     4  - (Enable world only)
 #                     0  - (All Disabled)
 
-Updates.EnableDatabases = 0
+Updates.EnableDatabases = 15
 
 #
 #    Updates.AutoSetup
