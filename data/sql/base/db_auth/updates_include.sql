@@ -13,9 +13,7 @@ CREATE TABLE IF NOT EXISTS `updates_include` (
 DELETE FROM `updates_include`;
 /*!40000 ALTER TABLE `updates_include` DISABLE KEYS */;
 INSERT INTO `updates_include` (`path`, `state`) VALUES
-	('$/sql/custom/auth', 'RELEASED'),
-	('$/sql/old/4.3.4/auth', 'ARCHIVED'),
-	('$/sql/updates/db_auth', 'RELEASED');
+	('$/data/sql/updates/db_auth', 'RELEASED');
 /*!40000 ALTER TABLE `updates_include` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
