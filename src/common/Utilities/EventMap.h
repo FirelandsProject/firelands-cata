@@ -112,6 +112,8 @@ public:
             _phase &= uint8(~(1 << (phase - 1)));
     }
 
+    bool HasEvent(uint32 eventId) const;
+
     /**
     * @name ScheduleEvent
     * @brief Creates new event entry in map.
@@ -268,6 +270,24 @@ public:
     * @param group Group of the events.
     */
     void DelayEvents(uint32 delay, uint32 group);
+
+    /**
+    * @name DelayEvent
+    * @brief Delays specific event in the map. If delay is greater than or equal internal timer, delay will be 0.
+    * @param delay Amount of delay in ms as std::chrono::duration.
+    */
+    void DelayEvent(uint32 eventID, Milliseconds delay)
+    {
+        DelayEvent(eventID, uint32(delay.count()));
+    }
+
+    /**
+    * @name DelayEvent
+    * @brief Delays specific event in the map. If delay is greater than or equal internal timer, delay will be 0.
+    * @param delay Amount of delay.
+    */
+
+    void DelayEvent(uint32 eventID, uint32 delay);
 
     /**
     * @name CancelEvent
