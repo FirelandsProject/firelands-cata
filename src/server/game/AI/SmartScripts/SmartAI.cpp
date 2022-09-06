@@ -931,6 +931,21 @@ void SmartAI::StopFollow(bool complete)
     GetScript()->ProcessEventsFor(SMART_EVENT_FOLLOW_COMPLETED, player);
 }
 
+void SmartAI::SetUnfollow()
+{
+    _followGuid.Clear();
+    _followDist = 0;
+    _followAngle = 0;
+    _followCredit = 0;
+    _followArrivedTimer = 0;
+    _followArrivedEntry = 0;
+    _followCreditType = 0;
+
+    me->StopMoving();
+    me->GetMotionMaster()->Clear();
+    me->GetMotionMaster()->MoveIdle();
+}
+
 void SmartAI::SetScript9(SmartScriptHolder& e, uint32 entry, Unit* invoker)
 {
     if (invoker)

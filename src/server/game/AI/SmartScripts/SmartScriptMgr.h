@@ -593,8 +593,25 @@ enum SMART_ACTION
     SMART_ACTION_OVERRIDE_WEATHER                   = 139,    // zoneId, weatherId, intensity
     SMART_ACTION_SET_AI_ANIM_KIT                    = 140,    // animKitId
     SMART_ACTION_SET_HOVER                          = 141,    // enable
+    // End Trinity Actions:
 
-    SMART_ACTION_END                                = 142
+    SMART_ACTION_STOP_FOLLOW                        = 200,    // none
+    SMART_ACTION_COMPLETE_QUEST                     = 201,    // Complete quest by ID (misc1, misc2 ...)
+    SMART_ACTION_MOD_CURRENCY                       = 202,    // Modify currency to player by ID and count
+    SMART_ACTION_CLEAR_QUEST                        = 203,    // Clear rewarded quest from player (quest ID)
+    SMART_ACTION_UNLEARN_SPELL                      = 204,    // Unlearn spells from player
+    SMART_ACTION_LEARN_SPELL                        = 205,    // Learn spells to player
+    SMART_ACTION_UPDATE_ACHIEVEMENT_CRITERIA        = 206,    // Update Achievement Criteria
+    SMART_ACTION_SET_OVERRIDE_ZONE_MUSIC            = 207,    // zone Id, music Id.
+    SMART_ACTION_SET_POWER_TYPE                     = 208,    // Power Type. See enum in Unit.h
+    SMART_ACTION_SET_MAX_POWER                      = 209,    // Power Type, value
+    SMART_ACTION_ADD_FLYING_MOVEMENT_FLAG           = 210,    // Variation
+    SMART_ACTION_REMOVE_FLYING_MOVEMENT_FLAG        = 211,    // Variation
+    SMART_ACTION_CAST_SPELL_OFFSET                  = 212,    // SpellId, triggered if value = 1.
+    SMART_ACTION_SET_SPEED                          = 213,    // speedType, speed
+    SMART_ACTION_IGNORE_PATHFINDING                 = 214,    // 0/1 (1 = ignored, 0 = enabled)
+
+    SMART_ACTION_END                                = 215
 };
 
 struct SmartAction
@@ -1176,9 +1193,6 @@ struct SmartAction
             uint32 entry;
         } cinematic;
 
-        //! Note for any new future actions
-        //! All parameters must have type uint32
-
         struct
         {
             uint32 movementType;
@@ -1211,6 +1225,73 @@ struct SmartAction
             uint32 enable;
         } setHover;
 
+        struct
+        {
+            uint32 quest[6];
+        } CompleteQuest;
+
+        struct
+        {
+            uint32 currencyID;
+            uint32 count;
+        } modCurrency;
+
+        struct
+        {
+            uint32 quest[6];
+        } clearQuest;
+
+        struct
+        {
+            uint32 spell[6];
+        } unlearnSpell;
+
+        struct
+        {
+            uint32 spell[6];
+        } learnSpell;
+
+        struct
+        {
+            uint32 type;
+            uint32 misc1;
+            uint32 misc2;
+            uint32 misc3;
+        } achievementCriteria;
+
+        struct
+        {
+            uint32 zoneId;
+            uint32 musicId;
+        } setOverrideZoneMusic;
+
+        struct
+        {
+            uint32 powerType;
+        } powerType;
+
+        struct
+        {
+            uint32 variationMovementFlags;
+        } SetMovementFlags;
+
+        struct
+        {
+            uint32 spellId;
+            uint32 triggered;
+        } castOffSet;
+
+        struct {
+            uint32 type;
+            uint32 speed;
+        } setSpeed;
+
+        struct {
+            uint32 ignore;
+        } ignorePathfinding;
+
+        //! Note for any new future actions
+        //! All parameters must have type uint32
         struct
         {
             uint32 param1;
