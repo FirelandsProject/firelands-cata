@@ -2922,6 +2922,35 @@ void SmartScript::GetTargets(ObjectVector& targets, SmartScriptHolder const& e, 
                             targets.push_back(u);
             break;
         }
+        case SMART_TARGET_INVOKER_SUMMON:
+        {
+            if (me)
+                if (Unit* target = me->GetSummonedCreatureByEntry(e.target.invokerSummon.entry))
+                    targets.push_back(target);
+
+            break;
+        }
+        case SMART_TARGET_HOSTILE_RANDOM_PLAYER:
+        {
+            if (me)
+                if (Unit* u = me->AI()->SelectTarget(SELECT_TARGET_RANDOM, 0, 0.0f, true))
+                    targets.push_back(u);
+            break;
+        }
+        case SMART_TARGET_HOSTILE_RANDOM_NOT_TOP_PLAYER:
+        {
+            if (me)
+                if (Unit* u = me->AI()->SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true))
+                    targets.push_back(u);
+            break;
+        }
+        case SMART_TARGET_HOSTILE_RANDOM_AURA:
+        {
+            if (me)
+                if (Unit* u = me->AI()->SelectTarget(SELECT_TARGET_RANDOM, e.target.spell.topornot, static_cast<float>(e.target.spell.dist), true, e.target.spell.entry))
+                    targets.push_back(u);
+            break;
+        }
         case SMART_TARGET_POSITION:
         case SMART_TARGET_NONE:
         default:

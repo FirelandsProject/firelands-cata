@@ -1505,6 +1505,11 @@ class FC_GAME_API Unit : public WorldObject
         ObjectGuid m_SummonSlot[MAX_SUMMON_SLOT];
         ObjectGuid m_ObjectSlot[MAX_GAMEOBJECT_SLOT];
 
+        void AddSummonedCreature(ObjectGuid guid, uint32 entry);
+        void RemoveSummonedCreature(ObjectGuid guid);
+        Creature* GetSummonedCreatureByEntry(uint32 entry);
+        void UnsummonCreatureByEntry(uint32 entry, uint32 ms = 0);
+
         ShapeshiftForm GetShapeshiftForm() const { return ShapeshiftForm(GetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_SHAPESHIFT_FORM)); }
         void SetShapeshiftForm(ShapeshiftForm form);
 
@@ -1997,6 +2002,8 @@ class FC_GAME_API Unit : public WorldObject
         std::array<std::unordered_set<AbstractPursuer*>, AsUnderlyingType(PursuingType::Max)> _unitsPursuingMe;
 
         bool _isIgnoringCombat;
+
+        std::unordered_map<ObjectGuid, uint32/*entry*/> m_SummonedCreatures;
 
         Optional<PendingSpellCastRequest> _pendingSpellCastRequest;
         void ProcessPendingSpellCastRequest();

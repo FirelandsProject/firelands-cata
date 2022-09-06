@@ -1274,8 +1274,14 @@ enum SMARTAI_TARGETS
     SMART_TARGET_LOOT_RECIPIENTS                = 27,   // all players that have tagged this creature (for kill credit)
     SMART_TARGET_FARTHEST                       = 28,   // maxDist, playerOnly, isInLos
     SMART_TARGET_VEHICLE_PASSENGER              = 29,   // seatMask (0 - all seats)
+    // Trinity smart targets end
 
-    SMART_TARGET_END                            = 30
+    SMART_TARGET_INVOKER_SUMMON                 = 100,  // entry
+    SMART_TARGET_HOSTILE_RANDOM_PLAYER          = 101,  // Just any random target on our threat list player
+    SMART_TARGET_HOSTILE_RANDOM_NOT_TOP_PLAYER  = 102,  // Any random target except top threat player
+    SMART_TARGET_HOSTILE_RANDOM_AURA            = 103,  // 
+
+    SMART_TARGET_END                            = 104
 };
 
 struct SmartTarget
@@ -1403,6 +1409,18 @@ struct SmartTarget
         {
             uint32 seatMask;
         } vehicle;
+
+        struct
+        {
+            uint32 entry;
+        } invokerSummon;
+
+        struct
+        {
+            int32 entry;
+            uint32 dist;
+            uint32 topornot;
+        } spell;
     };
 };
 
