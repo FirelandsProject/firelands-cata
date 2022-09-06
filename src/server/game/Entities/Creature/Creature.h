@@ -109,6 +109,10 @@ class FC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
 
         Unit* SelectVictim();
 
+        // For spells with Cone targets
+        void PrepareChanneledCast(float facing, uint32 spellId = 0, bool triggered = false);
+        void RemoveChanneledCast(ObjectGuid target);
+
         void SetReactState(ReactStates st) { m_reactState = st; }
         ReactStates GetReactState() const { return m_reactState; }
         bool HasReactState(ReactStates state) const { return (m_reactState == state); }
@@ -274,6 +278,8 @@ class FC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         ObjectGuid::LowType lootingGroupLowGUID;                         // used to find group which is looting corpse
 
         void SendZoneUnderAttackMessage(Player* attacker);
+
+        void SetCombatDistance(float dist) { m_CombatDistance = dist < 5.0f ? 5.0f : dist; }
 
         void SetInCombatWithZone();
 

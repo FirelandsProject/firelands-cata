@@ -94,6 +94,8 @@ class FC_GAME_API SmartScript
         typedef std::unordered_map<uint32, uint32> CounterMap;
         CounterMap mCounterList;
 
+        uint32 GetEventPhaseMask() { return mEventPhase; }
+
     private:
         void IncPhase(uint32 p);
         void DecPhase(uint32 p);

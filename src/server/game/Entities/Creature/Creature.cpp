@@ -3544,3 +3544,30 @@ void Creature::Reload(bool skipDatabase)
 
     LOG_DEBUG("sql.sql", "Creature SpawnId (" SI64FMTD ") reloaded.", GetSpawnId());
 }
+
+void Creature::PrepareChanneledCast(float facing, uint32 spell_id, bool triggered)
+{
+    AttackStop();
+    SetReactState(REACT_PASSIVE);
+    SetFacingTo(facing);
+
+    if (spell_id)
+        CastSpell(this, spell_id, triggered);
+}
+
+
+void Creature::RemoveChanneledCast(ObjectGuid target)
+{
+    SetReactState(REACT_AGGRESSIVE);
+
+    if (Unit* itr = ObjectAccessor::GetUnit(*this, target))
+    {
+        GetMotionMaster()->MoveChase(itr);
+        Attack(itr, true);
+    }
+    else if (Player* itr = SelectNearestPlayer(100.0f))
+    {
+        GetMotionMaster()->MoveChase(itr);
+        Attack(itr, true);
+    }
+}
