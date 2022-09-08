@@ -2151,6 +2151,7 @@ void ScriptMgr::OnQuestStatusChange(Player* player, Quest const* quest, QuestSta
     GET_SCRIPT(QuestScript, quest->GetScriptId(), tmpscript);
     tmpscript->OnQuestStatusChange(player, quest, oldStatus, newStatus);
 }
+//To Do: uncomment when QuestObjectives are implemented.
 /*
 void ScriptMgr::OnQuestObjectiveChange(Player* player, Quest const* quest, QuestObjective const& objective, int32 oldAmount, int32 newAmount)
 {

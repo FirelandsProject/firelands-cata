@@ -1029,6 +1029,7 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
                 }
                 break;
             case SMART_EVENT_QUEST_OBJ_COPLETETION:
+                //To Do: uncomment when QuestObjectives are implemented.
                 //    if (!sObjectMgr->GetQuestObjective(e.event.questObjective.id))
                 //    {
                 //        LOG_ERROR("sql.sql", "SmartAIMgr: Event SMART_EVENT_QUEST_OBJ_COPLETETION using invalid objective id %u, skipped.", e.event.questObjective.id);

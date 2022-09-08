@@ -3117,6 +3117,7 @@ void SmartScript::ProcessEvent(SmartScriptHolder& e, Unit* unit, uint32 var0, ui
             break;
         }
         case SMART_EVENT_QUEST_OBJ_COPLETETION:
+            //To Do: uncomment when QuestObjectives are implemented.
             //{
             //    if (var0 == (e.event.questObjective.id))
             //        ProcessAction(e, unit);

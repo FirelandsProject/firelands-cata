@@ -809,6 +809,7 @@ public:
     // Called when a quest status change
     virtual void OnQuestStatusChange(Player* /*player*/, Quest const* /*quest*/, QuestStatus /*oldStatus*/, QuestStatus /*newStatus*/) { }
 
+    //To Do: uncomment when QuestObjectives are implemented.
     // Called when a quest objective data change
     //virtual void OnQuestObjectiveChange(Player* /*player*/, Quest const* /*quest*/, QuestObjective const& /*objective*/, int32 /*oldAmount*/, int32 /*newAmount*/) { }
 };
@@ -1072,6 +1073,7 @@ class FC_GAME_API ScriptMgr
     public: /* QuestScript */
 
         void OnQuestStatusChange(Player* player, Quest const* quest, QuestStatus oldStatus, QuestStatus newStatus);
+        //To Do: uncomment when QuestObjectives are implemented.
         //void OnQuestObjectiveChange(Player* player, Quest const* quest, QuestObjective const& objective, int32 oldAmount, int32 newAmount);
 
     private:
