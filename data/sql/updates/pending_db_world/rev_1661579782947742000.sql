@@ -5,7 +5,7 @@ SET @GOBLIN_MODEL_1= 35186;
 SET @GOBLIN_MODEL_2= 35175;
 
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup` IN (379, 169) AND `SourceEntry`= 4765;
-DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=17 AND `SourceEntry` IN (66909,66910,66911,66912,66913);
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=17 AND `SourceEntry` IN (66909, 66910, 66911, 66912, 66913);
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
 (26, 379, 4765, 0, 0, 9, 0, 14153, 0, 0, 0, 0, 0, "", "Set Phase 379 in area 4765; Kezan, Quest Life of the party (14153)"),
 (26, 169, 4765, 0, 0, 9, 0, 14153, 0, 0, 0, 0, 0, "", "Set Phase 169 in area 4765; Kezan, Quest Life of the party (14153)"),
