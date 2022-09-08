@@ -1,6 +1,6 @@
 -- Update Unit Class Level Stats
 
-DELETE FROM creature_classlevelstats WHERE level BETWEEN 1 and 88;
+DELETE FROM creature_classlevelstats WHERE level BETWEEN 1 and 90;
 INSERT INTO creature_classlevelstats (level, class, basehp0, basehp1, basehp2, basehp3, basemana, basearmor, attackpower, rangedattackpower, damage_base, damage_exp1, damage_exp2, damage_exp3, comment) VALUES
 (1, 1, 42, 42, 42, 1, 0, 7, 9, 0, 0.1321, 0.1321, 0.1321, 0, ''),
 (1, 2, 41, 41, 41, 1, 60, 23, 9, 0, 0.2381, 0.2381, 0.2381, 0, ''),
