@@ -365,3 +365,6 @@ INSERT INTO creature_classlevelstats (level, class, basehp0, basehp1, basehp2, b
 
 -- Sauranok the Mystic
 UPDATE creature_template SET exp = 2, HealthModifierExtra = 2 WHERE entry = 44120;
+
+-- Auctioneer Chilton, Fitch, Jaxon and Hasse
+UPDATE creature_template SET exp = 2, minlevel = 50, maxlevel = 50 WHERE entry IN (8670, 8719, 15659, 43690);
