@@ -105,6 +105,10 @@ template<>
 struct is_script_database_bound<WorldMapScript>
     : std::true_type { };
 
+template<>
+struct is_script_database_bound<QuestScript>
+    : std::true_type { };
+
 enum Spells
 {
     SPELL_HOTSWAP_VISUAL_SPELL_EFFECT = 40162 // 59084
@@ -879,6 +883,35 @@ public:
     {
         ChatHandler::invalidateCommandTable();
     }
+};
+
+/// This hook is responsible for swapping QuestScript's
+template<typename Base>
+class ScriptRegistrySwapHooks<QuestScript, Base>
+    : public ScriptRegistrySwapHookBase
+{
+public:
+    ScriptRegistrySwapHooks() : swapped(false) { }
+
+    void BeforeReleaseContext(std::string const& context) final override
+    {
+        auto const bounds = static_cast<Base*>(this)->_ids_of_contexts.equal_range(context);
+        if (bounds.first != bounds.second)
+            swapped = true;
+    }
+
+    void BeforeSwapContext(bool /*initialize*/) override
+    {
+        swapped = false;
+    }
+
+    void BeforeUnload() final override
+    {
+        ASSERT(!swapped);
+    }
+
+private:
+    bool swapped;
 };
 
 // Database unbound script registry
@@ -1965,6 +1998,11 @@ void ScriptMgr::OnPlayerRepop(Player* player)
     FOREACH_SCRIPT(PlayerScript)->OnPlayerRepop(player);
 }
 
+void ScriptMgr::OnPlayerUpdate(Player* player, uint32 diff)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnUpdate(player, diff);
+}
+
 // Account
 void ScriptMgr::OnAccountLogin(uint32 accountId)
 {
@@ -2110,6 +2148,25 @@ void ScriptMgr::ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& dama
     FOREACH_SCRIPT(UnitScript)->ModifySpellDamageTaken(target, attacker, damage);
 }
 
+void ScriptMgr::OnQuestStatusChange(Player* player, Quest const* quest, QuestStatus oldStatus, QuestStatus newStatus)
+{
+    ASSERT(player);
+    ASSERT(quest);
+
+    GET_SCRIPT(QuestScript, quest->GetScriptId(), tmpscript);
+    tmpscript->OnQuestStatusChange(player, quest, oldStatus, newStatus);
+}
+//To Do: uncomment when QuestObjectives are implemented.
+/*
+void ScriptMgr::OnQuestObjectiveChange(Player* player, Quest const* quest, QuestObjective const& objective, int32 oldAmount, int32 newAmount)
+{
+    ASSERT(player);
+    ASSERT(quest);
+
+    GET_SCRIPT(QuestScript, quest->GetScriptId(), tmpscript);
+    tmpscript->OnQuestObjectiveChange(player, quest, objective, oldAmount, newAmount);
+}
+*/
 SpellScriptLoader::SpellScriptLoader(char const* name)
     : ScriptObject(name)
 {
@@ -2300,6 +2357,12 @@ GroupScript::GroupScript(char const* name)
     ScriptRegistry<GroupScript>::Instance()->AddScript(this);
 }
 
+QuestScript::QuestScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptRegistry<QuestScript>::Instance()->AddScript(this);
+}
+
 // Specialize for each script type class like so:
 template class FC_GAME_API ScriptRegistry<SpellScriptLoader>;
 template class FC_GAME_API ScriptRegistry<ServerScript>;
@@ -2327,3 +2390,4 @@ template class FC_GAME_API ScriptRegistry<GuildScript>;
 template class FC_GAME_API ScriptRegistry<GroupScript>;
 template class FC_GAME_API ScriptRegistry<UnitScript>;
 template class FC_GAME_API ScriptRegistry<AccountScript>;
+template class TC_GAME_API ScriptRegistry<QuestScript>;
