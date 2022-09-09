@@ -2390,4 +2390,4 @@ template class FC_GAME_API ScriptRegistry<GuildScript>;
 template class FC_GAME_API ScriptRegistry<GroupScript>;
 template class FC_GAME_API ScriptRegistry<UnitScript>;
 template class FC_GAME_API ScriptRegistry<AccountScript>;
-template class TC_GAME_API ScriptRegistry<QuestScript>;
+template class FC_GAME_API ScriptRegistry<QuestScript>;
