@@ -799,6 +799,21 @@ class FC_GAME_API GroupScript : public ScriptObject
         virtual void OnDisband(Group* /*group*/) { }
 };
 
+class FC_GAME_API QuestScript : public ScriptObject
+{
+protected:
+
+    QuestScript(const char* name);
+
+public:
+    // Called when a quest status change
+    virtual void OnQuestStatusChange(Player* /*player*/, Quest const* /*quest*/, QuestStatus /*oldStatus*/, QuestStatus /*newStatus*/) { }
+
+    //To Do: uncomment when QuestObjectives are implemented.
+    // Called when a quest objective data change
+    //virtual void OnQuestObjectiveChange(Player* /*player*/, Quest const* /*quest*/, QuestObjective const& /*objective*/, int32 /*oldAmount*/, int32 /*newAmount*/) { }
+};
+
 // Manages registration, loading, and execution of scripts.
 class FC_GAME_API ScriptMgr
 {
@@ -1054,6 +1069,12 @@ class FC_GAME_API ScriptMgr
         void ModifyPeriodicDamageAurasTick(Unit* target, Unit* attacker, uint32& damage);
         void ModifyMeleeDamage(Unit* target, Unit* attacker, uint32& damage);
         void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage);
+
+    public: /* QuestScript */
+
+        void OnQuestStatusChange(Player* player, Quest const* quest, QuestStatus oldStatus, QuestStatus newStatus);
+        //To Do: uncomment when QuestObjectives are implemented.
+        //void OnQuestObjectiveChange(Player* player, Quest const* quest, QuestObjective const& objective, int32 oldAmount, int32 newAmount);
 
     private:
         uint32 _scriptCount;
