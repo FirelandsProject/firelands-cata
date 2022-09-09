@@ -705,6 +705,9 @@ class FC_GAME_API PlayerScript : public ScriptObject
 
         // Called when a player presses release when he died
         virtual void OnPlayerRepop(Player* /*player*/) { }
+
+        // Called at each player update
+        virtual void OnUpdate(Player* /*player*/, uint32 /*diff*/) { }
 };
 
 class FC_GAME_API AccountScript : public ScriptObject
@@ -1029,6 +1032,7 @@ class FC_GAME_API ScriptMgr
         void OnPlayerUpdateZone(Player* player, uint32 newZone, uint32 newArea);
         void OnQuestStatusChange(Player* player, uint32 questId);
         void OnPlayerRepop(Player* player);
+        void OnPlayerUpdate(Player* player, uint32 diff);
 
     public: /* AccountScript */
 
