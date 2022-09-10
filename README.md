@@ -15,3 +15,7 @@ Read file [COPYING](COPYING)
 Read file [AUTHORS](AUTHORS)
 
 [Discord](https://discord.gg/GZ5rsxumxN)
+
+If you want to Collaborate donating, here is the link
+
+[![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5TTDM5NL8G8EY)
