@@ -1229,8 +1229,8 @@ class FC_GAME_API Unit : public WorldObject
         virtual bool SetDisableGravity(bool disable, bool packetOnly = false, bool updateAnimationTier = true);
         bool SetFall(bool enable);
         bool SetSwim(bool enable);
-		bool SetFlying(bool enable);
-		virtual bool SetCanFly(bool enable, bool packetOnly = false);
+        bool SetFlying(bool enable);
+        virtual bool SetCanFly(bool enable, bool packetOnly = false);
         virtual bool SetCanTransitionBetweenSwimAndFly(bool enable);
         bool SetWaterWalking(bool enable, bool packetOnly = false);
         bool SetFeatherFall(bool enable, bool packetOnly = false);
