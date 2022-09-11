@@ -252,9 +252,9 @@ class FC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
 
         void DespawnOrUnsummon(uint32 msTimeToDespawn = 0, Seconds forceRespawnTime = 0s);
         void DespawnOrUnsummon(Milliseconds time, Seconds forceRespawnTime = 0s) { DespawnOrUnsummon(uint32(time.count()), forceRespawnTime); }
-		void DespawnCreaturesInArea(uint32 entry, float range = 125.0f);
+        void DespawnCreaturesInArea(uint32 entry, float range = 125.0f);
 
-		time_t const& GetRespawnTime() const { return m_respawnTime; }
+        time_t const& GetRespawnTime() const { return m_respawnTime; }
         time_t GetRespawnTimeEx() const;
         void SetRespawnTime(uint32 respawn);
         void Respawn(bool force = false);
