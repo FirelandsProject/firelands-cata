@@ -1279,7 +1279,7 @@ enum SMARTAI_TARGETS
     SMART_TARGET_INVOKER_SUMMON                 = 100,  // entry
     SMART_TARGET_HOSTILE_RANDOM_PLAYER          = 101,  // Just any random target on our threat list player
     SMART_TARGET_HOSTILE_RANDOM_NOT_TOP_PLAYER  = 102,  // Any random target except top threat player
-    SMART_TARGET_HOSTILE_RANDOM_AURA            = 103,  // 
+    SMART_TARGET_HOSTILE_RANDOM_AURA            = 103,  //
 
     SMART_TARGET_END                            = 104
 };
