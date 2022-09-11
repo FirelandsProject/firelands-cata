@@ -313,9 +313,9 @@ class FC_GAME_API UnitAI
         void DoCastSelf(uint32 spellId, CastSpellExtraArgs const& args = {}) { DoCast(me, spellId, args); }
         void DoCastVictim(uint32 spellId, CastSpellExtraArgs const& args = {});
         void DoCastAOE(uint32 spellId, CastSpellExtraArgs const& args = {}) { DoCast(nullptr, spellId, args); }
-		void DoCastRandom(uint32 spellId, float dist, CastSpellExtraArgs const& args = {}, int32 aura = 0, uint32 position = 0);
+        void DoCastRandom(uint32 spellId, float dist, CastSpellExtraArgs const& args = {}, int32 aura = 0, uint32 position = 0);
 
-		float DoGetSpellMaxRange(uint32 spellId, bool positive = false);
+        float DoGetSpellMaxRange(uint32 spellId, bool positive = false);
         void DoMeleeAttackIfReady();
         bool DoSpellAttackIfReady(uint32 spell);
 
