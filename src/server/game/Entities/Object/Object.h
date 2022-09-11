@@ -420,7 +420,7 @@ class FC_GAME_API WorldObject : public Object, public WorldLocation
         std::list<Creature*>    FindAllUnfriendlyCreaturesInRange(float range);
         Creature*               FindNearestAttackableCreatureOnTransportInFloor(float rangeXY, float rangeZ);
         Creature*               FindNearestCreatureOnTransportInFloor(uint32 entry, float rangeXY, float rangeZ);
-        
+
         GameObject*             FindNearestGameObject(uint32 entry, float range) const;
         std::list<GameObject*>  FindNearestGameObjects(uint32 entry, float range) const;
         GameObject*             FindNearestGameObjectOfType(GameobjectTypes type, float range) const;
