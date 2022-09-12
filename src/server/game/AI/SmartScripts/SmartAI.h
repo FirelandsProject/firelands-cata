@@ -196,6 +196,8 @@ class FC_GAME_API SmartAI : public CreatureAI
 
         void SetGossipReturn(bool val) { _gossipReturn = val; }
 
+        uint32 GetEventPhaseMask() { return GetScript()->GetEventPhaseMask(); }
+
     private:
         bool AssistPlayerInCombatAgainst(Unit* who);
         void ReturnToLastOOCPos();

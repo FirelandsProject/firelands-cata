@@ -2114,6 +2114,18 @@ void Creature::DespawnOrUnsummon(uint32 msTimeToDespawn /*= 0*/, Seconds forceRe
         ForcedDespawn(msTimeToDespawn, forceRespawnTimer);
 }
 
+void Creature::DespawnCreaturesInArea(uint32 entry, float range)
+{
+    std::list<Creature*> creatures;
+    GetCreatureListWithEntryInGrid(creatures, entry, range);
+
+    if (creatures.empty())
+        return;
+
+    for (std::list<Creature*>::iterator iter = creatures.begin(); iter != creatures.end(); ++iter)
+        (*iter)->DespawnOrUnsummon();
+}
+
 void Creature::LoadTemplateImmunities()
 {
     // uint32 max used for "spell id", the immunity system will not perform SpellInfo checks against invalid spells
@@ -3543,4 +3555,31 @@ void Creature::Reload(bool skipDatabase)
     }
 
     LOG_DEBUG("sql.sql", "Creature SpawnId %u reloaded.", GetSpawnId());
+}
+
+void Creature::PrepareChanneledCast(float facing, uint32 spell_id, bool triggered)
+{
+    AttackStop();
+    SetReactState(REACT_PASSIVE);
+    SetFacingTo(facing);
+
+    if (spell_id)
+        CastSpell(this, spell_id, triggered);
+}
+
+
+void Creature::RemoveChanneledCast(ObjectGuid target)
+{
+    SetReactState(REACT_AGGRESSIVE);
+
+    if (Unit* itr = ObjectAccessor::GetUnit(*this, target))
+    {
+        GetMotionMaster()->MoveChase(itr);
+        Attack(itr, true);
+    }
+    else if (Player* itr = SelectNearestPlayer(100.0f))
+    {
+        GetMotionMaster()->MoveChase(itr);
+        Attack(itr, true);
+    }
 }
