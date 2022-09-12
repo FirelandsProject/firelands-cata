@@ -557,6 +557,35 @@ void Firelands::PlayerLastSearcher<Check>::Visit(PlayerMapType& m)
     }
 }
 
+template<class Check>
+void Firelands::AreaTriggerListSearcher<Check>::Visit(AreaTriggerMapType& p_AreaTriggerMap)
+{
+    for (AreaTriggerMapType::iterator itr = p_AreaTriggerMap.begin(); itr != p_AreaTriggerMap.end(); ++itr)
+    {
+        if (!itr->GetSource()->IsInPhase(i_searcher))
+            continue;
+
+        if (i_check(itr->GetSource()))
+            m_AreaTriggers.push_back(itr->GetSource());
+    }
+}
+
+template<class Check>
+void Firelands::AreaTriggerSearcher<Check>::Visit(AreaTriggerMapType& p_AreaTriggerMap)
+{
+    for (AreaTriggerMapType::iterator itr = p_AreaTriggerMap.begin(); itr != p_AreaTriggerMap.end(); ++itr)
+    {
+        if (!itr->GetSource()->IsInPhase(i_searcher))
+            continue;
+
+        if (i_check(itr->GetSource()))
+        {
+            i_object = itr->GetSource();
+            return;
+        }
+    }
+}
+
 template<class Builder>
 void Firelands::LocalizedPacketDo<Builder>::operator()(Player* p)
 {
