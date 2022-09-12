@@ -3011,3 +3011,8 @@ void WorldObject::SetMeleeAnimKitId(uint16 animKitId)
     packet.AnimKitID = animKitId;
     SendMessageToSet(packet.Write(), true);
 }
+
+float WorldObject::GetObjectSize() const
+{
+    return (m_valuesCount > UNIT_FIELD_COMBATREACH) ? m_floatValues[UNIT_FIELD_COMBATREACH] : DEFAULT_PLAYER_BOUNDING_RADIUS;
+}

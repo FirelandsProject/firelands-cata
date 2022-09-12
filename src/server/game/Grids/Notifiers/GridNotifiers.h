@@ -629,6 +629,37 @@ namespace Firelands
         template<class NOT_INTERESTED> void Visit(GridRefManager<NOT_INTERESTED> &) { }
     };
 
+    /// AreaTriggers searchers
+    template<class Check>
+    struct AreaTriggerListSearcher
+    {
+        WorldObject const* i_searcher;
+        std::list<AreaTrigger*>& m_AreaTriggers;
+        Check& i_check;
+
+        AreaTriggerListSearcher(WorldObject const* searcher, std::list<AreaTrigger*>& areaTriggers, Check& check)
+            : i_searcher(searcher), m_AreaTriggers(areaTriggers), i_check(check) {}
+
+        void Visit(AreaTriggerMapType& p_AreaTriggerMap);
+
+        template<class NOT_INTERESTED> void Visit(GridRefManager<NOT_INTERESTED>&) {}
+    };
+
+    template<class Check>
+    struct AreaTriggerSearcher
+    {
+        WorldObject const* i_searcher;
+        AreaTrigger*& i_object;
+        Check& i_check;
+
+        AreaTriggerSearcher(WorldObject const* searcher, AreaTrigger*& result, Check& check)
+            : i_searcher(searcher), i_object(result), i_check(check) {}
+
+        void Visit(AreaTriggerMapType& m);
+
+        template<class NOT_INTERESTED> void Visit(GridRefManager<NOT_INTERESTED>&) {}
+    };
+
     // CHECKS && DO classes
 
     // WorldObject check classes
@@ -1157,6 +1188,26 @@ namespace Firelands
     };
     */
 
+    class AttackableUnitInObjectRangeCheck
+    {
+    public:
+        AttackableUnitInObjectRangeCheck(WorldObject const* obj, float range, bool check3D = true) : i_obj(obj), i_range(range), i_check3D(check3D) { }
+
+        bool operator()(Unit* u) const
+        {
+            if (i_obj->IsUnit())
+                if (u->IsAlive() && i_obj->IsWithinDistInMap(u, i_range, i_check3D) && i_obj->ToUnit()->IsValidAttackTarget(u))
+                    return true;
+
+            return false;
+        }
+
+    private:
+        WorldObject const* i_obj;
+        float i_range;
+        bool i_check3D;
+    };
+
     // Creature checks
 
     class NearestHostileUnitCheck
@@ -1597,29 +1648,26 @@ namespace Firelands
 
     class NearestAreaTriggerWithIdInObjectRangeCheck
     {
-    public:
-        NearestAreaTriggerWithIdInObjectRangeCheck(WorldObject const* obj, uint32 spellId, float range) : i_obj(obj), i_spellId(spellId), i_range(range) {}
-        bool operator()(AreaTrigger* a)
-        {
-            if (i_obj->IsWithinDistInMap(a, i_range) && a->GetSpellId() == i_spellId)
+        public:
+            NearestAreaTriggerWithIdInObjectRangeCheck(WorldObject const* obj, uint32 spellId, float range) : i_obj(obj), i_spellId(spellId), i_range(range) {}
+            bool operator()(AreaTrigger* a)
             {
-                i_range = i_obj->GetDistance(a);        // use found unit range as new range limit for next check
-                return true;
+                if (i_obj->IsWithinDistInMap(a, i_range) && a->GetSpellId() == i_spellId)
+                {
+                    i_range = i_obj->GetDistance(a);  // use found unit range as new range limit for next check
+                    return true;
+                }
+                return false;
             }
-
-            return false;
-        }
-    private:
-        WorldObject const* i_obj;
-        uint32 i_spellId;
-        float i_range;
-
-        // prevent clone this object
-        NearestAreaTriggerWithIdInObjectRangeCheck(NearestAreaTriggerWithIdInObjectRangeCheck const&);
+        private:
+            WorldObject const* i_obj;
+            uint32 i_spellId;
+            float i_range;
+            // prevent clone this object
+            NearestAreaTriggerWithIdInObjectRangeCheck(NearestAreaTriggerWithIdInObjectRangeCheck const&);
     };
 
     // Player checks and do
-
     // Prepare using Builder localized packets with caching and send to player
     template<class Builder>
     class LocalizedPacketDo
