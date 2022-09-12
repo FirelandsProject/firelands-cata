@@ -1516,6 +1516,23 @@ namespace Firelands
             float m_fRange;
     };
 
+    class AllCreaturesInRange
+    {
+    public:
+        AllCreaturesInRange(const WorldObject* object, float maxRange) : m_pObject(object), m_fRange(maxRange) {}
+        bool operator() (Unit* unit)
+        {
+            if (m_pObject->IsWithinDist(unit, m_fRange, false))
+                return true;
+
+            return false;
+        }
+
+    private:
+        const WorldObject* m_pObject;
+        float m_fRange;
+    };
+
     class PlayerAtMinimumRangeAway
     {
     public:
@@ -1629,24 +1646,28 @@ namespace Firelands
             ObjectGuid _casterGUID;
     };
 
-    class AnyAreatriggerInObjectRangeCheck
+    class NearestAreaTriggerWithIdInObjectRangeCheck
     {
-    public:
-        AnyAreatriggerInObjectRangeCheck(WorldObject const* p_Object, float range) : m_Object(p_Object), m_Range(range) {}
-        bool operator()(AreaTrigger* p_AreaTrigger)
-        {
-            if (m_Object->IsWithinDistInMap(p_AreaTrigger, m_Range))
-                return true;
-
-            return false;
-        }
-    private:
-        WorldObject const* m_Object;
-        float m_Range;
+        public:
+            NearestAreaTriggerWithIdInObjectRangeCheck(WorldObject const* obj, uint32 spellId, float range) : i_obj(obj), i_spellId(spellId), i_range(range) {}
+            bool operator()(AreaTrigger* a)
+            {
+                if (i_obj->IsWithinDistInMap(a, i_range) && a->GetSpellId() == i_spellId)
+                {
+                    i_range = i_obj->GetDistance(a);  // use found unit range as new range limit for next check
+                    return true;
+                }
+                return false;
+            }
+        private:
+            WorldObject const* i_obj;
+            uint32 i_spellId;
+            float i_range;
+            // prevent clone this object
+            NearestAreaTriggerWithIdInObjectRangeCheck(NearestAreaTriggerWithIdInObjectRangeCheck const&);
     };
 
     // Player checks and do
-
     // Prepare using Builder localized packets with caching and send to player
     template<class Builder>
     class LocalizedPacketDo

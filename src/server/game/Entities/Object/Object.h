@@ -415,10 +415,25 @@ class FC_GAME_API WorldObject : public Object, public WorldLocation
         Creature*   SummonTrigger(float x, float y, float z, float ang, uint32 dur, CreatureAI* (*GetAI)(Creature*) = nullptr);
         void SummonCreatureGroup(uint8 group, std::list<TempSummon*>* list = nullptr);
 
-        Creature*   FindNearestCreature(uint32 entry, float range, bool alive = true) const;
-        GameObject* FindNearestGameObject(uint32 entry, float range) const;
-        GameObject* FindNearestGameObjectOfType(GameobjectTypes type, float range) const;
-        Player* SelectNearestPlayer(float distance) const;
+        Creature*               FindNearestCreature(uint32 entry, float range, bool alive = true) const;
+        Creature*               FindNearestCreature(std::list<uint32> entrys, float range, bool alive = true) const;
+        std::list<Creature*>    FindNearestCreatures(uint32 entry, float range) const;
+        std::list<Creature*>    FindAllCreaturesInRange(float range);
+        std::list<Creature*>    FindAllUnfriendlyCreaturesInRange(float range);
+        Creature*               FindNearestAttackableCreatureOnTransportInFloor(float rangeXY, float rangeZ);
+        Creature*               FindNearestCreatureOnTransportInFloor(uint32 entry, float rangeXY, float rangeZ);
+
+        GameObject*             FindNearestGameObject(uint32 entry, float range) const;
+        std::list<GameObject*>  FindNearestGameObjects(uint32 entry, float range) const;
+        GameObject*             FindNearestGameObjectOfType(GameobjectTypes type, float range) const;
+
+        std::list<Player*>      SelectNearestPlayers(float range, bool alive = true);
+        Player*                 SelectRandomPlayerInRange(float range, bool alive);
+        Player*                 SelectNearestPlayer(float distance) const;
+
+        AreaTrigger*            SelectNearestAreaTrigger(uint32 spellId, float distance = 0.0f) const;
+        std::list<AreaTrigger*> SelectNearestAreaTriggers(uint32 spellId, float range);
+        AreaTrigger*            SelectRandomAreaTriggerInRange(uint32 spellId, float range);
 
         template <typename Container>
         void GetGameObjectListWithEntryInGrid(Container& gameObjectContainer, uint32 entry, float maxSearchRange = 250.0f) const;

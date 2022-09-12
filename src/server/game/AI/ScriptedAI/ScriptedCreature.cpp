@@ -124,7 +124,8 @@ void SummonList::DoActionImpl(int32 action, StorageType const& summons)
 
 ScriptedAI::ScriptedAI(Creature* creature) : CreatureAI(creature),
     IsFleeing(false),
-    _isCombatMovementAllowed(true)
+    _isCombatMovementAllowed(true),
+    _checkHomeTimer(5000)
 {
     _isHeroic = me->GetMap()->IsHeroic();
     _difficulty = Difficulty(me->GetMap()->GetSpawnMode());
@@ -445,6 +446,44 @@ void ScriptedAI::SetCombatMovement(bool allowMovement)
     _isCombatMovementAllowed = allowMovement;
 }
 
+bool ScriptedAI::CheckHomeDistToEvade(uint32 diff, float dist, float x, float y, float z, bool onlyZ)
+{
+    if (!me->IsInCombat())
+        return false;
+
+    bool evade = false;
+
+    if (_checkHomeTimer <= diff)
+    {
+        _checkHomeTimer = 1500;
+
+        if (onlyZ)
+        {
+            if ((me->GetPositionZ() > z + dist) || (me->GetPositionZ() < z - dist))
+                evade = true;
+        }
+        else if (x != 0.0f || y != 0.0f || z != 0.0f)
+        {
+            if (me->GetDistance(x, y, z) >= dist)
+                evade = true;
+        }
+        else if (me->GetDistance(me->GetHomePosition()) >= dist)
+            evade = true;
+
+        if (evade)
+        {
+            EnterEvadeMode();
+            return true;
+        }
+    }
+    else
+    {
+        _checkHomeTimer -= diff;
+    }
+
+    return false;
+}
+
 // BossAI - for instanced bosses
 BossAI::BossAI(Creature* creature, uint32 bossId) : ScriptedAI(creature),
     instance(creature->GetInstanceScript()),
@@ -639,4 +678,62 @@ void WorldBossAI::UpdateAI(uint32 diff)
     }
 
     DoMeleeAttackIfReady();
+}
+
+Player* GetFarthestPlayerInArea(WorldObject* owner, float range)
+{
+    Player* farth = nullptr;
+    float dist = 0.0f;
+    std::list<Player*> PlayersInArea;
+    GetPlayerListInGrid(PlayersInArea, owner, range);
+
+    for (auto&& itr : PlayersInArea)
+    {
+        if (itr->IsGameMaster())
+            continue;
+
+        if (itr->GetDistance2d(owner) > dist)
+        {
+            dist = itr->GetDistance2d(owner);
+            farth = itr;
+        }
+    }
+
+    return farth;
+}
+
+void GetPositionWithDistInOrientation(Position* pUnit, float dist, float orientation, float& x, float& y)
+{
+    x = pUnit->GetPositionX() + (dist * cos(orientation));
+    y = pUnit->GetPositionY() + (dist * sin(orientation));
+}
+
+void GetPositionWithDistInOrientation(Position* fromPos, float dist, float orientation, Position& movePosition)
+{
+    float x = 0.0f;
+    float y = 0.0f;
+
+    GetPositionWithDistInOrientation(fromPos, dist, orientation, x, y);
+
+    movePosition.m_positionX = x;
+    movePosition.m_positionY = y;
+    movePosition.m_positionZ = fromPos->GetPositionZ();
+}
+
+void GetRandPosFromCenterInDist(float centerX, float centerY, float dist, float& x, float& y)
+{
+    float randOrientation = frand(0.0f, 2.0f * (float)M_PI);
+
+    x = centerX + (dist * cos(randOrientation));
+    y = centerY + (dist * sin(randOrientation));
+}
+
+void GetRandPosFromCenterInDist(Position* centerPos, float dist, Position& movePosition)
+{
+    GetPositionWithDistInOrientation(centerPos, dist, frand(0, 2 * float(M_PI)), movePosition);
+}
+
+void GetPositionWithDistInFront(Position* centerPos, float dist, Position& movePosition)
+{
+    GetPositionWithDistInOrientation(centerPos, dist, centerPos->GetOrientation(), movePosition);
 }
