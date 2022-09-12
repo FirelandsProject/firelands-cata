@@ -160,7 +160,8 @@ enum ConditionSourceType
     CONDITION_SOURCE_TYPE_PHASE                          = 26,
     CONDITION_SOURCE_TYPE_GRAVEYARD                      = 27,
     CONDITION_SOURCE_TYPE_SPELL_AREA                     = 28,
-    CONDITION_SOURCE_TYPE_MAX                            = 29  // MAX
+    CONDITION_SOURCE_TYPE_SPAWN                          = 29,
+    CONDITION_SOURCE_TYPE_MAX                            = 30  // MAX
 };
 
 enum RelationType
@@ -278,6 +279,7 @@ class FC_GAME_API ConditionMgr
         bool IsObjectMeetingVehicleSpellConditions(uint32 creatureId, uint32 spellId, Player* player, Unit* vehicle) const;
         bool IsObjectMeetingSmartEventConditions(int32 entryOrGuid, uint32 eventId, uint32 sourceType, Unit* unit, WorldObject* baseObject) const;
         bool IsObjectMeetingVendorItemConditions(uint32 creatureId, uint32 itemId, Player* player, Creature* vendor) const;
+        bool IsObjectMeetingSpawnConditions(uint32 objectType, uint32 entry, WorldObject* seer) const;
 
         bool IsSpellUsedInSpellClickConditions(uint32 spellId) const;
 
@@ -312,6 +314,7 @@ class FC_GAME_API ConditionMgr
         ConditionEntriesByCreatureIdMap SpellClickEventConditionStore;
         ConditionEntriesByCreatureIdMap NpcVendorConditionContainerStore;
         SmartEventConditionContainer    SmartEventConditionStore;
+        ConditionEntriesByCreatureIdMap SpawnConditionContainerStore;
 
         std::unordered_set<uint32> SpellsUsedInSpellClickConditions;
 };
