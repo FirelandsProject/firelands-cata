@@ -192,6 +192,15 @@ void SmartAIMgr::LoadSmartAIFromDB()
                     }
                     break;
                 }
+                case SMART_SCRIPT_TYPE_QUEST:
+                {
+                    if (!sObjectMgr->GetQuestTemplate((uint32)temp.entryOrGuid))
+                    {
+                        LOG_ERROR("sql.sql", "SmartAIMgr::LoadSmartAIFromDB: Quest entry (%u) does not exist, skipped loading.", uint32(temp.entryOrGuid));
+                        continue;
+                    }
+                    break;
+                }
                 case SMART_SCRIPT_TYPE_TIMED_ACTIONLIST:
                     break;//nothing to check, really
                 default:
@@ -1031,6 +1040,19 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
                     return false;
                 }
                 break;
+            case SMART_EVENT_QUEST_OBJ_COPLETETION:
+                //To Do: uncomment when QuestObjectives are implemented.
+                //    if (!sObjectMgr->GetQuestObjective(e.event.questObjective.id))
+                //    {
+                //        LOG_ERROR("sql.sql", "SmartAIMgr: Event SMART_EVENT_QUEST_OBJ_COPLETETION using invalid objective id %u, skipped.", e.event.questObjective.id);
+                //        return false;
+                //    }
+                //    break;
+            case SMART_EVENT_QUEST_ACCEPTED:
+            case SMART_EVENT_QUEST_COMPLETION:
+            case SMART_EVENT_QUEST_REWARDED:
+            case SMART_EVENT_QUEST_FAIL:
+                break;
             case SMART_EVENT_LINK:
             case SMART_EVENT_GO_LOOT_STATE_CHANGED:
             case SMART_EVENT_GO_EVENT_INFORM:
@@ -1048,11 +1070,6 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
             case SMART_EVENT_EVADE:
             case SMART_EVENT_REACHED_HOME:
             case SMART_EVENT_RESET:
-            case SMART_EVENT_QUEST_ACCEPTED:
-            case SMART_EVENT_QUEST_OBJ_COPLETETION:
-            case SMART_EVENT_QUEST_COMPLETION:
-            case SMART_EVENT_QUEST_REWARDED:
-            case SMART_EVENT_QUEST_FAIL:
             case SMART_EVENT_JUST_SUMMONED:
             case SMART_EVENT_WAYPOINT_START:
             case SMART_EVENT_WAYPOINT_REACHED:
@@ -1634,6 +1651,54 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
                 return false;
             }
             break;
+        case SMART_ACTION_COMPLETE_QUEST:
+        {
+            for (auto& questID : e.action.CompleteQuest.quest)
+            {
+                if (questID && !IsQuestValid(e, questID))
+                    questID = 0;
+            }
+            break;
+        }
+        case SMART_ACTION_CLEAR_QUEST:
+        {
+            for (auto& questID : e.action.clearQuest.quest)
+            {
+                if (questID && !IsQuestValid(e, questID))
+                    questID = 0;
+            }
+
+            break;
+        }
+        case SMART_ACTION_UNLEARN_SPELL:
+        {
+            for (auto& entryID : e.action.unlearnSpell.spell)
+            {
+                if (entryID && !IsSpellValid(e, entryID))
+                    entryID = 0;
+            }
+
+            break;
+        }
+        case SMART_ACTION_LEARN_SPELL:
+        {
+            for (auto& entryID : e.action.learnSpell.spell)
+            {
+                if (entryID && !IsSpellValid(e, entryID))
+                    entryID = 0;
+            }
+            break;
+        }
+        case SMART_ACTION_SET_SPEED:
+        {
+            if (e.action.setSpeed.type >= MAX_MOVE_TYPE)
+            {
+                LOG_ERROR("sql.sql", "SmartScript: SMART_ACTION_SET_SPEED have wrong speed type %u for creature " SI64FMTD ", skipped", e.action.setSpeed.type, e.entryOrGuid);
+                return false;
+            }
+
+            break;
+        }
         case SMART_ACTION_START_CLOSEST_WAYPOINT:
         case SMART_ACTION_FOLLOW:
         case SMART_ACTION_SET_ORIENTATION:
@@ -1715,6 +1780,15 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
         case SMART_ACTION_DESPAWN_SPAWNGROUP:
         case SMART_ACTION_PLAY_CINEMATIC:
         case SMART_ACTION_SET_HOVER:
+        case SMART_ACTION_STOP_FOLLOW:
+        case SMART_ACTION_MOD_CURRENCY:
+        case SMART_ACTION_UPDATE_ACHIEVEMENT_CRITERIA:
+        case SMART_ACTION_SET_OVERRIDE_ZONE_MUSIC:
+        case SMART_ACTION_SET_POWER_TYPE:
+        case SMART_ACTION_SET_MAX_POWER:
+        case SMART_ACTION_ADD_FLYING_MOVEMENT_FLAG:
+        case SMART_ACTION_REMOVE_FLYING_MOVEMENT_FLAG:
+        case SMART_ACTION_IGNORE_PATHFINDING:
             break;
         default:
             LOG_ERROR("sql.sql", "SmartAIMgr: Not handled action_type(%u), event_type(%u), Entry %d SourceType %u Event %u, skipped.", e.GetActionType(), e.GetEventType(), e.entryOrGuid, e.GetScriptType(), e.event_id);

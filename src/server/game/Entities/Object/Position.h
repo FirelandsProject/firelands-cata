@@ -218,6 +218,30 @@ public:
 
     // modulos a radian orientation to the range of 0..2PI
     static float NormalizeOrientation(float o);
+
+    void GetPositionWithDistInFront(float dist, float& x, float& y) const
+    {
+        GetPositionWithDistInOrientation(dist, GetOrientation(), x, y);
+    }
+
+    Position GetPositionWithDistInFront(float dist) const
+    {
+        return GetPositionWithDistInOrientation(dist, GetOrientation());
+    }
+
+    void GetPositionWithDistInOrientation(float dist, float orientation, float& x, float& y) const
+    {
+        x = GetPositionX() + (dist * cos(orientation));
+        y = GetPositionY() + (dist * sin(orientation));
+    }
+
+    Position GetPositionWithDistInOrientation(float dist, float orientation) const
+    {
+        float x = GetPositionX() + (dist * cos(orientation));
+        float y = GetPositionY() + (dist * sin(orientation));
+
+        return Position(x, y, GetPositionZ(), GetOrientation());
+    }
 };
 
 #define MAPID_INVALID 0xFFFFFFFF
