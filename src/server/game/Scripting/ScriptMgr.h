@@ -705,6 +705,9 @@ class FC_GAME_API PlayerScript : public ScriptObject
 
         // Called when a player presses release when he died
         virtual void OnPlayerRepop(Player* /*player*/) { }
+
+        // Called at each player update
+        virtual void OnUpdate(Player* /*player*/, uint32 /*diff*/) { }
 };
 
 class FC_GAME_API AccountScript : public ScriptObject
@@ -797,6 +800,21 @@ class FC_GAME_API GroupScript : public ScriptObject
 
         // Called when a group is disbanded.
         virtual void OnDisband(Group* /*group*/) { }
+};
+
+class FC_GAME_API QuestScript : public ScriptObject
+{
+protected:
+
+    QuestScript(const char* name);
+
+public:
+    // Called when a quest status change
+    virtual void OnQuestStatusChange(Player* /*player*/, Quest const* /*quest*/, QuestStatus /*oldStatus*/, QuestStatus /*newStatus*/) { }
+
+    //To Do: uncomment when QuestObjectives are implemented.
+    // Called when a quest objective data change
+    //virtual void OnQuestObjectiveChange(Player* /*player*/, Quest const* /*quest*/, QuestObjective const& /*objective*/, int32 /*oldAmount*/, int32 /*newAmount*/) { }
 };
 
 // Manages registration, loading, and execution of scripts.
@@ -1014,6 +1032,7 @@ class FC_GAME_API ScriptMgr
         void OnPlayerUpdateZone(Player* player, uint32 newZone, uint32 newArea);
         void OnQuestStatusChange(Player* player, uint32 questId);
         void OnPlayerRepop(Player* player);
+        void OnPlayerUpdate(Player* player, uint32 diff);
 
     public: /* AccountScript */
 
@@ -1054,6 +1073,12 @@ class FC_GAME_API ScriptMgr
         void ModifyPeriodicDamageAurasTick(Unit* target, Unit* attacker, uint32& damage);
         void ModifyMeleeDamage(Unit* target, Unit* attacker, uint32& damage);
         void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage);
+
+    public: /* QuestScript */
+
+        void OnQuestStatusChange(Player* player, Quest const* quest, QuestStatus oldStatus, QuestStatus newStatus);
+        //To Do: uncomment when QuestObjectives are implemented.
+        //void OnQuestObjectiveChange(Player* player, Quest const* quest, QuestObjective const& objective, int32 oldAmount, int32 newAmount);
 
     private:
         uint32 _scriptCount;
@@ -1133,6 +1158,25 @@ class GenericGameObjectScript : public GameObjectScript
         GameObjectAI* GetAI(GameObject* go) const override { return new AI(go); }
 };
 #define RegisterGameObjectAI(ai_name) new GenericGameObjectScript<ai_name>(#ai_name)
+
+template <class AI>
+class GenericInstanceMapScript : public InstanceMapScript
+{
+public:
+    GenericInstanceMapScript(char const* name, uint32 mapId) : InstanceMapScript(name, mapId) { }
+    InstanceScript* GetInstanceScript(InstanceMap* map) const override { return new AI(map); }
+};
+#define RegisterInstanceScript(ai_name, mapId) new GenericInstanceMapScript<ai_name>(#ai_name, mapId)
+
+#define RegisterAchievementCriteriaScript(script) new script()
+#define RegisterAreaTriggerScript(script) new script()
+#define RegisterBattlegroundScript(script) new script()
+#define RegisterItemScript(script) new script()
+#define RegisterOnlyOnceAreaTriggerScript(script) new script()
+#define RegisterOutdoorPvPScript(script) new script()
+#define RegisterPlayerScript(script) new script()
+#define RegisterTransportScript(script) new script()
+#define RegisterVehicleScript(script) new script()
 
 #define sScriptMgr ScriptMgr::instance()
 

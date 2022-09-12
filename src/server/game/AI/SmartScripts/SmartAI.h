@@ -66,6 +66,7 @@ class FC_GAME_API SmartAI : public CreatureAI
         bool CanCombatMove() { return _canCombatMove; }
         void SetFollow(Unit* target, float dist = 0.0f, float angle = 0.0f, uint32 credit = 0, uint32 end = 0, uint32 creditType = 0);
         void StopFollow(bool complete);
+        void SetUnfollow();
         bool IsEscortInvokerInRange();
 
         void WaypointPathStarted(uint32 pathId) override;
