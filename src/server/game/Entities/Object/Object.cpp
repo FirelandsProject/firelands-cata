@@ -1728,6 +1728,9 @@ bool WorldObject::CanSeeOrDetect(WorldObject const* obj, bool ignoreStealth, boo
     if (obj->IsAlwaysVisibleFor(this) || CanAlwaysSee(obj))
         return true;
 
+    if (!sConditionMgr->IsObjectMeetingSpawnConditions(obj->GetTypeId(), obj->GetEntry(), const_cast<WorldObject*>(this)))
+        return false;
+
     if (!obj->CheckPrivateObjectOwnerVisibility(this))
         return false;
 

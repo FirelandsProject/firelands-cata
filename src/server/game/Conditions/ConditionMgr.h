@@ -83,7 +83,23 @@ enum ConditionTypes
     CONDITION_PET_TYPE              = 45,                   // mask             0              0                  true if player has a pet of given type(s)
     CONDITION_TAXI                  = 46,                   // 0                0              0                  true if player is on taxi
     CONDITION_QUESTSTATE            = 47,                   // quest_id         state_mask     0                  true if player is in any of the provided quest states for the quest (1 = not taken, 2 = completed, 8 = in progress, 32 = failed, 64 = rewarded)
-    CONDITION_MAX                   = 48                    // MAX
+    // End Trinity conditions
+
+    CONDITION_HAS_GROUP             = 48,                   // 0                0              0                  true if player is in group
+    CONDITION_SAI_PHASE             = 49,                   // phase            0              0                  true if object sai phase = value1
+    CONDITION_WEEKLY_QUEST_DONE     = 50,                   // quest            0              0                  true if weekly quest has been completed for the week
+    CONDITION_MONTHLY_QUEST_DONE    = 51,                   // quest            0              0                  true if monthly quest has been completed for the month
+    CONDITION_REPUTATION_VALUE      = 52,                   // faction_id       rep_value      0                  true if reputation value more or equal than rep_value
+    CONDITION_CURRENCY              = 53,                   // currency_id      countMin       countMax           true if has #countMin and countMax
+    CONDITION_CURRENCY_ON_WEEK      = 54,                   // currency_id      countMin       countMax           true if has #countMin and countMax
+    CONDITION_ON_TRANSPORT          = 55,                   // 0                0              0                  true if on vehicle
+    CONDITION_IN_RAID_OR_GROUP      = 56,                   // 0 - not in raid  isRaid         isGroup
+    CONDITION_HAS_POWER             = 57,                   // PowerType        > this         < this             true if power > or power < if set
+    CONDITION_GAMEMASTER            = 58,                   // 0                0              0                  true if player is GameMaster
+    CONDITION_HAS_EMOTE_STATE       = 59,                   // 0                0              0                  true if has EmoteState
+    CONDITION_IN_COMBAT             = 60,                   // 0                0              0                  true if in combat
+
+    CONDITION_MAX                   = 61                    // MAX
 };
 
 /*! Documentation on implementing a new ConditionSourceType:
@@ -144,7 +160,8 @@ enum ConditionSourceType
     CONDITION_SOURCE_TYPE_PHASE                          = 26,
     CONDITION_SOURCE_TYPE_GRAVEYARD                      = 27,
     CONDITION_SOURCE_TYPE_SPELL_AREA                     = 28,
-    CONDITION_SOURCE_TYPE_MAX                            = 29  // MAX
+    CONDITION_SOURCE_TYPE_SPAWN                          = 29,
+    CONDITION_SOURCE_TYPE_MAX                            = 30  // MAX
 };
 
 enum RelationType
@@ -262,6 +279,7 @@ class FC_GAME_API ConditionMgr
         bool IsObjectMeetingVehicleSpellConditions(uint32 creatureId, uint32 spellId, Player* player, Unit* vehicle) const;
         bool IsObjectMeetingSmartEventConditions(int32 entryOrGuid, uint32 eventId, uint32 sourceType, Unit* unit, WorldObject* baseObject) const;
         bool IsObjectMeetingVendorItemConditions(uint32 creatureId, uint32 itemId, Player* player, Creature* vendor) const;
+        bool IsObjectMeetingSpawnConditions(uint32 objectType, uint32 entry, WorldObject* seer) const;
 
         bool IsSpellUsedInSpellClickConditions(uint32 spellId) const;
 
@@ -296,6 +314,7 @@ class FC_GAME_API ConditionMgr
         ConditionEntriesByCreatureIdMap SpellClickEventConditionStore;
         ConditionEntriesByCreatureIdMap NpcVendorConditionContainerStore;
         SmartEventConditionContainer    SmartEventConditionStore;
+        ConditionEntriesByCreatureIdMap SpawnConditionContainerStore;
 
         std::unordered_set<uint32> SpellsUsedInSpellClickConditions;
 };
