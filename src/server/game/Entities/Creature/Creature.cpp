@@ -2114,6 +2114,18 @@ void Creature::DespawnOrUnsummon(uint32 msTimeToDespawn /*= 0*/, Seconds forceRe
         ForcedDespawn(msTimeToDespawn, forceRespawnTimer);
 }
 
+void Creature::DespawnCreaturesInArea(uint32 entry, float range)
+{
+    std::list<Creature*> creatures;
+    GetCreatureListWithEntryInGrid(creatures, entry, range);
+
+    if (creatures.empty())
+        return;
+
+    for (std::list<Creature*>::iterator iter = creatures.begin(); iter != creatures.end(); ++iter)
+        (*iter)->DespawnOrUnsummon();
+}
+
 void Creature::LoadTemplateImmunities()
 {
     // uint32 max used for "spell id", the immunity system will not perform SpellInfo checks against invalid spells
@@ -3432,7 +3444,7 @@ void Creature::Reload(bool skipDatabase)
     CreatureData const* data = sObjectMgr->GetCreatureData(GetSpawnId());
     if (!data)
     {
-        LOG_ERROR("sql.sql", "Creature SpawnID (" SI64FMTD ") does not exist, skipped re-loading.", GetSpawnId());
+        LOG_ERROR("sql.sql", "Creature SpawnID %u does not exist, skipped re-loading.", GetSpawnId());
         return;
     }
 
@@ -3443,7 +3455,7 @@ void Creature::Reload(bool skipDatabase)
         QueryResult scriptQuery = WorldDatabase.PQuery("SELECT ScriptName FROM creature WHERE guid = %u", GetSpawnId());
         if (!scriptQuery)
         {
-            LOG_ERROR("sql.sql", "Creature SpawnID (" SI64FMTD ") not found in creature table, skipped re-loading.", GetSpawnId());
+            LOG_ERROR("sql.sql", "Creature SpawnID %u not found in creature table, skipped re-loading.", GetSpawnId());
             return;
         }
 
@@ -3463,7 +3475,7 @@ void Creature::Reload(bool skipDatabase)
     // and triggering a crash about Auras not removed in the destructor
     if (!IsPositionValid())
     {
-        LOG_ERROR("entities.unit", "Creature::Create(): given coordinates for creature (SpawnID " UI64FMTD ", entry %d) are not valid (X: %f, Y: %f, Z: %f, O: %f)",
+        LOG_ERROR("entities.unit", "Creature::Create(): given coordinates for creature (SpawnID %u, entry %d) are not valid (X: %f, Y: %f, Z: %f, O: %f)",
             GetSpawnId(), GetEntry(), data->spawnPoint.GetPositionX(), data->spawnPoint.GetPositionY(), data->spawnPoint.GetPositionZ(), data->spawnPoint.GetOrientation());
         return;
     }
@@ -3542,5 +3554,32 @@ void Creature::Reload(bool skipDatabase)
         AI()->EnterEvadeMode();
     }
 
-    LOG_DEBUG("sql.sql", "Creature SpawnId (" SI64FMTD ") reloaded.", GetSpawnId());
+    LOG_DEBUG("sql.sql", "Creature SpawnId %u reloaded.", GetSpawnId());
+}
+
+void Creature::PrepareChanneledCast(float facing, uint32 spell_id, bool triggered)
+{
+    AttackStop();
+    SetReactState(REACT_PASSIVE);
+    SetFacingTo(facing);
+
+    if (spell_id)
+        CastSpell(this, spell_id, triggered);
+}
+
+
+void Creature::RemoveChanneledCast(ObjectGuid target)
+{
+    SetReactState(REACT_AGGRESSIVE);
+
+    if (Unit* itr = ObjectAccessor::GetUnit(*this, target))
+    {
+        GetMotionMaster()->MoveChase(itr);
+        Attack(itr, true);
+    }
+    else if (Player* itr = SelectNearestPlayer(100.0f))
+    {
+        GetMotionMaster()->MoveChase(itr);
+        Attack(itr, true);
+    }
 }

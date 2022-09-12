@@ -4497,8 +4497,10 @@ void Spell::EffectQuestClear(SpellEffIndex effIndex)
     if (!quest)
         return;
 
+    QuestStatus oldStatus = player->GetQuestStatus(quest_id);
+
     // Player has never done this quest
-    if (player->GetQuestStatus(quest_id) == QUEST_STATUS_NONE)
+    if (oldStatus == QUEST_STATUS_NONE)
         return;
 
     // remove all quest entries for 'entry' from quest log
@@ -4524,6 +4526,7 @@ void Spell::EffectQuestClear(SpellEffIndex effIndex)
     player->RemoveRewardedQuest(quest_id);
 
     sScriptMgr->OnQuestStatusChange(player, quest_id);
+    sScriptMgr->OnQuestStatusChange(player, quest, oldStatus, QUEST_STATUS_NONE);
 }
 
 void Spell::EffectSendTaxi(SpellEffIndex effIndex)
