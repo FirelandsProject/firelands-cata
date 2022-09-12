@@ -540,6 +540,15 @@ bool SmartAIMgr::IsTargetValid(SmartScriptHolder const& e)
                 return false;
             }
             break;
+        case SMART_TARGET_INVOKER_SUMMON:
+        {
+            if (!sObjectMgr->GetCreatureTemplate(e.target.invokerSummon.entry))
+            {
+                LOG_ERROR("sql.sql", "SmartAIMgr: Entry " SI64FMTD " SourceType %u Event %u Action %u uses non-existent Creature entry %u as target_param1, skipped.", e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType(), e.target.invokerSummon.entry);
+                return false;
+            }
+            break;
+        }
         case SMART_TARGET_PLAYER_RANGE:
         case SMART_TARGET_SELF:
         case SMART_TARGET_VICTIM:
@@ -559,6 +568,9 @@ bool SmartAIMgr::IsTargetValid(SmartScriptHolder const& e)
         case SMART_TARGET_LOOT_RECIPIENTS:
         case SMART_TARGET_FARTHEST:
         case SMART_TARGET_VEHICLE_PASSENGER:
+        case SMART_TARGET_HOSTILE_RANDOM_PLAYER:
+        case SMART_TARGET_HOSTILE_RANDOM_NOT_TOP_PLAYER:
+        case SMART_TARGET_HOSTILE_RANDOM_AURA:
             break;
         default:
             LOG_ERROR("sql.sql", "SmartAIMgr: Not handled target_type(%u), Entry %d SourceType %u Event %u Action %u, skipped.", e.GetTargetType(), e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType());
