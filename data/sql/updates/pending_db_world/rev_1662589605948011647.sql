@@ -1,7 +1,5 @@
--- Update Unit Class Level Stats
-
-DELETE FROM creature_classlevelstats WHERE level BETWEEN 1 and 90;
-INSERT INTO creature_classlevelstats (level, class, basehp0, basehp1, basehp2, basehp3, basemana, basearmor, attackpower, rangedattackpower, damage_base, damage_exp1, damage_exp2, damage_exp3, comment) VALUES
+DELETE FROM `creature_classlevelstats` WHERE `level` BETWEEN 1 and 90;
+INSERT INTO `creature_classlevelstats` (`level`, `class`, `basehp0`, `basehp1`, `basehp2`, `basehp3`, `basemana`, `basearmor`, `attackpower`, `rangedattackpower`, `damage_base`, `damage_exp1`, `damage_exp2`, `damage_exp3`, `comment`) VALUES
 (1, 1, 42, 42, 42, 1, 0, 7, 9, 0, 0.1321, 0.1321, 0.1321, 0, ''),
 (1, 2, 41, 41, 41, 1, 60, 23, 9, 0, 0.2381, 0.2381, 0.2381, 0, ''),
 (1, 4, 42, 42, 42, 1, 0, 23, 9, 0, 0.1321, 0.1321, 0.1321, 0, ''),
@@ -363,8 +361,5 @@ INSERT INTO creature_classlevelstats (level, class, basehp0, basehp1, basehp2, b
 (90, 4, 6935, 10980, 17193, 107596, 0, 1, 0, 0, 0, 0, 0, 211.376, ''),
 (90, 8, 4881, 7776, 13760, 107596, 10052, 1, 0, 0, 0, 0, 0, 203.275, '');
 
--- Sauranok the Mystic
-UPDATE creature_template SET exp = 2, HealthModifierExtra = 2 WHERE entry = 44120;
-
--- Auctioneer Chilton, Fitch, Jaxon and Hasse
-UPDATE creature_template SET exp = 2, minlevel = 50, maxlevel = 50 WHERE entry IN (8670, 8719, 15659, 43690);
+UPDATE `creature_template` SET `exp`=2, `HealthModifierExtra`=2 WHERE `entry`=44120;
+UPDATE `creature_template` SET `exp`=2, `minlevel`=50, `maxlevel`=50 WHERE `entry` IN (8670, 8719, 15659, 43690);
