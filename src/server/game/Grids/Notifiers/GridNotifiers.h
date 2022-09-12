@@ -1208,6 +1208,23 @@ namespace Firelands
         bool i_check3D;
     };
 
+    class AnyAreatriggerInObjectRangeCheck
+    {
+       public:
+        AnyAreatriggerInObjectRangeCheck(WorldObject const* p_Object, float range) : m_Object(p_Object), m_Range(range) {}
+        bool operator()(AreaTrigger* p_AreaTrigger)
+        {
+            if (m_Object->IsWithinDistInMap(p_AreaTrigger, m_Range))
+                return true;
+
+            return false;
+        }
+
+       private:
+        WorldObject const* m_Object;
+        float m_Range;
+    };
+
     // Creature checks
 
     class NearestHostileUnitCheck
