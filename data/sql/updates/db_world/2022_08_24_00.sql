@@ -84,11 +84,9 @@ DELETE FROM `smart_scripts` WHERE `entryorguid`=@ENTRY AND `source_type`=0;
 INSERT INTO `smart_scripts` (`entryorguid`,`source_type`,`id`,`link`,`event_type`,`event_phase_mask`,`event_chance`,`event_flags`,`event_param1`,`event_param2`,`event_param3`,`event_param4`,`action_type`,`action_param1`,`action_param2`,`action_param3`,`action_param4`,`action_param5`,`action_param6`,`target_type`,`target_param1`,`target_param2`,`target_param3`,`target_x`,`target_y`,`target_z`,`target_o`,`comment`) VALUES
 (@ENTRY,0,0,0,0,0,100,0,1000,2000,10000,11000,11,15089,0,0,0,0,0,2,0,0,0,0,0,0,0,'Cast Frost Cleave'),
 (@ENTRY,0,1,2,38,0,100,0,1,1,0,0,114,0,0,0,0,0,0,1,0,0,0,0,10,0,0,"Captive Spitescale Scout - On Data Set 1 1"),
-(@ENTRY,0,2,3,61,0,100,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,"Captive Spitescale Scout - On Data Set 0 0 - Say Line 0"),
+(@ENTRY,0,2,3,61,0,100,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,"Captive Spitescale Scout - On Data Set 1 1- Say Line 0"),
 (@ENTRY,0,3,4,61,0,100,0,0,0,0,0,19,256,0,0,0,0,0,1,0,0,0,0,0,0,0,"Captive Spitescale Scout - Set Hostile"),
 (@ENTRY,0,4,0,61,0,100,0,0,0,0,0,49,0,0,0,0,0,0,21,100,0,0,0,0,0,0,"Captive Spitescale Scout - Start Attack"),
-(@ENTRY,0,5,14,11,0,100,0,0,0,0,0,99,1,0,0,0,0,0,13,201968,0,30,0,0,0,0,"Captive Spitescale Scout - On Respawn - Set Lootstate Ready"),
-(@ENTRY,0,14,0,61,0,100,0,0,0,0,0,9,0,0,0,0,0,0,14,218472,0,0,0,0,0,0,"Captive Spitescale Scout - On Respawn - Set Lootstate Ready"),
 (@ENTRY,0,6,0,6,0,100,0,0,0,0,0,45,2,2,0,0,0,0,11,38242,20,0,0,0,0,0,"Captive Spitescale Scout - On Just Died - Set Data 2 2"),
 (@ENTRY,0,7,0,6,0,100,0,0,0,0,0,45,3,3,0,0,0,0,11,38247,20,0,0,0,0,0,"Captive Spitescale Scout - On Just Died - Set Data 3 3"),
 (@ENTRY,0,8,0,6,0,100,0,0,0,0,0,45,4,4,0,0,0,0,11,38246,20,0,0,0,0,0,"Captive Spitescale Scout - On Just Died - Set Data 4 4"),
@@ -97,8 +95,9 @@ INSERT INTO `smart_scripts` (`entryorguid`,`source_type`,`id`,`link`,`event_type
 (@ENTRY,0,11,0,6,0,100,0,0,0,0,0,45,8,8,0,0,0,0,11,38037,20,0,0,0,0,0,"Captive Spitescale Scout - On Just Died - Set Data 8 8"),
 (@ENTRY,0,12,0,6,0,100,0,0,0,0,0,45,9,9,0,0,0,0,11,38243,20,0,0,0,0,0,"Captive Spitescale Scout - On Just Died - Set Data 9 9"),
 (@ENTRY,0,13,0,6,0,100,0,0,0,0,0,45,10,10,0,0,0,0,11,42618,20,0,0,0,0,0,"Captive Spitescale Scout - On Just Died - Set Data 10 10"),
+(@ENTRY,0,14,0,6,0,100,0,0,0,0,0,9,0,0,0,0,0,0,14,218472,0,0,0,0,0,0,"Captive Spitescale Scout - On Just Died - Set Lootstate Ready"),
 (@ENTRY,0,15,16,6,0,100,0,0,0,0,0,27,0,0,0,0,0,0,1,0,0,0,0,0,0,0,"Captive Spitescale Scout - On Just Died - Stop combat"),
-(@ENTRY,0,16,0,61,0,100,0,0,0,0,0,82,256,0,0,0,0,0,1,0,0,0,0,0,0,0,"Captive Spitescale Scout - On Just Died - Set Flag IMMUNE_TO_PC(256)");
+(@ENTRY,0,16,0,61,0,100,0,0,0,0,0,18,256,0,0,0,0,0,1,0,0,0,0,0,0,0,"Captive Spitescale Scout - On Just Died - Set Flag IMMUNE_TO_PC(256)");
 
 DELETE FROM `creature_text` WHERE `CreatureID`=@ENTRY;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
