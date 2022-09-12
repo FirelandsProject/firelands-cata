@@ -610,7 +610,6 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo) const
                         condMeets = !player->GetGroup();
                 }
             }
-
             break;
         }
         case CONDITION_HAS_POWER:
@@ -1009,7 +1008,6 @@ bool ConditionMgr::IsObjectMeetToConditionList(ConditionSourceInfo& sourceInfo, 
                     LOG_DEBUG("condition", "ConditionMgr::IsPlayerMeetToConditionList %s Reference template -%u not found",
                         condition->ToString().c_str(), condition->ReferenceId); // checked at loading, should never happen
                 }
-
             }
             else //handle normal condition
             {
