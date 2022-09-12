@@ -1229,6 +1229,7 @@ class FC_GAME_API Unit : public WorldObject
         virtual bool SetDisableGravity(bool disable, bool packetOnly = false, bool updateAnimationTier = true);
         bool SetFall(bool enable);
         bool SetSwim(bool enable);
+        bool SetFlying(bool enable);
         virtual bool SetCanFly(bool enable, bool packetOnly = false);
         virtual bool SetCanTransitionBetweenSwimAndFly(bool enable);
         bool SetWaterWalking(bool enable, bool packetOnly = false);
@@ -1848,6 +1849,11 @@ class FC_GAME_API Unit : public WorldObject
         bool CanRequestSpellCast(SpellInfo const* spell) const;
 
         void DestroyForPlayer(Player* target, bool onDeath = false) const override;
+
+        void GetAttackableUnitListInRange(std::list<Unit*>& list, float fMaxSearchRange) const;
+        void GetFriendlyUnitListInRange(std::list<Unit*>& list, float fMaxSearchRange, bool exceptSelf = false) const;
+        void GetAreatriggerListInRange(std::list<AreaTrigger*>& list, float fMaxSearchRange) const;
+        void GetAreaTriggerListWithSpellIDInRange(std::list<AreaTrigger*>& list, uint32 spellid, float fMaxSearchRange) const;
 
     protected:
         explicit Unit (bool isWorldObject);

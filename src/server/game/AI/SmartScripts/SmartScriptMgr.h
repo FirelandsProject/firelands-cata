@@ -144,7 +144,7 @@ enum SMART_EVENT
     SMART_EVENT_INSTANCE_PLAYER_ENTER    = 45,      // Team (0 any), CooldownMin, CooldownMax
     SMART_EVENT_AREATRIGGER_ONTRIGGER    = 46,      // TriggerId(0 any)
     SMART_EVENT_QUEST_ACCEPTED           = 47,      // none
-    SMART_EVENT_QUEST_OBJ_COPLETETION    = 48,      // none
+    SMART_EVENT_QUEST_OBJ_COPLETETION    = 48,      // none (fix this)
     SMART_EVENT_QUEST_COMPLETION         = 49,      // none
     SMART_EVENT_QUEST_REWARDED           = 50,      // none
     SMART_EVENT_QUEST_FAIL               = 51,      // none
@@ -429,6 +429,11 @@ struct SmartEvent
             uint32 cooldownMin;
             uint32 cooldownMax;
         } counter;
+
+        //struct
+        //{
+        //    uint32 id;
+        //} questObjective;
 
         struct
         {
@@ -1494,7 +1499,7 @@ enum SmartScriptType
     SMART_SCRIPT_TYPE_AREATRIGGER = 2, //done
     SMART_SCRIPT_TYPE_EVENT = 3, //
     SMART_SCRIPT_TYPE_GOSSIP = 4, //
-    SMART_SCRIPT_TYPE_QUEST = 5, //
+    SMART_SCRIPT_TYPE_QUEST = 5, //done
     SMART_SCRIPT_TYPE_SPELL = 6, //
     SMART_SCRIPT_TYPE_TRANSPORT = 7, //
     SMART_SCRIPT_TYPE_INSTANCE = 8, //
