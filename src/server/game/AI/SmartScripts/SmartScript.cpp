@@ -49,6 +49,7 @@ SmartScript::SmartScript()
     go = nullptr;
     me = nullptr;
     trigger = nullptr;
+    quest = nullptr;
     mEventPhase = 0;
     mPathId = 0;
     mTextTimer = 0;
@@ -2436,6 +2437,214 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                     target->ToUnit()->SetHover(e.action.setHover.enable != 0);
 
             break;
+        case SMART_ACTION_STOP_FOLLOW:
+        {
+            if (!me)
+                break;
+
+            ENSURE_AI(SmartAI, me->AI())->SetUnfollow();
+
+            break;
+        }
+        case SMART_ACTION_COMPLETE_QUEST:
+        {
+            for (WorldObject* const target : targets)
+            {
+                if (!IsUnit(target))
+                    continue;
+
+                if (Player* player = target->ToUnit()->ToPlayer())
+                    for (auto const& questID : e.action.CompleteQuest.quest)
+                        player->CompleteQuest(questID);
+            }
+
+            break;
+        }
+        case SMART_ACTION_MOD_CURRENCY:
+        {
+            for (WorldObject* const target : targets)
+            {
+                if (!IsUnit(target))
+                    continue;
+
+                if (Player* player = target->ToUnit()->ToPlayer())
+                    player->ModifyCurrency(e.action.modCurrency.currencyID, e.action.modCurrency.count, true, false);
+            }
+
+            break;
+        }
+        case SMART_ACTION_CLEAR_QUEST:
+        {
+            for (WorldObject* const target : targets)
+            {
+                if (!IsUnit(target))
+                    continue;
+
+                if (Player* player = target->ToUnit()->ToPlayer())
+                    for (auto const& questID : e.action.clearQuest.quest)
+                        player->RemoveRewardedQuest(questID);
+            }
+
+            break;
+        }
+        case SMART_ACTION_UNLEARN_SPELL:
+        {
+            for (WorldObject* const target : targets)
+            {
+                if (!IsUnit(target))
+                    continue;
+
+                if (Player* player = target->ToUnit()->ToPlayer())
+                    for (auto const& entryID : e.action.unlearnSpell.spell)
+                        player->RemoveSpell(entryID);
+            }
+            break;
+        }
+        case SMART_ACTION_LEARN_SPELL:
+        {
+            for (WorldObject* const target : targets)
+            {
+                if (!IsUnit(target))
+                    continue;
+
+                if (Player* player = target->ToUnit()->ToPlayer())
+                    for (auto const& entryID : e.action.learnSpell.spell)
+                        player->LearnSpell(entryID, false);
+            }
+
+            break;
+        }
+        case SMART_ACTION_UPDATE_ACHIEVEMENT_CRITERIA:
+        {
+            if (!GetBaseObject())
+                break;
+
+            for (WorldObject* const target : targets)
+            {
+                if (!IsUnit(target))
+                    continue;
+
+                if (Player* player = target->ToUnit()->ToPlayer())
+                    player->UpdateAchievementCriteria(static_cast<AchievementCriteriaTypes>(e.action.achievementCriteria.type), e.action.achievementCriteria.misc1,
+                        e.action.achievementCriteria.misc2, e.action.achievementCriteria.misc3, unit);
+
+            }
+
+            break;
+        }
+        case SMART_ACTION_SET_OVERRIDE_ZONE_MUSIC:
+        {
+            if (me)
+                me->GetMap()->SetZoneMusic(e.action.setOverrideZoneMusic.zoneId, e.action.setOverrideZoneMusic.musicId);
+            break;
+        }
+        case SMART_ACTION_SET_POWER_TYPE:
+        {
+            for (WorldObject* const target : targets)
+                if (IsUnit(target))
+                    target->ToUnit()->SetPowerType(Powers(e.action.powerType.powerType));
+
+            break;
+        }
+        case SMART_ACTION_SET_MAX_POWER:
+        {
+            for (WorldObject* const target : targets)
+                if (IsUnit(target))
+                    target->ToUnit()->SetMaxPower(Powers(e.action.power.powerType), e.action.power.newPower);
+
+            break;
+        }
+        case SMART_ACTION_ADD_FLYING_MOVEMENT_FLAG:
+        {
+            for (WorldObject* const target : targets)
+            {
+                if (IsUnit(target))
+                {
+                    switch (e.action.SetMovementFlags.variationMovementFlags)
+                    {
+                    case 0:
+                        target->ToUnit()->AddUnitMovementFlag(MOVEMENTFLAG_FLYING);
+                        break;
+                    case 1:
+                        target->ToUnit()->AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY);
+                        break;
+                    case 2:
+                        target->ToUnit()->AddUnitMovementFlag(MOVEMENTFLAG_HOVER);
+                        break;
+                    }
+                }
+            }
+
+            break;
+        }
+        case SMART_ACTION_REMOVE_FLYING_MOVEMENT_FLAG:
+        {
+            for (WorldObject* const target : targets)
+            {
+                if (IsUnit(target))
+                {
+                    switch (e.action.SetMovementFlags.variationMovementFlags)
+                    {
+                    case 0:
+                        target->ToUnit()->RemoveUnitMovementFlag(MOVEMENTFLAG_FLYING);
+                        break;
+                    case 1:
+                        target->ToUnit()->RemoveUnitMovementFlag(MOVEMENTFLAG_CAN_FLY);
+                        break;
+                    case 2:
+                        target->ToUnit()->RemoveUnitMovementFlag(MOVEMENTFLAG_HOVER);
+                        break;
+                    }
+                }
+            }
+
+            break;
+        }
+        case SMART_ACTION_CAST_SPELL_OFFSET:
+        {
+            for (WorldObject* const target : targets)
+            {
+                if (!IsUnit(target))
+                    continue;
+
+                Position pos = target->GetPosition();
+
+                // Use forward/backward/left/right cartesian plane movement
+                float x, y, z, o;
+                o = pos.GetOrientation();
+                x = pos.GetPositionX() + (std::cos(o - (M_PI / 2)) * e.target.x) + (std::cos(o) * e.target.y);
+                y = pos.GetPositionY() + (std::sin(o - (M_PI / 2)) * e.target.x) + (std::sin(o) * e.target.y);
+                z = pos.GetPositionZ() + e.target.z;
+
+                if (e.action.castOffSet.triggered)
+                    target->ToUnit()->CastSpell(Position(x, y, z), e.action.castOffSet.spellId, true);
+                else
+                    target->ToUnit()->CastSpell(Position(x, y, z), e.action.castOffSet.spellId, false);
+            }
+            break;
+        }case SMART_ACTION_SET_SPEED:
+        {
+            for (WorldObject* const target : targets)
+                if (Unit* unitTarget = target->ToUnit())
+                    unitTarget->SetSpeed(UnitMoveType(e.action.setSpeed.type), e.action.setSpeed.speed);
+
+            break;
+        }
+        case SMART_ACTION_IGNORE_PATHFINDING:
+        {
+            for (WorldObject* const target : targets)
+            {
+                if (Unit* unitTarget = target->ToUnit())
+                {
+                    if (e.action.ignorePathfinding.ignore)
+                        unitTarget->AddUnitState(UNIT_STATE_IGNORE_PATHFINDING);
+                    else
+                        unitTarget->ClearUnitState(UNIT_STATE_IGNORE_PATHFINDING);
+                }
+            }
+
+            break;
+        }
         default:
             LOG_ERROR("sql.sql", "SmartScript::ProcessAction: Entry %d SourceType %u, Event %u, Unhandled Action type %u", e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType());
             break;
@@ -2922,6 +3131,35 @@ void SmartScript::GetTargets(ObjectVector& targets, SmartScriptHolder const& e, 
                             targets.push_back(u);
             break;
         }
+        case SMART_TARGET_INVOKER_SUMMON:
+        {
+            if (me)
+                if (Unit* target = me->GetSummonedCreatureByEntry(e.target.invokerSummon.entry))
+                    targets.push_back(target);
+
+            break;
+        }
+        case SMART_TARGET_HOSTILE_RANDOM_PLAYER:
+        {
+            if (me)
+                if (Unit* u = me->AI()->SelectTarget(SELECT_TARGET_RANDOM, 0, 0.0f, true))
+                    targets.push_back(u);
+            break;
+        }
+        case SMART_TARGET_HOSTILE_RANDOM_NOT_TOP_PLAYER:
+        {
+            if (me)
+                if (Unit* u = me->AI()->SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true))
+                    targets.push_back(u);
+            break;
+        }
+        case SMART_TARGET_HOSTILE_RANDOM_AURA:
+        {
+            if (me)
+                if (Unit* u = me->AI()->SelectTarget(SELECT_TARGET_RANDOM, e.target.spell.topornot, static_cast<float>(e.target.spell.dist), true, e.target.spell.entry))
+                    targets.push_back(u);
+            break;
+        }
         case SMART_TARGET_POSITION:
         case SMART_TARGET_NONE:
         default:
@@ -3107,6 +3345,21 @@ void SmartScript::ProcessEvent(SmartScriptHolder& e, Unit* unit, uint32 var0, ui
                 ProcessAction(e, unit, var0, var1, bvar, spell, gob);
             break;
         }
+        case SMART_EVENT_QUEST_ACCEPTED:
+        case SMART_EVENT_QUEST_COMPLETION:
+        case SMART_EVENT_QUEST_REWARDED:
+        case SMART_EVENT_QUEST_FAIL:
+        {
+            ProcessAction(e, unit);
+            break;
+        }
+        case SMART_EVENT_QUEST_OBJ_COPLETETION:
+            //To Do: uncomment when QuestObjectives are implemented.
+            //{
+            //    if (var0 == (e.event.questObjective.id))
+            //        ProcessAction(e, unit);
+            //    break;
+            //}
         //no params
         case SMART_EVENT_AGGRO:
         case SMART_EVENT_DEATH:
@@ -3117,11 +3370,6 @@ void SmartScript::ProcessEvent(SmartScriptHolder& e, Unit* unit, uint32 var0, ui
         case SMART_EVENT_AI_INIT:
         case SMART_EVENT_TRANSPORT_ADDPLAYER:
         case SMART_EVENT_TRANSPORT_REMOVE_PLAYER:
-        case SMART_EVENT_QUEST_ACCEPTED:
-        case SMART_EVENT_QUEST_OBJ_COPLETETION:
-        case SMART_EVENT_QUEST_COMPLETION:
-        case SMART_EVENT_QUEST_REWARDED:
-        case SMART_EVENT_QUEST_FAIL:
         case SMART_EVENT_JUST_SUMMONED:
         case SMART_EVENT_RESET:
         case SMART_EVENT_JUST_CREATED:
@@ -3723,7 +3971,7 @@ void SmartScript::OnUpdate(uint32 const diff)
     }
 }
 
-void SmartScript::FillScript(SmartAIEventList e, WorldObject* obj, AreaTriggerEntry const* at)
+void SmartScript::FillScript(SmartAIEventList e, WorldObject* obj, AreaTriggerEntry const* at, Quest const* quest)
 {
     if (e.empty())
     {
@@ -3731,6 +3979,8 @@ void SmartScript::FillScript(SmartAIEventList e, WorldObject* obj, AreaTriggerEn
             LOG_DEBUG("scripts.ai", "SmartScript: EventMap for Entry %u is empty but is using SmartScript.", obj->GetEntry());
         if (at)
             LOG_DEBUG("scripts.ai", "SmartScript: EventMap for AreaTrigger %u is empty but is using SmartScript.", at->ID);
+        if (quest)
+            LOG_DEBUG("scripts.ai", "SmartScript: EventMap for Quest %u is empty but is using SmartScript.", quest->GetQuestId());
         return;
     }
     for (SmartAIEventList::iterator i = e.begin(); i != e.end(); ++i)
@@ -3763,23 +4013,28 @@ void SmartScript::GetScript()
         e = sSmartScriptMgr->GetScript(-((int32)me->GetSpawnId()), mScriptType);
         if (e.empty())
             e = sSmartScriptMgr->GetScript((int32)me->GetEntry(), mScriptType);
-        FillScript(e, me, nullptr);
+        FillScript(e, me, nullptr, nullptr);
     }
     else if (go)
     {
         e = sSmartScriptMgr->GetScript(-((int32)go->GetSpawnId()), mScriptType);
         if (e.empty())
             e = sSmartScriptMgr->GetScript((int32)go->GetEntry(), mScriptType);
-        FillScript(e, go, nullptr);
+        FillScript(e, go, nullptr, nullptr);
     }
     else if (trigger)
     {
         e = sSmartScriptMgr->GetScript((int32)trigger->ID, mScriptType);
-        FillScript(e, nullptr, trigger);
+        FillScript(e, nullptr, trigger, nullptr);
+    }
+    else if (quest)
+    {
+        e = sSmartScriptMgr->GetScript(quest->GetQuestId(), mScriptType);
+        FillScript(std::move(e), nullptr, nullptr, quest);
     }
 }
 
-void SmartScript::OnInitialize(WorldObject* obj, AreaTriggerEntry const* at)
+void SmartScript::OnInitialize(WorldObject* obj, AreaTriggerEntry const* at, Quest const* qst)
 {
     if (obj)//handle object based scripts
     {
@@ -3804,6 +4059,12 @@ void SmartScript::OnInitialize(WorldObject* obj, AreaTriggerEntry const* at)
         mScriptType = SMART_SCRIPT_TYPE_AREATRIGGER;
         trigger = at;
         LOG_DEBUG("scripts.ai", "SmartScript::OnInitialize: source is AreaTrigger %u", trigger->ID);
+    }
+    else if (qst)
+    {
+        mScriptType = SMART_SCRIPT_TYPE_QUEST;
+        quest = qst;
+        LOG_DEBUG("scripts.ai", "SmartScript::OnInitialize: source is Quest with id %u", qst->GetQuestId());
     }
     else
     {

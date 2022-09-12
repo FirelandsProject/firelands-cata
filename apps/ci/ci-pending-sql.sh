@@ -37,6 +37,7 @@ function import()
 }
 
 import "world"
+import "hotfixes"
 import "characters"
 import "auth"
 
