@@ -1078,12 +1078,12 @@ enum SpellEffects
     SPELL_EFFECT_APPLY_AURA_2                       = 174,
     SPELL_EFFECT_175                                = 175, // Unused (4.3.4)
     SPELL_EFFECT_SANCTUARY_2                        = 176, // Some kind of sanctuary effect (Vanish)
-    SPELL_EFFECT_177                                = 177,
+    SPELL_EFFECT_DESPAWN_DYNOBJECT                  = 177,
     SPELL_EFFECT_178                                = 178, // Unused (4.3.4)
     SPELL_EFFECT_CREATE_AREATRIGGER                 = 179,
     SPELL_EFFECT_UPDATE_AREATRIGGER                 = 180, // Unused (4.3.4)
     SPELL_EFFECT_REMOVE_TALENT                      = 181, // Unused (4.3.4)
-    SPELL_EFFECT_182                                = 182,
+    SPELL_EFFECT_DESPAWN_AREATRIGGER                = 182,
     TOTAL_SPELL_EFFECTS                             = 183,
 };
 

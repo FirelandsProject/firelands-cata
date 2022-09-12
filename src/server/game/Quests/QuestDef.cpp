@@ -233,6 +233,7 @@ void Quest::LoadQuestTemplateAddon(Field* fields)
 
     _allowableRaces = fields[18].GetUInt32();
     _timeAllowed = fields[19].GetInt32();
+    ScriptId = sObjectMgr->GetScriptId(fields[20].GetString());
 }
 
 void Quest::LoadQuestMailSender(Field* fields)

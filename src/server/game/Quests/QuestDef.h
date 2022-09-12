@@ -316,6 +316,7 @@ class FC_GAME_API Quest
         bool   IsAutoComplete() const;
         uint32 GetFlags() const { return _flags; }
         uint32 GetSpecialFlags() const { return _specialFlags; }
+        uint32 GetScriptId() const { return ScriptId; }
         uint32 GetMinimapTargetMark() const { return _minimapTargetMark; }
         uint32 GetRewardSkillId() const { return _rewardSkillId; }
         uint32 GetRewardSkillPoints() const { return _rewardSkillPoints; }
@@ -468,6 +469,7 @@ class FC_GAME_API Quest
         uint32 _specialFlags            = 0; // custom flags, not sniffed/WDB
         uint32 _allowableRaces          = 0;
         uint32 _timeAllowed             = 0;
+        uint32 ScriptId                 = 0;
 
         // Helpers
         static uint32 RoundXPValue(uint32 xp);

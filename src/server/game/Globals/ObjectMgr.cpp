@@ -4121,8 +4121,8 @@ void ObjectMgr::LoadQuests()
 
         // 0   1         2                 3              4            5            6               7                     8                     9
         { "ID, MaxLevel, AllowableClasses, SourceSpellID, PrevQuestID, NextQuestID, ExclusiveGroup, BreadcrumbForQuestId, RewardMailTemplateID, RewardMailDelay,"
-        // 10              11                   12                     13                     14                   15                   16                 17            18              19
-        " RequiredSkillID, RequiredSkillPoints, RequiredMinRepFaction, RequiredMaxRepFaction, RequiredMinRepValue, RequiredMaxRepValue, ProvidedItemCount, SpecialFlags, AllowableRaces, TimeAllowed", "quest_template_addon", "template addons",     &Quest::LoadQuestTemplateAddon },
+        // 10              11                   12                     13                     14                   15                   16                 17            18              19             20
+        " RequiredSkillID, RequiredSkillPoints, RequiredMinRepFaction, RequiredMaxRepFaction, RequiredMinRepValue, RequiredMaxRepValue, ProvidedItemCount, SpecialFlags, AllowableRaces, TimeAllowed, ScriptName", "quest_template_addon", "template addons",     &Quest::LoadQuestTemplateAddon },
 
         // 0        1
         { "QuestId, RewardMailSenderEntry",                                                                                                                               "quest_mail_sender",    "mail sender entries", &Quest::LoadQuestMailSender    }
@@ -9343,6 +9343,8 @@ void ObjectMgr::LoadScriptNames()
         "SELECT DISTINCT(ScriptName) FROM outdoorpvp_template WHERE ScriptName <> '' "
         "UNION "
         "SELECT DISTINCT(ScriptName) FROM world_map_template WHERE ScriptName <> '' "
+        "UNION "
+        "SELECT DISTINCT(ScriptName) FROM quest_template_addon WHERE ScriptName <> '' "
         "UNION "
         "SELECT DISTINCT(script) FROM instance_template WHERE script <> ''");
 

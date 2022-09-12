@@ -241,21 +241,21 @@ pEffect SpellEffects[TOTAL_SPELL_EFFECTS]=
     &Spell::EffectDamageFromMaxHealthPCT,                   //165 SPELL_EFFECT_DAMAGE_FROM_MAX_HEALTH_PCT
     &Spell::EffectGiveCurrency,                             //166 SPELL_EFFECT_GIVE_CURRENCY
     &Spell::EffectUpdatePlayerPhase,                        //167 SPELL_EFFECT_UPDATE_PLAYER_PHASE
-    &Spell::EffectNULL,                                     //168 SPELL_EFFECT_168
-    &Spell::EffectNULL,                                     //169 SPELL_EFFECT_DESTROY_ITEM
+    &Spell::EffectNULL,                                     //168 SPELL_EFFECT_ALLOW_CONTROL_PET
+    &Spell::EffectDestroyItem,                              //169 SPELL_EFFECT_DESTROY_ITEM
     &Spell::EffectUpdateZoneAurasAndPhases,                 //170 SPELL_EFFECT_UPDATE_ZONE_AURAS_AND_PHASES
     &Spell::EffectSummonPersonalGameObject,                 //171 SPELL_EFFECT_SUMMON_PERSONAL_GAMEOBJECT
     &Spell::EffectResurrectWithAura,                        //172 SPELL_EFFECT_RESURRECT_WITH_AURA
     &Spell::EffectUnlockGuildVaultTab,                      //173 SPELL_EFFECT_UNLOCK_GUILD_VAULT_TAB
     &Spell::EffectApplyAura,                                //174 SPELL_EFFECT_APPLY_AURA_2
     &Spell::EffectUnused,                                   //175 SPELL_EFFECT_175  unused
-    &Spell::EffectNULL,                                     //176 SPELL_EFFECT_SANCTUARY_2
-    &Spell::EffectNULL,                                     //177 SPELL_EFFECT_177
+    &Spell::EffectSanctuary,                                //176 SPELL_EFFECT_SANCTUARY_2
+    &Spell::EffectDespawnDynamicObject,                     //177 SPELL_EFFECT_DESPAWN_DYNOBJECT
     &Spell::EffectUnused,                                   //178 SPELL_EFFECT_178 unused
     &Spell::EffectCreateAreaTrigger,                        //179 SPELL_EFFECT_CREATE_AREATRIGGER
     &Spell::EffectUnused,                                   //180 SPELL_EFFECT_UPDATE_AREATRIGGER
     &Spell::EffectUnused,                                   //181 SPELL_EFFECT_REMOVE_TALENT
-    &Spell::EffectNULL,                                     //182 SPELL_EFFECT_182
+    &Spell::EffectNULL,                                     //182 SPELL_EFFECT_DESPAWN_AREATRIGGER
 };
 
 void Spell::EffectNULL(SpellEffIndex /*effIndex*/)
@@ -4497,8 +4497,10 @@ void Spell::EffectQuestClear(SpellEffIndex effIndex)
     if (!quest)
         return;
 
+    QuestStatus oldStatus = player->GetQuestStatus(quest_id);
+
     // Player has never done this quest
-    if (player->GetQuestStatus(quest_id) == QUEST_STATUS_NONE)
+    if (oldStatus == QUEST_STATUS_NONE)
         return;
 
     // remove all quest entries for 'entry' from quest log
@@ -4524,6 +4526,7 @@ void Spell::EffectQuestClear(SpellEffIndex effIndex)
     player->RemoveRewardedQuest(quest_id);
 
     sScriptMgr->OnQuestStatusChange(player, quest_id);
+    sScriptMgr->OnQuestStatusChange(player, quest, oldStatus, QUEST_STATUS_NONE);
 }
 
 void Spell::EffectSendTaxi(SpellEffIndex effIndex)
@@ -5717,4 +5720,27 @@ void Spell::EffectUpdateZoneAurasAndPhases(SpellEffIndex /*effIndex*/)
         return;
 
     unitTarget->ToPlayer()->UpdateAreaDependentAuras(unitTarget->GetAreaId());
+}
+
+void Spell::EffectDestroyItem(SpellEffIndex effIndex)
+{
+    if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
+        return;
+
+    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
+        return;
+
+    Player* player = unitTarget->ToPlayer();
+    uint32 itemId = m_spellInfo->Effects[effIndex].ItemType;
+
+    if (Item* item = player->GetItemByEntry(itemId))
+        player->DestroyItem(item->GetBagSlot(), item->GetSlot(), true);
+}
+
+void Spell::EffectDespawnDynamicObject(SpellEffIndex /*effIndex*/)
+{
+    if (!m_caster)
+        return;
+
+    m_caster->RemoveAllDynObjects();
 }

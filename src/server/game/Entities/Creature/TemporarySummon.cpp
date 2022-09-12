@@ -227,6 +227,8 @@ void TempSummon::InitSummon()
 {
     if (Unit* owner = GetSummoner())
     {
+        owner->AddSummonedCreature(GetGUID(), GetEntry());
+
         if (owner->GetTypeId() == TYPEID_UNIT && owner->ToCreature()->IsAIEnabled())
             owner->ToCreature()->AI()->JustSummoned(this);
         if (IsAIEnabled())
@@ -265,6 +267,8 @@ void TempSummon::UnSummon(uint32 msTime)
     Unit* owner = GetSummoner();
     if (owner)
     {
+        owner->RemoveSummonedCreature(GetGUID());
+
         if (owner->GetTypeId() == TYPEID_UNIT && owner->ToCreature()->IsAIEnabled())
             owner->ToCreature()->AI()->SummonedCreatureDespawn(this);
     }

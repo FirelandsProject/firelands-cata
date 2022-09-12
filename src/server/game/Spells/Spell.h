@@ -407,6 +407,8 @@ class FC_GAME_API Spell
         void EffectCreateAreaTrigger(SpellEffIndex effIndex);
         void EffectUpdatePlayerPhase(SpellEffIndex effIndex);
         void EffectUpdateZoneAurasAndPhases(SpellEffIndex effIndex);
+        void EffectDestroyItem(SpellEffIndex effIndex);
+        void EffectDespawnDynamicObject(SpellEffIndex effIndex);
 
         typedef std::unordered_set<Aura*> UsedSpellMods;
 
