@@ -2437,6 +2437,214 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                     target->ToUnit()->SetHover(e.action.setHover.enable != 0);
 
             break;
+        case SMART_ACTION_STOP_FOLLOW:
+        {
+            if (!me)
+                break;
+
+            ENSURE_AI(SmartAI, me->AI())->SetUnfollow();
+
+            break;
+        }
+        case SMART_ACTION_COMPLETE_QUEST:
+        {
+            for (WorldObject* const target : targets)
+            {
+                if (!IsUnit(target))
+                    continue;
+
+                if (Player* player = target->ToUnit()->ToPlayer())
+                    for (auto const& questID : e.action.CompleteQuest.quest)
+                        player->CompleteQuest(questID);
+            }
+
+            break;
+        }
+        case SMART_ACTION_MOD_CURRENCY:
+        {
+            for (WorldObject* const target : targets)
+            {
+                if (!IsUnit(target))
+                    continue;
+
+                if (Player* player = target->ToUnit()->ToPlayer())
+                    player->ModifyCurrency(e.action.modCurrency.currencyID, e.action.modCurrency.count, true, false);
+            }
+
+            break;
+        }
+        case SMART_ACTION_CLEAR_QUEST:
+        {
+            for (WorldObject* const target : targets)
+            {
+                if (!IsUnit(target))
+                    continue;
+
+                if (Player* player = target->ToUnit()->ToPlayer())
+                    for (auto const& questID : e.action.clearQuest.quest)
+                        player->RemoveRewardedQuest(questID);
+            }
+
+            break;
+        }
+        case SMART_ACTION_UNLEARN_SPELL:
+        {
+            for (WorldObject* const target : targets)
+            {
+                if (!IsUnit(target))
+                    continue;
+
+                if (Player* player = target->ToUnit()->ToPlayer())
+                    for (auto const& entryID : e.action.unlearnSpell.spell)
+                        player->RemoveSpell(entryID);
+            }
+            break;
+        }
+        case SMART_ACTION_LEARN_SPELL:
+        {
+            for (WorldObject* const target : targets)
+            {
+                if (!IsUnit(target))
+                    continue;
+
+                if (Player* player = target->ToUnit()->ToPlayer())
+                    for (auto const& entryID : e.action.learnSpell.spell)
+                        player->LearnSpell(entryID, false);
+            }
+
+            break;
+        }
+        case SMART_ACTION_UPDATE_ACHIEVEMENT_CRITERIA:
+        {
+            if (!GetBaseObject())
+                break;
+
+            for (WorldObject* const target : targets)
+            {
+                if (!IsUnit(target))
+                    continue;
+
+                if (Player* player = target->ToUnit()->ToPlayer())
+                    player->UpdateAchievementCriteria(static_cast<AchievementCriteriaTypes>(e.action.achievementCriteria.type), e.action.achievementCriteria.misc1,
+                        e.action.achievementCriteria.misc2, e.action.achievementCriteria.misc3, unit);
+
+            }
+
+            break;
+        }
+        case SMART_ACTION_SET_OVERRIDE_ZONE_MUSIC:
+        {
+            if (me)
+                me->GetMap()->SetZoneMusic(e.action.setOverrideZoneMusic.zoneId, e.action.setOverrideZoneMusic.musicId);
+            break;
+        }
+        case SMART_ACTION_SET_POWER_TYPE:
+        {
+            for (WorldObject* const target : targets)
+                if (IsUnit(target))
+                    target->ToUnit()->SetPowerType(Powers(e.action.powerType.powerType));
+
+            break;
+        }
+        case SMART_ACTION_SET_MAX_POWER:
+        {
+            for (WorldObject* const target : targets)
+                if (IsUnit(target))
+                    target->ToUnit()->SetMaxPower(Powers(e.action.power.powerType), e.action.power.newPower);
+
+            break;
+        }
+        case SMART_ACTION_ADD_FLYING_MOVEMENT_FLAG:
+        {
+            for (WorldObject* const target : targets)
+            {
+                if (IsUnit(target))
+                {
+                    switch (e.action.SetMovementFlags.variationMovementFlags)
+                    {
+                    case 0:
+                        target->ToUnit()->AddUnitMovementFlag(MOVEMENTFLAG_FLYING);
+                        break;
+                    case 1:
+                        target->ToUnit()->AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY);
+                        break;
+                    case 2:
+                        target->ToUnit()->AddUnitMovementFlag(MOVEMENTFLAG_HOVER);
+                        break;
+                    }
+                }
+            }
+
+            break;
+        }
+        case SMART_ACTION_REMOVE_FLYING_MOVEMENT_FLAG:
+        {
+            for (WorldObject* const target : targets)
+            {
+                if (IsUnit(target))
+                {
+                    switch (e.action.SetMovementFlags.variationMovementFlags)
+                    {
+                    case 0:
+                        target->ToUnit()->RemoveUnitMovementFlag(MOVEMENTFLAG_FLYING);
+                        break;
+                    case 1:
+                        target->ToUnit()->RemoveUnitMovementFlag(MOVEMENTFLAG_CAN_FLY);
+                        break;
+                    case 2:
+                        target->ToUnit()->RemoveUnitMovementFlag(MOVEMENTFLAG_HOVER);
+                        break;
+                    }
+                }
+            }
+
+            break;
+        }
+        case SMART_ACTION_CAST_SPELL_OFFSET:
+        {
+            for (WorldObject* const target : targets)
+            {
+                if (!IsUnit(target))
+                    continue;
+
+                Position pos = target->GetPosition();
+
+                // Use forward/backward/left/right cartesian plane movement
+                float x, y, z, o;
+                o = pos.GetOrientation();
+                x = pos.GetPositionX() + (std::cos(o - (M_PI / 2)) * e.target.x) + (std::cos(o) * e.target.y);
+                y = pos.GetPositionY() + (std::sin(o - (M_PI / 2)) * e.target.x) + (std::sin(o) * e.target.y);
+                z = pos.GetPositionZ() + e.target.z;
+
+                if (e.action.castOffSet.triggered)
+                    target->ToUnit()->CastSpell(Position(x, y, z), e.action.castOffSet.spellId, true);
+                else
+                    target->ToUnit()->CastSpell(Position(x, y, z), e.action.castOffSet.spellId, false);
+            }
+            break;
+        }case SMART_ACTION_SET_SPEED:
+        {
+            for (WorldObject* const target : targets)
+                if (Unit* unitTarget = target->ToUnit())
+                    unitTarget->SetSpeed(UnitMoveType(e.action.setSpeed.type), e.action.setSpeed.speed);
+
+            break;
+        }
+        case SMART_ACTION_IGNORE_PATHFINDING:
+        {
+            for (WorldObject* const target : targets)
+            {
+                if (Unit* unitTarget = target->ToUnit())
+                {
+                    if (e.action.ignorePathfinding.ignore)
+                        unitTarget->AddUnitState(UNIT_STATE_IGNORE_PATHFINDING);
+                    else
+                        unitTarget->ClearUnitState(UNIT_STATE_IGNORE_PATHFINDING);
+                }
+            }
+
+            break;
+        }
         default:
             LOG_ERROR("sql.sql", "SmartScript::ProcessAction: Entry %d SourceType %u, Event %u, Unhandled Action type %u", e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType());
             break;
