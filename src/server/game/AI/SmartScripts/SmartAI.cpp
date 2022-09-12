@@ -931,6 +931,21 @@ void SmartAI::StopFollow(bool complete)
     GetScript()->ProcessEventsFor(SMART_EVENT_FOLLOW_COMPLETED, player);
 }
 
+void SmartAI::SetUnfollow()
+{
+    _followGuid.Clear();
+    _followDist = 0;
+    _followAngle = 0;
+    _followCredit = 0;
+    _followArrivedTimer = 0;
+    _followArrivedEntry = 0;
+    _followCreditType = 0;
+
+    me->StopMoving();
+    me->GetMotionMaster()->Clear();
+    me->GetMotionMaster()->MoveIdle();
+}
+
 void SmartAI::SetScript9(SmartScriptHolder& e, uint32 entry, Unit* invoker)
 {
     if (invoker)
@@ -1101,7 +1116,50 @@ class SmartTrigger : public AreaTriggerScript
         }
 };
 
+class SmartQuest : public QuestScript
+{
+public:
+    SmartQuest() : QuestScript("SmartQuest") { }
+
+    // Called when a quest status change
+    void OnQuestStatusChange(Player* player, Quest const* quest, QuestStatus /*oldStatus*/, QuestStatus newStatus)
+    {
+        SmartScript smartScript;
+        smartScript.OnInitialize(nullptr, nullptr, quest);
+        switch (newStatus)
+        {
+        case QUEST_STATUS_INCOMPLETE:
+            smartScript.ProcessEventsFor(SMART_EVENT_QUEST_ACCEPTED, player);
+            break;
+        case QUEST_STATUS_COMPLETE:
+            smartScript.ProcessEventsFor(SMART_EVENT_QUEST_COMPLETION, player);
+            break;
+        case QUEST_STATUS_FAILED:
+            smartScript.ProcessEventsFor(SMART_EVENT_QUEST_FAIL, player);
+            break;
+        case QUEST_STATUS_REWARDED:
+            smartScript.ProcessEventsFor(SMART_EVENT_QUEST_REWARDED, player);
+            break;
+        case QUEST_STATUS_NONE:
+        default:
+            break;
+        }
+    }
+
+    // Called when a quest objective data change
+    //void OnQuestObjectiveChange(Player* player, Quest const* quest, QuestObjective const& objective, int32 /*oldAmount*/, int32 /*newAmount*/)
+    //{
+    //    if (player->IsQuestObjectiveComplete(objective))
+    //    {
+    //        SmartScript smartScript;
+    //        smartScript.OnInitialize(nullptr, nullptr, nullptr, quest);
+    //        smartScript.ProcessEventsFor(SMART_EVENT_QUEST_OBJ_COPLETETION, player, objective.ID);
+    //    }
+    //}
+};
+
 void AddSC_SmartScripts()
 {
     new SmartTrigger();
+    new SmartQuest();
 }
