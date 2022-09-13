@@ -1,6 +1,5 @@
 /*
- * This file is part of the FirelandsCore Project. See AUTHORS file for
- * Copyright information
+ * This file is part of the FirelandsCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -16,4 +15,25 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-void AddSC_quest_scripts() {}
+#ifndef ServerMotd_h__
+#define ServerMotd_h__
+
+#include "Define.h"
+#include <string>
+
+class WorldPacket;
+
+namespace Motd
+{
+    /// Set a new Message of the Day
+    void SetMotd(std::string motd);
+
+    /// Get the current Message of the Day
+    char const* GetMotd();
+
+    /// Get the motd packet to send at login
+    WorldPacket const* GetMotdPacket();
+}
+
+#endif //ServerMotd_h_
+// _

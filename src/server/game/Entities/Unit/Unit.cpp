@@ -302,7 +302,7 @@ Unit::Unit(bool isWorldObject) :
     m_vehicleKit(nullptr), m_unitTypeMask(UNIT_MASK_NONE), m_Diminishing(),
     m_isEngaged(false), m_combatManager(this), m_threatManager(this),
     i_AI(nullptr), m_aiLocked(false), m_spellHistory(new SpellHistory(this)),
-    _isIgnoringCombat(false)
+    _isIgnoringCombat(false), _scheduler(this)
 {
     m_objectType |= TYPEMASK_UNIT;
     m_objectTypeId = TYPEID_UNIT;
@@ -405,6 +405,7 @@ Unit::~Unit()
         }
 
     m_Events.KillAllEvents(true);
+    _scheduler.CancelAll();
 
     _DeleteRemovedAuras();
 
@@ -432,6 +433,8 @@ void Unit::Update(uint32 p_time)
     // Spells must be processed with event system BEFORE they go to _UpdateSpells.
     // Or else we may have some SPELL_STATE_FINISHED spells stalled in pointers, that is bad.
     m_Events.Update(p_time);
+
+    _scheduler.Update(p_time);
 
     CheckPendingMovementAcks();
 
@@ -3151,9 +3154,9 @@ void Unit::RemoveSummonedCreature(ObjectGuid guid)
 Creature* Unit::GetSummonedCreatureByEntry(uint32 entry)
 {
     auto itr = std::find_if(m_SummonedCreatures.begin(), m_SummonedCreatures.end(), [entry](auto& p)
-        {
-            return p.second == entry;
-        });
+    {
+        return p.second == entry;
+    });
 
     if (itr == m_SummonedCreatures.end())
         return nullptr;
