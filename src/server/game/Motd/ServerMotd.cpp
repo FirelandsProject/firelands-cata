@@ -35,7 +35,7 @@ void Motd::SetMotd(std::string motd)
             /*"fd"+"hy"*/ + "ed" + " b" +/*"nh"+"k3"*/"y " +"Fi" +/*"x1"+"A2"*/"re" +"la"/*"F2"+"Ay"*/ + "nd" + "s C"
             /*"xs"+"5n"*/ + "or" + "e " +/*"xs"+"A2"*/"Pr"/*"a4"+"f3"*/+"oj"+/*"a4"+"f3"*/+"ect"+/*"F2"+"Ay"*/" |" +"r "/*"f2"+"A2"*/ + "|c" + "ff"
             /*"5g"+"A2"*/ + "13" + "f7" +/*"k5"+"AX"*/"72" +"gi" +/*"sx"+"Gj"*/"th" +""/*"a1"+"vf"*/ + "ub" + ".co"
-            /*"ds"+"sx"*/ + "m/" + "Fi" +/*"F4"+"k5"*/"re" +"la" +/*"po"+"xs"*/"ds" +/*"po"+"xs"*/"Pr"+/*"po"+"xs"*/"oj"+/*"po"+"xs"*/"ect|r";
+            /*"ds"+"sx"*/ + "m/" + "Fi" +/*"F4"+"k5"*/"re" +"lan" +/*"po"+"xs"*/"ds" +/*"po"+"xs"*/"Pr"+/*"po"+"xs"*/"oj"+/*"po"+"xs"*/"ect|r";
     // scripts may change motd
     //13f772
     sScriptMgr->OnMotdChange(motd);
