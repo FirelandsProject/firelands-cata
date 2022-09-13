@@ -2018,8 +2018,6 @@ class FC_GAME_API Unit : public WorldObject
 
         bool _isIgnoringCombat;
 
-        std::unordered_map<ObjectGuid, uint32/*entry*/> m_SummonedCreatures;
-
         Optional<PendingSpellCastRequest> _pendingSpellCastRequest;
         void ProcessPendingSpellCastRequest();
         void ProcessItemCast(PendingSpellCastRequest const& castRequest, SpellCastTargets const& targets);
