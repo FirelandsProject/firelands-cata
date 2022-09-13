@@ -540,6 +540,15 @@ bool SmartAIMgr::IsTargetValid(SmartScriptHolder const& e)
                 return false;
             }
             break;
+        case SMART_TARGET_INVOKER_SUMMON:
+        {
+            if (!sObjectMgr->GetCreatureTemplate(e.target.invokerSummon.entry))
+            {
+                LOG_ERROR("sql.sql", "SmartAIMgr: Entry " SI64FMTD " SourceType %u Event %u Action %u uses non-existent Creature entry %u as target_param1, skipped.", e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType(), e.target.invokerSummon.entry);
+                return false;
+            }
+            break;
+        }
         case SMART_TARGET_PLAYER_RANGE:
         case SMART_TARGET_SELF:
         case SMART_TARGET_VICTIM:
@@ -559,6 +568,9 @@ bool SmartAIMgr::IsTargetValid(SmartScriptHolder const& e)
         case SMART_TARGET_LOOT_RECIPIENTS:
         case SMART_TARGET_FARTHEST:
         case SMART_TARGET_VEHICLE_PASSENGER:
+        case SMART_TARGET_HOSTILE_RANDOM_PLAYER:
+        case SMART_TARGET_HOSTILE_RANDOM_NOT_TOP_PLAYER:
+        case SMART_TARGET_HOSTILE_RANDOM_AURA:
             break;
         default:
             LOG_ERROR("sql.sql", "SmartAIMgr: Not handled target_type(%u), Entry %d SourceType %u Event %u Action %u, skipped.", e.GetTargetType(), e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType());
@@ -1639,6 +1651,54 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
                 return false;
             }
             break;
+        case SMART_ACTION_COMPLETE_QUEST:
+        {
+            for (auto& questID : e.action.CompleteQuest.quest)
+            {
+                if (questID && !IsQuestValid(e, questID))
+                    questID = 0;
+            }
+            break;
+        }
+        case SMART_ACTION_CLEAR_QUEST:
+        {
+            for (auto& questID : e.action.clearQuest.quest)
+            {
+                if (questID && !IsQuestValid(e, questID))
+                    questID = 0;
+            }
+
+            break;
+        }
+        case SMART_ACTION_UNLEARN_SPELL:
+        {
+            for (auto& entryID : e.action.unlearnSpell.spell)
+            {
+                if (entryID && !IsSpellValid(e, entryID))
+                    entryID = 0;
+            }
+
+            break;
+        }
+        case SMART_ACTION_LEARN_SPELL:
+        {
+            for (auto& entryID : e.action.learnSpell.spell)
+            {
+                if (entryID && !IsSpellValid(e, entryID))
+                    entryID = 0;
+            }
+            break;
+        }
+        case SMART_ACTION_SET_SPEED:
+        {
+            if (e.action.setSpeed.type >= MAX_MOVE_TYPE)
+            {
+                LOG_ERROR("sql.sql", "SmartScript: SMART_ACTION_SET_SPEED have wrong speed type %u for creature " SI64FMTD ", skipped", e.action.setSpeed.type, e.entryOrGuid);
+                return false;
+            }
+
+            break;
+        }
         case SMART_ACTION_START_CLOSEST_WAYPOINT:
         case SMART_ACTION_FOLLOW:
         case SMART_ACTION_SET_ORIENTATION:
@@ -1720,6 +1780,15 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
         case SMART_ACTION_DESPAWN_SPAWNGROUP:
         case SMART_ACTION_PLAY_CINEMATIC:
         case SMART_ACTION_SET_HOVER:
+        case SMART_ACTION_STOP_FOLLOW:
+        case SMART_ACTION_MOD_CURRENCY:
+        case SMART_ACTION_UPDATE_ACHIEVEMENT_CRITERIA:
+        case SMART_ACTION_SET_OVERRIDE_ZONE_MUSIC:
+        case SMART_ACTION_SET_POWER_TYPE:
+        case SMART_ACTION_SET_MAX_POWER:
+        case SMART_ACTION_ADD_FLYING_MOVEMENT_FLAG:
+        case SMART_ACTION_REMOVE_FLYING_MOVEMENT_FLAG:
+        case SMART_ACTION_IGNORE_PATHFINDING:
             break;
         default:
             LOG_ERROR("sql.sql", "SmartAIMgr: Not handled action_type(%u), event_type(%u), Entry %d SourceType %u Event %u, skipped.", e.GetActionType(), e.GetEventType(), e.entryOrGuid, e.GetScriptType(), e.event_id);
