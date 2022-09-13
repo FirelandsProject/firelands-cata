@@ -1,31 +1,35 @@
 /*
-* This file is part of the FirelandsCore Project. See AUTHORS file for Copyright information
-*
-* This program is free software; you can redistribute it and/or modify it
-* under the terms of the GNU General Public License as published by the
-* Free Software Foundation; either version 2 of the License, or (at your
-* option) any later version.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-* more details.
-*
-* You should have received a copy of the GNU General Public License along
-* with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * This file is part of the FirelandsCore Project. See AUTHORS file for
+ * Copyright information
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation; either version 2 of the License, or (at your
+ * option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "RASession.h"
-#include "AccountMgr.h"
-#include "Config.h"
-#include "DatabaseEnv.h"
-#include "Log.h"
-#include "Util.h"
-#include "World.h"
+
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/read_until.hpp>
 #include <memory>
 #include <thread>
+
+#include "AccountMgr.h"
+#include "Config.h"
+#include "DatabaseEnv.h"
+#include "Log.h"
+#include "ServerMotd.h"
+#include "Util.h"
+#include "World.h"
 
 using boost::asio::ip::tcp;
 
@@ -35,15 +39,16 @@ void RASession::Start()
     for (int counter = 0; counter < 10 && _socket.available() == 0; counter++)
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-    // Check if there are bytes available, if they are, then the client is requesting the negotiation
+    // Check if there are bytes available, if they are, then the client is
+    // requesting the negotiation
     if (_socket.available() > 0)
     {
         // Handle subnegotiation
-        char buf[1024] = { };
+        char buf[1024] = {};
         _socket.read_some(boost::asio::buffer(buf));
 
         // Send the end-of-negotiation packet
-        uint8 const reply[2] = { 0xFF, 0xF0 };
+        uint8 const reply[2] = {0xFF, 0xF0};
         _socket.write_some(boost::asio::buffer(reply));
     }
 
@@ -52,16 +57,15 @@ void RASession::Start()
 
     std::string username = ReadString();
 
-    if (username.empty())
-        return;
+    if (username.empty()) return;
 
-    LOG_INFO("commands.ra", "Accepting RA connection from user %s (IP: %s)", username.c_str(), GetRemoteIpAddress().c_str());
+    LOG_INFO("commands.ra", "Accepting RA connection from user %s (IP: %s)",
+        username.c_str(), GetRemoteIpAddress().c_str());
 
     Send("Password: ");
 
     std::string password = ReadString();
-    if (password.empty())
-        return;
+    if (password.empty()) return;
 
     if (!CheckAccessLevel(username) || !CheckPassword(username, password))
     {
@@ -70,20 +74,19 @@ void RASession::Start()
         return;
     }
 
-    LOG_INFO("commands.ra", "User %s (IP: %s) authenticated correctly to RA", username.c_str(), GetRemoteIpAddress().c_str());
+    LOG_INFO("commands.ra", "User %s (IP: %s) authenticated correctly to RA",
+        username.c_str(), GetRemoteIpAddress().c_str());
 
     // Authentication successful, send the motd
-    for (std::string const& line : sWorld->GetMotd())
-        Send(line.c_str());
+    Send(std::string(std::string(Motd::GetMotd()) + "\r\n").c_str());
 
     // Read commands
     for (;;)
     {
-        Send("TC>");
+        Send("FC>");
         std::string command = ReadString();
 
-        if (ProcessCommand(command))
-            break;
+        if (ProcessCommand(command)) break;
     }
 
     _socket.close();
@@ -112,8 +115,7 @@ std::string RASession::ReadString()
     std::istream is(&_readBuffer);
     std::getline(is, line);
 
-    if (*line.rbegin() == '\r')
-        line.erase(line.length() - 1);
+    if (*line.rbegin() == '\r') line.erase(line.length() - 1);
 
     return line;
 }
@@ -124,13 +126,15 @@ bool RASession::CheckAccessLevel(const std::string& user)
 
     Utf8ToUpperOnlyLatin(safeUser);
 
-    LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_ACCOUNT_ACCESS);
+    LoginDatabasePreparedStatement* stmt =
+        LoginDatabase.GetPreparedStatement(LOGIN_SEL_ACCOUNT_ACCESS);
     stmt->setString(0, safeUser);
     PreparedQueryResult result = LoginDatabase.Query(stmt);
 
     if (!result)
     {
-        LOG_INFO("commands.ra", "User %s does not exist in database", user.c_str());
+        LOG_INFO(
+            "commands.ra", "User %s does not exist in database", user.c_str());
         return false;
     }
 
@@ -138,12 +142,15 @@ bool RASession::CheckAccessLevel(const std::string& user)
 
     if (fields[1].GetUInt8() < sConfigMgr->GetIntDefault("Ra.MinLevel", 3))
     {
-        LOG_INFO("commands.ra", "User %s has no privilege to login", user.c_str());
+        LOG_INFO(
+            "commands.ra", "User %s has no privilege to login", user.c_str());
         return false;
     }
     else if (fields[2].GetInt32() != -1)
     {
-        LOG_INFO("commands.ra", "User %s has to be assigned on all realms (with RealmID = '-1')", user.c_str());
+        LOG_INFO("commands.ra",
+            "User %s has to be assigned on all realms (with RealmID = '-1')",
+            user.c_str());
         return false;
     }
 
@@ -160,7 +167,8 @@ bool RASession::CheckPassword(const std::string& user, const std::string& pass)
 
     std::string hash = AccountMgr::CalculateShaPassHash(safe_user, safe_pass);
 
-    LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_CHECK_PASSWORD_BY_NAME);
+    LoginDatabasePreparedStatement* stmt =
+        LoginDatabase.GetPreparedStatement(LOGIN_SEL_CHECK_PASSWORD_BY_NAME);
 
     stmt->setString(0, safe_user);
     stmt->setString(1, hash);
@@ -178,8 +186,7 @@ bool RASession::CheckPassword(const std::string& user, const std::string& pass)
 
 bool RASession::ProcessCommand(std::string& command)
 {
-    if (command.length() == 0)
-        return true;
+    if (command.length() == 0) return true;
 
     LOG_INFO("commands.ra", "Received command: %s", command.c_str());
 
@@ -194,7 +201,8 @@ bool RASession::ProcessCommand(std::string& command)
     delete _commandExecuting;
     _commandExecuting = new std::promise<void>();
 
-    CliCommandHolder* cmd = new CliCommandHolder(this, command.c_str(), &RASession::CommandPrint, &RASession::CommandFinished);
+    CliCommandHolder* cmd = new CliCommandHolder(this, command.c_str(),
+        &RASession::CommandPrint, &RASession::CommandFinished);
     sWorld->QueueCliCommand(cmd);
 
     // Wait for the command to finish
@@ -205,8 +213,7 @@ bool RASession::ProcessCommand(std::string& command)
 
 void RASession::CommandPrint(void* callbackArg, char const* text)
 {
-    if (!text || !*text)
-        return;
+    if (!text || !*text) return;
 
     RASession* session = static_cast<RASession*>(callbackArg);
     session->Send(text);
