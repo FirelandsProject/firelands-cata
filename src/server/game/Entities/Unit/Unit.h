@@ -23,6 +23,7 @@
 #include "CombatManager.h"
 #include "SpellAuraDefines.h"
 #include "SpellDefines.h"
+#include "TaskScheduler.h"
 #include "ThreatManager.h"
 #include "Timer.h"
 #include "SpellPacketsCommon.h"
@@ -1511,6 +1512,7 @@ class FC_GAME_API Unit : public WorldObject
         Creature* GetSummonedCreatureByEntry(uint32 entry);
         void UnsummonCreatureByEntry(uint32 entry, uint32 ms = 0);
 
+
         ShapeshiftForm GetShapeshiftForm() const { return ShapeshiftForm(GetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_SHAPESHIFT_FORM)); }
         void SetShapeshiftForm(ShapeshiftForm form);
 
@@ -1841,6 +1843,9 @@ class FC_GAME_API Unit : public WorldObject
         virtual void TextEmote(uint32 textId, WorldObject const* target = nullptr, bool isBossEmote = false);
         virtual void Whisper(uint32 textId, Player* target, bool isBossWhisper = false);
 
+        TaskScheduler& GetScheduler() { return _scheduler; }
+
+
         float GetCollisionHeight() const override;
 
         // returns if the unit is allowed to enter combat
@@ -2001,6 +2006,10 @@ class FC_GAME_API Unit : public WorldObject
 
         SpellHistory* m_spellHistory;
 
+        TaskScheduler _scheduler;
+
+        std::unordered_map<ObjectGuid, uint32/*entry*/> m_SummonedCreatures;
+
         PositionUpdateInfo _positionUpdateInfo;
 
         FormationFollowerGUIDContainer _formationFollowers;
@@ -2008,8 +2017,6 @@ class FC_GAME_API Unit : public WorldObject
         std::array<std::unordered_set<AbstractPursuer*>, AsUnderlyingType(PursuingType::Max)> _unitsPursuingMe;
 
         bool _isIgnoringCombat;
-
-        std::unordered_map<ObjectGuid, uint32/*entry*/> m_SummonedCreatures;
 
         Optional<PendingSpellCastRequest> _pendingSpellCastRequest;
         void ProcessPendingSpellCastRequest();
