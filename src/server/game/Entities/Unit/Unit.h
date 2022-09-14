@@ -1772,6 +1772,7 @@ class FC_GAME_API Unit : public WorldObject
         TransportBase* GetDirectTransport() const;
 
         bool m_ControlledByPlayer;
+        static Creature* GetCreature(WorldObject& object, uint64 guid);
 
         bool HandleSpellClick(Unit* clicker, int8 seatId = -1);
         void EnterVehicle(Unit* base, int8 seatId = -1);
