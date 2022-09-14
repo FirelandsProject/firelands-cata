@@ -73,6 +73,7 @@
 #include "QuestPools.h"
 #include "Realm.h"
 #include "ScriptMgr.h"
+#include "ServerMotd.h"
 #include "ScriptReloadMgr.h"
 #include "SkillDiscovery.h"
 #include "SkillExtraItems.h"
@@ -207,20 +208,6 @@ void World::SetClosed(bool val)
 
     // Invert the value, for simplicity for scripters.
     sScriptMgr->OnOpenStateChange(!val);
-}
-
-void World::SetMotd(std::string motd)
-{
-    /// we are using a string copy here to allow modifications in script hooks
-    sScriptMgr->OnMotdChange(motd);
-
-    _motd.clear();
-    boost::split(_motd, motd, boost::is_any_of("@"));
-}
-
-std::vector<std::string> const& World::GetMotd() const
-{
-    return _motd;
 }
 
 void World::TriggerGuidWarning()
@@ -526,7 +513,7 @@ void World::LoadConfigSettings(bool reload)
 
     ///- Read the player limit and the Message of the day from the config file
     SetPlayerAmountLimit(sConfigMgr->GetIntDefault("PlayerLimit", 100));
-    SetMotd(sConfigMgr->GetStringDefault("Motd", "Welcome to a Firelands Core Server."));
+    Motd::SetMotd(sConfigMgr->GetStringDefault("Motd", "Welcome to a Firelands Core Server."));
 
     ///- Read ticket system setting from the config file
     m_bool_configs[CONFIG_ALLOW_TICKETS] = sConfigMgr->GetBoolDefault("AllowTickets", true);
