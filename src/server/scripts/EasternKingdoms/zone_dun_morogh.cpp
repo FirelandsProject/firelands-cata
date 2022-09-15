@@ -127,9 +127,9 @@ Position const eQuestPosition[14] = {
     {-5165.000000f, 709.453979f},  // Move To Waypoint 6
     {-5183.830078f, 722.093994f},  // Move To Waypoint 7
     {-5184.470215f, 712.554993f},  // Move To Waypoint 8
-    {-5173.34f, 730.11f, 294.25f}, // Move To Waypoint 9 Motion Master 
-    {-5173.72f, 725.7f, 294.03f},  // Move To Waypoint 10 Motion Master 
-    {-5174.57f, 716.45f, 289.53f}, // Move To Waypoint 11 Motion Master 
+    {-5173.34f, 730.11f, 294.25f}, // Move To Waypoint 9 Motion Master
+    {-5173.72f, 725.7f, 294.03f},  // Move To Waypoint 10 Motion Master
+    {-5174.57f, 716.45f, 289.53f}, // Move To Waypoint 11 Motion Master
     {-5175.04f, 707.2f, 294.4f},   // Move To Waypoint 12 Motion Master 
     {-5175.61f, 700.38f, 290.89f}, // Move To Waypoint 13 Motion Master 
 };
