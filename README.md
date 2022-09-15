@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Firelands, an open source community, is interested in working on version 4.3.4 (cataclysm). Our intention is to create a new community, where people can participate and make their contributions. The list of authors, and people who participated directly or indirectly in the project, is below. You can join our discord community, if you want to be part of the project or consult about it.
+Firelands Core Project is an open source community, is interested in working on World Of Warcraft Emulator version 4.3.4 (cataclysm). Our intention is to create a new community, where people can participate and make their contributions. The list of authors, and people who participated directly or indirectly in the project, is below. You can join our discord community, if you want to be part of the project or consult about it.
 
 ## Copyright
 
