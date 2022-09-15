@@ -113,6 +113,25 @@ enum eSanitron
     NPC_DECONTAMINATION_BUNNY = 46165,
     NPC_CLEAN_CANNON = 46208,
     NPC_SAFE_TECHNICAN = 46230,
+    HANDLE_EMOTE_SANNITRON_01 = 0,
+};
+
+Position const eQuestPosition[14] = {
+    /*X    Y*/
+    {-5165.209961f, 713.809021f},   //Move To Waypoint 0
+    {-5164.919922f, 723.890991f},  // Move To Waypoint 1
+    {-5182.560059f, 726.656982f},  // Move To Waypoint 2
+    {-5166.350098f, 706.336975f},  // Move To Waypoint 3
+    {-5184.040039f, 708.405029f},  // Move To Waypoint 4
+    {-5164.209961f, 719.267029f},  // Move To Waypoint 5
+    {-5165.000000f, 709.453979f},  // Move To Waypoint 6
+    {-5183.830078f, 722.093994f},  // Move To Waypoint 7
+    {-5184.470215f, 712.554993f},  // Move To Waypoint 8
+    {-5173.34f, 730.11f, 294.25f},  // Move To Waypoint 9 Motion Master 
+    {-5173.72f, 725.7f, 294.03f},   // Move To Waypoint 10 Motion Master 
+    {-5174.57f, 716.45f, 289.53f},  // Move To Waypoint 11 Motion Master 
+    {-5175.04f, 707.2f, 294.4f},    // Move To Waypoint 12 Motion Master 
+    {-5175.61f, 700.38f, 290.89f},  // Move To Waypoint 13 Motion Master 
 };
 
 enum eTexts
@@ -128,13 +147,14 @@ class npc_sanitron500 : public CreatureScript
    public:
     npc_sanitron500() : CreatureScript("npc_sanitron500") {}
 
+    Creature* pCreature;
+    Vehicle* vehicle = pCreature->GetVehicleKit();
     bool OnGossipHello(Player* pPlayer, Creature* pCreature)
     {
         QuestStatus status = pPlayer->GetQuestStatus(QUEST_DECONTAMINATION);
         if (status == QUEST_STATUS_INCOMPLETE)
         {
-            pPlayer->HandleEmoteCommand(0);
-            Vehicle* vehicle = pCreature->GetVehicleKit();
+            pPlayer->HandleEmoteCommand(HANDLE_EMOTE_SANNITRON_01);
             pPlayer->EnterVehicle(pCreature->ToUnit(), 0);
             pCreature->Say(SAY_SANITRON_01);
         }
@@ -143,21 +163,19 @@ class npc_sanitron500 : public CreatureScript
 
     struct npc_sanitron500AI : public ScriptedAI
     {
+        Vehicle* vehicle = 0;
+        Unit* Technician = 0;
+        Creature::Unit* Bunny[4] = {0};
+        Creature::Unit* Cannon[4] = {0};
+        uint32 uiTimer = 0;
+        uint32 uiRespawnTimer = 0;
+        uint8 uiPhase = 0;
+
         npc_sanitron500AI(Creature* pCreature)
             : ScriptedAI(pCreature), vehicle(pCreature->GetVehicleKit())
         {
             assert(vehicle);
         }
-
-        Vehicle* vehicle;
-        Unit* Technician;
-        Creature::Unit* Bunny[4];
-        Creature::Unit* Cannon[4];
-        std::list<Unit*> targets;
-        uint32 uiTimer;
-        uint32 uiRespawnTimer;
-        uint8 uiPhase;
-
         void Reset()
         {
             uiTimer = 0;
@@ -190,35 +208,45 @@ class npc_sanitron500 : public CreatureScript
                         {
                             case 46230:
                                 if ((*iter)->GetDistance2d(
-                                        -5165.209961f, 713.809021f) <= 1)
+                                        eQuestPosition[0].GetPositionX(),
+                                        eQuestPosition[0].GetPositionY()) <= 1)
                                     Technician = (*iter);
                                 break;
                             case 46165:
                                 if ((*iter)->GetDistance2d(
-                                        -5164.919922f, 723.890991f) <= 1)
+                                        eQuestPosition[1].GetPositionX(),
+                                        eQuestPosition[1].GetPositionY()) <= 1)
                                     Bunny[0] = (*iter);
                                 if ((*iter)->GetDistance2d(
-                                        -5182.560059f, 726.656982f) <= 1)
+                                        eQuestPosition[2].GetPositionX(),
+                                        eQuestPosition[2].GetPositionY()) <= 1)
                                     Bunny[1] = (*iter);
                                 if ((*iter)->GetDistance2d(
-                                        -5166.350098f, 706.336975f) <= 1)
+                                        eQuestPosition[3].GetPositionX(),
+                                        eQuestPosition[3].GetPositionY()) <= 1)
                                     Bunny[2] = (*iter);
                                 if ((*iter)->GetDistance2d(
-                                        -5184.040039f, 708.405029f) <= 1)
+                                        eQuestPosition[4].GetPositionX(),
+                                        eQuestPosition[4].GetPositionY()) <= 1)
                                     Bunny[3] = (*iter);
                                 break;
                             case 46208:
                                 if ((*iter)->GetDistance2d(
-                                        -5164.209961f, 719.267029f) <= 1)
+                                        eQuestPosition[5].GetPositionX(),
+                                        eQuestPosition[5].GetPositionY()) <= 1)
                                     Cannon[0] = (*iter);
                                 if ((*iter)->GetDistance2d(
-                                        -5165.000000f, 709.453979f) <= 1)
+                                        eQuestPosition[6].GetPositionX(),
+                                        eQuestPosition[6].GetPositionY()
+                                        ) <= 1)
                                     Cannon[1] = (*iter);
                                 if ((*iter)->GetDistance2d(
-                                        -5183.830078f, 722.093994f) <= 1)
+                                        eQuestPosition[7].GetPositionX(),
+                                        eQuestPosition[7].GetPositionY()) <= 1)
                                     Cannon[2] = (*iter);
                                 if ((*iter)->GetDistance2d(
-                                        -5184.470215f, 712.554993f) <= 1)
+                                        eQuestPosition[8].GetPositionX(),
+                                        eQuestPosition[8].GetPositionY()) <= 1)
                                     Cannon[3] = (*iter);
                                 break;
                         }
@@ -234,8 +262,10 @@ class npc_sanitron500 : public CreatureScript
                     switch (uiPhase)
                     {
                         case 0:
-                            me->GetMotionMaster()->MovePoint(
-                                1, -5173.34f, 730.11f, 294.25f);
+                            me->GetMotionMaster()->MovePoint(1,
+                                eQuestPosition[9].GetPositionX(),
+                                eQuestPosition[9].GetPositionY(),
+                                eQuestPosition[9].GetPositionZ());
                             GetTargets();
                             ++uiPhase;
                             uiTimer = 5500;
@@ -249,14 +279,16 @@ class npc_sanitron500 : public CreatureScript
                                     me, SPELL_DECONTAMINATE_STAGE_1, true);
                             }
                             ++uiPhase;
-                            uiTimer = 5000;
+                            uiTimer = 6000;
                             break;
                         case 2:
                             if (Cannon[0] && Cannon[1] && Cannon[2] &&
                                 Cannon[3])
                             {
-                                me->GetMotionMaster()->MovePoint(
-                                    2, -5173.72f, 725.7f, 294.03f);
+                                me->GetMotionMaster()->MovePoint(2,
+                                    eQuestPosition[10].GetPositionX(),
+                                    eQuestPosition[10].GetPositionY(),
+                                    eQuestPosition[10].GetPositionZ());
                                 Cannon[0]->CastSpell(
                                     me, SPELL_CANNON_BURST, true);
                                 Cannon[1]->CastSpell(
@@ -267,12 +299,14 @@ class npc_sanitron500 : public CreatureScript
                                     me, SPELL_CANNON_BURST, true);
                             }
                             ++uiPhase;
-                            uiTimer = 2000;
+                            uiTimer = 8000;
                             break;
                         case 3:
                             if (Technician)
-                                me->GetMotionMaster()->MovePoint(
-                                    3, -5174.57f, 716.45f, 289.53f);
+                                me->GetMotionMaster()->MovePoint(3,
+                                    eQuestPosition[11].GetPositionX(),
+                                    eQuestPosition[11].GetPositionY(),
+                                    eQuestPosition[11].GetPositionZ());
                             Technician->Say(SAY_SANITRON_02);
                             ++uiPhase;
                             uiTimer = 8000;
@@ -280,15 +314,17 @@ class npc_sanitron500 : public CreatureScript
                         case 4:
                             if (Bunny[2] && Bunny[3])
                             {
-                                me->GetMotionMaster()->MovePoint(
-                                    4, -5175.04f, 707.2f, 294.4f);
+                                me->GetMotionMaster()->MovePoint(4,
+                                    eQuestPosition[12].GetPositionX(),
+                                    eQuestPosition[12].GetPositionY(),
+                                    eQuestPosition[12].GetPositionZ());
                                 Bunny[2]->CastSpell(
                                     me, SPELL_DECONTAMINATE_STAGE_2, true);
                                 Bunny[3]->CastSpell(
                                     me, SPELL_DECONTAMINATE_STAGE_2, true);
                             }
                             ++uiPhase;
-                            uiTimer = 1000;
+                            uiTimer = 4000;
                             break;
                         case 5:
                             if (vehicle->GetPassenger(0))
@@ -298,7 +334,9 @@ class npc_sanitron500 : public CreatureScript
                                         QUEST_DECONTAMINATION);
                             me->Say(SAY_SANITRON_03);
                             me->GetMotionMaster()->MovePoint(
-                                5, -5175.61f, 700.38f, 290.89f);
+                                5,  eQuestPosition[13].GetPositionX(),
+                                    eQuestPosition[13].GetPositionY(),
+                                    eQuestPosition[13].GetPositionZ());
                             ++uiPhase;
                             uiTimer = 3000;
                             break;
