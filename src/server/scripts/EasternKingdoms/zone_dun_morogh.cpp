@@ -130,8 +130,8 @@ Position const eQuestPosition[14] = {
     {-5173.34f, 730.11f, 294.25f}, // Move To Waypoint 9 Motion Master
     {-5173.72f, 725.7f, 294.03f},  // Move To Waypoint 10 Motion Master
     {-5174.57f, 716.45f, 289.53f}, // Move To Waypoint 11 Motion Master
-    {-5175.04f, 707.2f, 294.4f},   // Move To Waypoint 12 Motion Master 
-    {-5175.61f, 700.38f, 290.89f}, // Move To Waypoint 13 Motion Master 
+    {-5175.04f, 707.2f, 294.4f},   // Move To Waypoint 12 Motion Master
+    {-5175.61f, 700.38f, 290.89f}, // Move To Waypoint 13 Motion Master
 };
 
 enum eTexts
