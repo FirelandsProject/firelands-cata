@@ -18,13 +18,15 @@
 #include "ScriptMgr.h"
 #include "MotionMaster.h"
 #include "ScriptedCreature.h"
+#include "ObjectAccessor.h"
 #include "Unit.h"
 #include "ScriptedEscortAI.h"
 #include "Vehicle.h"
 #include "GridNotifiers.h"
 #include "CellImpl.h"
- #include "GridNotifiersImpl.h"
+#include "GridNotifiersImpl.h"
 #include "ObjectMgr.h"
+#include "Map.h"
 
 enum FrozenMountaineer
 {
@@ -127,10 +129,10 @@ Position const eQuestPosition[14] = {
     {-5165.000000f, 709.453979f},  // Move To Waypoint 6
     {-5183.830078f, 722.093994f},  // Move To Waypoint 7
     {-5184.470215f, 712.554993f},  // Move To Waypoint 8
-    {-5173.34f, 730.11f, 294.25f}, // Move To Waypoint 9 Motion Master
-    {-5173.72f, 725.7f, 294.03f},  // Move To Waypoint 10 Motion Master
-    {-5174.57f, 716.45f, 289.53f}, // Move To Waypoint 11 Motion Master
-    {-5175.04f, 707.2f, 294.4f},   // Move To Waypoint 12 Motion Master
+    {-5173.94f, 725.62f, 291.387f}, // Move To Waypoint 9 Motion Master
+    {-5174.56f, 716.36f, 289.387f},  // Move To Waypoint 10 Motion Master
+    {-5175.21f, 707.18f, 291.887f},   // Move To Waypoint 11 Motion Master
+    {-5175.98f, 700.18f, 291.387f},     // Move To Waypoint 12 Motion Master
     {-5175.61f, 700.38f, 290.89f}, // Move To Waypoint 13 Motion Master
 };
 
@@ -187,7 +189,7 @@ class npc_sanitron500 : public CreatureScript
         {
             if (Unit* unit =
                     me->FindNearestCreature(entry, float(range), alive))
-                if (Unit* unit2 = Unit::GetCreature(*me, unit->GetGUID()))
+                if (Unit* unit2 = ObjectAccessor::GetCreature(*me, unit->GetGUID()))
                     return unit2;
         }
 
@@ -268,7 +270,8 @@ class npc_sanitron500 : public CreatureScript
                                 eQuestPosition[9].GetPositionZ());
                             GetTargets();
                             ++uiPhase;
-                            uiTimer = 5500;
+                            me->Say(SAY_SANITRON_01);
+                            uiTimer = 6000;
                             break;
                         case 1:
                             if (Bunny[0] && Bunny[1])
@@ -299,7 +302,7 @@ class npc_sanitron500 : public CreatureScript
                                     me, SPELL_CANNON_BURST, true);
                             }
                             ++uiPhase;
-                            uiTimer = 8000;
+                            uiTimer = 6000;
                             break;
                         case 3:
                             if (Technician)
@@ -309,7 +312,7 @@ class npc_sanitron500 : public CreatureScript
                                     eQuestPosition[11].GetPositionZ());
                             Technician->Say(SAY_SANITRON_02);
                             ++uiPhase;
-                            uiTimer = 8000;
+                            uiTimer = 3000;
                             break;
                         case 4:
                             if (Bunny[2] && Bunny[3])
@@ -324,7 +327,7 @@ class npc_sanitron500 : public CreatureScript
                                     me, SPELL_DECONTAMINATE_STAGE_2, true);
                             }
                             ++uiPhase;
-                            uiTimer = 4000;
+                            uiTimer = 6000;
                             break;
                         case 5:
                             if (vehicle->GetPassenger(0))
@@ -333,10 +336,10 @@ class npc_sanitron500 : public CreatureScript
                                     player->CompleteQuest(
                                         QUEST_DECONTAMINATION);
                             me->Say(SAY_SANITRON_03);
-                            me->GetMotionMaster()->MovePoint(
-                                5,  eQuestPosition[13].GetPositionX(),
-                                    eQuestPosition[13].GetPositionY(),
-                                    eQuestPosition[13].GetPositionZ());
+                            me->GetMotionMaster()->MovePoint(5,
+                                eQuestPosition[13].GetPositionX(),
+                                eQuestPosition[13].GetPositionY(),
+                                eQuestPosition[13].GetPositionZ());
                             ++uiPhase;
                             uiTimer = 3000;
                             break;
