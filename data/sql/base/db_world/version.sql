@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `version` (
 DELETE FROM `version`;
 /*!40000 ALTER TABLE `version` DISABLE KEYS */;
 INSERT INTO `version` (`core_version`, `core_revision`, `db_version`, `cache_id`) VALUES
-	('TrinityCore rev. 2b6144510918+ 2022-01-09 00:36:20 +0100 (master branch) (Unix, Debug, Dynamic)', '2b6144510918+', 'TDB 434.22011', 22011);
+	('Firelands rev. c2b1d7f36b11 2022-09-13 12:04:43 -0500 (master branch) (MacOSX, RelWithDebInfo, Static)', 'c2b1d7f36b11', 'FDB 434.22012', 22012);
 /*!40000 ALTER TABLE `version` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
