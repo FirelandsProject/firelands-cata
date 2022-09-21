@@ -149,13 +149,12 @@ class npc_sanitron500 : public CreatureScript
    public:
     npc_sanitron500() : CreatureScript("npc_sanitron500") {}
 
-    Creature* pCreature;
-    Vehicle* vehicle = pCreature->GetVehicleKit();
     bool OnGossipHello(Player* pPlayer, Creature* pCreature)
     {
         QuestStatus status = pPlayer->GetQuestStatus(QUEST_DECONTAMINATION);
         if (status == QUEST_STATUS_INCOMPLETE)
         {
+            Vehicle* vehicle = pCreature->GetVehicleKit();
             pPlayer->HandleEmoteCommand(HANDLE_EMOTE_SANNITRON_01);
             pPlayer->EnterVehicle(pCreature->ToUnit(), 0);
             pCreature->Say(SAY_SANITRON_01);
@@ -165,7 +164,7 @@ class npc_sanitron500 : public CreatureScript
 
     struct npc_sanitron500AI : public ScriptedAI
     {
-        Vehicle* vehicle = 0;
+        Vehicle* vehicle;
         Unit* Technician = 0;
         Creature::Unit* Bunny[4] = {0};
         Creature::Unit* Cannon[4] = {0};
