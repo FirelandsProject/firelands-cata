@@ -2835,9 +2835,19 @@ class FC_GAME_API Player : public Unit, public GridObject<Player>
     void SetMap(Map* map) override;
     void ResetMap() override;
 
+     // Anticheat Helper
+    bool CanTeleport() { return m_canTeleport; }
+
     bool isAllowedToLoot(Creature const* creature);
 
+    // Anticheat Helper
+    void SetCanTeleport(bool value) { m_canTeleport = value; }
+
     DeclinedName const* GetDeclinedNames() const { return m_declinedname; }
+
+    // Anticheat Helper
+    bool CanKnockback() { return m_canKnockback; }
+    void SetCanKnockback(bool value) { m_canKnockback = value; }
 
     uint8 GetRunesState() const { return m_runes->runeState; }
     RuneType GetBaseRune(uint8 index) const
@@ -3341,6 +3351,10 @@ class FC_GAME_API Player : public Unit, public GridObject<Player>
     uint32 m_DelayedOperations;
     bool m_bCanDelayTeleport;
     bool m_bHasDelayedTeleport;
+
+    // Anticheat Helper
+    bool m_canTeleport;
+    bool m_canKnockback;
 
     // Temporary removed pet cache
     uint32 m_temporaryUnsummonedPetNumber;

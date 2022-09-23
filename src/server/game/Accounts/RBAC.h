@@ -769,6 +769,10 @@ enum RBACPermissions
     // IF YOU ADD NEW PERMISSIONS, ADD THEM IN MASTER BRANCH AS WELL!
     //
     // custom permissions 1000+
+
+    // ANTICHEAT
+    RBAC_PERM_COMMAND_ANTICHEAT_MANAGER = 1434,
+
     RBAC_PERM_MAX
 };
 
