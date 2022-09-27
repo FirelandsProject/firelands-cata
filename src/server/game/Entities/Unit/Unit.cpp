@@ -9117,6 +9117,10 @@ void Unit::SetSpeedRate(UnitMoveType mtype, float rate)
     {
         MovementPacketSender::SendSpeedChangeToMover(this, mtype, newSpeedFlat);
         SetSpeedRateReal(mtype, rate);
+
+        // Null Check added and to prevent false positives in the Anticheat system
+        if (GetTypeId() == TYPEID_PLAYER)
+            ToPlayer()->SetCanTeleport(true);
     }
     else if (IsMovedByClient() && !IsInWorld()) // (1)
         SetSpeedRateReal(mtype, rate);
@@ -13624,6 +13628,11 @@ void Unit::ExitVehicle(Position const* /*exitPosition*/)
     //! init spline movement based on those coordinates in unapply handlers, and
     //! relocate exiting passengers based on Unit::moveSpline data. Either way,
     //! Coming Soon(TM)
+
+    // Null Check added and to prevent false positives in the Anticheat system
+    if (Player* player = ToPlayer())
+        player->SetCanTeleport(true);
+
 }
 
 void Unit::_ExitVehicle(Position const* exitPosition)
