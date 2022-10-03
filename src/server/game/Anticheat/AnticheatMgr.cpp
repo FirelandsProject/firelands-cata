@@ -238,6 +238,12 @@ void AnticheatMgr::SpeedHackDetection(Player* player, MovementInfo movementInfo)
     // This covers packet manipulation
     if (int32(timeDiff) < 0)
     {
+        if (sWorld->getBoolConfig(CONFIG_ANTICHEAT_WRITELOG_ENABLE))
+        {
+            uint32 latency = player->GetSession()->GetLatency();
+            std::string goXYZ = ".go xyz " + std::to_string(player->GetPositionX()) + " " + std::to_string(player->GetPositionY()) + " " + std::to_string(player->GetPositionZ() + 1.0f) + " " + std::to_string(player->GetMap()->GetId()) + " " + std::to_string(player->GetOrientation());
+            LOG_INFO("anticheat.module", "AnticheatMgr:: Time Manipulation - Hack detected player %s (%s) - Latency: %u ms - Cheat Flagged at: %s", player->GetName().c_str(), player->GetGUID().ToString().c_str(), latency, goXYZ.c_str());
+        }
         BuildReport(player, SPEED_HACK_REPORT);
         timeDiff = 1;
     }
@@ -259,7 +265,7 @@ void AnticheatMgr::SpeedHackDetection(Player* player, MovementInfo movementInfo)
                 uint32 latency = 0;
                 latency = player->GetSession()->GetLatency();
                 std::string goXYZ = ".go xyz " + std::to_string(player->GetPositionX()) + " " + std::to_string(player->GetPositionY()) + " " + std::to_string(player->GetPositionZ() + 1.0f) + " " + std::to_string(player->GetMap()->GetId()) + " " + std::to_string(player->GetOrientation());
-                LOG_INFO("anticheat", "AnticheatMgr:: Speed-Hack detected player %s (%s) - Latency: %u ms - Cheat Flagged at: %s", player->GetName().c_str(), player->GetGUID().ToString().c_str(), latency, goXYZ.c_str());
+                LOG_INFO("anticheat", "AnticheatMgr:: Speed-Hack (Speed Movement at %u above allowed Server Set rate %u.) detected player %s (%s) - Latency: %u ms - Cheat Flagged at: %s", clientSpeedRate, speedRate, player->GetName().c_str(), player->GetGUID().ToString().c_str(), latency, goXYZ.c_str());
             }
             BuildReport(player, SPEED_HACK_REPORT);
         }
@@ -960,11 +966,15 @@ void AnticheatMgr::BGStartExploit(Player* player, MovementInfo movementInfo)
                 if (bg->GetStatus() == STATUS_WAIT_JOIN)
                 {
                     // Outside of starting area before BG has started.
-                    if (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() < 770.0f)
+                    if ((player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() < 770.0f) ||
+                        (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() > 940.31f) ||
+                        (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionY() < -525.0f))
                     {
                         sAnticheatMgr->BGreport(player);
                     }
-                    if (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionY() > -536.0f)
+                    if ((player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionY() > -536.0f) ||
+                        (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionX() > -1283.33f) ||
+                        (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionY() < -716.0f))
                     {
                         sAnticheatMgr->BGreport(player);
                     }
@@ -975,7 +985,8 @@ void AnticheatMgr::BGStartExploit(Player* player, MovementInfo movementInfo)
         case 489: // Warsong Gulch
         {
             // Only way to get this high is with engineering items malfunction.
-            if (!(movementInfo.HasMovementFlag(MOVEMENTFLAG_FALLING_FAR) || m_Players[key].GetLastOpcode() == MSG_MOVE_JUMP) && movementInfo.pos.GetPositionZ() > 380.0f)
+            if (!(movementInfo.HasMovementFlag(MOVEMENTFLAG_FALLING_FAR) || m_Players[key].GetLastOpcode() == MSG_MOVE_JUMP) &&
+                movementInfo.pos.GetPositionZ() > 380.0f)
             {
                 sAnticheatMgr->BGreport(player);
             }
@@ -985,11 +996,15 @@ void AnticheatMgr::BGStartExploit(Player* player, MovementInfo movementInfo)
                 if (bg->GetStatus() == STATUS_WAIT_JOIN)
                 {
                     // Outside of starting area before BG has started.
-                    if (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() < 1490.0f)
+                    if ((player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() < 1490.0f) ||
+                        (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionY() > 1500.0f) ||
+                        (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionY() < 1450.0f))
                     {
                         sAnticheatMgr->BGreport(player);
                     }
-                    if (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionX() > 957.0f)
+                    if ((player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionX() > 957.0f) ||
+                        (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionY() < 1416.0f) ||
+                        (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionY() > 1466.0f))
                     {
                         sAnticheatMgr->BGreport(player);
                     }
@@ -1004,11 +1019,14 @@ void AnticheatMgr::BGStartExploit(Player* player, MovementInfo movementInfo)
                 if (bg->GetStatus() == STATUS_WAIT_JOIN)
                 {
                     // Outside of starting area before BG has started.
-                    if (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() < 1270.0f)
+                    if ((player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() < 1270.0f) ||
+                        (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionY() < 1258.0f) ||
+                        (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionY() > 1361.0f))
                     {
                         sAnticheatMgr->BGreport(player);
                     }
-                    if (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionX() > 730.0f)
+                    if ((player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionX() > 730.0f) ||
+                        (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionY() > 724.8f))
                     {
                         sAnticheatMgr->BGreport(player);
                     }
@@ -1023,11 +1041,15 @@ void AnticheatMgr::BGStartExploit(Player* player, MovementInfo movementInfo)
                 if (bg->GetStatus() == STATUS_WAIT_JOIN)
                 {
                     // Outside of starting area before BG has started.
-                    if (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() < 2512.0f)
+                    if ((player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() < 2512.0f) ||
+                        (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionY() > 1610.0f) ||
+                        (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionY() < 1584.0f))
                     {
                         sAnticheatMgr->BGreport(player);
                     }
-                    if (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionX() > 1816.0f)
+                    if ((player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionX() > 1816.0f) ||
+                        (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionY() > 1554.0f) ||
+                        (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionY() < 1526.0f))
                     {
                         sAnticheatMgr->BGreport(player);
                     }
@@ -1042,11 +1064,15 @@ void AnticheatMgr::BGStartExploit(Player* player, MovementInfo movementInfo)
                 if (bg->GetStatus() == STATUS_WAIT_JOIN)
                 {
                     // Outside of starting area before BG has started.
-                    if (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() > 412.0f)
+                    if ((player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() > 412.0f) ||
+                        (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionY() < -911.0f) ||
+                        (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionY() > -760.0f))
                     {
                         sAnticheatMgr->BGreport(player);
                     }
-                    if (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionX() < 1147.8f)
+                    if ((player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionX() < 1147.8f) ||
+                        (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionY() < -855.0f) ||
+                        (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionY() > -676.0f))
                     {
                         sAnticheatMgr->BGreport(player);
                     }
