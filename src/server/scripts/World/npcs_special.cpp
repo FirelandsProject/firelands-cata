@@ -112,7 +112,7 @@ public:
             ASSERT(false, "Unhandled creature with entry %u is assigned 'npc_air_force_bots' script", entry);
         }
 
-        npc_air_force_botsAI(Creature* creature) : NullCreatureAI(creature), _spawn(FindSpawnFor(creature->GetEntry())) {}
+        explicit npc_air_force_botsAI(Creature* creature) : NullCreatureAI(creature), _spawn(FindSpawnFor(creature->GetEntry())) {}
 
         Creature* GetOrSummonGuard()
         {
@@ -214,7 +214,7 @@ public:
 
     struct npc_chicken_cluckAI : public ScriptedAI
     {
-        npc_chicken_cluckAI(Creature* creature) : ScriptedAI(creature)
+        explicit npc_chicken_cluckAI(Creature* creature) : ScriptedAI(creature)
         {
             Initialize();
         }
@@ -313,7 +313,7 @@ public:
 
     struct npc_dancing_flamesAI : public ScriptedAI
     {
-        npc_dancing_flamesAI(Creature* creature) : ScriptedAI(creature)
+        explicit npc_dancing_flamesAI(Creature* creature) : ScriptedAI(creature)
         {
             Initialize();
         }
@@ -409,7 +409,7 @@ public:
 
     struct npc_torch_tossing_target_bunny_controllerAI : public ScriptedAI
     {
-        npc_torch_tossing_target_bunny_controllerAI(Creature* creature) : ScriptedAI(creature)
+        explicit npc_torch_tossing_target_bunny_controllerAI(Creature* creature) : ScriptedAI(creature)
         {
             _targetTimer = 3000;
         }
@@ -474,7 +474,7 @@ public:
 
     struct npc_midsummer_bunny_poleAI : public ScriptedAI
     {
-        npc_midsummer_bunny_poleAI(Creature* creature) : ScriptedAI(creature)
+        explicit npc_midsummer_bunny_poleAI(Creature* creature) : ScriptedAI(creature)
         {
             Initialize();
         }
@@ -631,7 +631,7 @@ public:
 
     struct npc_doctorAI : public ScriptedAI
     {
-        npc_doctorAI(Creature* creature) : ScriptedAI(creature)
+        explicit npc_doctorAI(Creature* creature) : ScriptedAI(creature)
         {
             Initialize();
         }
@@ -780,7 +780,7 @@ public:
 
     struct npc_injured_patientAI : public ScriptedAI
     {
-        npc_injured_patientAI(Creature* creature) : ScriptedAI(creature)
+        explicit npc_injured_patientAI(Creature* creature) : ScriptedAI(creature)
         {
             Initialize();
         }
@@ -983,7 +983,7 @@ public:
 
     struct npc_garments_of_questsAI : public EscortAI
     {
-        npc_garments_of_questsAI(Creature* creature) : EscortAI(creature)
+        explicit npc_garments_of_questsAI(Creature* creature) : EscortAI(creature)
         {
             switch (me->GetEntry())
             {
@@ -1132,7 +1132,7 @@ public:
 
     struct npc_guardianAI : public ScriptedAI
     {
-        npc_guardianAI(Creature* creature) : ScriptedAI(creature) { }
+        explicit npc_guardianAI(Creature* creature) : ScriptedAI(creature) { }
 
         void Reset() override
         {
@@ -1218,7 +1218,7 @@ class npc_sayge : public CreatureScript
 
         struct npc_saygeAI : public ScriptedAI
         {
-            npc_saygeAI(Creature* creature) : ScriptedAI(creature) { }
+            explicit npc_saygeAI(Creature* creature) : ScriptedAI(creature) { }
 
             bool GossipHello(Player* player) override
             {
@@ -1350,7 +1350,7 @@ public:
 
     struct npc_steam_tonkAI : public ScriptedAI
     {
-        npc_steam_tonkAI(Creature* creature) : ScriptedAI(creature) { }
+        explicit npc_steam_tonkAI(Creature* creature) : ScriptedAI(creature) { }
 
         void Reset() override { }
         void JustEngagedWith(Unit* /*who*/) override { }
@@ -1388,7 +1388,7 @@ public:
 
     struct npc_tonk_mineAI : public ScriptedAI
     {
-        npc_tonk_mineAI(Creature* creature) : ScriptedAI(creature)
+        explicit npc_tonk_mineAI(Creature* creature) : ScriptedAI(creature)
         {
             Initialize();
             me->SetReactState(REACT_PASSIVE);
@@ -1531,7 +1531,7 @@ class npc_tournament_mount : public CreatureScript
 
         struct npc_tournament_mountAI : public VehicleAI
         {
-            npc_tournament_mountAI(Creature* creature) : VehicleAI(creature)
+            explicit npc_tournament_mountAI(Creature* creature) : VehicleAI(creature)
             {
                 _pennantSpellId = 0;
             }
@@ -1687,7 +1687,7 @@ class npc_brewfest_reveler : public CreatureScript
 
         struct npc_brewfest_revelerAI : public ScriptedAI
         {
-            npc_brewfest_revelerAI(Creature* creature) : ScriptedAI(creature) { }
+            explicit npc_brewfest_revelerAI(Creature* creature) : ScriptedAI(creature) { }
 
             void ReceiveEmote(Player* player, uint32 emote) override
             {
@@ -1725,7 +1725,7 @@ enum TrainingDummy
 
 struct npc_training_dummy : NullCreatureAI
 {
-    npc_training_dummy(Creature* creature) : NullCreatureAI(creature)
+    explicit npc_training_dummy(Creature* creature) : NullCreatureAI(creature)
     {
         uint32 const entry = me->GetEntry();
         if (entry == NPC_TARGET_DUMMY || entry == NPC_ADVANCED_TARGET_DUMMY)
@@ -1816,7 +1816,7 @@ class npc_wormhole : public CreatureScript
 
         struct npc_wormholeAI : public PassiveAI
         {
-            npc_wormholeAI(Creature* creature) : PassiveAI(creature)
+            explicit npc_wormholeAI(Creature* creature) : PassiveAI(creature)
             {
                 Initialize();
             }
@@ -1921,7 +1921,7 @@ class npc_pet_trainer : public CreatureScript
 
         struct npc_pet_trainerAI : public ScriptedAI
         {
-            npc_pet_trainerAI(Creature* creature) : ScriptedAI(creature) { }
+            explicit npc_pet_trainerAI(Creature* creature) : ScriptedAI(creature) { }
 
             bool GossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
             {
@@ -1959,7 +1959,7 @@ class npc_experience : public CreatureScript
 
         struct npc_experienceAI : public ScriptedAI
         {
-            npc_experienceAI(Creature* creature) : ScriptedAI(creature) { }
+            explicit npc_experienceAI(Creature* creature) : ScriptedAI(creature) { }
 
             bool GossipSelect(Player* player, uint32 /*menuId*/, uint32 gossipListId) override
             {
@@ -2067,7 +2067,7 @@ public:
 
     struct npc_fireworkAI : public ScriptedAI
     {
-        npc_fireworkAI(Creature* creature) : ScriptedAI(creature) { }
+        explicit npc_fireworkAI(Creature* creature) : ScriptedAI(creature) { }
 
         bool isCluster()
         {
@@ -2305,7 +2305,7 @@ public:
 
     struct npc_spring_rabbitAI : public ScriptedAI
     {
-        npc_spring_rabbitAI(Creature* creature) : ScriptedAI(creature)
+        explicit npc_spring_rabbitAI(Creature* creature) : ScriptedAI(creature)
         {
             Initialize();
         }
@@ -2396,7 +2396,7 @@ public:
 
     struct npc_imp_in_a_ballAI : public ScriptedAI
     {
-        npc_imp_in_a_ballAI(Creature* creature) : ScriptedAI(creature)
+        explicit npc_imp_in_a_ballAI(Creature* creature) : ScriptedAI(creature)
         {
             summonerGUID.Clear();
         }
@@ -2458,7 +2458,7 @@ class npc_stable_master : public CreatureScript
 
         struct npc_stable_masterAI : public ScriptedAI
         {
-            npc_stable_masterAI(Creature* creature) : ScriptedAI(creature) { }
+            explicit npc_stable_masterAI(Creature* creature) : ScriptedAI(creature) { }
 
             bool GossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
             {
@@ -2529,7 +2529,7 @@ class npc_train_wrecker : public CreatureScript
 
         struct npc_train_wreckerAI : public NullCreatureAI
         {
-            npc_train_wreckerAI(Creature* creature) : NullCreatureAI(creature), _isSearching(true), _nextAction(0), _timer(1 * IN_MILLISECONDS) { }
+            explicit npc_train_wreckerAI(Creature* creature) : NullCreatureAI(creature), _isSearching(true), _nextAction(0), _timer(1 * IN_MILLISECONDS) { }
 
             GameObject* VerifyTarget() const
             {
@@ -2698,7 +2698,7 @@ public:
 
     struct npc_argent_squire_gruntlingAI : public ScriptedAI
     {
-        npc_argent_squire_gruntlingAI(Creature* creature) : ScriptedAI(creature)
+        explicit npc_argent_squire_gruntlingAI(Creature* creature) : ScriptedAI(creature)
         {
             ScheduleTasks();
         }
@@ -2845,7 +2845,7 @@ public:
 
     struct npc_bountiful_tableAI : public PassiveAI
     {
-        npc_bountiful_tableAI(Creature* creature) : PassiveAI(creature) { }
+        explicit npc_bountiful_tableAI(Creature* creature) : PassiveAI(creature) { }
 
         void PassengerBoarded(Unit* who, int8 seatId, bool /*apply*/) override
         {
@@ -2924,7 +2924,7 @@ enum MageOrb
 // Frostfire Orb / Flaming Orb
  struct npc_mage_orb : public ScriptedAI
  {
-     npc_mage_orb(Creature* creature) : ScriptedAI(creature) { }
+     explicit npc_mage_orb(Creature* creature) : ScriptedAI(creature) { }
 
      void AttackStart(Unit* /*target*/) override
      {
@@ -3008,7 +3008,7 @@ class npc_druid_treant : public CreatureScript
 
         struct npc_druid_treantAI : public PetAI
         {
-            npc_druid_treantAI(Creature* creature) : PetAI(creature) { }
+            explicit npc_druid_treantAI(Creature* creature) : PetAI(creature) { }
 
             void JustDied(Unit* /*killer*/) override
             {
@@ -3054,7 +3054,7 @@ enum WhackAGnoll
 
 struct npc_darkmoon_island_gnoll : public ScriptedAI
 {
-    npc_darkmoon_island_gnoll(Creature* creature) : ScriptedAI(creature)
+    explicit npc_darkmoon_island_gnoll(Creature* creature) : ScriptedAI(creature)
     {
         Initialize();
     }

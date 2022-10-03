@@ -388,7 +388,7 @@ public:
 
     struct npc_prof_blacksmithAI : public ScriptedAI
     {
-        npc_prof_blacksmithAI(Creature* creature) : ScriptedAI(creature) { }
+        explicit npc_prof_blacksmithAI(Creature* creature) : ScriptedAI(creature) { }
 
         bool GossipHello(Player* player) override
         {
@@ -653,8 +653,7 @@ public:
 
     struct npc_engineering_tele_trinketAI : public ScriptedAI
     {
-        npc_engineering_tele_trinketAI(Creature* creature) : ScriptedAI(creature) { }
-
+        explicit npc_engineering_tele_trinketAI(Creature* creature) : ScriptedAI(creature) { }
 
         bool GossipHello(Player* player) override
         {
@@ -759,7 +758,7 @@ class npc_prof_leather : public CreatureScript
 
         struct npc_prof_leatherAI : public ScriptedAI
         {
-            npc_prof_leatherAI(Creature* creature) : ScriptedAI(creature) { }
+            explicit npc_prof_leatherAI(Creature* creature) : ScriptedAI(creature) { }
 
             bool GossipHello(Player* player) override
             {
@@ -890,7 +889,7 @@ class npc_prof_tailor : public CreatureScript
 
         struct npc_prof_tailorAI : public ScriptedAI
         {
-            npc_prof_tailorAI(Creature* creature) : ScriptedAI(creature) { }
+            explicit npc_prof_tailorAI(Creature* creature) : ScriptedAI(creature) { }
 
             bool GossipHello(Player* player) override
             {

@@ -63,7 +63,7 @@ class AuthSession : public Socket<AuthSession> {
 public:
   static std::unordered_map<uint8, AuthHandler> InitHandlers();
 
-  AuthSession(tcp::socket &&socket);
+  explicit AuthSession(tcp::socket &&socket);
 
   void Start() override;
   bool Update() override;

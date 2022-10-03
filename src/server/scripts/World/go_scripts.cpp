@@ -75,7 +75,7 @@ class go_cat_figurine : public GameObjectScript
 
         struct go_cat_figurineAI : public GameObjectAI
         {
-            go_cat_figurineAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_cat_figurineAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -101,7 +101,7 @@ class go_barov_journal : public GameObjectScript
 
         struct go_barov_journalAI : public GameObjectAI
         {
-            go_barov_journalAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_barov_journalAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -135,7 +135,7 @@ class go_gilded_brazier : public GameObjectScript
 
         struct go_gilded_brazierAI : public GameObjectAI
         {
-            go_gilded_brazierAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_gilded_brazierAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -168,7 +168,7 @@ class go_orb_of_command : public GameObjectScript
 
         struct go_orb_of_commandAI : public GameObjectAI
         {
-            go_orb_of_commandAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_orb_of_commandAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -196,7 +196,7 @@ class go_tablet_of_madness : public GameObjectScript
 
         struct go_tablet_of_madnessAI : public GameObjectAI
         {
-            go_tablet_of_madnessAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_tablet_of_madnessAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -224,7 +224,7 @@ class go_tablet_of_the_seven : public GameObjectScript
 
         struct go_tablet_of_the_sevenAI : public GameObjectAI
         {
-            go_tablet_of_the_sevenAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_tablet_of_the_sevenAI(GameObject* go) : GameObjectAI(go) { }
 
             /// @todo use gossip option ("Transcript the Tablet") instead, if Firelands adds support.
             bool GossipHello(Player* player) override
@@ -256,7 +256,7 @@ class go_jump_a_tron : public GameObjectScript
 
         struct go_jump_a_tronAI : public GameObjectAI
         {
-            go_jump_a_tronAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_jump_a_tronAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -300,7 +300,7 @@ class go_ethereum_prison : public GameObjectScript
 
         struct go_ethereum_prisonAI : public GameObjectAI
         {
-            go_ethereum_prisonAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_ethereum_prisonAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -360,7 +360,7 @@ class go_ethereum_stasis : public GameObjectScript
 
         struct go_ethereum_stasisAI : public GameObjectAI
         {
-            go_ethereum_stasisAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_ethereum_stasisAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -396,7 +396,7 @@ class go_resonite_cask : public GameObjectScript
 
         struct go_resonite_caskAI : public GameObjectAI
         {
-            go_resonite_caskAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_resonite_caskAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* /*player*/) override
             {
@@ -429,7 +429,7 @@ class go_sacred_fire_of_life : public GameObjectScript
 
         struct go_sacred_fire_of_lifeAI : public GameObjectAI
         {
-            go_sacred_fire_of_lifeAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_sacred_fire_of_lifeAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -467,7 +467,7 @@ class go_shrine_of_the_birds : public GameObjectScript
 
         struct go_shrine_of_the_birdsAI : public GameObjectAI
         {
-            go_shrine_of_the_birdsAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_shrine_of_the_birdsAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -520,7 +520,7 @@ class go_southfury_moonstone : public GameObjectScript
 
         struct go_southfury_moonstoneAI : public GameObjectAI
         {
-            go_southfury_moonstoneAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_southfury_moonstoneAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -559,7 +559,7 @@ class go_tele_to_dalaran_crystal : public GameObjectScript
 
         struct go_tele_to_dalaran_crystalAI : public GameObjectAI
         {
-            go_tele_to_dalaran_crystalAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_tele_to_dalaran_crystalAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -588,7 +588,7 @@ class go_tele_to_violet_stand : public GameObjectScript
 
         struct go_tele_to_violet_standAI : public GameObjectAI
         {
-            go_tele_to_violet_standAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_tele_to_violet_standAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -628,7 +628,7 @@ class go_fel_crystalforge : public GameObjectScript
 
         struct go_fel_crystalforgeAI : public GameObjectAI
         {
-            go_fel_crystalforgeAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_fel_crystalforgeAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -698,7 +698,7 @@ class go_bashir_crystalforge : public GameObjectScript
 
         struct go_bashir_crystalforgeAI : public GameObjectAI
         {
-            go_bashir_crystalforgeAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_bashir_crystalforgeAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -773,7 +773,7 @@ class go_matrix_punchograph : public GameObjectScript
 
         struct go_matrix_punchographAI : public GameObjectAI
         {
-            go_matrix_punchographAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_matrix_punchographAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -836,7 +836,7 @@ class go_scourge_cage : public GameObjectScript
 
         struct go_scourge_cageAI : public GameObjectAI
         {
-            go_scourge_cageAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_scourge_cageAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -874,7 +874,7 @@ class go_arcane_prison : public GameObjectScript
 
         struct go_arcane_prisonAI : public GameObjectAI
         {
-            go_arcane_prisonAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_arcane_prisonAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -911,7 +911,7 @@ class go_blood_filled_orb : public GameObjectScript
 
         struct go_blood_filled_orbAI : public GameObjectAI
         {
-            go_blood_filled_orbAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_blood_filled_orbAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -952,7 +952,7 @@ class go_jotunheim_cage : public GameObjectScript
 
         struct go_jotunheim_cageAI : public GameObjectAI
         {
-            go_jotunheim_cageAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_jotunheim_cageAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -1012,7 +1012,7 @@ class go_table_theka : public GameObjectScript
 
         struct go_table_thekaAI : public GameObjectAI
         {
-            go_table_thekaAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_table_thekaAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -1048,7 +1048,7 @@ class go_inconspicuous_landmark : public GameObjectScript
 
         struct go_inconspicuous_landmarkAI : public GameObjectAI
         {
-            go_inconspicuous_landmarkAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_inconspicuous_landmarkAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -1078,9 +1078,7 @@ class go_soulwell : public GameObjectScript
 
         struct go_soulwellAI : public GameObjectAI
         {
-            go_soulwellAI(GameObject* go) : GameObjectAI(go)
-            {
-            }
+            explicit go_soulwellAI(GameObject* go) : GameObjectAI(go) { }
 
             /// Due to the fact that this GameObject triggers CMSG_GAMEOBJECT_USE
             /// _and_ CMSG_GAMEOBJECT_REPORT_USE, this GossipHello hook is called
@@ -1122,7 +1120,7 @@ class go_dragonflayer_cage : public GameObjectScript
 
         struct go_dragonflayer_cageAI : public GameObjectAI
         {
-            go_dragonflayer_cageAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_dragonflayer_cageAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -1188,7 +1186,7 @@ class go_amberpine_outhouse : public GameObjectScript
 
         struct go_amberpine_outhouseAI : public GameObjectAI
         {
-            go_amberpine_outhouseAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_amberpine_outhouseAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -1255,7 +1253,7 @@ class go_hive_pod : public GameObjectScript
 
         struct go_hive_podAI : public GameObjectAI
         {
-            go_hive_podAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_hive_podAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -1279,7 +1277,7 @@ class go_massive_seaforium_charge : public GameObjectScript
 
         struct go_massive_seaforium_chargeAI : public GameObjectAI
         {
-            go_massive_seaforium_chargeAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_massive_seaforium_chargeAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* /*player*/) override
             {
@@ -1312,7 +1310,7 @@ class go_veil_skith_cage : public GameObjectScript
 
        struct go_veil_skith_cageAI : public GameObjectAI
        {
-           go_veil_skith_cageAI(GameObject* go) : GameObjectAI(go) { }
+           explicit go_veil_skith_cageAI(GameObject* go) : GameObjectAI(go) { }
 
            bool GossipHello(Player* player) override
            {
@@ -1359,7 +1357,7 @@ class go_frostblade_shrine : public GameObjectScript
 
         struct go_frostblade_shrineAI : public GameObjectAI
         {
-            go_frostblade_shrineAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_frostblade_shrineAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -1396,7 +1394,7 @@ class go_midsummer_bonfire : public GameObjectScript
 
         struct go_midsummer_bonfireAI : public GameObjectAI
         {
-            go_midsummer_bonfireAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_midsummer_bonfireAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -1427,7 +1425,7 @@ class go_midsummer_ribbon_pole : public GameObjectScript
 
         struct go_midsummer_ribbon_poleAI : public GameObjectAI
         {
-            go_midsummer_ribbon_poleAI(GameObject* go) : GameObjectAI(go) { }
+            explicit go_midsummer_ribbon_poleAI(GameObject* go) : GameObjectAI(go) { }
 
             bool GossipHello(Player* player) override
             {
@@ -1458,7 +1456,7 @@ class go_toy_train_set : public GameObjectScript
 
         struct go_toy_train_setAI : public GameObjectAI
         {
-            go_toy_train_setAI(GameObject* go) : GameObjectAI(go), _pulseTimer(3 * IN_MILLISECONDS) { }
+            explicit go_toy_train_setAI(GameObject* go) : GameObjectAI(go), _pulseTimer(3 * IN_MILLISECONDS) { }
 
             void UpdateAI(uint32 diff) override
             {
@@ -1543,7 +1541,7 @@ public:
         uint32 rnd = 0;
         uint32 musicTime = 1000;
 
-        go_brewfest_musicAI(GameObject* go) : GameObjectAI(go)
+        explicit go_brewfest_musicAI(GameObject* go) : GameObjectAI(go)
         {
             _events.ScheduleEvent(EVENT_BM_SELECT_MUSIC, 1000);
             _events.ScheduleEvent(EVENT_BM_START_MUSIC, 2000);
@@ -1641,7 +1639,7 @@ public:
 
     struct go_midsummer_musicAI : public GameObjectAI
     {
-        go_midsummer_musicAI(GameObject* go) : GameObjectAI(go)
+        explicit go_midsummer_musicAI(GameObject* go) : GameObjectAI(go)
         {
             _events.ScheduleEvent(EVENT_MM_START_MUSIC, 1000);
         }
@@ -1706,7 +1704,7 @@ public:
 
     struct go_darkmoon_faire_musicAI : public GameObjectAI
     {
-        go_darkmoon_faire_musicAI(GameObject* go) : GameObjectAI(go)
+        explicit go_darkmoon_faire_musicAI(GameObject* go) : GameObjectAI(go)
         {
             _events.ScheduleEvent(EVENT_DFM_START_MUSIC, 1000);
         }
@@ -1760,7 +1758,7 @@ public:
 
     struct go_pirate_day_musicAI : public GameObjectAI
     {
-        go_pirate_day_musicAI(GameObject* go) : GameObjectAI(go)
+        explicit go_pirate_day_musicAI(GameObject* go) : GameObjectAI(go)
         {
             _events.ScheduleEvent(EVENT_PDM_START_MUSIC, 1000);
         }
@@ -1837,7 +1835,7 @@ public:
 
     struct go_bellsAI : public GameObjectAI
     {
-        go_bellsAI(GameObject* go) : GameObjectAI(go) { }
+        explicit go_bellsAI(GameObject* go) : GameObjectAI(go) { }
 
         void InitializeAI() override
         {
@@ -1906,7 +1904,7 @@ public:
 
 struct go_generic_firework : public GameObjectAI
 {
-    go_generic_firework(GameObject* go) : GameObjectAI(go) { }
+    explicit go_generic_firework(GameObject* go) : GameObjectAI(go) { }
 
     void InitializeAI() override
     {
@@ -1921,7 +1919,7 @@ enum CauldronOfBattle
 
 struct go_cauldron_of_battle : public GameObjectAI
 {
-    go_cauldron_of_battle(GameObject* go) : GameObjectAI(go) { }
+    explicit go_cauldron_of_battle(GameObject* go) : GameObjectAI(go) { }
 
     void JustAppeared() override
     {

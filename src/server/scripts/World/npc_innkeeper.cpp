@@ -58,7 +58,7 @@ class npc_innkeeper : public CreatureScript
 
         struct npc_innkeeperAI : public ScriptedAI
         {
-            npc_innkeeperAI(Creature* creature) : ScriptedAI(creature) { }
+            explicit npc_innkeeperAI(Creature* creature) : ScriptedAI(creature) { }
 
             bool GossipHello(Player* player) override
             {

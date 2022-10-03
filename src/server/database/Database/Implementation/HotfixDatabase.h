@@ -48,7 +48,7 @@ public:
     typedef HotfixDatabaseStatements Statements;
 
     //- Constructors for sync and async connections
-    HotfixDatabaseConnection(MySQLConnectionInfo& connInfo);
+    explicit HotfixDatabaseConnection(MySQLConnectionInfo& connInfo);
     HotfixDatabaseConnection(ProducerConsumerQueue<SQLOperation*>* q, MySQLConnectionInfo& connInfo);
     ~HotfixDatabaseConnection();
 
