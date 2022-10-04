@@ -1854,7 +1854,7 @@ class spell_mage_mirror_image_AurasScript : public AuraScript
 class SummonerCheck
 {
     public:
-        SummonerCheck(Unit* _summoner) : summoner(_summoner)  { }
+        explicit SummonerCheck(Unit* _summoner) : summoner(_summoner)  { }
 
         bool operator()(WorldObject* object)
         {

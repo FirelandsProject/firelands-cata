@@ -50,7 +50,7 @@ class spell_item_trigger_spell : public SpellScriptLoader
             uint32 _triggeredSpellId;
 
         public:
-            spell_item_trigger_spell_SpellScript(uint32 triggeredSpellId) : SpellScript(), _triggeredSpellId(triggeredSpellId) { }
+            explicit spell_item_trigger_spell_SpellScript(uint32 triggeredSpellId) : SpellScript(), _triggeredSpellId(triggeredSpellId) { }
 
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
@@ -200,7 +200,7 @@ template <uint8 StackAmount>
 class spell_item_anger_capacitor : public SpellScriptLoader
 {
     public:
-        spell_item_anger_capacitor(char const* ScriptName) : SpellScriptLoader(ScriptName) { }
+        explicit spell_item_anger_capacitor(char const* ScriptName) : SpellScriptLoader(ScriptName) { }
 
         template <uint8 Stacks>
         class spell_item_anger_capacitor_AuraScript : public AuraScript
@@ -560,7 +560,7 @@ template <uint32 StrengthSpellId, uint32 AgilitySpellId, uint32 APSpellId, uint3
 class spell_item_deathbringers_will : public SpellScriptLoader
 {
     public:
-        spell_item_deathbringers_will(char const* ScriptName) : SpellScriptLoader(ScriptName) { }
+        explicit spell_item_deathbringers_will(char const* ScriptName) : SpellScriptLoader(ScriptName) { }
 
         template <uint32 Strength, uint32 Agility, uint32 AttackPower, uint32 Critical, uint32 Haste>
         class spell_item_deathbringers_will_AuraScript : public AuraScript
@@ -1134,7 +1134,7 @@ template <uint32 EnergySpellId, uint32 ManaSpellId, uint32 RageSpellId, uint32 R
 class spell_item_heartpierce : public SpellScriptLoader
 {
     public:
-        spell_item_heartpierce(char const* ScriptName) : SpellScriptLoader(ScriptName) { }
+        explicit spell_item_heartpierce(char const* ScriptName) : SpellScriptLoader(ScriptName) { }
 
         template <uint32 Energy, uint32 Mana, uint32 Rage, uint32 RunicPower>
         class spell_item_heartpierce_AuraScript : public AuraScript
@@ -3607,7 +3607,7 @@ template <uint32 HealProcSpellId, uint32 DamageProcSpellId>
 class spell_item_shard_of_the_scale : public SpellScriptLoader
 {
     public:
-        spell_item_shard_of_the_scale(char const* ScriptName) : SpellScriptLoader(ScriptName) { }
+        explicit spell_item_shard_of_the_scale(char const* ScriptName) : SpellScriptLoader(ScriptName) { }
 
         template <uint32 HealProc, uint32 DamageProc>
         class spell_item_shard_of_the_scale_AuraScript : public AuraScript
@@ -3742,7 +3742,7 @@ template <uint32 AldorSpellId, uint32 ScryersSpellId>
 class spell_item_sunwell_neck : public SpellScriptLoader
 {
     public:
-        spell_item_sunwell_neck(char const* ScriptName) : SpellScriptLoader(ScriptName) { }
+        explicit spell_item_sunwell_neck(char const* ScriptName) : SpellScriptLoader(ScriptName) { }
 
         template <uint32 Aldors, uint32 Scryers>
         class spell_item_sunwell_neck_AuraScript : public AuraScript
@@ -4006,9 +4006,9 @@ class spell_item_zandalarian_charm : public SpellScriptLoader
 
         class spell_item_zandalarian_charm_AuraScript : public AuraScript
         {
-
             friend class spell_item_zandalarian_charm;
-            spell_item_zandalarian_charm_AuraScript(uint32 SpellId) : AuraScript(), _spellId(SpellId) { }
+
+            explicit spell_item_zandalarian_charm_AuraScript(uint32 SpellId) : AuraScript(), _spellId(SpellId) { }
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
                 return ValidateSpellInfo({ _spellId });
@@ -4588,7 +4588,8 @@ class spell_item_consume_charges : public SpellScriptLoader
         class spell_item_consume_charges_SpellScript : public SpellScript
         {
             friend class spell_item_consume_charges;
-            spell_item_consume_charges_SpellScript(uint32 SpellId) : SpellScript(), _spellId(SpellId) { }
+
+            explicit spell_item_consume_charges_SpellScript(uint32 SpellId) : SpellScript(), _spellId(SpellId) { }
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
                 return ValidateSpellInfo({ _spellId });

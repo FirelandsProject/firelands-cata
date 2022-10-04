@@ -57,7 +57,7 @@ enum Events
 
 struct npc_pet_mage_mirror_image : ScriptedAI
 {
-    npc_pet_mage_mirror_image(Creature* creature) : ScriptedAI(creature), _angle(0.f) { }
+    explicit npc_pet_mage_mirror_image(Creature* creature) : ScriptedAI(creature), _angle(0.f) { }
 
     void AttackStart(Unit* who) override
     {

@@ -56,7 +56,7 @@ class npc_pet_hunter_snake_trap : public CreatureScript
 
         struct npc_pet_hunter_snake_trapAI : public ScriptedAI
         {
-            npc_pet_hunter_snake_trapAI(Creature* creature) : ScriptedAI(creature), _isViper(false), _spellTimer(0) { }
+            explicit npc_pet_hunter_snake_trapAI(Creature* creature) : ScriptedAI(creature), _isViper(false), _spellTimer(0) { }
 
             void JustEngagedWith(Unit* /*who*/) override { }
 

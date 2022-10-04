@@ -39,7 +39,7 @@ class npc_pet_pri_lightwell : public CreatureScript
 
         struct npc_pet_pri_lightwellAI : public PassiveAI
         {
-            npc_pet_pri_lightwellAI(Creature* creature) : PassiveAI(creature)
+            explicit npc_pet_pri_lightwellAI(Creature* creature) : PassiveAI(creature)
             {
                 DoCast(me, SPELL_PRIEST_LIGHTWELL_CHARGES, false);
             }
@@ -68,7 +68,7 @@ class npc_pet_pri_shadowfiend : public CreatureScript
 
         struct npc_pet_pri_shadowfiendAI : public PetAI
         {
-            npc_pet_pri_shadowfiendAI(Creature* creature) : PetAI(creature) { }
+            explicit npc_pet_pri_shadowfiendAI(Creature* creature) : PetAI(creature) { }
 
             void IsSummonedBy(Unit* summoner) override
             {

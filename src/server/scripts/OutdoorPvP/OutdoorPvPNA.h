@@ -161,7 +161,7 @@ class OutdoorPvPNA;
 class OPvPCapturePointNA : public OPvPCapturePoint
 {
     public:
-        OPvPCapturePointNA(OutdoorPvP* pvp);
+        explicit OPvPCapturePointNA(OutdoorPvP* pvp);
 
         bool Update(uint32 diff) override;
 

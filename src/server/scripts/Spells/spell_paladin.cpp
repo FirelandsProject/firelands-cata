@@ -595,7 +595,7 @@ class spell_pal_holy_shock : public SpellScript
 class spell_pal_improved_aura_effect : public SpellScriptLoader
 {
     public:
-        spell_pal_improved_aura_effect(char const* name) : SpellScriptLoader(name) { }
+        explicit spell_pal_improved_aura_effect(char const* name) : SpellScriptLoader(name) { }
 
         class spell_pal_improved_aura_effect_AuraScript : public AuraScript
         {
