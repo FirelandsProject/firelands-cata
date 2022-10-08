@@ -37,6 +37,7 @@ EndScriptData */
 #include "RBAC.h"
 #include "Realm.h"
 #include "UpdateTime.h"
+#include "ServerMotd.h"
 #include "Util.h"
 #include "VMapFactory.h"
 #include "VMapManager2.h"
@@ -274,10 +275,7 @@ public:
     // Display the 'Message of the day' for the realm
     static bool HandleServerMotdCommand(ChatHandler* handler, char const* /*args*/)
     {
-        std::string motd;
-        for (std::string const& line : sWorld->GetMotd())
-            motd += line;
-        handler->PSendSysMessage(LANG_MOTD_CURRENT, motd.c_str());
+        handler->PSendSysMessage(LANG_MOTD_CURRENT, Motd::GetMotd());
         return true;
     }
 
@@ -397,10 +395,10 @@ public:
     }
 
     // Define the 'Message of the day' for the realm
-    static bool HandleServerSetMotdCommand(ChatHandler* handler, char const* args)
+    static bool HandleServerSetMotdCommand(ChatHandler* handler, char const* motd)
     {
-        sWorld->SetMotd(args);
-        handler->PSendSysMessage(LANG_MOTD_NEW, args);
+        Motd::SetMotd(motd);
+        handler->PSendSysMessage(LANG_MOTD_NEW, motd);
         return true;
     }
 

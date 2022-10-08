@@ -23,6 +23,7 @@
 #include "CombatManager.h"
 #include "SpellAuraDefines.h"
 #include "SpellDefines.h"
+#include "TaskScheduler.h"
 #include "ThreatManager.h"
 #include "Timer.h"
 #include "SpellPacketsCommon.h"
@@ -1229,6 +1230,7 @@ class FC_GAME_API Unit : public WorldObject
         virtual bool SetDisableGravity(bool disable, bool packetOnly = false, bool updateAnimationTier = true);
         bool SetFall(bool enable);
         bool SetSwim(bool enable);
+        bool SetFlying(bool enable);
         virtual bool SetCanFly(bool enable, bool packetOnly = false);
         virtual bool SetCanTransitionBetweenSwimAndFly(bool enable);
         bool SetWaterWalking(bool enable, bool packetOnly = false);
@@ -1504,6 +1506,12 @@ class FC_GAME_API Unit : public WorldObject
 
         ObjectGuid m_SummonSlot[MAX_SUMMON_SLOT];
         ObjectGuid m_ObjectSlot[MAX_GAMEOBJECT_SLOT];
+
+        void AddSummonedCreature(ObjectGuid guid, uint32 entry);
+        void RemoveSummonedCreature(ObjectGuid guid);
+        Creature* GetSummonedCreatureByEntry(uint32 entry);
+        void UnsummonCreatureByEntry(uint32 entry, uint32 ms = 0);
+
 
         ShapeshiftForm GetShapeshiftForm() const { return ShapeshiftForm(GetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_SHAPESHIFT_FORM)); }
         void SetShapeshiftForm(ShapeshiftForm form);
@@ -1835,6 +1843,9 @@ class FC_GAME_API Unit : public WorldObject
         virtual void TextEmote(uint32 textId, WorldObject const* target = nullptr, bool isBossEmote = false);
         virtual void Whisper(uint32 textId, Player* target, bool isBossWhisper = false);
 
+        TaskScheduler& GetScheduler() { return _scheduler; }
+
+
         float GetCollisionHeight() const override;
 
         // returns if the unit is allowed to enter combat
@@ -1848,6 +1859,11 @@ class FC_GAME_API Unit : public WorldObject
         bool CanRequestSpellCast(SpellInfo const* spell) const;
 
         void DestroyForPlayer(Player* target, bool onDeath = false) const override;
+
+        void GetAttackableUnitListInRange(std::list<Unit*>& list, float fMaxSearchRange) const;
+        void GetFriendlyUnitListInRange(std::list<Unit*>& list, float fMaxSearchRange, bool exceptSelf = false) const;
+        void GetAreatriggerListInRange(std::list<AreaTrigger*>& list, float fMaxSearchRange) const;
+        void GetAreaTriggerListWithSpellIDInRange(std::list<AreaTrigger*>& list, uint32 spellid, float fMaxSearchRange) const;
 
     protected:
         explicit Unit (bool isWorldObject);
@@ -1989,6 +2005,10 @@ class FC_GAME_API Unit : public WorldObject
         bool _isWalkingBeforeCharm;     ///< Are we walking before we were charmed?
 
         SpellHistory* m_spellHistory;
+
+        TaskScheduler _scheduler;
+
+        std::unordered_map<ObjectGuid, uint32/*entry*/> m_SummonedCreatures;
 
         PositionUpdateInfo _positionUpdateInfo;
 

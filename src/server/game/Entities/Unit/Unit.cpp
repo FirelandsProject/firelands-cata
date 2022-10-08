@@ -302,7 +302,7 @@ Unit::Unit(bool isWorldObject) :
     m_vehicleKit(nullptr), m_unitTypeMask(UNIT_MASK_NONE), m_Diminishing(),
     m_isEngaged(false), m_combatManager(this), m_threatManager(this),
     i_AI(nullptr), m_aiLocked(false), m_spellHistory(new SpellHistory(this)),
-    _isIgnoringCombat(false)
+    _isIgnoringCombat(false), _scheduler(this)
 {
     m_objectType |= TYPEMASK_UNIT;
     m_objectTypeId = TYPEID_UNIT;
@@ -405,6 +405,7 @@ Unit::~Unit()
         }
 
     m_Events.KillAllEvents(true);
+    _scheduler.CancelAll();
 
     _DeleteRemovedAuras();
 
@@ -432,6 +433,8 @@ void Unit::Update(uint32 p_time)
     // Spells must be processed with event system BEFORE they go to _UpdateSpells.
     // Or else we may have some SPELL_STATE_FINISHED spells stalled in pointers, that is bad.
     m_Events.Update(p_time);
+
+    _scheduler.Update(p_time);
 
     CheckPendingMovementAcks();
 
@@ -3136,6 +3139,36 @@ bool Unit::IsMovementPreventedByCasting() const
 
     // prohibit movement for all other spell casts
     return true;
+}
+
+void Unit::AddSummonedCreature(ObjectGuid guid, uint32 entry)
+{
+    m_SummonedCreatures[guid] = entry;
+}
+
+void Unit::RemoveSummonedCreature(ObjectGuid guid)
+{
+    m_SummonedCreatures.erase(guid);
+}
+
+Creature* Unit::GetSummonedCreatureByEntry(uint32 entry)
+{
+    auto itr = std::find_if(m_SummonedCreatures.begin(), m_SummonedCreatures.end(), [entry](auto& p)
+    {
+        return p.second == entry;
+    });
+
+    if (itr == m_SummonedCreatures.end())
+        return nullptr;
+
+    return ObjectAccessor::GetCreature(*this, itr->first);
+}
+
+void Unit::UnsummonCreatureByEntry(uint32 entry, uint32 ms/* = 0*/)
+{
+    if (Creature* creature = GetSummonedCreatureByEntry(entry))
+        if (TempSummon* tempSummon = creature->ToTempSummon())
+            tempSummon->UnSummon(ms);
 }
 
 bool Unit::isInFrontInMap(Unit const* target, float distance,  float arc) const
@@ -9084,6 +9117,10 @@ void Unit::SetSpeedRate(UnitMoveType mtype, float rate)
     {
         MovementPacketSender::SendSpeedChangeToMover(this, mtype, newSpeedFlat);
         SetSpeedRateReal(mtype, rate);
+
+        // Null Check added and to prevent false positives in the Anticheat system
+        if (GetTypeId() == TYPEID_PLAYER)
+            ToPlayer()->SetCanTeleport(true);
     }
     else if (IsMovedByClient() && !IsInWorld()) // (1)
         SetSpeedRateReal(mtype, rate);
@@ -13591,6 +13628,11 @@ void Unit::ExitVehicle(Position const* /*exitPosition*/)
     //! init spline movement based on those coordinates in unapply handlers, and
     //! relocate exiting passengers based on Unit::moveSpline data. Either way,
     //! Coming Soon(TM)
+
+    // Null Check added and to prevent false positives in the Anticheat system
+    if (Player* player = ToPlayer())
+        player->SetCanTeleport(true);
+
 }
 
 void Unit::_ExitVehicle(Position const* exitPosition)
@@ -14460,6 +14502,19 @@ bool Unit::SetSwim(bool enable)
     return true;
 }
 
+bool Unit::SetFlying(bool enable)
+{
+    if (enable == IsFlying())
+        return false;
+
+    if (enable)
+        AddUnitMovementFlag(MOVEMENTFLAG_FLYING);
+    else
+        RemoveUnitMovementFlag(MOVEMENTFLAG_FLYING);
+
+    return true;
+}
+
 bool Unit::SetCanFly(bool enable, bool packetOnly)
 {
     if (!packetOnly)
@@ -15284,4 +15339,79 @@ void Unit::ProcessItemCast(PendingSpellCastRequest const& castRequest, SpellCast
 void Unit::SetGameClientMovingMe(GameClient* gameClientMovingMe)
 {
     _gameClientMovingMe = gameClientMovingMe;
+}
+
+void Unit::GetAttackableUnitListInRange(std::list<Unit*>& list, float fMaxSearchRange) const
+{
+    CellCoord p(Firelands::ComputeCellCoord(GetPositionX(), GetPositionY()));
+    Cell cell(p);
+    cell.SetNoCreate();
+
+    Firelands::AttackableUnitInObjectRangeCheck u_check(this, fMaxSearchRange);
+    Firelands::UnitListSearcher<Firelands::AttackableUnitInObjectRangeCheck> searcher(this, list, u_check);
+
+    TypeContainerVisitor<Firelands::UnitListSearcher<Firelands::AttackableUnitInObjectRangeCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
+    TypeContainerVisitor<Firelands::UnitListSearcher<Firelands::AttackableUnitInObjectRangeCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
+
+    cell.Visit(p, world_unit_searcher, *GetMap(), *this, fMaxSearchRange);
+    cell.Visit(p, grid_unit_searcher, *GetMap(), *this, fMaxSearchRange);
+}
+
+void Unit::GetFriendlyUnitListInRange(std::list<Unit*>& list, float fMaxSearchRange, bool exceptSelf /*= false*/) const
+{
+    CellCoord p(Firelands::ComputeCellCoord(GetPositionX(), GetPositionY()));
+    Cell cell(p);
+    cell.SetNoCreate();
+
+    Firelands::AnyFriendlyUnitInObjectRangeCheck u_check(this, this, fMaxSearchRange, false, exceptSelf);
+    Firelands::UnitListSearcher<Firelands::AnyFriendlyUnitInObjectRangeCheck> searcher(this, list, u_check);
+
+    TypeContainerVisitor<Firelands::UnitListSearcher<Firelands::AnyFriendlyUnitInObjectRangeCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
+    TypeContainerVisitor<Firelands::UnitListSearcher<Firelands::AnyFriendlyUnitInObjectRangeCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
+
+    cell.Visit(p, world_unit_searcher, *GetMap(), *this, fMaxSearchRange);
+    cell.Visit(p, grid_unit_searcher, *GetMap(), *this, fMaxSearchRange);
+}
+
+void Unit::GetAreatriggerListInRange(std::list<AreaTrigger*>& list, float fMaxSearchRange) const
+{
+    CellCoord l_Coords(Firelands::ComputeCellCoord(GetPositionX(), GetPositionY()));
+    Cell l_Cell(l_Coords);
+    l_Cell.SetNoCreate();
+
+    Firelands::AnyAreatriggerInObjectRangeCheck l_Check(this, fMaxSearchRange);
+    Firelands::AreaTriggerListSearcher<Firelands::AnyAreatriggerInObjectRangeCheck> searcher(this, list, l_Check);
+
+    TypeContainerVisitor<Firelands::AreaTriggerListSearcher<Firelands::AnyAreatriggerInObjectRangeCheck>, WorldTypeMapContainer> l_WorldSearcher(searcher);
+    TypeContainerVisitor<Firelands::AreaTriggerListSearcher<Firelands::AnyAreatriggerInObjectRangeCheck>, GridTypeMapContainer>  l_GridSearcher(searcher);
+
+    l_Cell.Visit(l_Coords, l_WorldSearcher, *GetMap(), *this, fMaxSearchRange);
+    l_Cell.Visit(l_Coords, l_GridSearcher, *GetMap(), *this, fMaxSearchRange);
+}
+
+void Unit::GetAreaTriggerListWithSpellIDInRange(std::list<AreaTrigger*>& list, uint32 spellid, float fMaxSearchRange) const
+{
+    CellCoord l_Coords(Firelands::ComputeCellCoord(GetPositionX(), GetPositionY()));
+    Cell l_Cell(l_Coords);
+    l_Cell.SetNoCreate();
+
+    Firelands::AnyAreatriggerInObjectRangeCheck l_Check(this, fMaxSearchRange);
+    Firelands::AreaTriggerListSearcher<Firelands::AnyAreatriggerInObjectRangeCheck> searcher(this, list, l_Check);
+
+    TypeContainerVisitor<Firelands::AreaTriggerListSearcher<Firelands::AnyAreatriggerInObjectRangeCheck>, WorldTypeMapContainer> l_WorldSearcher(searcher);
+    TypeContainerVisitor<Firelands::AreaTriggerListSearcher<Firelands::AnyAreatriggerInObjectRangeCheck>, GridTypeMapContainer>  l_GridSearcher(searcher);
+
+    l_Cell.Visit(l_Coords, l_WorldSearcher, *GetMap(), *this, fMaxSearchRange);
+    l_Cell.Visit(l_Coords, l_GridSearcher, *GetMap(), *this, fMaxSearchRange);
+
+    if (!list.empty())
+    {
+        list.remove_if([spellid](AreaTrigger* p_AreaTrigger) -> bool
+            {
+                if (p_AreaTrigger == nullptr || p_AreaTrigger->GetSpellId() != spellid)
+                    return true;
+
+                return false;
+            });
+    }
 }

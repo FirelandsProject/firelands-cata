@@ -628,6 +628,7 @@ class FC_GAME_API Map : public GridRefManager<NGridType>
         void RemoveGameObjectModel(const GameObjectModel& model) { _dynamicTree.remove(model); }
         void InsertGameObjectModel(const GameObjectModel& model) { _dynamicTree.insert(model); }
         bool ContainsGameObjectModel(const GameObjectModel& model) const { return _dynamicTree.contains(model);}
+        DynamicMapTree const& GetDynamicMapTree() const { return _dynamicTree; }
         float GetGameObjectFloor(PhaseShift const& phaseShift, float x, float y, float z, float maxSearchDist = DEFAULT_HEIGHT_SEARCH) const
         {
             return _dynamicTree.getHeight(x, y, z, maxSearchDist, phaseShift);
@@ -702,6 +703,13 @@ class FC_GAME_API Map : public GridRefManager<NGridType>
             _updateObjects.erase(obj);
         }
 
+        void SetWorldState(uint32 id, uint64 value) { m_worldStates[id] = value; }
+        uint64 GetWorldState(uint32 id) const
+        {
+            auto itr = m_worldStates.find(id);
+            return itr != m_worldStates.end() ? itr->second : uint64(0);
+        }
+
     private:
 
         void LoadMapAndVMap(int gx, int gy);
@@ -762,6 +770,9 @@ class FC_GAME_API Map : public GridRefManager<NGridType>
         void ScriptsProcess();
 
         void SendObjectUpdates();
+
+        typedef std::map<uint32, uint64> WorldStatesMap;
+        WorldStatesMap m_worldStates;
 
     protected:
         std::mutex _mapLock;
