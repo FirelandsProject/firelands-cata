@@ -20,6 +20,7 @@
 #include "DatabaseEnv.h"
 #include "GameEventMgr.h"
 #include "GameObject.h"
+#include "Group.h"
 #include "Guild.h"
 #include "InstanceScript.h"
 #include "Log.h"
@@ -31,6 +32,7 @@
 #include "Pet.h"
 #include "ReputationMgr.h"
 #include "ScriptMgr.h"
+#include "SmartAI.h"
 #include "SpellAuras.h"
 #include "SpellMgr.h"
 #include "World.h"
@@ -65,7 +67,8 @@ char const* const ConditionMgr::StaticSourceTypeData[CONDITION_SOURCE_TYPE_MAX] 
     "Terrain Swap",
     "Phase",
     "Graveyard",
-    "Spell Area"
+    "Spell Area",
+    "Spawn"
 };
 
 ConditionMgr::ConditionTypeInfo const ConditionMgr::StaticConditionTypeData[CONDITION_MAX] =
@@ -117,7 +120,20 @@ ConditionMgr::ConditionTypeInfo const ConditionMgr::StaticConditionTypeData[COND
     { "Charmed",             false, false, false },
     { "Pet type",             true, false, false },
     { "On Taxi",             false, false, false },
-    { "Quest state mask",     true,  true, false }
+    { "Quest state mask",     true,  true, false },
+    { "Group",               false, false, false },
+    { "EventPhaseMask",       true, false, false },
+    { "WeeklyQuest",          true, false, false },
+    { "MonthlyQuest",         true, false, false },
+    { "Reputation Value",     true, true,  false },
+    { "Currency",             true, true,  true  },
+    { "Currency on Week",     true, true,  true  },
+    { "On Transport",        false, false, false },
+    { "Raid or Group",        true, true,  true  },
+    { "Has Power",            true, true,  true  },
+    { "GameMaster",          false, false, false },
+    { "Emote State",         false, false, false },
+    { "In Combat",           false, false, false }
 };
 
 // Checks if object meets the condition
@@ -512,6 +528,119 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo) const
             }
             break;
         }
+        case CONDITION_HAS_GROUP:
+        {
+            if (Player* player = object->ToPlayer())
+            {
+                Group* group = player->GetGroup();
+                condMeets = group ? true : false;
+            }
+            break;
+        }
+        case CONDITION_SAI_PHASE:
+        {
+            if (Creature* creature = object->ToCreature())
+                if (creature->GetAIName() == "SmartAI" && !creature->IsPet())
+                    condMeets = CAST_AI(SmartAI, creature->AI())->GetPhase() == ConditionValue1;
+            if (GameObject* go = object->ToGameObject())
+                if (go->GetAIName() == "SmartAI")
+                    condMeets = CAST_AI(SmartAI, go->AI())->GetPhase() == ConditionValue1;
+            break;
+        }
+        case CONDITION_WEEKLY_QUEST_DONE:
+        {
+            if (Player* player = object->ToPlayer())
+                condMeets = player->IsWeeklyQuestDone(ConditionValue1);
+            break;
+        }
+        case CONDITION_MONTHLY_QUEST_DONE:
+        {
+            if (Player* player = object->ToPlayer())
+                condMeets = player->IsMonthlyQuestDone(ConditionValue1);
+            break;
+        }
+        case CONDITION_REPUTATION_VALUE:
+        {
+            if (Player* player = object->ToPlayer())
+            {
+                if (FactionEntry const* faction = sFactionStore.LookupEntry(ConditionValue1))
+                    condMeets = (ConditionValue2 && player->GetReputationMgr().GetReputation(faction) >= int32(ConditionValue2));
+            }
+            break;
+        }
+        case CONDITION_CURRENCY:
+        {
+            if (Player* player = object->ToPlayer())
+            {
+                uint32 count = player->GetCurrency(ConditionValue1, true);
+                condMeets = count >= ConditionValue2 && (!ConditionValue3 || count < ConditionValue3);
+            }
+            break;
+        }
+        case CONDITION_CURRENCY_ON_WEEK:
+        {
+            if (Player* player = object->ToPlayer())
+            {
+                uint32 count = player->GetCurrencyOnWeek(ConditionValue1, true);
+                condMeets = count >= ConditionValue2 && (!ConditionValue3 || count < ConditionValue3);
+            }
+            break;
+        }
+        case CONDITION_ON_TRANSPORT:
+        {
+            if (Player* player = object->ToPlayer())
+                condMeets = player->IsOnVehicle(player->GetVehicleBase());
+            break;
+        }
+        case CONDITION_IN_RAID_OR_GROUP:
+        {
+            if (Player* player = object->ToPlayer())
+            {
+                if (ConditionValue1)
+                {
+                    if (ConditionValue2)
+                        condMeets = player->GetGroup() && player->GetGroup()->isRaidGroup();
+                    if (ConditionValue3)
+                        condMeets = player->GetGroup();
+                }
+                else
+                {
+                    if (ConditionValue2)
+                        condMeets = !player->GetGroup() || !player->GetGroup()->isRaidGroup();
+                    if (ConditionValue3)
+                        condMeets = !player->GetGroup();
+                }
+            }
+            break;
+        }
+        case CONDITION_HAS_POWER:
+        {
+            if (Unit* unit = object->ToUnit())
+            {
+                condMeets = unit->GetPower(Powers(ConditionValue1)) >= ConditionValue2;
+                if (ConditionValue3)
+                    condMeets = unit->GetPower(Powers(ConditionValue1)) <= ConditionValue3;
+            }
+            break;
+        }
+        case CONDITION_GAMEMASTER:
+        {
+            if (Player* player = object->ToPlayer())
+                condMeets = player->IsGameMaster();
+            break;
+        }
+        case CONDITION_HAS_EMOTE_STATE:
+        {
+            if (Unit* unit = object->ToUnit())
+                condMeets = unit->GetUInt32Value(UNIT_NPC_EMOTESTATE);
+            break;
+        }
+        case CONDITION_IN_COMBAT:
+        {
+            if (auto unit = object->ToUnit())
+                condMeets = unit->IsInCombat();
+            break;
+        }
         default:
             condMeets = false;
             break;
@@ -708,6 +837,45 @@ uint32 Condition::GetSearcherTypeMaskForCondition() const
         case CONDITION_QUESTSTATE:
             mask |= GRID_MAP_TYPE_MASK_PLAYER;
             break;
+        case CONDITION_HAS_GROUP:
+            mask |= GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_SAI_PHASE:
+            mask |= GRID_MAP_TYPE_MASK_CREATURE | GRID_MAP_TYPE_MASK_GAMEOBJECT;
+            break;
+        case CONDITION_WEEKLY_QUEST_DONE:
+            mask |= GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_MONTHLY_QUEST_DONE:
+            mask |= GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_REPUTATION_VALUE:
+            mask |= GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_CURRENCY:
+            mask |= GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_CURRENCY_ON_WEEK:
+            mask |= GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_ON_TRANSPORT:
+            mask |= GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_IN_RAID_OR_GROUP:
+            mask |= GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_HAS_POWER:
+            mask |= GRID_MAP_TYPE_MASK_CREATURE | GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_GAMEMASTER:
+            mask |= GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_HAS_EMOTE_STATE:
+            mask |= GRID_MAP_TYPE_MASK_CREATURE | GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_IN_COMBAT:
+            mask |= GRID_MAP_TYPE_MASK_CREATURE | GRID_MAP_TYPE_MASK_PLAYER;
+            break;
         default:
             ASSERT(false && "Condition::GetSearcherTypeMaskForCondition - missing condition handling!");
             break;
@@ -841,7 +1009,6 @@ bool ConditionMgr::IsObjectMeetToConditionList(ConditionSourceInfo& sourceInfo, 
                     LOG_DEBUG("condition", "ConditionMgr::IsPlayerMeetToConditionList %s Reference template -%u not found",
                         condition->ToString().c_str(), condition->ReferenceId); // checked at loading, should never happen
                 }
-
             }
             else //handle normal condition
             {
@@ -900,7 +1067,8 @@ bool ConditionMgr::CanHaveSourceGroupSet(ConditionSourceType sourceType)
             sourceType == CONDITION_SOURCE_TYPE_SMART_EVENT ||
             sourceType == CONDITION_SOURCE_TYPE_NPC_VENDOR ||
             sourceType == CONDITION_SOURCE_TYPE_PHASE ||
-            sourceType == CONDITION_SOURCE_TYPE_SPELL_AREA);
+            sourceType == CONDITION_SOURCE_TYPE_SPELL_AREA ||
+            sourceType == CONDITION_SOURCE_TYPE_SPAWN);
 }
 
 bool ConditionMgr::CanHaveSourceIdSet(ConditionSourceType sourceType)
@@ -1020,6 +1188,21 @@ bool ConditionMgr::IsObjectMeetingVendorItemConditions(uint32 creatureId, uint32
 bool ConditionMgr::IsSpellUsedInSpellClickConditions(uint32 spellId) const
 {
     return SpellsUsedInSpellClickConditions.find(spellId) != SpellsUsedInSpellClickConditions.end();
+}
+
+bool ConditionMgr::IsObjectMeetingSpawnConditions(uint32 objectType, uint32 entry, WorldObject* seer) const
+{
+    ConditionEntriesByCreatureIdMap::const_iterator itr = SpawnConditionContainerStore.find(objectType);
+    if (itr != SpawnConditionContainerStore.end())
+    {
+        ConditionsByEntryMap::const_iterator i = (*itr).second.find(entry);
+        if (i != (*itr).second.end())
+        {
+            LOG_DEBUG("condition", "IsObjectMeetingSpawnConditions: found conditions for objectType %u entry %u", objectType, entry);
+            return IsObjectMeetToConditions(seer, i->second);
+        }
+    }
+    return true;
 }
 
 ConditionMgr* ConditionMgr::instance()
@@ -1265,6 +1448,13 @@ void ConditionMgr::LoadConditions(bool isReload)
                 case CONDITION_SOURCE_TYPE_SPELL_AREA:
                     valid = addToSpellArea(cond);
                     break;
+                case CONDITION_SOURCE_TYPE_SPAWN:
+                {
+                    SpawnConditionContainerStore[cond->SourceGroup][cond->SourceEntry].push_back(cond);
+                    valid = true;
+                    ++count;
+                    continue;
+                }
                 default:
                     break;
             }
@@ -1899,6 +2089,37 @@ bool ConditionMgr::isSourceTypeValid(Condition* cond) const
                 return false;
             }
             break;
+        case CONDITION_SOURCE_TYPE_SPAWN:
+        {
+            if (cond->SourceGroup <= 0 || cond->SourceGroup >= NUM_CLIENT_OBJECT_TYPES)
+            {
+                LOG_ERROR("sql.sql", "%s SourceGroup in `condition` table, is no valid object type, ignoring.", cond->ToString().c_str());
+                return false;
+            }
+
+            if (cond->SourceGroup == TYPEID_UNIT)
+            {
+                if (!sObjectMgr->GetCreatureTemplate(cond->SourceEntry))
+                {
+                    LOG_ERROR("sql.sql", "%s SourceEntry in `condition` table, does not exist in `creature_template`, ignoring.", cond->ToString().c_str());
+                    return false;
+                }
+            }
+            else if (cond->SourceGroup == TYPEID_GAMEOBJECT)
+            {
+                if (!sObjectMgr->GetGameObjectTemplate(cond->SourceEntry))
+                {
+                    LOG_ERROR("sql.sql", "%s SourceEntry in `condition` table, does not exist in `gameobject_template`, ignoring.", cond->ToString().c_str());
+                    return false;
+                }
+            }
+            else
+            {
+                LOG_ERROR("sql.sql", "%s SourceGroup in `condition` table, uses unchecked type id, ignoring.", cond->ToString().c_str());
+                return false;
+            }
+            break;
+        }
         default:
             break;
     }
@@ -1980,6 +2201,7 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond) const
             break;
         }
         case CONDITION_REPUTATION_RANK:
+        case CONDITION_REPUTATION_VALUE:
         {
             FactionEntry const* factionEntry = sFactionStore.LookupEntry(cond->ConditionValue1);
             if (!factionEntry)
@@ -2026,6 +2248,8 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond) const
         case CONDITION_QUEST_NONE:
         case CONDITION_QUEST_COMPLETE:
         case CONDITION_DAILY_QUEST_DONE:
+        case CONDITION_WEEKLY_QUEST_DONE:
+        case CONDITION_MONTHLY_QUEST_DONE:
         {
             if (!sObjectMgr->GetQuestTemplate(cond->ConditionValue1))
             {
@@ -2398,9 +2622,29 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond) const
                 return false;
             }
             break;
+        case CONDITION_CURRENCY:
+        case CONDITION_CURRENCY_ON_WEEK:
+        {
+            CurrencyTypesEntry const* currencyEntry = sCurrencyTypesStore.LookupEntry(cond->ConditionValue1);
+            if (!currencyEntry)
+            {
+                LOG_ERROR("sql.sql", "Currency condition has non existing currency (%u), skipped", cond->ConditionValue1);
+                return false;
+            }
+            break;
+        }
         case CONDITION_IN_WATER:
         case CONDITION_CHARMED:
         case CONDITION_TAXI:
+        case CONDITION_HAS_GROUP:
+        case CONDITION_SAI_PHASE:
+        case CONDITION_ON_TRANSPORT:
+        case CONDITION_IN_RAID_OR_GROUP:
+        case CONDITION_HAS_POWER:
+        case CONDITION_GAMEMASTER:
+        case CONDITION_HAS_EMOTE_STATE:
+        case CONDITION_IN_COMBAT:
+            break;
         default:
             break;
     }
@@ -2465,6 +2709,13 @@ void ConditionMgr::Clean()
                 delete *i;
 
     NpcVendorConditionContainerStore.clear();
+
+    for (ConditionEntriesByCreatureIdMap::iterator itr = SpawnConditionContainerStore.begin(); itr != SpawnConditionContainerStore.end(); ++itr)
+        for (ConditionsByEntryMap::iterator it = itr->second.begin(); it != itr->second.end(); ++it)
+            for (ConditionContainer::const_iterator i = it->second.begin(); i != it->second.end(); ++i)
+                delete* i;
+
+    SpawnConditionContainerStore.clear();
 
     // this is a BIG hack, feel free to fix it if you can figure out the ConditionMgr ;)
     for (std::vector<Condition*>::const_iterator itr = AllocatedMemoryStore.begin(); itr != AllocatedMemoryStore.end(); ++itr)

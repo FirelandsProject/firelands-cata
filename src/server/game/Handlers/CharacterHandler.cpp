@@ -51,6 +51,7 @@
 #include "Realm.h"
 #include "ReputationMgr.h"
 #include "ScriptMgr.h"
+#include "ServerMotd.h"
 #include "SharedDefines.h"
 #include "SocialMgr.h"
 #include "SystemPackets.h"
@@ -931,9 +932,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const &holder) {
 
   // Send MOTD
   {
-    WorldPackets::System::MOTD motd;
-    motd.Text = &sWorld->GetMotd();
-    SendPacket(motd.Write());
+    SendPacket(Motd::GetMotdPacket());
   }
 
   WorldPackets::System::FeatureSystemStatus features;

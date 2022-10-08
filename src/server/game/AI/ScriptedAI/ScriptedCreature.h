@@ -261,6 +261,8 @@ struct FC_GAME_API ScriptedAI : public CreatureAI
     void SetCombatMovement(bool allowMovement);
     bool IsCombatMovementAllowed() const { return _isCombatMovementAllowed; }
 
+    bool CheckHomeDistToEvade(uint32 diff, float dist = 0.0f, float x = 0.0f, float y = 0.0f, float z = 0.0f, bool onlyZ = false);
+
     // return true for heroic mode. i.e.
     //   - for dungeon in mode 10-heroic,
     //   - for raid in mode 10-Heroic
@@ -330,6 +332,7 @@ struct FC_GAME_API ScriptedAI : public CreatureAI
         Difficulty _difficulty;
         bool _isCombatMovementAllowed;
         bool _isHeroic;
+        uint32 _checkHomeTimer;
 };
 
 class FC_GAME_API BossAI : public ScriptedAI
@@ -436,5 +439,15 @@ inline void GetPlayerListInGrid(Container& container, WorldObject* source, float
 {
     source->GetPlayerListInGrid(container, maxSearchRange);
 }
+
+Player* GetFarthestPlayerInArea(WorldObject* owner, float range);
+
+FC_GAME_API void GetPositionWithDistInOrientation(Position* pUnit, float dist, float orientation, float& x, float& y);
+FC_GAME_API void GetPositionWithDistInOrientation(Position* fromPos, float dist, float orientation, Position& movePosition);
+
+FC_GAME_API void GetRandPosFromCenterInDist(float centerX, float centerY, float dist, float& x, float& y);
+FC_GAME_API void GetRandPosFromCenterInDist(Position* centerPos, float dist, Position& movePosition);
+
+FC_GAME_API void GetPositionWithDistInFront(Position* centerPos, float dist, Position& movePosition);
 
 #endif // SCRIPTEDCREATURE_H_

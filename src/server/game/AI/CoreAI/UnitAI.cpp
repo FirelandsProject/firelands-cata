@@ -179,6 +179,15 @@ void UnitAI::DoCastVictim(uint32 spellId, CastSpellExtraArgs const& args)
         DoCast(victim, spellId, args);
 }
 
+void UnitAI::DoCastRandom(uint32 spellId, float dist, CastSpellExtraArgs const& args, int32 aura, uint32 position)
+{
+    if (me->HasUnitState(UNIT_STATE_CASTING) && !(args.TriggerFlags & TRIGGERED_IGNORE_CAST_IN_PROGRESS))
+        return;
+
+    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, position, dist, true, aura))
+        me->CastSpell(target, spellId, args);
+}
+
 #define UPDATE_TARGET(a) {if (AIInfo->target<a) AIInfo->target=a;}
 
 void UnitAI::FillAISpellInfo()
