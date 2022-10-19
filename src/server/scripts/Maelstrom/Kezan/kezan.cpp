@@ -28,52 +28,11 @@
 #include "TemporarySummon.h"
 #include "UnitDefines.h"
 #include "Vehicle.h"
+#include "kezan.h"
 
 /* ###
 #   Quest Rolling With My Homies
 ### */
-
-// clang-format off
-enum QuestRollingWithMyHomies
-{
-    // Quest ID
-    QUEST_ROLLING_WITH_MY_HOMIES      = 14071,
-    // Objectives ID's
-    OBJECTIVE_IZZY_PICKED_UP          = 265516,
-    OBJECTIVE_ACE_PICKED_UP           = 265517,
-    OBJECTIVE_GOBBER_PICKED_UP        = 265518,
-    // NPC defs
-    NPC_HOT_ROD                       = 34840,
-    NPC_IZZY                          = 34890,
-    NPC_ACE                           = 34892,
-    NPC_GOBBER                        = 34954,
-    // Summons
-    SUMMON_NPC_IZZY                   = 34959,
-    SUMMON_NPC_ACE                    = 34957,
-    SUMMON_NPC_GOBBER                 = 34958,
-    // Inv Detections
-    SPELL_INV_DETECTION_1             = 66403,
-    SPELL_INV_DETECTION_2             = 66404,
-    SPELL_INV_DETECTION_3             = 66405,
-    // Summon Spells
-    SPELL_SUMMON_IZZY                 = 66600,
-    SPELL_SUMMON_ACE                  = 66597,
-    SPELL_SUMMON_GOBBER               = 66599,
-    // Re-Summon NPC Spells
-    SPELL_RESUMMON_IZZY               = 66644,
-    SPELL_RESUMMON_ACE                = 66646,
-    SPELL_RESUMMON_GOBBER             = 66645,
-    // ROD Spells
-    SPELL_HOT_ROD_KNOCKBACK           = 66301,
-    // Quest Actions
-    ACTION_ROD_ENTER_VEHICLE          = 1,
-    // Vehicle Sounds
-    RADIO_SOUND                       = 23406,
-    KLAXON_SOUND                      = 22491,
-    // Quest Item
-    HOT_ROD_ITEM                      = 46856
-};
-// clang-format on
 
 std::unordered_map<uint32, std::tuple<uint32, uint32>> const seatPerHomie = {{SUMMON_NPC_ACE, {1, SPELL_RESUMMON_ACE}},
     {SUMMON_NPC_GOBBER, {2, SPELL_RESUMMON_GOBBER}}, {SUMMON_NPC_IZZY, {3, SPELL_RESUMMON_IZZY}}};
@@ -266,33 +225,6 @@ void InitQuestRollingWithMyHomies()
 #   Quest Fourth and Goal
 ### */
 
-// clang-format off
-enum QuestNecessaryRoughness
-{
-    QUEST_NECESSARY_ROUGHNESS            = 24502,
-    QUEST_FOURTH_AND_GOAL                = 28414,
-    // Despawn Spell Definitions
-    SPELL_DESPAWN_SHARKS                 = 69987,
-    // Summon Spell Definitions
-    SPELL_SUMMON_BILGWATER_BUCCANEER     = 70015,
-    SPELL_SUMMON_BILGWATER_BUCCANEER_2   = 70075,
-    SPELL_SUMMON_DEATHWING               = 66322,
-    // Spell Definition
-    SPELL_GROUND_RUMBLE_EARTHQUAKE       = 78607,
-    SPELL_THROW_FOOTBOMB                 = 69993,
-    SPELL_KICK_FOOTBOMB                  = 70052,
-    SPELL_GENERIC_INV_DETECTION_4        = 90161,
-    // NPC Definitions
-    NPC_SUMMON_BILGWATER_BUCCANEER       = 37179,
-    NPC_SUMMON_BILGWATER_BUCCANEER_2     = 37213,
-    NPC_FOURTH_AND_GOAL_KILL_CREDIT      = 37203,
-    NPC_NECEESARY_ROUGHNESS_KILL_CREDIT  = 48271,
-    NPC_SHARK                            = 37114,
-    // Aura Definitions
-    AURA_BILWATER_BUCANEER               = 70016,
-    AURA_BILWATER_BUCANEER2              = 70065,
-};
-// clang-format on
 // Used in fourth_and_goal Logic
 Position const playerTeleportPos = {-8250.910156f, 1484.290039f, 41.499901f, 3.124140f};
 
@@ -306,21 +238,8 @@ class quest_fourth_and_goal : public QuestScript
 
     void OnQuestStatusChange(Player* player, Quest const* /*quest*/, QuestStatus /*oldStatus*/, QuestStatus newStatus) override
     {
-        if (newStatus == QUEST_STATUS_INCOMPLETE)
-        {
-            player->ExitVehicle();
 
-            player->GetScheduler().Schedule(1s,
-                [player](TaskContext /*ctx*/)
-                {
-                    player->RemoveAurasDueToSpell(SPELL_GENERIC_INV_DETECTION_4);
-                    player->NearTeleportTo(playerTeleportPos);
-
-                    player->GetScheduler().Schedule(1s,
-                        [player](TaskContext /*ctx*/) { player->CastSpell(nullptr, SPELL_SUMMON_BILGWATER_BUCCANEER_2, true); });
-                });
-        }
-        else if (newStatus == QUEST_STATUS_COMPLETE)
+        if (newStatus == QUEST_STATUS_COMPLETE)
         {
             player->CastSpell(player, SPELL_GROUND_RUMBLE_EARTHQUAKE, true);
             player->CastSpell(nullptr, SPELL_SUMMON_DEATHWING, true);
@@ -348,12 +267,14 @@ class npc_coach_crosscheck : public CreatureScript
         if (quest->GetQuestId() == QUEST_NECESSARY_ROUGHNESS)
         {
             player->NearTeleportTo(playerTeleportPos);
-            player->GetScheduler().Schedule(500ms,
-                [player](TaskContext /*ctx*/)
-                {
-                    player->CastSpell(nullptr, SPELL_SUMMON_BILGWATER_BUCCANEER, true);
-                    player->RemoveAurasDueToSpell(SPELL_GENERIC_INV_DETECTION_4);
-                });
+            player->GetScheduler().Schedule(
+                500ms, [player](TaskContext /*ctx*/) { player->CastSpell(player, SPELL_SUMMON_BILGWATER_BUCCANEER, true); });
+        }
+        else if (quest->GetQuestId() == QUEST_FOURTH_AND_GOAL)
+        {
+            player->NearTeleportTo(playerTeleportPos);
+            player->GetScheduler().Schedule(
+                500ms, [player](TaskContext /*ctx*/) { player->CastSpell(player, SPELL_SUMMON_BILGWATER_BUCCANEER_2, true); });
         }
 
         return false;
@@ -375,53 +296,60 @@ const Position SharkPos[8] = {
 
 // NPC entry 37179
 // NPC entry 37213
-struct npc_bucanneer_gob : public ScriptedAI
+class npc_bilgewater_bucaneer : public CreatureScript
 {
-    npc_bucanneer_gob(Creature* creature) : ScriptedAI(creature) {}
+  public:
+    npc_bilgewater_bucaneer() : CreatureScript("npc_bilgewater_bucaneer") {}
 
-    void Reset() override
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
-        if (me->GetEntry() == NPC_SUMMON_BILGWATER_BUCCANEER_2 && me->IsSummon())
-        {
-            Unit* summoner = me->ToTempSummon()->GetSummoner();
-            if (summoner && summoner->IsPlayer())
-            {
-                summoner->EnterVehicle(me);
-            }
-        }
+        pPlayer->EnterVehicle(pCreature->ToUnit(), 0);
+        return true;
     }
 
-    void OnCharmed(bool /*apply*/) override {}
-
-    void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply) override
+    struct npc_bucanneer_gob : public ScriptedAI
     {
-        Player* player = who->ToPlayer();
-        if (!player)
-            return;
+        npc_bucanneer_gob(Creature* creature) : ScriptedAI(creature) {}
 
-        if (apply)
+        void Reset() override
         {
-            me->SetSpeed(MOVE_RUN, 0.001f);
-            player->RemoveAurasDueToSpell(SPELL_GENERIC_INV_DETECTION_4);
+            me->AddUnitState(UNIT_STATE_ROOT);
+            me->AddUnitMovementFlag(MOVEMENTFLAG_ROOT);
+        }
 
-            if (player->GetQuestStatus(QUEST_NECESSARY_ROUGHNESS) == QUEST_STATUS_INCOMPLETE)
+        void OnCharmed(bool /*apply*/) override {}
+
+        void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply) override
+        {
+            Player* player = who->ToPlayer();
+            if (!player)
+                return;
+
+            if (apply)
             {
-                player->KilledMonsterCredit(NPC_NECEESARY_ROUGHNESS_KILL_CREDIT, me->GetGUID());
-                me->AddAura(AURA_BILWATER_BUCANEER, me);
+                me->SetSpeed(MOVE_RUN, 0.001f);
+                player->PlayDirectSound(SOUND_WOW1, player);
+                player->RemoveAurasDueToSpell(SPELL_GENERIC_INV_DETECTION_4);
 
-                for (uint8 count = 0; count < 8; ++count)
-                    me->SummonCreature(NPC_SHARK, SharkPos[count], TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 120 * IN_MILLISECONDS);
+                if (player->GetQuestStatus(QUEST_NECESSARY_ROUGHNESS) == QUEST_STATUS_INCOMPLETE)
+                {
+                    player->KilledMonsterCredit(NPC_NECEESARY_ROUGHNESS_KILL_CREDIT, me->GetGUID());
+                    me->AddAura(AURA_BILWATER_BUCANEER, me);
+
+                    for (uint8 count = 0; count < 8; ++count)
+                        me->SummonCreature(NPC_SHARK, SharkPos[count], TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 120 * IN_MILLISECONDS);
+                }
             }
-            else if (player->GetQuestStatus(QUEST_FOURTH_AND_GOAL) == QUEST_STATUS_INCOMPLETE)
-                me->AddAura(AURA_BILWATER_BUCANEER2, me);
+            else
+            {
+                player->CastSpell(player, SPELL_GENERIC_INV_DETECTION_4, true);
+                me->CastSpell(nullptr, SPELL_DESPAWN_SHARKS, true);
+                me->GetScheduler().Schedule(1s, [this](TaskContext /*context*/) { me->DespawnOrUnsummon(); });
+            }
         }
-        else
-        {
-            player->CastSpell(player, SPELL_GENERIC_INV_DETECTION_4, true);
-            me->CastSpell(nullptr, SPELL_DESPAWN_SHARKS, true);
-            me->GetScheduler().Schedule(1s, [this](TaskContext /*context*/) { me->DespawnOrUnsummon(); });
-        }
-    }
+    };
+
+    CreatureAI* GetAI(Creature* creature) const override { return new npc_bucanneer_gob(creature); }
 };
 
 // NPC entry 37114
@@ -476,7 +404,13 @@ struct npc_fourth_and_goal_target : public ScriptedAI
 {
     npc_fourth_and_goal_target(Creature* creature) : ScriptedAI(creature) {}
 
-    void Reset() override { me->setActive(true); }
+    void Reset() override
+    {
+        me->setActive(true);
+        me->SetReactState(REACT_PASSIVE);
+        me->AddAura(SPELL_MARK, me);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+    }
 
     void SpellHit(Unit* caster, const SpellInfo* spell) override
     {
@@ -528,7 +462,7 @@ void InitQuestNecessaryRoughness()
 {
     new quest_fourth_and_goal();
     new npc_coach_crosscheck();
-    RegisterCreatureAI(npc_bucanneer_gob);
+    new npc_bilgewater_bucaneer();
     RegisterCreatureAI(npc_shark_gob);
     RegisterSpellScript(npc_fourth_and_goal_kick_footbomb);
     RegisterCreatureAI(npc_fourth_and_goal_target);

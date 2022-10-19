@@ -399,6 +399,22 @@ class FC_GAME_API CreatureScript : public ScriptObject
     // Called when a player accepts a quest from the creature.
     virtual bool OnQuestAccept(Player* /*player*/, Creature* /*creature*/, Quest const* /*quest*/) { return false; }
 
+    // Called when a player opens a gossip dialog with the creature.
+    virtual bool OnGossipHello(Player* /*player*/, Creature* /*creature*/) { return false; }
+
+    // Called when a player selects a gossip with a code in the creature's gossip menu.
+    virtual bool OnGossipSelectCode(
+        Player* /*player*/, Creature* /*creature*/, uint32 /*sender*/, uint32 /*action*/, const char* /*code*/)
+    {
+        return false;
+    }
+
+    // Called when a player selects a gossip item in the creature's gossip menu.
+    virtual bool OnGossipSelect(Player* /*player*/, Creature* /*creature*/, uint32 /*sender*/, uint32 /*action*/)
+    {
+        return false;
+    }
+
     // Called when a CreatureAI object is needed for the creature.
     virtual CreatureAI* GetAI(Creature* /*creature*/) const = 0;
 };
@@ -409,6 +425,20 @@ class FC_GAME_API GameObjectScript : public ScriptObject, public UpdatableScript
     GameObjectScript(char const* name);
 
   public:
+    // Called when a player opens a gossip dialog with the gameObject.
+    virtual bool OnGossipHello(Player* /*player*/, GameObject* /*gameObject*/) { return false; }
+
+    // Called when a player selects a gossip item in the gameObject's gossip menu.
+    virtual bool OnGossipSelect(Player* /*player*/, GameObject* /*gameObject*/, uint32 /*sender*/, uint32 /*action*/)
+    {
+        return false;
+    }
+
+    virtual bool OnGossipSelectCode(
+        Player* /*player*/, GameObject* /*go*/, uint32 /*sender*/, uint32 /*action*/, const char* /*code*/)
+    {
+        return false;
+    }
     // Called when a GameObjectAI object is needed for the gameobject.
     virtual GameObjectAI* GetAI(GameObject* /*go*/) const = 0;
 };
@@ -891,9 +921,15 @@ class FC_GAME_API ScriptMgr
 
   public: /* CreatureScript */
     bool OnQuestAccept(Player* player, Creature* creature, Quest const* quest);
+    bool OnGossipHello(Player* player, Creature* creature);
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action);
+    bool OnGossipSelectCode(Player* player, Creature* creature, uint32 sender, uint32 action, const char* code);
     CreatureAI* GetCreatureAI(Creature* creature);
 
   public: /* GameObjectScript */
+    bool OnGossipHello(Player* player, GameObject* gameObject);
+    bool OnGossipSelect(Player* player, GameObject* gameObject, uint32 sender, uint32 action);
+    bool OnGossipSelectCode(Player* player, GameObject* go, uint32 sender, uint32 action, const char* code);
     GameObjectAI* GetGameObjectAI(GameObject* go);
 
   public: /* AreaTriggerScript */
