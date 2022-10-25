@@ -18,8 +18,10 @@
 
 #include <unordered_map>
 
+#include "CombatAI.h"
 #include "Log.h"
 #include "MotionMaster.h"
+#include "ObjectAccessor.h"
 #include "Player.h"
 #include "QuestDef.h"
 #include "ScriptMgr.h"
@@ -225,9 +227,6 @@ void InitQuestRollingWithMyHomies()
 #   Quest Fourth and Goal
 ### */
 
-// Used in fourth_and_goal Logic
-Position const playerTeleportPos = {-8250.910156f, 1484.290039f, 41.499901f, 3.124140f};
-
 // For Quests:
 // QUEST_NECESSARY_ROUGHNESS
 // QUEST_FOURTH_AND_GOAL
@@ -242,7 +241,6 @@ class quest_fourth_and_goal : public QuestScript
         if (newStatus == QUEST_STATUS_COMPLETE)
         {
             player->CastSpell(player, SPELL_GROUND_RUMBLE_EARTHQUAKE, true);
-            player->CastSpell(nullptr, SPELL_SUMMON_DEATHWING, true);
         }
         else if (newStatus == QUEST_STATUS_REWARDED)
         {
@@ -264,15 +262,18 @@ class npc_coach_crosscheck : public CreatureScript
 
     bool OnQuestAccept(Player* player, Creature* /*creature*/, Quest const* quest) override
     {
+        player->AddAura(SPELL_INVISIBILITY_DETECTION_4, player);
+
         if (quest->GetQuestId() == QUEST_NECESSARY_ROUGHNESS)
         {
-            player->NearTeleportTo(playerTeleportPos);
             player->GetScheduler().Schedule(
                 500ms, [player](TaskContext /*ctx*/) { player->CastSpell(player, SPELL_SUMMON_BILGWATER_BUCCANEER, true); });
         }
         else if (quest->GetQuestId() == QUEST_FOURTH_AND_GOAL)
         {
-            player->NearTeleportTo(playerTeleportPos);
+            player->RemoveAura(SPELL_INVISIBILITY_DETECTION_5);
+            player->RemoveAura(SPELL_INVISIBILITY_DETECTION_6);
+            player->RemoveAura(SPELL_INVISIBILITY_DETECTION_7);
             player->GetScheduler().Schedule(
                 500ms, [player](TaskContext /*ctx*/) { player->CastSpell(player, SPELL_SUMMON_BILGWATER_BUCCANEER_2, true); });
         }
@@ -307,45 +308,119 @@ class npc_bilgewater_bucaneer : public CreatureScript
         return true;
     }
 
-    struct npc_bucanneer_gob : public ScriptedAI
+    struct npc_bucanneer_gob : public VehicleAI
     {
-        npc_bucanneer_gob(Creature* creature) : ScriptedAI(creature) {}
+
+        npc_bucanneer_gob(Creature* creature) : VehicleAI(creature) {}
+
+        EventMap m_events;
+        ObjectGuid m_playerGUID;
+        bool m_DeathwingSummoned;
+        uint32 m_counter;
 
         void Reset() override
         {
+            m_DeathwingSummoned = false;
+            m_counter = 0;
+            me->AddAura(SPELL_QUEST_INVISIBILITY_6, me);
+            me->AddAura(SPELL_QUEST_INVISIBILITY_7, me);
             me->AddUnitState(UNIT_STATE_ROOT);
             me->AddUnitMovementFlag(MOVEMENTFLAG_ROOT);
+            me->NearTeleportTo(-8250.910156f, 1484.290039f, 41.499901f, 3.14f);
         }
 
-        void OnCharmed(bool /*apply*/) override {}
-
-        void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply) override
+        void IsSummonedBy(Unit* summoner) override
         {
-            Player* player = who->ToPlayer();
-            if (!player)
-                return;
+            if (Player* player = summoner->ToPlayer())
+            {
+                m_playerGUID = player->GetGUID();
+                player->RemoveAura(SPELL_INVISIBILITY_DETECTION_4);
+                player->AddAura(SPELL_INVISIBILITY_DETECTION_7, player);
+                player->EnterVehicle(me, 0);
+                m_events.ScheduleEvent(EVENT_PLAY_SOUND1, 1000);
+            }
+        }
 
+        void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
+        {
+            if (!m_DeathwingSummoned)
+                if (spell->Id == SPELL_SIGNAL_BACK_TO_SHREDDER)
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, m_playerGUID))
+                    {
+                        player->PlayDirectSound(SOUND_WOW, player);
+                        m_events.ScheduleEvent(EVENT_SUMMON_DEATHWING, 100);
+                    }
+        }
+
+        void PassengerBoarded(Unit* unit, int8 /*seat*/, bool apply) override
+        {
             if (apply)
             {
-                me->SetSpeed(MOVE_RUN, 0.001f);
-                player->PlayDirectSound(SOUND_WOW1, player);
-                player->RemoveAurasDueToSpell(SPELL_GENERIC_INV_DETECTION_4);
-
-                if (player->GetQuestStatus(QUEST_NECESSARY_ROUGHNESS) == QUEST_STATUS_INCOMPLETE)
-                {
-                    player->KilledMonsterCredit(NPC_NECEESARY_ROUGHNESS_KILL_CREDIT, me->GetGUID());
-                    me->AddAura(AURA_BILWATER_BUCANEER, me);
-
-                    for (uint8 count = 0; count < 8; ++count)
-                        me->SummonCreature(NPC_SHARK, SharkPos[count], TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 120 * IN_MILLISECONDS);
-                }
+                me->CastSpell(me, SPELL_INCREASED_MOD_DETECTED_RANGE, true);
+                if (Player* player = unit->ToPlayer())
+                    if (Creature* npc = me->FindNearestCreature(NPC_FOURTH_AND_GOAL_TARGET, 50.0f))
+                        player->ToUnit()->Talk(BUCANEER_DIALOG_1, CHAT_MSG_RAID_BOSS_WHISPER, 50.0f, player);
             }
             else
             {
-                player->CastSpell(player, SPELL_GENERIC_INV_DETECTION_4, true);
-                me->CastSpell(nullptr, SPELL_DESPAWN_SHARKS, true);
-                me->GetScheduler().Schedule(1s, [this](TaskContext /*context*/) { me->DespawnOrUnsummon(); });
+                if (Player* player = unit->ToPlayer())
+                {
+                    player->RemoveAura(SPELL_INVISIBILITY_DETECTION_7);
+                    player->AddAura(SPELL_INVISIBILITY_DETECTION_4, player);
+                }
+                me->RemoveAura(SPELL_INCREASED_MOD_DETECTED_RANGE);
+                me->DespawnOrUnsummon(100);
             }
+        }
+
+        void UpdateAI(uint32 diff) override
+        {
+            m_events.Update(diff);
+            VehicleAI::UpdateAI(diff);
+
+            while (uint32 eventId = m_events.ExecuteEvent())
+            {
+                switch (eventId)
+                {
+                case EVENT_PLAY_SOUND1:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, m_playerGUID))
+                        player->PlayDirectSound(SOUND_WOW1, player);
+                    m_events.ScheduleEvent(EVENT_PLAY_SOUND1, 1000);
+                    break;
+                }
+                case EVENT_PLAY_SOUND2:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, m_playerGUID))
+                        player->PlayDirectSound(RAND(SOUND_RAND_1, SOUND_RAND_2, SOUND_RAND_3), player);
+                    m_counter += 1;
+                    if (m_counter < 3)
+                        m_events.ScheduleEvent(EVENT_PLAY_SOUND2, 3000);
+                    break;
+                }
+                case EVENT_SUMMON_DEATHWING:
+                {
+                    if (!m_DeathwingSummoned)
+                        if (Player* player = ObjectAccessor::GetPlayer(*me, m_playerGUID))
+                        {
+                            m_DeathwingSummoned = true;
+                            player->RemoveAura(SPELL_INVISIBILITY_DETECTION_7);
+                            player->AddAura(SPELL_INVISIBILITY_DETECTION_6, player);
+                            player->SummonCreature(NPC_DEATHWING, -8230.59f, 1482.14f, 110.9156f, TEMPSUMMON_MANUAL_DESPAWN);
+                            player->KilledMonsterCredit(NPC_FOURTH_AND_GOAL_TARGET);
+                            m_events.CancelEvent(EVENT_PLAY_SOUND1);
+                            player->PlayDirectSound(SOUND_SUMMON_DEATHWING, player);
+                            m_events.ScheduleEvent(EVENT_PLAY_SOUND2, 3000);
+                        }
+                    break;
+                }
+                }
+            }
+
+            if (!UpdateVictim())
+                return;
+            else
+                DoMeleeAttackIfReady();
         }
     };
 
@@ -388,15 +463,17 @@ class npc_fourth_and_goal_kick_footbomb : public SpellScript
 {
     PrepareSpellScript(npc_fourth_and_goal_kick_footbomb);
 
-    void HandleAfterCast()
+    void HandleBeforeCast()
     {
-        if (GetCaster()->IsVehicle())
-            if (Unit* passenger = GetCaster()->GetVehicleKit()->GetPassenger(0))
-                if (Player* player = passenger->ToPlayer())
-                    player->KilledMonsterCredit(NPC_FOURTH_AND_GOAL_KILL_CREDIT);
+        if (Position* dest = const_cast<WorldLocation*>(GetExplTargetDest()))
+        {
+            if (dest->GetPositionY() > 1450.0f && dest->GetPositionY() < 1525.0f)
+                if (dest->GetPositionZ() > 100.0f && dest->GetPositionZ() < 300.0f)
+                    GetCaster()->CastSpell(GetCaster(), SPELL_SIGNAL_BACK_TO_SHREDDER);
+        }
     }
 
-    void Register() override { AfterCast.Register(&npc_fourth_and_goal_kick_footbomb::HandleAfterCast); }
+    void Register() override { BeforeCast.Register(&npc_fourth_and_goal_kick_footbomb::HandleBeforeCast); }
 };
 
 // NPC entry 37203
@@ -406,37 +483,190 @@ struct npc_fourth_and_goal_target : public ScriptedAI
 
     void Reset() override
     {
-        me->setActive(true);
-        me->SetReactState(REACT_PASSIVE);
-        me->AddAura(SPELL_MARK, me);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        me->CastSpell(me, SPELL_MARK, true);
+        me->AddAura(SPELL_QUEST_INVISIBILITY_7, me);
     }
-
-    void SpellHit(Unit* caster, const SpellInfo* spell) override
-    {
-        if (spell->Id == SPELL_KICK_FOOTBOMB)
-        {
-            if (caster->GetVehicleKit())
-                if (Unit* passenger = caster->GetVehicleKit()->GetPassenger(0))
-                    if (Player* player = passenger->ToPlayer())
-                        player->KilledMonsterCredit(me->GetEntry(), me->GetGUID());
-        }
-    }
-
-    void JustReachedHome() override {}
 };
 
 // NPC entry 48572
-struct npc_fourth_and_goal_deathwing : public ScriptedAI
+class npc_fourth_and_goal_deathwing : public CreatureScript
 {
-    npc_fourth_and_goal_deathwing(Creature* creature) : ScriptedAI(creature) {}
+  public:
+    npc_fourth_and_goal_deathwing() : CreatureScript("npc_fourth_and_goal_deathwing") {}
 
-    void Reset() override
+    struct npc_fourth_and_goal_deathwingAI : public ScriptedAI
     {
-        me->setActive(true);
+        npc_fourth_and_goal_deathwingAI(Creature* creature) : ScriptedAI(creature) {}
 
-        // TODO waypoints when parser is available
-    }
+        EventMap m_events;
+        ObjectGuid m_playerGUID;
+        uint32 m_nextPoint;
+        float m_newSpeed;
+
+        void Reset() override
+        {
+            me->SetDisableGravity(true);
+            me->SetObjectScale(0.6f);
+            me->GetMotionMaster()->MovePoint(2001, -8320.0f, 1473.0f, 110.0f);
+            m_nextPoint = 0;
+            m_newSpeed = 0;
+        }
+
+        void IsSummonedBy(Unit* summoner) override
+        {
+            if (Player* player = summoner->ToPlayer())
+            {
+                m_playerGUID = player->GetGUID();
+                player->PlayDirectSound(SOUND_WOW, player);
+            }
+        }
+
+        void MovementInform(uint32 type, uint32 id) override
+        {
+            if (type != POINT_MOTION_TYPE)
+                return;
+
+            switch (id)
+            {
+            case 2001:
+                m_events.ScheduleEvent(EVENT_MOVE_PART1, 10);
+                break;
+            case 2002:
+                m_events.ScheduleEvent(EVENT_MOVE_PART2, 10);
+                break;
+            case 2003:
+                m_events.ScheduleEvent(EVENT_MOVE_PART3, 10);
+                break;
+            case 2004:
+                m_events.ScheduleEvent(EVENT_MOVE_PART4, 10);
+                break;
+            case 2005:
+                m_events.ScheduleEvent(EVENT_MOVE_PART5, 10);
+                break;
+            case 2006:
+                m_events.ScheduleEvent(EVENT_MOVE_PART6, 10);
+                break;
+            case 2007:
+                m_events.ScheduleEvent(EVENT_MOVE_PART7, 10);
+                break;
+            }
+        }
+
+        void UpdateAI(uint32 diff) override
+        {
+            m_events.Update(diff);
+
+            while (uint32 eventId = m_events.ExecuteEvent())
+            {
+                switch (eventId)
+                {
+                case EVENT_WAIT_TO_MOVE:
+                {
+                    if (m_newSpeed)
+                        me->SetSpeed(MOVE_RUN, m_newSpeed);
+                    switch (m_nextPoint)
+                    {
+                    case 2004:
+                        me->GetMotionMaster()->MovePoint(2004, -8330.0f, 1460.0f, 110.0f);
+                        break;
+                    }
+                    m_nextPoint = 0;
+                    m_newSpeed = 0;
+                    break;
+                }
+                case EVENT_WAIT_FOR_NEW_SPEED:
+                    if (m_newSpeed)
+                        me->SetSpeed(MOVE_RUN, m_newSpeed);
+                    m_newSpeed = 0;
+                    break;
+                case EVENT_MOVE_PART1:
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, m_playerGUID))
+                        player->PlayDirectSound(SOUND_DEATHWING, player);
+                    me->SetObjectScale(0.4f);
+                    me->GetMotionMaster()->MovePoint(2002, -8320.0f, 1480.0f, 110.0f);
+                    break;
+                case EVENT_MOVE_PART2:
+                    me->SetSpeed(MOVE_RUN, 0.2f);
+                    m_events.ScheduleEvent(EVENT_TALK, 2000);
+                    me->GetMotionMaster()->MovePoint(2003, -8330.0f, 1500.0f, 110.0f);
+                    break;
+                case EVENT_MOVE_PART3:
+                    m_events.ScheduleEvent(EVENT_ATTACK_SPELL, 3000);
+                    m_nextPoint = 2004;
+                    m_newSpeed = 1.0f;
+                    m_events.ScheduleEvent(EVENT_WAIT_TO_MOVE, 6500);
+                    break;
+                case EVENT_MOVE_PART4:
+                    me->GetMotionMaster()->MovePoint(2005, -8320.0f, 1500.0f, 110.0f);
+                    break;
+                case EVENT_MOVE_PART5:
+                    m_events.ScheduleEvent(EVENT_PLAY_SOUND1, 2000);
+                    me->SetObjectScale(0.6f);
+                    me->GetMotionMaster()->MovePoint(2006, -8250.0f, 1480.0f, 90.0f);
+                    break;
+                case EVENT_MOVE_PART6:
+                    me->SetObjectScale(0.8f);
+                    m_events.ScheduleEvent(EVENT_EXIT_VEHICLE, 2000);
+                    m_events.ScheduleEvent(EVENT_EARTHQUAKE, 6000);
+                    me->GetMotionMaster()->MovePoint(2007, -7900.0f, 1460.0f, 90.0f);
+                    break;
+                case EVENT_MOVE_PART7:
+                    me->GetMotionMaster()->MovePoint(2008, -7900.0f, 1460.0f, 90.0f);
+                    break;
+                case EVENT_TALK:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, m_playerGUID))
+                    {
+                        Talk(0, player);
+                        player->PlayDirectSound(23228, player);
+                    }
+                    break;
+                }
+                case EVENT_ATTACK_SPELL:
+                {
+                    if (Creature* target = me->FindNearestCreature(42196, 250.0f))
+                    {
+                        me->SetFacingToObject(target);
+                        me->CastSpell(target, SPELL_DEATHWINGS_ATTACK, true);
+                    }
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, m_playerGUID))
+                        player->PlayDirectSound(SOUND_DEATHWING_ATTACK, player);
+                    break;
+                }
+                case EVENT_PLAY_SOUND1:
+                {
+                    me->CastSpell(me, SPELL_DEATHWING_SOUND_4, true);
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, m_playerGUID))
+                    {
+                        player->PlayDirectSound(SOUND_DEATHWING_1, player);
+                        player->ToUnit()->Talk(DEATHWING_DIALOG_1, CHAT_MSG_RAID_BOSS_WHISPER, 25.0f, player);
+                    }
+                    break;
+                }
+                case EVENT_EXIT_VEHICLE:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, m_playerGUID))
+                    {
+                        player->ExitVehicle();
+                        player->PlayDirectSound(SOUND_EXIT_VEHICLE, player);
+                    }
+                    break;
+                }
+                case EVENT_EARTHQUAKE:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, m_playerGUID))
+                    {
+                        player->CastSpell(
+                            player, SPELL_GROUND_RUMBLE_EARTHQUAKE, true); // This Earthquake is taken drom Duskhaven..
+                    }
+                    break;
+                }
+                }
+            }
+        }
+    };
+
+    CreatureAI* GetAI(Creature* creature) const override { return new npc_fourth_and_goal_deathwingAI(creature); }
 };
 
 // Spell Id 69987
@@ -463,10 +693,10 @@ void InitQuestNecessaryRoughness()
     new quest_fourth_and_goal();
     new npc_coach_crosscheck();
     new npc_bilgewater_bucaneer();
+    new npc_fourth_and_goal_deathwing();
     RegisterCreatureAI(npc_shark_gob);
     RegisterSpellScript(npc_fourth_and_goal_kick_footbomb);
     RegisterCreatureAI(npc_fourth_and_goal_target);
-    RegisterCreatureAI(npc_fourth_and_goal_deathwing);
     RegisterSpellScript(spell_kezan_despawn_sharks);
 }
 
