@@ -25,4 +25,5 @@
 #include "ScriptedCreature.h"
 #include "SpellInfo.h"
 #include "SpellScript.h"
+#include "CombatAI.h"
 #include "TemporarySummon.h"
