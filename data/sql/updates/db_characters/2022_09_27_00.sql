@@ -1,4 +1,3 @@
--- run if dropping and creating the tables for the first time or wanting to start fresh on anticheat stats
 CREATE TABLE IF NOT EXISTS `daily_players_reports` (
   `guid` int unsigned NOT NULL DEFAULT 0,
   `creation_time` int unsigned NOT NULL DEFAULT 0,

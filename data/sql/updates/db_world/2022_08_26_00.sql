@@ -1,14 +1,11 @@
 DELETE FROM `npc_spellclick_spells` WHERE `npc_entry`=36440 AND `spell_id`=68735;
-
 INSERT INTO `npc_spellclick_spells` (`npc_entry`, `spell_id`, `cast_flags`, `user_type`) VALUES
 (36440, 68735, 1, 1);
 
 UPDATE `creature_template` SET `npcflag`=`npcflag`|16777216, `AIName`='SmartAI', `ScriptName`='' WHERE `entry`=36440;
 
 DELETE FROM `smart_scripts` WHERE `entryorguid`=36440 AND `source_type`=0;
-
 DELETE FROM `smart_scripts` WHERE `entryorguid` IN (5542, 5543, 5544, 5545, 5546, 5574, 5577) AND `source_type`=2;
-
 INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `event_param5`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES
 (36440, 0, 0, 1, 73, 0, 100, 0, 0, 0, 0, 0, 0, 85, 68735, 2, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Drowning Watchman - On Spellclick - Cast Rescue Drowning Watchman - Invoker"),
 (36440, 0, 1, 2, 61, 0, 100, 0, 0, 0, 0, 0, 0, 11, 47020, 2, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, "Drowning Watchman - Linked - Cast Ride Vehicle - Invoker"),
@@ -28,7 +25,6 @@ INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_
 (5577, 2, 0, 0, 46, 0, 100, 0, 5577, 0, 0, 0, 0, 45, 1, 1, 0, 0, 0, 0, 19, 36440, 10, 0, 0, 0, 0, 0, "Areatrigger - On Trigger - Set Data 1 1 - Drowning Watchman");
 
 DELETE FROM `areatrigger_scripts` WHERE `entry` IN (5542, 5543, 5544, 5545, 5546, 5574, 5577);
-
 INSERT INTO `areatrigger_scripts` (`entry`, `ScriptName`) VALUES
 (5542, 'SmartTrigger'),
 (5543, 'SmartTrigger'),
