@@ -92,7 +92,7 @@ struct FC_GAME_API SpellTargetSelector
 struct FC_GAME_API NonTankTargetSelector
 {
     public:
-        NonTankTargetSelector(Unit* source, bool playerOnly = true) : _source(source), _playerOnly(playerOnly) { }
+        explicit NonTankTargetSelector(Unit* source, bool playerOnly = true) : _source(source), _playerOnly(playerOnly) { }
         bool operator()(Unit const* target) const;
 
     private:

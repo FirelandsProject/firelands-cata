@@ -27,7 +27,7 @@ class CreatureAI;
 template <class REAL_AI, bool is_db_allowed = true>
 struct CreatureAIFactory : public SelectableAI<Creature, CreatureAI, is_db_allowed>
 {
-    CreatureAIFactory(std::string const& name) : SelectableAI<Creature, CreatureAI, is_db_allowed>(name) { }
+    explicit CreatureAIFactory(std::string const& name) : SelectableAI<Creature, CreatureAI, is_db_allowed>(name) { }
 
     inline CreatureAI* Create(Creature* c) const override
     {

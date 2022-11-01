@@ -27,7 +27,7 @@ class GameObjectAI;
 template <class REAL_GO_AI, bool is_db_allowed = true>
 struct GameObjectAIFactory : public SelectableAI<GameObject, GameObjectAI, is_db_allowed>
 {
-    GameObjectAIFactory(std::string const& name) : SelectableAI<GameObject, GameObjectAI, is_db_allowed>(name) { }
+    explicit GameObjectAIFactory(std::string const& name) : SelectableAI<GameObject, GameObjectAI, is_db_allowed>(name) { }
 
     GameObjectAI* Create(GameObject* go) const override
     {
