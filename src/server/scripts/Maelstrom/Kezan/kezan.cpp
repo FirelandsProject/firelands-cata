@@ -238,11 +238,7 @@ class quest_fourth_and_goal : public QuestScript
     void OnQuestStatusChange(Player* player, Quest const* /*quest*/, QuestStatus /*oldStatus*/, QuestStatus newStatus) override
     {
 
-        if (newStatus == QUEST_STATUS_COMPLETE)
-        {
-            player->CastSpell(player, SPELL_GROUND_RUMBLE_EARTHQUAKE, true);
-        }
-        else if (newStatus == QUEST_STATUS_REWARDED)
+        if (newStatus == QUEST_STATUS_COMPLETE || newStatus == QUEST_STATUS_REWARDED)
         {
             player->CastSpell(player, SPELL_GROUND_RUMBLE_EARTHQUAKE, true);
         }
@@ -274,6 +270,10 @@ class npc_coach_crosscheck : public CreatureScript
             player->RemoveAura(SPELL_INVISIBILITY_DETECTION_5);
             player->RemoveAura(SPELL_INVISIBILITY_DETECTION_6);
             player->RemoveAura(SPELL_INVISIBILITY_DETECTION_7);
+            if (player->IsMounted())
+            {
+                player->ExitVehicle();
+            }
             player->GetScheduler().Schedule(
                 500ms, [player](TaskContext /*ctx*/) { player->CastSpell(player, SPELL_SUMMON_BILGWATER_BUCCANEER_2, true); });
         }
@@ -305,6 +305,8 @@ class npc_bilgewater_bucaneer : public CreatureScript
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         pPlayer->EnterVehicle(pCreature->ToUnit(), 0);
+        pPlayer->KilledMonsterCredit(NPC_NECEESARY_ROUGHNESS_KILL_CREDIT, pCreature->GetGUID());
+
         return true;
     }
 
@@ -326,7 +328,6 @@ class npc_bilgewater_bucaneer : public CreatureScript
             me->AddAura(SPELL_QUEST_INVISIBILITY_7, me);
             me->AddUnitState(UNIT_STATE_ROOT);
             me->AddUnitMovementFlag(MOVEMENTFLAG_ROOT);
-            me->NearTeleportTo(-8250.910156f, 1484.290039f, 41.499901f, 3.14f);
         }
 
         void IsSummonedBy(Unit* summoner) override
@@ -336,7 +337,7 @@ class npc_bilgewater_bucaneer : public CreatureScript
                 m_playerGUID = player->GetGUID();
                 player->RemoveAura(SPELL_INVISIBILITY_DETECTION_4);
                 player->AddAura(SPELL_INVISIBILITY_DETECTION_7, player);
-                player->EnterVehicle(me, 0);
+                me->NearTeleportTo(-8250.910156f, 1484.290039f, 41.499901f, 3.14f);
                 m_events.ScheduleEvent(EVENT_PLAY_SOUND1, 1000);
             }
         }
@@ -354,20 +355,33 @@ class npc_bilgewater_bucaneer : public CreatureScript
 
         void PassengerBoarded(Unit* unit, int8 /*seat*/, bool apply) override
         {
+            Player* player = unit->ToPlayer();
+            if (!player)
+            {
+                return;
+            }
+
             if (apply)
             {
-                me->CastSpell(me, SPELL_INCREASED_MOD_DETECTED_RANGE, true);
-                if (Player* player = unit->ToPlayer())
+                if (player->GetQuestStatus(QUEST_NECESSARY_ROUGHNESS) == QUEST_STATUS_INCOMPLETE)
+                {
+                    me->AddAura(AURA_BILWATER_BUCANEER, me);
+
+                    for (uint8 count = 0; count < 8; ++count)
+                        me->SummonCreature(NPC_SHARK, SharkPos[count], TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 120 * IN_MILLISECONDS);
+                }
+                else if (player->GetQuestStatus(QUEST_FOURTH_AND_GOAL) == QUEST_STATUS_INCOMPLETE)
+                {
+                    me->CastSpell(me, SPELL_INCREASED_MOD_DETECTED_RANGE, true);
                     if (Creature* npc = me->FindNearestCreature(NPC_FOURTH_AND_GOAL_TARGET, 50.0f))
                         player->ToUnit()->Talk(BUCANEER_DIALOG_1, CHAT_MSG_RAID_BOSS_WHISPER, 50.0f, player);
+                }
             }
             else
             {
-                if (Player* player = unit->ToPlayer())
-                {
-                    player->RemoveAura(SPELL_INVISIBILITY_DETECTION_7);
-                    player->AddAura(SPELL_INVISIBILITY_DETECTION_4, player);
-                }
+                player->RemoveAura(SPELL_INVISIBILITY_DETECTION_7);
+                player->AddAura(SPELL_INVISIBILITY_DETECTION_4, player);
+
                 me->RemoveAura(SPELL_INCREASED_MOD_DETECTED_RANGE);
                 me->DespawnOrUnsummon(100);
             }
@@ -505,6 +519,8 @@ class npc_fourth_and_goal_deathwing : public CreatureScript
 
         void Reset() override
         {
+            me->AddAura(SPELL_QUEST_INVISIBILITY_6, me);
+            me->setActive(true);
             me->SetDisableGravity(true);
             me->SetObjectScale(0.6f);
             me->GetMotionMaster()->MovePoint(2001, -8320.0f, 1473.0f, 110.0f);
