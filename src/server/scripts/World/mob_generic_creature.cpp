@@ -28,7 +28,7 @@ public:
 
     struct trigger_periodicAI : public NullCreatureAI
     {
-        trigger_periodicAI(Creature* creature) : NullCreatureAI(creature)
+        explicit trigger_periodicAI(Creature* creature) : NullCreatureAI(creature)
         {
             spell = me->m_spells[0] ? sSpellMgr->GetSpellInfo(me->m_spells[0]) : nullptr;
             interval = me->GetAttackTime(BASE_ATTACK);

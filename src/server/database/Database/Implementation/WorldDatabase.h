@@ -107,7 +107,7 @@ public:
     typedef WorldDatabaseStatements Statements;
 
     //- Constructors for sync and async connections
-    WorldDatabaseConnection(MySQLConnectionInfo& connInfo);
+    explicit WorldDatabaseConnection(MySQLConnectionInfo& connInfo);
     WorldDatabaseConnection(ProducerConsumerQueue<SQLOperation*>* q, MySQLConnectionInfo& connInfo);
     ~WorldDatabaseConnection();
 

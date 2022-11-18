@@ -55,7 +55,7 @@ public:
 
     struct guard_genericAI : public GuardAI
     {
-        guard_genericAI(Creature* creature) : GuardAI(creature)
+        explicit guard_genericAI(Creature* creature) : GuardAI(creature)
         {
             Initialize();
         }
@@ -272,7 +272,7 @@ public:
 
     struct guard_shattrath_scryerAI : public GuardAI
     {
-        guard_shattrath_scryerAI(Creature* creature) : GuardAI(creature)
+        explicit guard_shattrath_scryerAI(Creature* creature) : GuardAI(creature)
         {
             Initialize();
         }
@@ -345,7 +345,7 @@ public:
 
     struct guard_shattrath_aldorAI : public GuardAI
     {
-        guard_shattrath_aldorAI(Creature* creature) : GuardAI(creature)
+        explicit guard_shattrath_aldorAI(Creature* creature) : GuardAI(creature)
         {
             Initialize();
         }

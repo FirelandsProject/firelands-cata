@@ -43,7 +43,7 @@ class npc_pet_dk_ebon_gargoyle : public CreatureScript
 
         struct npc_pet_dk_ebon_gargoyleAI : CasterAI
         {
-            npc_pet_dk_ebon_gargoyleAI(Creature* creature) : CasterAI(creature) { }
+            explicit npc_pet_dk_ebon_gargoyleAI(Creature* creature) : CasterAI(creature) { }
 
             void InitializeAI() override
             {
@@ -118,7 +118,7 @@ class npc_pet_dk_guardian : public CreatureScript
 
         struct npc_pet_dk_guardianAI : public AggressorAI
         {
-            npc_pet_dk_guardianAI(Creature* creature) : AggressorAI(creature) { }
+            explicit npc_pet_dk_guardianAI(Creature* creature) : AggressorAI(creature) { }
 
             bool CanAIAttack(Unit const* target) const override
             {
@@ -231,8 +231,7 @@ enum ArmyOfTheDead
 
 struct npc_pet_dk_army_of_the_dead_ghoul : public AggressorAI
 {
-    npc_pet_dk_army_of_the_dead_ghoul(Creature* creature) : AggressorAI(creature), _readyToAttack(false) { }
-
+    explicit npc_pet_dk_army_of_the_dead_ghoul(Creature* creature) : AggressorAI(creature), _readyToAttack(false) { }
 
     void IsSummonedBy(Unit* summoner) override
     {
@@ -302,7 +301,7 @@ enum DancingRuneWeapon
 
 struct npc_pet_dk_rune_weapon : public AggressorAI
 {
-    npc_pet_dk_rune_weapon(Creature* creature) : AggressorAI(creature) { }
+    explicit npc_pet_dk_rune_weapon(Creature* creature) : AggressorAI(creature) { }
 
     void IsSummonedBy(Unit* summoner) override
     {

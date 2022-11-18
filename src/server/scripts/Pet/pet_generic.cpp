@@ -50,7 +50,7 @@ public:
 
     struct npc_pet_gen_baby_blizzard_bearAI : public NullCreatureAI
     {
-        npc_pet_gen_baby_blizzard_bearAI(Creature* creature) : NullCreatureAI(creature)
+        explicit npc_pet_gen_baby_blizzard_bearAI(Creature* creature) : NullCreatureAI(creature)
         {
             if (Unit* owner = me->GetCharmerOrOwner())
                 me->FollowTarget(owner);
@@ -106,7 +106,7 @@ public:
 
     struct npc_pet_gen_egbertAI : public NullCreatureAI
     {
-        npc_pet_gen_egbertAI(Creature* creature) : NullCreatureAI(creature)
+        explicit npc_pet_gen_egbertAI(Creature* creature) : NullCreatureAI(creature)
         {
             if (Unit* owner = me->GetCharmerOrOwner())
                 if (owner->GetMap()->GetEntry()->ExpansionID > 1)
@@ -182,7 +182,7 @@ public:
 
     struct npc_pet_gen_pandaren_monkAI : public NullCreatureAI
     {
-        npc_pet_gen_pandaren_monkAI(Creature* creature) : NullCreatureAI(creature) { }
+        explicit npc_pet_gen_pandaren_monkAI(Creature* creature) : NullCreatureAI(creature) { }
 
         void Reset() override
         {
@@ -272,7 +272,7 @@ class npc_pet_gen_mojo : public CreatureScript
 
         struct npc_pet_gen_mojoAI : public ScriptedAI
         {
-            npc_pet_gen_mojoAI(Creature* creature) : ScriptedAI(creature)
+            explicit npc_pet_gen_mojoAI(Creature* creature) : ScriptedAI(creature)
             {
             }
 
@@ -340,7 +340,7 @@ class npc_pet_gen_lil_ragnaros : public CreatureScript
 
         struct npc_pet_gen_lil_ragnarosAI : public ScriptedAI
         {
-            npc_pet_gen_lil_ragnarosAI(Creature* creature) : ScriptedAI(creature)
+            explicit npc_pet_gen_lil_ragnarosAI(Creature* creature) : ScriptedAI(creature)
             {
                 Initialize();
             }
@@ -415,7 +415,7 @@ enum SoulTrader
 
 struct npc_pet_gen_soul_trader : public ScriptedAI
 {
-    npc_pet_gen_soul_trader(Creature* creature) : ScriptedAI(creature) { }
+    explicit npc_pet_gen_soul_trader(Creature* creature) : ScriptedAI(creature) { }
 
     void LeavingWorld() override
     {

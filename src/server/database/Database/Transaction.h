@@ -77,7 +77,7 @@ class FC_DATABASE_API TransactionTask : public SQLOperation
     friend class TransactionCallback;
 
     public:
-        TransactionTask(std::shared_ptr<TransactionBase> trans) : m_trans(trans) { }
+        explicit TransactionTask(std::shared_ptr<TransactionBase> trans) : m_trans(trans) { }
         ~TransactionTask() { }
 
     protected:
@@ -92,7 +92,7 @@ class FC_DATABASE_API TransactionTask : public SQLOperation
 class FC_DATABASE_API TransactionWithResultTask : public TransactionTask
 {
 public:
-    TransactionWithResultTask(std::shared_ptr<TransactionBase> trans) : TransactionTask(trans) { }
+    explicit TransactionWithResultTask(std::shared_ptr<TransactionBase> trans) : TransactionTask(trans) { }
 
     TransactionFuture GetFuture() { return m_result.get_future(); }
 
@@ -105,7 +105,7 @@ protected:
 class FC_DATABASE_API TransactionCallback
 {
 public:
-    TransactionCallback(TransactionFuture&& future) : m_future(std::move(future)) { }
+    explicit TransactionCallback(TransactionFuture&& future) : m_future(std::move(future)) { }
     TransactionCallback(TransactionCallback&&) = default;
 
     TransactionCallback& operator=(TransactionCallback&&) = default;

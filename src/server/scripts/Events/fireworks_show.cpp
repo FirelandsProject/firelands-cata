@@ -726,7 +726,7 @@ public:
 
     struct go_cheer_speakerAI : public GameObjectAI
     {
-        go_cheer_speakerAI(GameObject* go) : GameObjectAI(go)
+        explicit go_cheer_speakerAI(GameObject* go) : GameObjectAI(go)
         {
             _started = false;
             _big = true;

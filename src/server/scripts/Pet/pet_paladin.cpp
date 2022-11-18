@@ -36,7 +36,7 @@ enum GuardianOfAncientKings
 
 struct npc_pet_pal_guardian_of_ancient_kings : public PetAI
 {
-    npc_pet_pal_guardian_of_ancient_kings(Creature* creature) : PetAI(creature)
+    explicit npc_pet_pal_guardian_of_ancient_kings(Creature* creature) : PetAI(creature)
     {
         Initialize();
     }

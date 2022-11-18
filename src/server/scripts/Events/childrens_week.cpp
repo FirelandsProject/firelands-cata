@@ -152,7 +152,7 @@ class npc_winterfin_playmate : public CreatureScript
 
         struct npc_winterfin_playmateAI : public ScriptedAI
         {
-            npc_winterfin_playmateAI(Creature* creature) : ScriptedAI(creature)
+            explicit npc_winterfin_playmateAI(Creature* creature) : ScriptedAI(creature)
             {
                 Initialize();
             }
@@ -258,7 +258,7 @@ class npc_snowfall_glade_playmate : public CreatureScript
 
         struct npc_snowfall_glade_playmateAI : public ScriptedAI
         {
-            npc_snowfall_glade_playmateAI(Creature* creature) : ScriptedAI(creature)
+            explicit npc_snowfall_glade_playmateAI(Creature* creature) : ScriptedAI(creature)
             {
                 Initialize();
             }
@@ -364,7 +364,7 @@ class npc_the_biggest_tree : public CreatureScript
 
         struct npc_the_biggest_treeAI : public ScriptedAI
         {
-            npc_the_biggest_treeAI(Creature* creature) : ScriptedAI(creature)
+            explicit npc_the_biggest_treeAI(Creature* creature) : ScriptedAI(creature)
             {
                 Initialize();
                 me->SetDisplayId(DISPLAY_INVISIBLE);
@@ -459,7 +459,7 @@ class npc_high_oracle_soo_roo : public CreatureScript
 
         struct npc_high_oracle_soo_rooAI : public ScriptedAI
         {
-            npc_high_oracle_soo_rooAI(Creature* creature) : ScriptedAI(creature)
+            explicit npc_high_oracle_soo_rooAI(Creature* creature) : ScriptedAI(creature)
             {
                 Initialize();
             }
@@ -556,7 +556,7 @@ class npc_elder_kekek : public CreatureScript
 
         struct npc_elder_kekekAI : public ScriptedAI
         {
-            npc_elder_kekekAI(Creature* creature) : ScriptedAI(creature)
+            explicit npc_elder_kekekAI(Creature* creature) : ScriptedAI(creature)
             {
                 Initialize();
             }
@@ -658,7 +658,7 @@ class npc_the_etymidian : public CreatureScript
 
         struct npc_the_etymidianAI : public ScriptedAI
         {
-            npc_the_etymidianAI(Creature* creature) : ScriptedAI(creature)
+            explicit npc_the_etymidianAI(Creature* creature) : ScriptedAI(creature)
             {
                 Initialize();
             }
@@ -772,7 +772,7 @@ class npc_alexstraza_the_lifebinder : public CreatureScript
 
         struct npc_alexstraza_the_lifebinderAI : public ScriptedAI
         {
-            npc_alexstraza_the_lifebinderAI(Creature* creature) : ScriptedAI(creature)
+            explicit npc_alexstraza_the_lifebinderAI(Creature* creature) : ScriptedAI(creature)
             {
                 Initialize();
             }
@@ -996,7 +996,7 @@ class npc_cw_area_trigger : public CreatureScript
 
         struct npc_cw_area_triggerAI : public ScriptedAI
         {
-            npc_cw_area_triggerAI(Creature* creature) : ScriptedAI(creature)
+            explicit npc_cw_area_triggerAI(Creature* creature) : ScriptedAI(creature)
             {
                 me->SetDisplayId(DISPLAY_INVISIBLE);
             }
@@ -1092,7 +1092,7 @@ class npc_grizzlemaw_cw_trigger : public CreatureScript
 
         struct npc_grizzlemaw_cw_triggerAI : public ScriptedAI
         {
-            npc_grizzlemaw_cw_triggerAI(Creature* creature) : ScriptedAI(creature)
+            explicit npc_grizzlemaw_cw_triggerAI(Creature* creature) : ScriptedAI(creature)
             {
                 me->SetDisplayId(DISPLAY_INVISIBLE);
             }

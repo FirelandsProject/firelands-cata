@@ -36,7 +36,7 @@ namespace boost
 class FC_DATABASE_API UpdateException : public std::exception
 {
 public:
-    UpdateException(std::string const& msg) : _msg(msg) { }
+    explicit UpdateException(std::string const& msg) : _msg(msg) { }
     ~UpdateException() throw() { }
 
     char const* what() const throw() override { return _msg.c_str(); }

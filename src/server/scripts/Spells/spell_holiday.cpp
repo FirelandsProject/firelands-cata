@@ -472,7 +472,7 @@ class spell_pilgrims_bounty_buff_food : public SpellScriptLoader
             uint32 const _triggeredSpellId;
 
         public:
-            spell_pilgrims_bounty_buff_food_AuraScript(uint32 triggeredSpellId) : AuraScript(), _triggeredSpellId(triggeredSpellId)
+            explicit spell_pilgrims_bounty_buff_food_AuraScript(uint32 triggeredSpellId) : AuraScript(), _triggeredSpellId(triggeredSpellId)
             {
                 _handled = false;
             }
@@ -663,7 +663,7 @@ class spell_pilgrims_bounty_well_fed : public SpellScriptLoader
         class spell_pilgrims_bounty_well_fed_SpellScript : public SpellScript
         {
             public:
-                spell_pilgrims_bounty_well_fed_SpellScript(uint32 triggeredSpellId) : SpellScript(), _triggeredSpellId(triggeredSpellId) { }
+                explicit spell_pilgrims_bounty_well_fed_SpellScript(uint32 triggeredSpellId) : SpellScript(), _triggeredSpellId(triggeredSpellId) { }
 
             private:
                 uint32 _triggeredSpellId;
@@ -891,7 +891,7 @@ class spell_pilgrims_bounty_a_serving_of : public SpellScriptLoader
             uint32 _triggeredSpellId;
 
         public:
-            spell_pilgrims_bounty_a_serving_of_AuraScript(uint32 triggeredSpellId) : AuraScript(), _triggeredSpellId(triggeredSpellId) { }
+            explicit spell_pilgrims_bounty_a_serving_of_AuraScript(uint32 triggeredSpellId) : AuraScript(), _triggeredSpellId(triggeredSpellId) { }
 
             bool Validate(SpellInfo const* /*spell*/) override
             {
@@ -1732,7 +1732,7 @@ class spell_darkmoon_island_whack_summon_aura : public AuraScript
 class GnollHolderTargetSelector
 {
     public:
-        GnollHolderTargetSelector(Unit* caster) : _caster(caster) { }
+        explicit GnollHolderTargetSelector(Unit* caster) : _caster(caster) { }
 
         bool operator() (WorldObject* target)
         {

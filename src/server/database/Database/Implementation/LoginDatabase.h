@@ -121,7 +121,7 @@ public:
     typedef LoginDatabaseStatements Statements;
 
     //- Constructors for sync and async connections
-    LoginDatabaseConnection(MySQLConnectionInfo& connInfo);
+    explicit LoginDatabaseConnection(MySQLConnectionInfo& connInfo);
     LoginDatabaseConnection(ProducerConsumerQueue<SQLOperation*>* q, MySQLConnectionInfo& connInfo);
     ~LoginDatabaseConnection();
 

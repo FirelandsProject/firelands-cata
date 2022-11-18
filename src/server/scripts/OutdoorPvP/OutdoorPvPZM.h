@@ -132,7 +132,7 @@ enum ZM_GraveyardState
 class OPvPCapturePointZM_Graveyard : public OPvPCapturePoint
 {
     public:
-        OPvPCapturePointZM_Graveyard(OutdoorPvP* pvp);
+        explicit OPvPCapturePointZM_Graveyard(OutdoorPvP* pvp);
 
         bool Update(uint32 diff) override;
 

@@ -648,7 +648,7 @@ enum BreakShieldSpells
 class spell_gen_break_shield: public SpellScriptLoader
 {
     public:
-        spell_gen_break_shield(char const* name) : SpellScriptLoader(name) { }
+        explicit spell_gen_break_shield(char const* name) : SpellScriptLoader(name) { }
 
         class spell_gen_break_shield_SpellScript : public SpellScript
         {
@@ -1083,12 +1083,12 @@ class spell_gen_clone_weapon_aura : public SpellScriptLoader
 class spell_gen_count_pct_from_max_hp : public SpellScriptLoader
 {
     public:
-        spell_gen_count_pct_from_max_hp(char const* name, int32 damagePct = 0) : SpellScriptLoader(name), _damagePct(damagePct) { }
+        explicit spell_gen_count_pct_from_max_hp(char const* name, int32 damagePct = 0) : SpellScriptLoader(name), _damagePct(damagePct) { }
 
         class spell_gen_count_pct_from_max_hp_SpellScript : public SpellScript
         {
         public:
-            spell_gen_count_pct_from_max_hp_SpellScript(int32 damagePct) : SpellScript(), _damagePct(damagePct) { }
+            explicit spell_gen_count_pct_from_max_hp_SpellScript(int32 damagePct) : SpellScript(), _damagePct(damagePct) { }
 
             void RecalculateDamage()
             {
@@ -1218,11 +1218,11 @@ enum DalaranDisguiseSpells
 class spell_gen_dalaran_disguise : public SpellScriptLoader
 {
     public:
-        spell_gen_dalaran_disguise(char const* name) : SpellScriptLoader(name) { }
+        explicit spell_gen_dalaran_disguise(char const* name) : SpellScriptLoader(name) { }
 
         class spell_gen_dalaran_disguise_SpellScript : public SpellScript
         {
-                        bool Validate(SpellInfo const* spellInfo) override
+            bool Validate(SpellInfo const* spellInfo) override
             {
                 switch (spellInfo->Id)
                 {
@@ -1284,7 +1284,7 @@ class spell_gen_dalaran_disguise : public SpellScriptLoader
 class spell_gen_decay_over_time : public SpellScriptLoader
 {
     public:
-        spell_gen_decay_over_time(char const* name) : SpellScriptLoader(name) { }
+        explicit spell_gen_decay_over_time(char const* name) : SpellScriptLoader(name) { }
 
         SpellScript* GetSpellScript() const override
         {
@@ -1946,7 +1946,7 @@ class spell_gen_interrupt : public SpellScriptLoader
 class spell_gen_increase_stats_buff : public SpellScriptLoader
 {
     public:
-        spell_gen_increase_stats_buff(char const* scriptName) : SpellScriptLoader(scriptName) { }
+        explicit spell_gen_increase_stats_buff(char const* scriptName) : SpellScriptLoader(scriptName) { }
 
         class spell_gen_increase_stats_buff_SpellScript : public SpellScript
         {
@@ -1987,7 +1987,7 @@ class spell_gen_lifebloom : public SpellScriptLoader
         class spell_gen_lifebloom_AuraScript : public AuraScript
         {
         public:
-            spell_gen_lifebloom_AuraScript(uint32 spellId) : AuraScript(), _spellId(spellId) { }
+            explicit spell_gen_lifebloom_AuraScript(uint32 spellId) : AuraScript(), _spellId(spellId) { }
 
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
@@ -2536,7 +2536,7 @@ class spell_gen_paralytic_poison : public SpellScriptLoader
 class spell_gen_proc_below_pct_damaged : public SpellScriptLoader
 {
     public:
-        spell_gen_proc_below_pct_damaged(char const* name) : SpellScriptLoader(name) { }
+        explicit spell_gen_proc_below_pct_damaged(char const* name) : SpellScriptLoader(name) { }
 
         class spell_gen_proc_below_pct_damaged_AuraScript : public AuraScript
         {
@@ -3159,7 +3159,7 @@ class spell_gen_summon_elemental : public SpellScriptLoader
         class spell_gen_summon_elemental_AuraScript : public AuraScript
         {
         public:
-            spell_gen_summon_elemental_AuraScript(uint32 spellId) : AuraScript(), _spellId(spellId) { }
+            explicit spell_gen_summon_elemental_AuraScript(uint32 spellId) : AuraScript(), _spellId(spellId) { }
 
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
@@ -4909,7 +4909,7 @@ class spell_gen_reverse_cast_ride_vehicle : public SpellScript
 class GroupMemberCheck
 {
 public:
-    GroupMemberCheck(Player* player) : _player(player) { }
+    explicit GroupMemberCheck(Player* player) : _player(player) { }
 
     bool operator()(WorldObject* object)
     {

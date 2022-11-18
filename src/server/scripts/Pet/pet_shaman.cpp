@@ -48,8 +48,7 @@ class npc_pet_shaman_earth_elemental : public CreatureScript
 
         struct npc_pet_shaman_earth_elementalAI : public ScriptedAI
         {
-            npc_pet_shaman_earth_elementalAI(Creature* creature) : ScriptedAI(creature) { }
-
+            explicit npc_pet_shaman_earth_elementalAI(Creature* creature) : ScriptedAI(creature) { }
 
             void Reset() override
             {
@@ -91,7 +90,7 @@ class npc_pet_shaman_fire_elemental : public CreatureScript
 
         struct npc_pet_shaman_fire_elementalAI : public ScriptedAI
         {
-            npc_pet_shaman_fire_elementalAI(Creature* creature) : ScriptedAI(creature) { }
+            explicit npc_pet_shaman_fire_elementalAI(Creature* creature) : ScriptedAI(creature) { }
 
             void Reset() override
             {

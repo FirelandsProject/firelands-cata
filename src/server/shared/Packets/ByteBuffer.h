@@ -69,7 +69,7 @@ class FC_SHARED_API ByteBuffer
             _storage.reserve(DEFAULT_SIZE);
         }
 
-        ByteBuffer(size_t reserve) : _rpos(0), _wpos(0), _bitpos(InitialBitPos), _curbitval(0)
+        explicit ByteBuffer(size_t reserve) : _rpos(0), _wpos(0), _bitpos(InitialBitPos), _curbitval(0)
         {
             _storage.reserve(reserve);
         }
@@ -84,7 +84,7 @@ class FC_SHARED_API ByteBuffer
         ByteBuffer(ByteBuffer const& right) : _rpos(right._rpos), _wpos(right._wpos),
             _bitpos(right._bitpos), _curbitval(right._curbitval), _storage(right._storage) { }
 
-        ByteBuffer(MessageBuffer&& buffer);
+        explicit ByteBuffer(MessageBuffer&& buffer);
 
         ByteBuffer& operator=(ByteBuffer const& right)
         {

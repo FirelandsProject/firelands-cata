@@ -30,7 +30,7 @@ class DBPermit
 template <class O, class AI, bool is_db_allowed = true>
 struct SelectableAI : public FactoryHolder<AI, O>, public Permissible<O>, public DBPermit
 {
-    SelectableAI(std::string const& name) : FactoryHolder<AI, O>(name), Permissible<O>(), DBPermit() { }
+    explicit SelectableAI(std::string const& name) : FactoryHolder<AI, O>(name), Permissible<O>(), DBPermit() { }
 
     bool IsScriptNameAllowedInDB() const final override { return is_db_allowed; }
 };

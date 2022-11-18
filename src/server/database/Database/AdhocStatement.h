@@ -26,7 +26,7 @@
 class FC_DATABASE_API BasicStatementTask : public SQLOperation
 {
     public:
-        BasicStatementTask(char const* sql, bool async = false);
+        explicit BasicStatementTask(char const* sql, bool async = false);
         ~BasicStatementTask();
 
         bool Execute() override;
