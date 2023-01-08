@@ -366,6 +366,10 @@ void AnticheatMgr::JumpHackDetection(Player* player, MovementInfo  movementInfo,
         if (!sWorld->getBoolConfig(CONFIG_ANTICHEAT_ADV_JUMPHACK_ENABLE))
             return;
 
+        // Celestial Planetarium Observer Battle has a narrow path that false flags
+        if (player && sDBCManager.GetWMOAreaTableEntryByTripple(5202, 0, 24083))
+            return;
+
         if (m_Players[key].GetLastOpcode() == MSG_MOVE_JUMP && !player->IsFalling())
             return;
 
@@ -514,12 +518,8 @@ void AnticheatMgr::TeleportHackDetection(Player* player, MovementInfo movementIn
     float lastY = m_Players[key].GetLastMovementInfo().pos.GetPositionY();
     float newY = movementInfo.pos.GetPositionY();
 
-    float lastZ = m_Players[key].GetLastMovementInfo().pos.GetPositionZ();
-    float newZ = movementInfo.pos.GetPositionZ();
-
     float xDiff = fabs(lastX - newX);
     float yDiff = fabs(lastY - newY);
-    float zDiff = fabs(lastZ - newZ);
 
     if (player->IsFalling() || (player->IsFalling() && player->IsMounted()))
         return;
@@ -527,7 +527,7 @@ void AnticheatMgr::TeleportHackDetection(Player* player, MovementInfo movementIn
     /* Dueling exploit detection*/
     if (player->duel)
     {
-        if ((xDiff >= 50.0f || yDiff >= 50.0f || (zDiff >= 10.0f && !player->IsFlying())) && !player->CanTeleport())
+        if ((xDiff >= 50.0f || yDiff >= 50.0f) && !player->CanTeleport())
         {
             Player* opponent = player->duel->opponent;
 
@@ -555,7 +555,7 @@ void AnticheatMgr::TeleportHackDetection(Player* player, MovementInfo movementIn
             player->SetCanTeleport(false);
     }
     /* Please work */
-    if ((xDiff >= 50.0f || yDiff >= 50.0f || (zDiff >= 10.0f && !player->IsFlying())) && !player->CanTeleport())// teleport helpers in play
+    if ((xDiff >= 50.0f || yDiff >= 50.0f) && !player->CanTeleport())// teleport helpers in play
     {
         if (m_Players[key].GetTotalReports() > sWorld->getIntConfig(CONFIG_ANTICHEAT_REPORTS_INGAME_NOTIFICATION))
         {// we do this because we can not get the collumn count being propper when we add more collumns for the report, so we make a indvidual warning for Teleport Hack
@@ -989,7 +989,7 @@ void AnticheatMgr::BGStartExploit(Player* player, MovementInfo movementInfo)
                     {
                         sAnticheatMgr->BGreport(player);
                     }
-                    if ((player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionY() > -536.0f) ||
+                    if ((player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionY() > -535.0f) ||
                         (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionX() > -1283.33f) ||
                         (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionY() < -716.0f))
                     {
