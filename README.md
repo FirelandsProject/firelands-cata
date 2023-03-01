@@ -1,4 +1,9 @@
 # Firelands
+<div align="center">
+  <a href="#">
+    <img src="markdown/logo/firelands-cata.png" alt="Logo" width="200" height="200">
+  </a>
+</div>
 
 ## Introduction
 
