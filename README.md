@@ -13,9 +13,9 @@
 
 <h2>Setup</h2>
 
-[Linux](markdown/linux.md)
+[Linux](markdown/Wiki/Requirements/linux.md)
 
-[Windows](markdown/windows.md)
+[Windows](markdown/Wiki/Requirements/windows.md)
 
 <h2>Copyright</h2>
 
