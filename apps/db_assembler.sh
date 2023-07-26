@@ -18,14 +18,6 @@ echo ""
 echo -e "\e[1;37m"
 read -p "         Choose a number from 1 to 3: " opcion
 
-case $opcion in
-    1) all ;;
-    2) bases ;;
-    3) updates ;;
-    4) leave ;;
-    *) invalid ;;
-esac
-
 cd $CURRENT_LOCATION
 
 all()
@@ -100,3 +92,11 @@ verify()
         cat $1/*.sql > $2
     fi
 }
+
+case $opcion in
+    1) all ;;
+    2) bases ;;
+    3) updates ;;
+    4) leave ;;
+    *) invalid ;;
+esac
