@@ -40,6 +40,8 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH 1)
 list(APPEND CMAKE_MODULE_PATH
   "${CMAKE_SOURCE_DIR}/cmake/macros")
 
+include(deps/firelands/cmake-utils/utils.cmake)
+
 if (CMAKE_VERSION VERSION_LESS "3.16.0")
   list(APPEND CMAKE_MODULE_PATH
           "${CMAKE_SOURCE_DIR}/deps/cotire/CMake")
@@ -49,13 +51,17 @@ endif()
 if(CMAKE_GENERATOR STREQUAL "Ninja Multi-Config")
   set(CMAKE_DEFAULT_BUILD_TYPE "RelWithDebInfo" CACHE INTERNAL "")
 endif()
+
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 endif()
 
+#Add Utils For Cmake
+
 include(CheckCXXSourceRuns)
 include(CheckIncludeFiles)
 include(ConfigureScripts)
+include(ConfigureModules)
 
 # set default buildoptions and print them
 include(cmake/options.cmake)
@@ -85,11 +91,32 @@ include(cmake/genrev.cmake)
 # print out the results before continuing
 include(cmake/showoptions.cmake)
 
+# add modules and dependencies
+FC_SUBDIRLIST(sub_DIRS  "${CMAKE_SOURCE_DIR}/mods" FALSE FALSE)
+FOREACH(subdir ${sub_DIRS})
+
+    get_filename_component(MODULENAME ${subdir} NAME)
+
+    if (";${DISABLED_FC_MODULES};" MATCHES ";${MODULENAME};")
+        continue()
+    endif()
+
+    STRING(REPLACE "${CMAKE_SOURCE_DIR}/" "" subdir_rel ${subdir})
+    if(EXISTS "${subdir}/CMakeLists.txt")
+        add_subdirectory("${subdir_rel}")
+    endif()
+ENDFOREACH()
+FC_RUN_HOOK("AFTER_LOAD_CONF")
+
+
 # add dependencies
 add_subdirectory(deps)
 
 # add core sources
 add_subdirectory(src)
+
+# add custom mods
+add_subdirectory(mods)
 
 include(CTest)
 if(BUILD_TESTING)

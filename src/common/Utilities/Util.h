@@ -300,6 +300,8 @@ FC_COMMON_API uint32 GetPID();
 FC_COMMON_API std::string ByteArrayToHexStr(uint8 const* bytes, uint32 length, bool reverse = false);
 FC_COMMON_API void HexStrToByteArray(std::string const& str, uint8* out, bool reverse = false);
 
+FC_COMMON_API bool StringEqualI(std::string_view str1, std::string_view str2);
+
 FC_COMMON_API bool StringToBool(std::string const& str);
 
 FC_COMMON_API bool StringContainsStringI(std::string const& haystack, std::string const& needle);
