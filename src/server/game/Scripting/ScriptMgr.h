@@ -2,16 +2,16 @@
  * This file is part of the FirelandsCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
+ * under the terms of the GNU Affero General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along
+ * You should have received a copy of the GNU Affero General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -837,10 +837,15 @@ class FC_GAME_API ScriptMgr
     uint32 GetScriptCount() const { return _scriptCount; }
 
     typedef void (*ScriptLoaderCallbackType)();
+    typedef void (*ModulesLoaderCallbackType)();
 
     /// Sets the script loader callback which is invoked to load scripts
     /// (Workaround for circular dependency game <-> scripts)
     void SetScriptLoader(ScriptLoaderCallbackType script_loader_callback) { _script_loader_callback = script_loader_callback; }
+
+    /// Sets the modules loader callback which is invoked to load modules
+    /// (Workaround for circular dependency game <-> modules)
+    void SetModulesLoader(ModulesLoaderCallbackType script_loader_callback) { _modules_loader_callback = script_loader_callback; }
 
   public: /* Script contexts */
     /// Set the current script context, which allows the ScriptMgr
@@ -1064,6 +1069,7 @@ class FC_GAME_API ScriptMgr
     uint32 _scriptCount;
 
     ScriptLoaderCallbackType _script_loader_callback;
+    ModulesLoaderCallbackType _modules_loader_callback;
 
     std::string _currentContext;
 };

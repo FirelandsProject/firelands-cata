@@ -77,6 +77,7 @@ include(CheckPlatform)
 
 include(GroupSources)
 include(AutoCollect)
+include(ConfigInstall)
 
 find_package(PCHSupport)
 find_package(MySQL)

@@ -5,7 +5,7 @@
  * Author: Paradox
  * Copyright: Paradox
  * Email: iamparadox@netscape.net (paypal email)
- * License: GNU General Public License v2(GPL)
+ * License: GNU Affero General Public License v2(GPL)
  */
 if (!empty($_FILES['File1']) && !empty($_FILES['File2']))
 {

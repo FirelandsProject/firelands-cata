@@ -3,16 +3,16 @@
  * information
  *
  * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
+ * under the terms of the GNU Affero General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along
+ * You should have received a copy of the GNU Affero General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -37,6 +37,8 @@
 #include "IoContext.h"
 #include "MapManager.h"
 #include "Metric.h"
+#include "ModuleMgr.h"
+#include "ModulesScriptLoader.h"
 #include "MySQLThreading.h"
 #include "ObjectAccessor.h"
 #include "OpenSSLCrypto.h"
@@ -184,7 +186,7 @@ extern int main(int argc, char **argv)
 
 #endif
 
-    sConfigMgr->Configure(configFile.generic_string(), std::vector<std::string>(argv, argv + argc));
+    sConfigMgr->Configure(configFile.generic_string(), std::vector<std::string>(argv, argv + argc), CONFIG_FILE_LIST);
 
     if (!sConfigMgr->LoadConfigsCore())
     {
@@ -291,6 +293,8 @@ extern int main(int argc, char **argv)
         });
 
     sScriptMgr->SetScriptLoader(AddScripts);
+    sScriptMgr->SetModulesLoader(AddModulesScripts);
+
     std::shared_ptr<void> sScriptMgrHandle(nullptr,
         [](void *)
         {

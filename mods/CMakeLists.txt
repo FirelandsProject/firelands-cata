@@ -74,6 +74,10 @@ foreach(SOURCE_MODULE ${MODULES_MODULE_LIST})
     set(${MODULE_MODULE_VARIABLE} ${MODULES_DEFAULT_LINKAGE})
   endif()
 
+  if("${${MODULE_MODULE_VARIABLE}}" STREQUAL "")
+      set(${MODULE_MODULE_VARIABLE} "static")
+  endif()
+
   # Use only static for deprecated api loaders
   if (FC_SCRIPTS_INCLUDES MATCHES "${SOURCE_MODULE}")
     set(${MODULE_MODULE_VARIABLE} "static")
@@ -83,7 +87,6 @@ foreach(SOURCE_MODULE ${MODULES_MODULE_LIST})
   if (SOURCE_MODULE MATCHES "mod-eluna")
     ConfigureElunaModule(${SOURCE_MODULE})
   endif()
-  message("MODULOS ${MODULE_MODULE_VARIABLE} ${${MODULE_MODULE_VARIABLE}}")
 
   # Build the Graph values
   if(${MODULE_MODULE_VARIABLE} MATCHES "dynamic")
@@ -230,7 +233,7 @@ foreach(SOURCE_MODULE ${MODULES_MODULE_LIST})
 
     target_link_libraries(${MODULE_SOURCE_PROJECT_NAME}
       PRIVATE
-        acore-core-interface
+        fc-core-interface
       PUBLIC
         game)
 
@@ -242,7 +245,7 @@ foreach(SOURCE_MODULE ${MODULES_MODULE_LIST})
     set_target_properties(${MODULE_SOURCE_PROJECT_NAME}
       PROPERTIES
         FOLDER
-          "modules")
+          "mods")
 
     if(UNIX)
       install(TARGETS ${MODULE_SOURCE_PROJECT_NAME}
@@ -276,14 +279,14 @@ if (MOD_ELUNA_FOUND)
   list(REMOVE_ITEM PRIVATE_SOURCES_MODULES ${MOD_ELUNA_PATH}/lualib/luac.c)
 endif()
 
-add_library(modules STATIC
+add_library(mods STATIC
     ModulesScriptLoader.h
     ${SCRIPT_MODULE_PRIVATE_SCRIPTLOADER}
     ${PRIVATE_SOURCES_MODULES})
 
-target_link_libraries(modules
+target_link_libraries(mods
   PRIVATE
-    acore-core-interface
+    fc-core-interface
   PUBLIC
     game-interface)
 
@@ -348,22 +351,22 @@ foreach(ModuleName ${MODULE_LIST__})
 endforeach()
 
 # Define modules list
-target_compile_options(modules
+target_compile_options(mods
   INTERFACE
     -DFC_MODULES_LIST=$<1:"${MODULE_LIST}">)
 
 # Define modules config list
-target_compile_options(modules
+target_compile_options(mods
   INTERFACE
     -DCONFIG_FILE_LIST=$<1:"${CONFIG_LIST}">)
 
 if (MOD_ELUNA_FOUND)
   if (APPLE)
-    target_compile_definitions(modules
+    target_compile_definitions(mods
       PUBLIC
         LUA_USE_MACOSX)
   elseif (UNIX)
-    target_compile_definitions(modules
+    target_compile_definitions(mods
       PUBLIC
         LUA_USE_LINUX)
   endif()
