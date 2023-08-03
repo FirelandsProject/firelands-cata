@@ -10,7 +10,6 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
 
-
 # Make the script module list available in the current scope
 GetModuleSourceList(MODULES_MODULE_LIST)
 
@@ -28,12 +27,6 @@ elseif(MODULES MATCHES "static")
 else()
   set(MODULES_DEFAULT_LINKAGE "disabled")
 endif()
-
-# Add support old api modules
-
-FC_GET_GLOBAL("FC_ADD_SCRIPTS_LIST")
-
-FC_GET_GLOBAL("FC_ADD_SCRIPTS_INCLUDE")
 
 set("FC_SCRIPTS_INCLUDES" "")
 set("FC_MODULE_LIST" "")
@@ -72,10 +65,6 @@ foreach(SOURCE_MODULE ${MODULES_MODULE_LIST})
 
   if(${MODULE_MODULE_VARIABLE} STREQUAL "default")
     set(${MODULE_MODULE_VARIABLE} ${MODULES_DEFAULT_LINKAGE})
-  endif()
-
-  if("${${MODULE_MODULE_VARIABLE}}" STREQUAL "")
-      set(${MODULE_MODULE_VARIABLE} "static")
   endif()
 
   # Use only static for deprecated api loaders
@@ -139,20 +128,20 @@ GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
 # it to the variable arguments
 function(ConfigureScriptLoader SCRIPTLOADER_NAME LOADER_OUT IS_DYNAMIC_SCRIPTLOADER)
   # Deduces following variables which are referenced by thge template:
-  # FIRELANDS_IS_DYNAMIC_SCRIPTLOADER
-  # FIRELANDS_SCRIPTS_FORWARD_DECL
-  # FIRELANDS_SCRIPTS_INVOKE
-  # FIRELANDS_CURRENT_SCRIPT_PROJECT
+  # FC_IS_DYNAMIC_SCRIPTLOADER
+  # FC_SCRIPTS_FORWARD_DECL
+  # FC_SCRIPTS_INVOKE
+  # FC_CURRENT_SCRIPT_PROJECT
 
   # To generate export macros
-  set(FIRELANDS_IS_DYNAMIC_SCRIPTLOADER ${IS_DYNAMIC_SCRIPTLOADER})
+  set(FC_IS_DYNAMIC_SCRIPTLOADER ${IS_DYNAMIC_SCRIPTLOADER})
 
   # To generate forward declarations of the loading functions
-  unset(FIRELANDS_SCRIPTS_FORWARD_DECL)
-  unset(FIRELANDS_SCRIPTS_INVOKE)
+  unset(FC_SCRIPTS_FORWARD_DECL)
+  unset(FC_SCRIPTS_INVOKE)
 
   # The current script project which is built in
-  set(FIRELANDS_CURRENT_SCRIPT_PROJECT ${SCRIPTLOADER_NAME})
+  set(FC_CURRENT_SCRIPT_PROJECT ${SCRIPTLOADER_NAME})
 
   foreach(LOCALE_SCRIPT_MODULE ${ARGN})
 
@@ -164,11 +153,11 @@ function(ConfigureScriptLoader SCRIPTLOADER_NAME LOADER_OUT IS_DYNAMIC_SCRIPTLOA
       "Add${LOCALE_SCRIPT_MODULE}Scripts()")
 
     # Generate the funciton call and the forward declarations
-    set(FIRELANDS_SCRIPTS_FORWARD_DECL
-      "${FIRELANDS_SCRIPTS_FORWARD_DECL}void ${LOADER_FUNCTION};\n")
+    set(FC_SCRIPTS_FORWARD_DECL
+      "${FC_SCRIPTS_FORWARD_DECL}void ${LOADER_FUNCTION};\n")
 
-    set(FIRELANDS_SCRIPTS_INVOKE
-      "${FIRELANDS_SCRIPTS_INVOKE}    ${LOADER_FUNCTION};\n")
+    set(FC_SCRIPTS_INVOKE
+      "${FC_SCRIPTS_INVOKE}    ${LOADER_FUNCTION};\n")
   endforeach()
 
   set(GENERATED_LOADER ${CMAKE_CURRENT_BINARY_DIR}/gen_scriptloader/${SCRIPTLOADER_NAME}/ModulesLoader.cpp)
@@ -179,7 +168,7 @@ endfunction()
 # Generates the actual module projects
 # Fills the STATIC_SCRIPT_MODULES and DYNAMIC_SCRIPT_MODULE_PROJECTS variables
 # which contain the names which scripts are linked statically/dynamically and
-# adds the sources of the static modules to the PRIVATE_SOURCES_MODULES variable.
+# adds the sources of the static mods to the PRIVATE_SOURCES_MODULES variable.
 foreach(SOURCE_MODULE ${MODULES_MODULE_LIST})
   GetPathToModuleSource(${SOURCE_MODULE} MODULE_SOURCE_PATH)
   ModuleNameToVariable(${SOURCE_MODULE} MODULE_MODULE_VARIABLE)
@@ -191,7 +180,7 @@ foreach(SOURCE_MODULE ${MODULES_MODULE_LIST})
   if((${MODULE_MODULE_VARIABLE} STREQUAL "disabled") OR
       (${MODULE_MODULE_VARIABLE} STREQUAL "static"))
 
-    # Uninstall disabled modules
+    # Uninstall disabled mods
     GetProjectNameOfModuleName(${SOURCE_MODULE} MODULE_SOURCE_PROJECT_NAME)
     GetNativeSharedLibraryName(${MODULE_SOURCE_PROJECT_NAME} SCRIPT_MODULE_OUTPUT_NAME)
     list(APPEND DISABLED_SCRIPT_MODULE_PROJECTS ${INSTALL_OFFSET}/${SCRIPT_MODULE_OUTPUT_NAME})
@@ -254,7 +243,7 @@ foreach(SOURCE_MODULE ${MODULES_MODULE_LIST})
       install(TARGETS ${MODULE_SOURCE_PROJECT_NAME}
         RUNTIME DESTINATION ${INSTALL_OFFSET} COMPONENT ${MODULE_SOURCE_PROJECT_NAME})
       if(MSVC)
-        # Place the script modules in the script subdirectory
+        # Place the script mods in the script subdirectory
         set_target_properties(${MODULE_SOURCE_PROJECT_NAME} PROPERTIES
           RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin/Debug/scripts
           RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin/Release/scripts
@@ -267,7 +256,7 @@ foreach(SOURCE_MODULE ${MODULES_MODULE_LIST})
   endif()
 endforeach()
 
-# Add the dynamic script modules to the worldserver as dependency
+# Add the dynamic script mods to the worldserver as dependency
 set(WORLDSERVER_DYNAMIC_SCRIPT_MODULES_DEPENDENCIES ${DYNAMIC_SCRIPT_MODULE_PROJECTS} PARENT_SCOPE)
 
 ConfigureScriptLoader("static" SCRIPT_MODULE_PRIVATE_SCRIPTLOADER OFF ${STATIC_SCRIPT_MODULES})
@@ -307,7 +296,7 @@ set_target_properties(mods
 
 # Generate precompiled header
 # if (USE_SCRIPTPCH)
-#   list(APPEND ALL_SCRIPT_PROJECTS modules ${DYNAMIC_SCRIPT_MODULE_PROJECTS})
+#   list(APPEND ALL_SCRIPT_PROJECTS mods ${DYNAMIC_SCRIPT_MODULE_PROJECTS})
 #   add_cxx_pch("${ALL_SCRIPT_PROJECTS}" ${PRIVATE_PCH_HEADER})
 # endif()
 
@@ -350,12 +339,12 @@ foreach(ModuleName ${MODULE_LIST__})
   endforeach()
 endforeach()
 
-# Define modules list
+# Define mods list
 target_compile_options(mods
   INTERFACE
     -DFC_MODULES_LIST=$<1:"${MODULE_LIST}">)
 
-# Define modules config list
+# Define mods config list
 target_compile_options(mods
   INTERFACE
     -DCONFIG_FILE_LIST=$<1:"${CONFIG_LIST}">)

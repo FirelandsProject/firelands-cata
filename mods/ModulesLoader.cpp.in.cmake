@@ -11,14 +11,14 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for
  * more details.
  *
- * You should have received a copy of the GNU Affero General Public License along
+ * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 // This file was created automatically from your script configuration!
 // Use CMake to reconfigure this file, never change it on your own!
 
-#cmakedefine FIRELANDS_IS_DYNAMIC_SCRIPTLOADER
+#cmakedefine FC_IS_DYNAMIC_SCRIPTLOADER
 
 #include "Define.h"
 #include <vector>
@@ -27,8 +27,8 @@
 // Add deprecated api loaders include
 @FC_SCRIPTS_INCLUDES@
 // Includes list
-@FIRELANDS_SCRIPTS_FORWARD_DECL@
-#ifdef FIRELANDS_IS_DYNAMIC_SCRIPTLOADER
+@FC_SCRIPTS_FORWARD_DECL@
+#ifdef FC_IS_DYNAMIC_SCRIPTLOADER
 #  include "revision_data.h"
 #  define FC_MODULES_API FC_API_EXPORT
 extern "C" {
@@ -37,7 +37,7 @@ extern "C" {
 /// contained in this shared library.
 FC_MODULES_API char const* GetScriptModule()
 {
-    return "@FIRELANDS_CURRENT_SCRIPT_PROJECT@";
+    return "@FC_CURRENT_SCRIPT_PROJECT@";
 }
 
 #else
@@ -49,7 +49,7 @@ FC_MODULES_API char const* GetScriptModule()
 FC_MODULES_API void AddModulesScripts()
 {
     // Modules
-@FIRELANDS_SCRIPTS_INVOKE@
+@FC_SCRIPTS_INVOKE@
     // Deprecated api modules
 @FC_SCRIPTS_LIST@}
 
@@ -59,6 +59,6 @@ FC_MODULES_API char const* GetModulesBuildDirective()
     return _BUILD_DIRECTIVE;
 }
 
-#ifdef FIRELANDS_IS_DYNAMIC_SCRIPTLOADER
+#ifdef FC_IS_DYNAMIC_SCRIPTLOADER
 } // extern "C"
 #endif

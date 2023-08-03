@@ -21,7 +21,7 @@ done
 if test -n "$MODULE_NAME"
 then
     echo "--- Cloning 'base-module' as $MODULE_NAME/"
-    git clone --depth 1 -b main $MODULE_TEMPLATE_URL $MODULE_NAME
+    git clone --depth 1 -b master $MODULE_TEMPLATE_URL $MODULE_NAME
 
     echo "--- Removing 'base-module/.git/' history"
     cd $MODULE_NAME && rm -rf .git/
