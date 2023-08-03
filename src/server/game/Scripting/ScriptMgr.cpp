@@ -2,16 +2,16 @@
  * This file is part of the FirelandsCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
+ * under the terms of the GNU Affero General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along
+ * You should have received a copy of the GNU Affero General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -917,7 +917,7 @@ ScriptObject::ScriptObject(char const* name) : _name(name) { sScriptMgr->Increas
 
 ScriptObject::~ScriptObject() { sScriptMgr->DecreaseScriptCount(); }
 
-ScriptMgr::ScriptMgr() : _scriptCount(0), _script_loader_callback(nullptr) {}
+ScriptMgr::ScriptMgr() : _scriptCount(0), _script_loader_callback(nullptr), _modules_loader_callback(nullptr) {}
 
 ScriptMgr::~ScriptMgr() {}
 
@@ -952,7 +952,10 @@ void ScriptMgr::Initialize()
     // Load all static linked scripts through the script loader function.
     ASSERT(_script_loader_callback, "Script loader callback wasn't registered!");
 
+    ASSERT(_modules_loader_callback, "Modules loader callback wasn't registered!");
+
     _script_loader_callback();
+    _modules_loader_callback();
 
     // Initialize all dynamic scripts
     // and finishes the context switch to do

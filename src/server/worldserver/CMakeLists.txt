@@ -49,6 +49,7 @@ target_link_libraries(worldserver
     PRIVATE
     fc-core-interface
     PUBLIC
+    mods
     scripts
     game
     gsoap

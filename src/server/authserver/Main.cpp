@@ -3,26 +3,26 @@
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
+ * under the terms of the GNU Affero General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along
+ * You should have received a copy of the GNU Affero General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
-* @file main.cpp
-* @brief Authentication Server main program
-*
-* This file contains the main program for the
-* authentication server
-*/
+ * @file main.cpp
+ * @brief Authentication Server main program
+ *
+ * This file contains the main program for the
+ * authentication server
+ */
 
 #include "AppenderDB.h"
 #include "AuthSocketMgr.h"
@@ -32,26 +32,26 @@
 #include "DatabaseLoader.h"
 #include "DeadlineTimer.h"
 #include "GitRevision.h"
-#include "RealmList.h"
-#include "IoContext.h"
 #include "IPLocation.h"
+#include "IoContext.h"
 #include "MySQLThreading.h"
 #include "ProcessPriority.h"
+#include "RealmList.h"
 #include "Util.h"
 #include <boost/asio/signal_set.hpp>
-#include <boost/program_options.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <boost/program_options.hpp>
+#include <csignal>
+#include <iostream>
 #include <openssl/crypto.h>
 #include <openssl/opensslv.h>
-#include <iostream>
-#include <csignal>
 
 using boost::asio::ip::tcp;
 using namespace boost::program_options;
 namespace fs = boost::filesystem;
 
 #ifndef _FIRELANDS_REALM_CONFIG
-# define _FIRELANDS_REALM_CONFIG  "authserver.conf"
+#define _FIRELANDS_REALM_CONFIG "authserver.conf"
 #endif
 
 #if FC_PLATFORM == FC_PLATFORM_WINDOWS
@@ -60,21 +60,25 @@ char serviceName[] = "authserver";
 char serviceLongName[] = "Firelands auth service";
 char serviceDescription[] = "Firelands World of Warcraft emulator auth service";
 /*
-* -1 - not in service mode
-*  0 - stopped
-*  1 - running
-*  2 - paused
-*/
+ * -1 - not in service mode
+ *  0 - stopped
+ *  1 - running
+ *  2 - paused
+ */
 int m_ServiceStatus = -1;
 
-void ServiceStatusWatcher(std::weak_ptr<Firelands::Asio::DeadlineTimer> serviceStatusWatchTimerRef, std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error);
+void ServiceStatusWatcher(std::weak_ptr<Firelands::Asio::DeadlineTimer> serviceStatusWatchTimerRef,
+    std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error);
 #endif
 
 bool StartDB();
 void StopDB();
-void SignalHandler(std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error, int signalNumber);
-void KeepDatabaseAliveHandler(std::weak_ptr<Firelands::Asio::DeadlineTimer> dbPingTimerRef, int32 dbPingInterval, boost::system::error_code const& error);
-void BanExpiryHandler(std::weak_ptr<Firelands::Asio::DeadlineTimer> banExpiryCheckTimerRef, int32 banExpiryCheckInterval, boost::system::error_code const& error);
+void SignalHandler(
+    std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error, int signalNumber);
+void KeepDatabaseAliveHandler(
+    std::weak_ptr<Firelands::Asio::DeadlineTimer> dbPingTimerRef, int32 dbPingInterval, boost::system::error_code const& error);
+void BanExpiryHandler(std::weak_ptr<Firelands::Asio::DeadlineTimer> banExpiryCheckTimerRef, int32 banExpiryCheckInterval,
+    boost::system::error_code const& error);
 variables_map GetConsoleArguments(int argc, char** argv, fs::path& configFile, std::string& configService);
 
 int main(int argc, char** argv)
@@ -97,30 +101,26 @@ int main(int argc, char** argv)
         return WinServiceRun() ? 0 : 1;
 #endif
 
-    std::string configError;
-    if (!sConfigMgr->LoadInitial(configFile.generic_string(),
-                                 std::vector<std::string>(argv, argv + argc),
-                                 configError))
+    sConfigMgr->Configure(configFile.generic_string(), std::vector<std::string>(argv, argv + argc));
+    if (!sConfigMgr->LoadConfigsCore())
     {
-        printf("Error in config file: %s\n", configError.c_str());
+        printf("Error loading config file");
         return 1;
     }
 
     sLog->RegisterAppender<AppenderDB>();
     sLog->Initialize(nullptr);
 
-    Firelands::Banner::Show("authserver",
-        [](char const* text)
-        {
-            LOG_INFO("server.authserver", "%s", text);
-        },
+    Firelands::Banner::Show(
+        "authserver", [](char const* text) { LOG_INFO("server.authserver", "%s", text); },
         []()
         {
             LOG_INFO("server.authserver", "Using configuration file %s.", sConfigMgr->GetFilename().c_str());
-            LOG_INFO("server.authserver", "Using SSL version: %s (library: %s)", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
-            LOG_INFO("server.authserver", "Using Boost version: %i.%i.%i", BOOST_VERSION / 100000, BOOST_VERSION / 100 % 1000, BOOST_VERSION % 100);
-        }
-    );
+            LOG_INFO(
+                "server.authserver", "Using SSL version: %s (library: %s)", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
+            LOG_INFO("server.authserver", "Using Boost version: %i.%i.%i", BOOST_VERSION / 100000, BOOST_VERSION / 100 % 1000,
+                BOOST_VERSION % 100);
+        });
 
     // authserver PID file creation
     std::string pidFile = sConfigMgr->GetStringDefault("PidFile", "");
@@ -180,21 +180,26 @@ int main(int argc, char** argv)
 #if FC_PLATFORM == FC_PLATFORM_WINDOWS
     signals.add(SIGBREAK);
 #endif
-    signals.async_wait(std::bind(&SignalHandler, std::weak_ptr<Firelands::Asio::IoContext>(ioContext), std::placeholders::_1, std::placeholders::_2));
+    signals.async_wait(std::bind(
+        &SignalHandler, std::weak_ptr<Firelands::Asio::IoContext>(ioContext), std::placeholders::_1, std::placeholders::_2));
 
     // Set process priority according to configuration settings
-    SetProcessPriority("server.authserver", sConfigMgr->GetIntDefault(CONFIG_PROCESSOR_AFFINITY, 0), sConfigMgr->GetBoolDefault(CONFIG_HIGH_PRIORITY, false));
+    SetProcessPriority("server.authserver", sConfigMgr->GetIntDefault(CONFIG_PROCESSOR_AFFINITY, 0),
+        sConfigMgr->GetBoolDefault(CONFIG_HIGH_PRIORITY, false));
 
     // Enabled a timed callback for handling the database keep alive ping
     int32 dbPingInterval = sConfigMgr->GetIntDefault("MaxPingTime", 30);
     std::shared_ptr<Firelands::Asio::DeadlineTimer> dbPingTimer = std::make_shared<Firelands::Asio::DeadlineTimer>(*ioContext);
     dbPingTimer->expires_from_now(boost::posix_time::minutes(dbPingInterval));
-    dbPingTimer->async_wait(std::bind(&KeepDatabaseAliveHandler, std::weak_ptr<Firelands::Asio::DeadlineTimer>(dbPingTimer), dbPingInterval, std::placeholders::_1));
+    dbPingTimer->async_wait(std::bind(&KeepDatabaseAliveHandler, std::weak_ptr<Firelands::Asio::DeadlineTimer>(dbPingTimer),
+        dbPingInterval, std::placeholders::_1));
 
     int32 banExpiryCheckInterval = sConfigMgr->GetIntDefault("BanExpiryCheckInterval", 60);
-    std::shared_ptr<Firelands::Asio::DeadlineTimer> banExpiryCheckTimer = std::make_shared<Firelands::Asio::DeadlineTimer>(*ioContext);
+    std::shared_ptr<Firelands::Asio::DeadlineTimer> banExpiryCheckTimer =
+        std::make_shared<Firelands::Asio::DeadlineTimer>(*ioContext);
     banExpiryCheckTimer->expires_from_now(boost::posix_time::seconds(banExpiryCheckInterval));
-    banExpiryCheckTimer->async_wait(std::bind(&BanExpiryHandler, std::weak_ptr<Firelands::Asio::DeadlineTimer>(banExpiryCheckTimer), banExpiryCheckInterval, std::placeholders::_1));
+    banExpiryCheckTimer->async_wait(std::bind(&BanExpiryHandler,
+        std::weak_ptr<Firelands::Asio::DeadlineTimer>(banExpiryCheckTimer), banExpiryCheckInterval, std::placeholders::_1));
 
 #if FC_PLATFORM == FC_PLATFORM_WINDOWS
     std::shared_ptr<Firelands::Asio::DeadlineTimer> serviceStatusWatchTimer;
@@ -202,10 +207,9 @@ int main(int argc, char** argv)
     {
         serviceStatusWatchTimer = std::make_shared<Firelands::Asio::DeadlineTimer>(*ioContext);
         serviceStatusWatchTimer->expires_from_now(boost::posix_time::seconds(1));
-        serviceStatusWatchTimer->async_wait(std::bind(&ServiceStatusWatcher,
-            std::weak_ptr<Firelands::Asio::DeadlineTimer>(serviceStatusWatchTimer),
-            std::weak_ptr<Firelands::Asio::IoContext>(ioContext),
-            std::placeholders::_1));
+        serviceStatusWatchTimer->async_wait(
+            std::bind(&ServiceStatusWatcher, std::weak_ptr<Firelands::Asio::DeadlineTimer>(serviceStatusWatchTimer),
+                std::weak_ptr<Firelands::Asio::IoContext>(ioContext), std::placeholders::_1));
     }
 #endif
 
@@ -231,8 +235,7 @@ bool StartDB()
     // NOTE: While authserver is singlethreaded you should keep synch_threads == 1.
     // Increasing it is just silly since only 1 will be used ever.
     DatabaseLoader loader("server.authserver", DatabaseLoader::DATABASE_NONE);
-    loader
-        .AddDatabase(LoginDatabase, "Login");
+    loader.AddDatabase(LoginDatabase, "Login");
 
     if (!loader.Load())
         return false;
@@ -249,14 +252,16 @@ void StopDB()
     MySQL::Library_End();
 }
 
-void SignalHandler(std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error, int /*signalNumber*/)
+void SignalHandler(
+    std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error, int /*signalNumber*/)
 {
     if (!error)
         if (std::shared_ptr<Firelands::Asio::IoContext> ioContext = ioContextRef.lock())
             ioContext->stop();
 }
 
-void KeepDatabaseAliveHandler(std::weak_ptr<Firelands::Asio::DeadlineTimer> dbPingTimerRef, int32 dbPingInterval, boost::system::error_code const& error)
+void KeepDatabaseAliveHandler(
+    std::weak_ptr<Firelands::Asio::DeadlineTimer> dbPingTimerRef, int32 dbPingInterval, boost::system::error_code const& error)
 {
     if (!error)
     {
@@ -271,7 +276,8 @@ void KeepDatabaseAliveHandler(std::weak_ptr<Firelands::Asio::DeadlineTimer> dbPi
     }
 }
 
-void BanExpiryHandler(std::weak_ptr<Firelands::Asio::DeadlineTimer> banExpiryCheckTimerRef, int32 banExpiryCheckInterval, boost::system::error_code const& error)
+void BanExpiryHandler(std::weak_ptr<Firelands::Asio::DeadlineTimer> banExpiryCheckTimerRef, int32 banExpiryCheckInterval,
+    boost::system::error_code const& error)
 {
     if (!error)
     {
@@ -281,13 +287,15 @@ void BanExpiryHandler(std::weak_ptr<Firelands::Asio::DeadlineTimer> banExpiryChe
             LoginDatabase.Execute(LoginDatabase.GetPreparedStatement(LOGIN_UPD_EXPIRED_ACCOUNT_BANS));
 
             banExpiryCheckTimer->expires_from_now(boost::posix_time::seconds(banExpiryCheckInterval));
-            banExpiryCheckTimer->async_wait(std::bind(&BanExpiryHandler, banExpiryCheckTimerRef, banExpiryCheckInterval, std::placeholders::_1));
+            banExpiryCheckTimer->async_wait(
+                std::bind(&BanExpiryHandler, banExpiryCheckTimerRef, banExpiryCheckInterval, std::placeholders::_1));
         }
     }
 }
 
 #if FC_PLATFORM == FC_PLATFORM_WINDOWS
-void ServiceStatusWatcher(std::weak_ptr<Firelands::Asio::DeadlineTimer> serviceStatusWatchTimerRef, std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error)
+void ServiceStatusWatcher(std::weak_ptr<Firelands::Asio::DeadlineTimer> serviceStatusWatchTimerRef,
+    std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error)
 {
     if (!error)
     {
@@ -298,7 +306,8 @@ void ServiceStatusWatcher(std::weak_ptr<Firelands::Asio::DeadlineTimer> serviceS
             else if (std::shared_ptr<Firelands::Asio::DeadlineTimer> serviceStatusWatchTimer = serviceStatusWatchTimerRef.lock())
             {
                 serviceStatusWatchTimer->expires_from_now(boost::posix_time::seconds(1));
-                serviceStatusWatchTimer->async_wait(std::bind(&ServiceStatusWatcher, serviceStatusWatchTimerRef, ioContextRef, std::placeholders::_1));
+                serviceStatusWatchTimer->async_wait(
+                    std::bind(&ServiceStatusWatcher, serviceStatusWatchTimerRef, ioContextRef, std::placeholders::_1));
             }
         }
     }
@@ -308,17 +317,12 @@ void ServiceStatusWatcher(std::weak_ptr<Firelands::Asio::DeadlineTimer> serviceS
 variables_map GetConsoleArguments(int argc, char** argv, fs::path& configFile, std::string& configService)
 {
     options_description all("Allowed options");
-    all.add_options()
-        ("help,h", "print usage message")
-        ("version,v", "print version build info")
-        ("config,c", value<fs::path>(&configFile)->default_value(fs::absolute(_FIRELANDS_REALM_CONFIG)),
-                     "use <arg> as configuration file")
-        ;
+    all.add_options()("help,h", "print usage message")("version,v", "print version build info")("config,c",
+        value<fs::path>(&configFile)->default_value(fs::absolute(_FIRELANDS_REALM_CONFIG)), "use <arg> as configuration file");
 #if FC_PLATFORM == FC_PLATFORM_WINDOWS
     options_description win("Windows platform specific options");
-    win.add_options()
-        ("service,s", value<std::string>(&configService)->default_value(""), "Windows service options: [install | uninstall]")
-        ;
+    win.add_options()(
+        "service,s", value<std::string>(&configService)->default_value(""), "Windows service options: [install | uninstall]");
 
     all.add(win);
 #else

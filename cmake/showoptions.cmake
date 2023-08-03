@@ -15,19 +15,28 @@ if(UNIX)
     message("* Install libraries to   : ${LIBSDIR}")
 endif()
 
+message("* Install configs to              : ${CONF_DIR}")
+add_definitions(-D_CONF_DIR=$<1:"${CONF_DIR}">)
+
 message("")
 
 # Show infomation about the options selected during configuration
 if(SERVERS)
     message("* Build world/auth       : Yes (default)")
 else()
-    message("* Build world/bnetserver : No")
+    message("* Build world/auth : No")
 endif()
 
 if(SCRIPTS AND(NOT SCRIPTS STREQUAL "none"))
     message("* Build with scripts     : Yes (${SCRIPTS})")
 else()
     message("* Build with scripts     : No")
+endif()
+
+if (MODULES  AND (NOT MODULES STREQUAL "none"))
+  message("* Build with modules     : Yes (${MODULES})")
+else()
+  message("* Build with modules     : No")
 endif()
 
 if(TOOLS)

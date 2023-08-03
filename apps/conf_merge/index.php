@@ -5,7 +5,7 @@
  * Author: Paradox
  * Copyright: Paradox
  * Email: iamparadox@netscape.net (paypal email)
- * License: GNU General Public License v2(GPL)
+ * License: GNU Affero General Public License v2(GPL)
  */
 ?>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
