@@ -68,7 +68,7 @@ void UnitAI::DoMeleeAttackIfReady()
     if (!me->IsWithinMeleeRange(victim))
         return;
 
-    //Make sure our attack is ready and we aren't currently casting before checking distance
+    // Make sure our attack is ready and we aren't currently casting before checking distance
     if (me->isAttackReady())
     {
         me->AttackerStateUpdate(victim);
@@ -105,7 +105,8 @@ Unit* UnitAI::SelectTarget(SelectAggroTarget targetType, uint32 position, float 
     return SelectTarget(targetType, position, DefaultTargetSelector(me, dist, playerOnly, withTank, aura));
 }
 
-void UnitAI::SelectTargetList(std::list<Unit*>& targetList, uint32 num, SelectAggroTarget targetType, uint32 offset, float dist, bool playerOnly, bool withTank, int32 aura)
+void UnitAI::SelectTargetList(std::list<Unit*>& targetList, uint32 num, SelectAggroTarget targetType, uint32 offset, float dist,
+    bool playerOnly, bool withTank, int32 aura)
 {
     SelectTargetList(targetList, num, targetType, offset, DefaultTargetSelector(me, dist, playerOnly, withTank, aura));
 }
@@ -122,43 +123,43 @@ void UnitAI::DoCast(uint32 spellId)
 
     switch (AISpellInfo[spellId].target)
     {
-        default:
-        case AITARGET_SELF:
-            target = me;
-            break;
-        case AITARGET_VICTIM:
-            target = me->GetVictim();
-            break;
-        case AITARGET_ENEMY:
+    default:
+    case AITARGET_SELF:
+        target = me;
+        break;
+    case AITARGET_VICTIM:
+        target = me->GetVictim();
+        break;
+    case AITARGET_ENEMY:
+    {
+        if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId))
         {
-            if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId))
-            {
-                bool playerOnly = spellInfo->HasAttribute(SPELL_ATTR3_ONLY_TARGET_PLAYERS);
-                target = SelectTarget(SELECT_TARGET_RANDOM, 0, spellInfo->GetMaxRange(false), playerOnly);
-            }
-            break;
+            bool playerOnly = spellInfo->HasAttribute(SPELL_ATTR3_ONLY_TARGET_PLAYERS);
+            target = SelectTarget(SELECT_TARGET_RANDOM, 0, spellInfo->GetMaxRange(false), playerOnly);
         }
-        case AITARGET_ALLY:
-            target = me;
-            break;
-        case AITARGET_BUFF:
-            target = me;
-            break;
-        case AITARGET_DEBUFF:
+        break;
+    }
+    case AITARGET_ALLY:
+        target = me;
+        break;
+    case AITARGET_BUFF:
+        target = me;
+        break;
+    case AITARGET_DEBUFF:
+    {
+        if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId))
         {
-            if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId))
-            {
-                bool playerOnly = spellInfo->HasAttribute(SPELL_ATTR3_ONLY_TARGET_PLAYERS);
-                float range = spellInfo->GetMaxRange(false);
+            bool playerOnly = spellInfo->HasAttribute(SPELL_ATTR3_ONLY_TARGET_PLAYERS);
+            float range = spellInfo->GetMaxRange(false);
 
-                DefaultTargetSelector targetSelector(me, range, playerOnly, true, -(int32)spellId);
-                if (!spellInfo->HasAuraInterruptFlag(SpellAuraInterruptFlags::NOT_VICTIM) && targetSelector(me->GetVictim()))
-                    target = me->GetVictim();
-                else
-                    target = SelectTarget(SELECT_TARGET_RANDOM, 0, targetSelector);
-            }
-            break;
+            DefaultTargetSelector targetSelector(me, range, playerOnly, true, -(int32)spellId);
+            if (!spellInfo->HasAuraInterruptFlag(SpellAuraInterruptFlags::NOT_VICTIM) && targetSelector(me->GetVictim()))
+                target = me->GetVictim();
+            else
+                target = SelectTarget(SELECT_TARGET_RANDOM, 0, targetSelector);
         }
+        break;
+    }
     }
 
     if (target)
@@ -188,7 +189,11 @@ void UnitAI::DoCastRandom(uint32 spellId, float dist, CastSpellExtraArgs const& 
         me->CastSpell(target, spellId, args);
 }
 
-#define UPDATE_TARGET(a) {if (AIInfo->target<a) AIInfo->target=a;}
+#define UPDATE_TARGET(a)                                                                                                         \
+    {                                                                                                                            \
+        if (AIInfo->target < a)                                                                                                  \
+            AIInfo->target = a;                                                                                                  \
+    }
 
 void UnitAI::FillAISpellInfo()
 {
@@ -201,7 +206,7 @@ void UnitAI::FillAISpellInfo()
         if (!spellInfo)
             continue;
 
-        if (spellInfo->HasAttribute(SPELL_ATTR0_CASTABLE_WHILE_DEAD))
+        if (spellInfo->HasAttribute(SPELL_ATTR0_ALLOW_CAST_WHILE_DEAD))
             AIInfo->condition = AICOND_DIE;
         else if (spellInfo->IsPassive() || spellInfo->GetDuration() == -1)
             AIInfo->condition = AICOND_AGGRO;
@@ -217,8 +222,7 @@ void UnitAI::FillAISpellInfo()
             {
                 uint32 targetType = spellInfo->Effects[j].TargetA.GetTarget();
 
-                if (targetType == TARGET_UNIT_TARGET_ENEMY
-                    || targetType == TARGET_DEST_TARGET_ENEMY)
+                if (targetType == TARGET_UNIT_TARGET_ENEMY || targetType == TARGET_DEST_TARGET_ENEMY)
                     UPDATE_TARGET(AITARGET_VICTIM)
                 else if (targetType == TARGET_UNIT_DEST_AREA_ENEMY)
                     UPDATE_TARGET(AITARGET_ENEMY)
@@ -237,10 +241,7 @@ void UnitAI::FillAISpellInfo()
     }
 }
 
-ThreatManager& UnitAI::GetThreatManager()
-{
-    return me->GetThreatManager();
-}
+ThreatManager& UnitAI::GetThreatManager() { return me->GetThreatManager(); }
 
 void UnitAI::SortByDistance(std::list<Unit*>& list, bool ascending)
 {
@@ -248,7 +249,8 @@ void UnitAI::SortByDistance(std::list<Unit*>& list, bool ascending)
 }
 
 DefaultTargetSelector::DefaultTargetSelector(Unit const* unit, float dist, bool playerOnly, bool withTank, int32 aura)
-    : me(unit), m_dist(dist), m_playerOnly(playerOnly), except(!withTank ? unit->GetThreatManager().GetLastVictim() : nullptr), m_aura(aura)
+    : me(unit), m_dist(dist), m_playerOnly(playerOnly), except(!withTank ? unit->GetThreatManager().GetLastVictim() : nullptr),
+      m_aura(aura)
 {
 }
 
@@ -289,8 +291,8 @@ bool DefaultTargetSelector::operator()(Unit const* target) const
     return true;
 }
 
-SpellTargetSelector::SpellTargetSelector(Unit* caster, uint32 spellId) :
-    _caster(caster), _spellInfo(sSpellMgr->GetSpellForDifficultyFromSpell(sSpellMgr->GetSpellInfo(spellId), caster))
+SpellTargetSelector::SpellTargetSelector(Unit* caster, uint32 spellId)
+    : _caster(caster), _spellInfo(sSpellMgr->GetSpellForDifficultyFromSpell(sSpellMgr->GetSpellInfo(spellId), caster))
 {
     ASSERT(_spellInfo);
 }
