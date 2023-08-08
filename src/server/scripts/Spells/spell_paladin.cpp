@@ -80,6 +80,7 @@ enum PaladinSpells
     SPELL_PALADIN_JUDGEMENTS_OF_THE_BOLD = 89906,
     SPELL_PALADIN_JUDGEMENTS_OF_THE_WISE_PASSIVE = 31878,
     SPELL_PALADIN_JUDGEMENTS_OF_THE_WISE = 31930,
+    SPELL_PALADIN_JUDGEMENTS_OF_THE_JUST = 68055,
     SPELL_PALADIN_JUDGEMENT_OF_TRUTH = 31804,
     SPELL_PALADIN_JUDGEMENT_OF_RIGHTEOUSNESS = 20187,
     SPELL_PALADIN_JUDGEMENT_DEFAULT = 54158,
@@ -418,16 +419,20 @@ class spell_pal_eye_for_an_eye : public AuraScript
 {
     bool Validate(SpellInfo const* /*spellInfo*/) override { return ValidateSpellInfo({SPELL_PALADIN_EYE_FOR_AN_EYE_DAMAGE}); }
 
+    bool CheckProc(ProcEventInfo& eventInfo) { return eventInfo.GetDamageInfo() && eventInfo.GetDamageInfo()->GetDamage() > 0; }
+
     void HandleEffectProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
     {
         PreventDefaultAction();
         int32 damage = CalculatePct(eventInfo.GetDamageInfo()->GetDamage(), aurEff->GetAmount());
-        GetTarget()->CastSpell(
-            eventInfo.GetProcTarget(), SPELL_PALADIN_EYE_FOR_AN_EYE_DAMAGE, CastSpellExtraArgs(aurEff).AddSpellBP0(damage));
+        if (damage)
+            GetTarget()->CastSpell(
+                eventInfo.GetActor(), SPELL_PALADIN_EYE_FOR_AN_EYE_DAMAGE, CastSpellExtraArgs(aurEff).AddSpellBP0(damage));
     }
 
     void Register() override
     {
+        DoCheckProc.Register(&spell_pal_eye_for_an_eye::CheckProc);
         OnEffectProc.Register(&spell_pal_eye_for_an_eye::HandleEffectProc, EFFECT_0,
             m_scriptSpellId == SPELL_PALADIN_EYE_FOR_AN_EYE_RANK_1 ? SPELL_AURA_DUMMY : SPELL_AURA_PROC_TRIGGER_SPELL);
     }
@@ -438,11 +443,17 @@ class spell_pal_grand_crusader : public AuraScript
 {
     bool Validate(SpellInfo const* /*spellInfo*/) override { return ValidateSpellInfo({SPELL_PALADIN_AVENGERS_SHIELD}); }
 
-    bool CheckProc(ProcEventInfo& /*eventInfo*/) { return GetTarget()->GetTypeId() == TYPEID_PLAYER; }
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        if (!eventInfo.GetProcSpell() || !eventInfo.GetProcTarget())
+            return false;
+
+        return eventInfo.GetProcTarget() == eventInfo.GetProcSpell()->m_targets.GetUnitTarget();
+    }
 
     void HandleEffectProc(AuraEffect const* /*aurEff*/, ProcEventInfo& /*eventInfo*/)
     {
-        GetTarget()->ToPlayer()->GetSpellHistory()->ResetCooldown(SPELL_PALADIN_AVENGERS_SHIELD, true);
+        GetTarget()->GetSpellHistory()->ResetCooldown(SPELL_PALADIN_AVENGERS_SHIELD, true);
     }
 
     void Register() override
@@ -1103,7 +1114,7 @@ class spell_pal_word_of_glory : public SpellScript
         if (!caster || !target)
             return;
 
-        int32 heal = GetEffectValue() + caster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.198;
+        int32 heal = GetEffectValue() + caster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.198f;
         uint8 power = caster->HasAura(SPELL_PALADIN_DIVINE_PURPOSE_PROC) ? 3 : (caster->GetPower(POWER_HOLY_POWER) + 1);
         heal *= power;
 
@@ -1670,6 +1681,23 @@ class spell_pal_speed_of_light : public AuraScript
     void Register() override { OnEffectProc.Register(&spell_pal_speed_of_light::HandleProc, EFFECT_1, SPELL_AURA_DUMMY); }
 };
 
+// -53695 - Judgements of the Just
+class spell_pal_judgements_of_the_just : public AuraScript
+{
+    bool Validate(SpellInfo const* /*spellInfo*/) override { return ValidateSpellInfo({SPELL_PALADIN_JUDGEMENTS_OF_THE_JUST}); }
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+        GetTarget()->CastSpell(eventInfo.GetProcTarget(), SPELL_PALADIN_JUDGEMENTS_OF_THE_JUST);
+    }
+
+    void Register() override
+    {
+        OnEffectProc.Register(&spell_pal_judgements_of_the_just::HandleProc, EFFECT_0, SPELL_AURA_ADD_FLAT_MODIFIER);
+    }
+};
+
 void AddSC_paladin_spell_scripts()
 {
     RegisterSpellScript(spell_pal_ardent_defender);
@@ -1706,6 +1734,7 @@ void AddSC_paladin_spell_scripts()
     RegisterSpellScript(spell_pal_item_healing_discount);
     RegisterSpellScript(spell_pal_judgement);
     RegisterSpellScript(spell_pal_judgements);
+    RegisterSpellScript(spell_pal_judgements_of_the_just);
     RegisterSpellScript(spell_pal_lay_on_hands);
     RegisterSpellScript(spell_pal_lights_beacon);
     RegisterSpellScript(spell_pal_light_of_dawn);
