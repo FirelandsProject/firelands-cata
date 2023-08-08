@@ -194,7 +194,7 @@ bool Weather::ReGenerate()
 
 void Weather::SendWeatherUpdateToPlayer(Player* player)
 {
-    WorldPackets::Misc::Weather weather(GetWeatherState(), m_grade)
+    WorldPackets::Misc::Weather weather(GetWeatherState(), m_grade);
     player->SendDirectMessage(weather.Write());
 }
 
