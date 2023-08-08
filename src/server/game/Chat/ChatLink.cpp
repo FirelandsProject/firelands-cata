@@ -25,7 +25,8 @@
 
 // Supported shift-links (client generated and server side)
 // |color|Hachievement:achievement_id:player_guid:0:0:0:0:0:0:0:0|h[name]|h|r
-//                                                                        - client, item icon shift click, not used in server currently
+//                                                                        - client, item icon shift click, not used in server
+//                                                                        currently
 // |color|Harea:area_id|h[name]|h|r
 // |color|Hcreature:creature_guid|h[name]|h|r
 // |color|Hcreature_entry:creature_id|h[name]|h|r
@@ -33,12 +34,12 @@
 // |color|Hgameevent:id|h[name]|h|r
 // |color|Hgameobject:go_guid|h[name]|h|r
 // |color|Hgameobject_entry:go_id|h[name]|h|r
-// |color|Hglyph:glyph_slot_id:glyph_prop_id|h[%s]|h|r                    - client, at shift click in glyphs dialog, GlyphSlot.dbc, GlyphProperties.dbc
-// |color|Hitem:item_id:perm_ench_id:gem1:gem2:gem3:0:0:0:0:reporter_level|h[name]|h|r
+// |color|Hglyph:glyph_slot_id:glyph_prop_id|h[%s]|h|r                    - client, at shift click in glyphs dialog,
+// GlyphSlot.dbc, GlyphProperties.dbc |color|Hitem:item_id:perm_ench_id:gem1:gem2:gem3:0:0:0:0:reporter_level|h[name]|h|r
 //                                                                        - client, item icon shift click
 // |color|Hitemset:itemset_id|h[name]|h|r
-// |color|Hplayer:name|h[name]|h|r                                        - client, in some messages, at click copy only name instead link
-// |color|Hquest:quest_id:quest_level|h[name]|h|r                         - client, quest list name shift-click
+// |color|Hplayer:name|h[name]|h|r                                        - client, in some messages, at click copy only name
+// instead link |color|Hquest:quest_id:quest_level|h[name]|h|r                         - client, quest list name shift-click
 // |color|Hskill:skill_id|h[name]|h|r
 // |color|Hspell:spell_id|h[name]|h|r                                     - client, spellbook spell icon shift-click
 // |color|Htalent:talent_id, rank|h[name]|h|r                              - client, talent icon shift-click
@@ -77,7 +78,8 @@ inline bool CheckDelimiter(std::istringstream& iss, char delimiter, char const* 
     char c = iss.peek();
     if (c != delimiter)
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): invalid %s link structure ('%c' expected, '%c' found)", iss.str().c_str(), context, delimiter, c);
+        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): invalid %s link structure ('%c' expected, '%c' found)",
+            iss.str().c_str(), context, delimiter, c);
         return false;
     }
     iss.ignore(1);
@@ -88,7 +90,7 @@ inline bool ReadHex(std::istringstream& iss, uint32& res, uint32 length)
 {
     std::istringstream::pos_type pos = iss.tellg();
     iss >> std::hex >> res;
-    //uint32 size = uint32(iss.gcount());
+    // uint32 size = uint32(iss.gcount());
     if (length && uint32(iss.tellg() - pos) != length)
         return false;
     return !iss.fail() && !iss.eof();
@@ -111,20 +113,23 @@ bool ItemChatLink::Initialize(std::istringstream& iss)
     uint32 itemEntry = 0;
     if (!ReadUInt32(iss, itemEntry))
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading item entry", iss.str().c_str());
+        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading item entry",
+            iss.str().c_str());
         return false;
     }
     // Validate item
     _item = sObjectMgr->GetItemTemplate(itemEntry);
     if (!_item)
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid itemEntry %u in |item command", iss.str().c_str(), itemEntry);
+        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid itemEntry %u in |item command",
+            iss.str().c_str(), itemEntry);
         return false;
     }
     // Validate item's color
     if (_color != ItemQualityColors[_item->GetQuality()])
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): linked item has color %u, but user claims %u", iss.str().c_str(), ItemQualityColors[_item->GetQuality()], _color);
+        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): linked item has color %u, but user claims %u",
+            iss.str().c_str(), ItemQualityColors[_item->GetQuality()], _color);
         return false;
     }
     // Number of various item properties after item entry
@@ -138,7 +143,9 @@ bool ItemChatLink::Initialize(std::istringstream& iss)
         int32 id = 0;
         if (!ReadInt32(iss, id))
         {
-            LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading item property (%u)", iss.str().c_str(), index);
+            LOG_TRACE("chat.system",
+                "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading item property (%u)",
+                iss.str().c_str(), index);
             return false;
         }
         if (id && (index == randomPropertyPosition))
@@ -149,7 +156,9 @@ bool ItemChatLink::Initialize(std::istringstream& iss)
                 _property = sItemRandomPropertiesStore.LookupEntry(id);
                 if (!_property)
                 {
-                    LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid item property id %u in |item command", iss.str().c_str(), id);
+                    LOG_TRACE("chat.system",
+                        "ChatHandler::isValidChatMessage('%s'): got invalid item property id %u in |item command",
+                        iss.str().c_str(), id);
                     return false;
                 }
             }
@@ -158,7 +167,9 @@ bool ItemChatLink::Initialize(std::istringstream& iss)
                 _suffix = sItemRandomSuffixStore.LookupEntry(-id);
                 if (!_suffix)
                 {
-                    LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid item suffix id %u in |item command", iss.str().c_str(), -id);
+                    LOG_TRACE("chat.system",
+                        "ChatHandler::isValidChatMessage('%s'): got invalid item suffix id %u in |item command",
+                        iss.str().c_str(), -id);
                     return false;
                 }
             }
@@ -196,7 +207,9 @@ bool ItemChatLink::ValidateName(char* buffer, char const* context)
         }
     }
     if (!res)
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): linked item (id: %u) name wasn't found in any localization", context, _item->GetId());
+        LOG_TRACE("chat.system",
+            "ChatHandler::isValidChatMessage('%s'): linked item (id: %u) name wasn't found in any localization", context,
+            _item->GetId());
     return res;
 }
 
@@ -208,14 +221,16 @@ bool QuestChatLink::Initialize(std::istringstream& iss)
     uint32 questId = 0;
     if (!ReadUInt32(iss, questId))
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading quest entry", iss.str().c_str());
+        LOG_TRACE("chat.system",
+            "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading quest entry", iss.str().c_str());
         return false;
     }
     // Validate quest
     _quest = sObjectMgr->GetQuestTemplate(questId);
     if (!_quest)
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): quest template %u not found", iss.str().c_str(), questId);
+        LOG_TRACE(
+            "chat.system", "ChatHandler::isValidChatMessage('%s'): quest template %u not found", iss.str().c_str(), questId);
         return false;
     }
     // Check delimiter
@@ -224,13 +239,15 @@ bool QuestChatLink::Initialize(std::istringstream& iss)
     // Read quest level
     if (!ReadInt32(iss, _questLevel))
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading quest level", iss.str().c_str());
+        LOG_TRACE("chat.system",
+            "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading quest level", iss.str().c_str());
         return false;
     }
     // Validate quest level
     if (_questLevel >= STRONG_MAX_LEVEL)
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): quest level %d is too big", iss.str().c_str(), _questLevel);
+        LOG_TRACE(
+            "chat.system", "ChatHandler::isValidChatMessage('%s'): quest level %d is too big", iss.str().c_str(), _questLevel);
         return false;
     }
     return true;
@@ -250,7 +267,9 @@ bool QuestChatLink::ValidateName(char* buffer, char const* context)
                     break;
                 }
     if (!res)
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): linked quest (id: %u) title wasn't found in any localization", context, _quest->GetQuestId());
+        LOG_TRACE("chat.system",
+            "ChatHandler::isValidChatMessage('%s'): linked quest (id: %u) title wasn't found in any localization", context,
+            _quest->GetQuestId());
     return res;
 }
 
@@ -264,14 +283,16 @@ bool SpellChatLink::Initialize(std::istringstream& iss)
     uint32 spellId = 0;
     if (!ReadUInt32(iss, spellId))
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading spell entry", iss.str().c_str());
+        LOG_TRACE("chat.system",
+            "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading spell entry", iss.str().c_str());
         return false;
     }
     // Validate spell
     _spell = sSpellMgr->GetSpellInfo(spellId);
     if (!_spell)
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid spell id %u in |spell command", iss.str().c_str(), spellId);
+        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid spell id %u in |spell command",
+            iss.str().c_str(), spellId);
         return false;
     }
     return true;
@@ -282,24 +303,27 @@ bool SpellChatLink::ValidateName(char* buffer, char const* context)
     ChatLink::ValidateName(buffer, context);
 
     // spells with that flag have a prefix of "$PROFESSION: "
-    if (_spell->HasAttribute(SPELL_ATTR0_TRADESPELL))
+    if (_spell->HasAttribute(SPELL_ATTR0_IS_TRADESKILL))
     {
         SkillLineAbilityMapBounds bounds = sSpellMgr->GetSkillLineAbilityMapBounds(_spell->Id);
         if (bounds.first == bounds.second)
         {
-            LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): skill line not found for spell %u", context, _spell->Id);
+            LOG_TRACE(
+                "chat.system", "ChatHandler::isValidChatMessage('%s'): skill line not found for spell %u", context, _spell->Id);
             return false;
         }
         SkillLineAbilityEntry const* skillInfo = bounds.first->second;
         if (!skillInfo)
         {
-            LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): skill line ability not found for spell %u", context, _spell->Id);
+            LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): skill line ability not found for spell %u", context,
+                _spell->Id);
             return false;
         }
         SkillLineEntry const* skillLine = sSkillLineStore.LookupEntry(skillInfo->SkillLine);
         if (!skillLine)
         {
-            LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): skill line not found for skill %u", context, skillInfo->SkillLine);
+            LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): skill line not found for skill %u", context,
+                skillInfo->SkillLine);
             return false;
         }
 
@@ -316,7 +340,8 @@ bool SpellChatLink::ValidateName(char* buffer, char const* context)
     if (*_spell->SpellName && strcmp(_spell->SpellName, buffer) == 0)
         return true;
 
-    LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): linked spell (id: %u) name wasn't found in any localization", context, _spell->Id);
+    LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): linked spell (id: %u) name wasn't found in any localization",
+        context, _spell->Id);
     return false;
 }
 
@@ -330,14 +355,17 @@ bool AchievementChatLink::Initialize(std::istringstream& iss)
     uint32 achievementId = 0;
     if (!ReadUInt32(iss, achievementId))
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading achievement entry", iss.str().c_str());
+        LOG_TRACE("chat.system",
+            "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading achievement entry",
+            iss.str().c_str());
         return false;
     }
     // Validate achievement
     _achievement = sAchievementMgr->GetAchievement(achievementId);
     if (!_achievement)
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid achivement id %u in |achievement command", iss.str().c_str(), achievementId);
+        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid achivement id %u in |achievement command",
+            iss.str().c_str(), achievementId);
         return false;
     }
     // Check delimiter
@@ -346,7 +374,8 @@ bool AchievementChatLink::Initialize(std::istringstream& iss)
     // Read HEX
     if (!ReadHex(iss, _guid, 0))
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): invalid hexadecimal number while reading char's guid", iss.str().c_str());
+        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): invalid hexadecimal number while reading char's guid",
+            iss.str().c_str());
         return false;
     }
     // Skip progress
@@ -358,7 +387,9 @@ bool AchievementChatLink::Initialize(std::istringstream& iss)
 
         if (!ReadUInt32(iss, _data[index]))
         {
-            LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading achievement property (%u)", iss.str().c_str(), index);
+            LOG_TRACE("chat.system",
+                "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading achievement property (%u)",
+                iss.str().c_str(), index);
             return false;
         }
     }
@@ -372,7 +403,9 @@ bool AchievementChatLink::ValidateName(char* buffer, char const* context)
     if (*_achievement->Title && strcmp(_achievement->Title, buffer) == 0)
         return true;
 
-    LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): linked achievement (id: %u) name wasn't found in any localization", context, _achievement->ID);
+    LOG_TRACE("chat.system",
+        "ChatHandler::isValidChatMessage('%s'): linked achievement (id: %u) name wasn't found in any localization", context,
+        _achievement->ID);
     return false;
 }
 
@@ -386,14 +419,17 @@ bool TradeChatLink::Initialize(std::istringstream& iss)
     uint32 spellId = 0;
     if (!ReadUInt32(iss, spellId))
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading achievement entry", iss.str().c_str());
+        LOG_TRACE("chat.system",
+            "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading achievement entry",
+            iss.str().c_str());
         return false;
     }
     // Validate spell
     _spell = sSpellMgr->GetSpellInfo(spellId);
     if (!_spell)
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid spell id %u in |trade command", iss.str().c_str(), spellId);
+        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid spell id %u in |trade command",
+            iss.str().c_str(), spellId);
         return false;
     }
     // Check delimiter
@@ -402,7 +438,9 @@ bool TradeChatLink::Initialize(std::istringstream& iss)
     // Minimum talent level
     if (!ReadInt32(iss, _minSkillLevel))
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading minimum talent level", iss.str().c_str());
+        LOG_TRACE("chat.system",
+            "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading minimum talent level",
+            iss.str().c_str());
         return false;
     }
     // Check delimiter
@@ -411,7 +449,9 @@ bool TradeChatLink::Initialize(std::istringstream& iss)
     // Maximum talent level
     if (!ReadInt32(iss, _maxSkillLevel))
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading maximum talent level", iss.str().c_str());
+        LOG_TRACE("chat.system",
+            "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading maximum talent level",
+            iss.str().c_str());
         return false;
     }
     // Check delimiter
@@ -420,7 +460,9 @@ bool TradeChatLink::Initialize(std::istringstream& iss)
     // Something hexadecimal
     if (!ReadHex(iss, _guid, 0))
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading achievement's owner guid", iss.str().c_str());
+        LOG_TRACE("chat.system",
+            "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading achievement's owner guid",
+            iss.str().c_str());
         return false;
     }
     // Skip base64 encoded stuff
@@ -437,21 +479,25 @@ bool TalentChatLink::Initialize(std::istringstream& iss)
     // Read talent entry
     if (!ReadUInt32(iss, _talentId))
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading talent entry", iss.str().c_str());
+        LOG_TRACE("chat.system",
+            "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading talent entry",
+            iss.str().c_str());
         return false;
     }
     // Validate talent
     TalentEntry const* talentInfo = sTalentStore.LookupEntry(_talentId);
     if (!talentInfo)
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid talent id %u in |talent command", iss.str().c_str(), _talentId);
+        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid talent id %u in |talent command",
+            iss.str().c_str(), _talentId);
         return false;
     }
     // Validate talent's spell
     _spell = sSpellMgr->GetSpellInfo(talentInfo->SpellRank[0]);
     if (!_spell)
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid spell id %u in |trade command", iss.str().c_str(), talentInfo->SpellRank[0]);
+        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid spell id %u in |trade command",
+            iss.str().c_str(), talentInfo->SpellRank[0]);
         return false;
     }
     // Delimiter
@@ -460,7 +506,8 @@ bool TalentChatLink::Initialize(std::istringstream& iss)
     // Rank
     if (!ReadInt32(iss, _rankId))
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading talent rank", iss.str().c_str());
+        LOG_TRACE("chat.system",
+            "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading talent rank", iss.str().c_str());
         return false;
     }
     return true;
@@ -476,14 +523,17 @@ bool EnchantmentChatLink::Initialize(std::istringstream& iss)
     uint32 spellId = 0;
     if (!ReadUInt32(iss, spellId))
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading enchantment spell entry", iss.str().c_str());
+        LOG_TRACE("chat.system",
+            "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading enchantment spell entry",
+            iss.str().c_str());
         return false;
     }
     // Validate spell
     _spell = sSpellMgr->GetSpellInfo(spellId);
     if (!_spell)
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid spell id %u in |enchant command", iss.str().c_str(), spellId);
+        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid spell id %u in |enchant command",
+            iss.str().c_str(), spellId);
         return false;
     }
     return true;
@@ -498,7 +548,8 @@ bool GlyphChatLink::Initialize(std::istringstream& iss)
     // Slot
     if (!ReadUInt32(iss, _slotId))
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading slot id", iss.str().c_str());
+        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading slot id",
+            iss.str().c_str());
         return false;
     }
     // Check delimiter
@@ -508,27 +559,30 @@ bool GlyphChatLink::Initialize(std::istringstream& iss)
     uint32 glyphId = 0;
     if (!ReadUInt32(iss, glyphId))
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading glyph entry", iss.str().c_str());
+        LOG_TRACE("chat.system",
+            "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading glyph entry", iss.str().c_str());
         return false;
     }
     // Validate glyph
     _glyph = sGlyphPropertiesStore.LookupEntry(glyphId);
     if (!_glyph)
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid glyph id %u in |glyph command", iss.str().c_str(), glyphId);
+        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid glyph id %u in |glyph command",
+            iss.str().c_str(), glyphId);
         return false;
     }
     // Validate glyph's spell
     _spell = sSpellMgr->GetSpellInfo(_glyph->SpellID);
     if (!_spell)
     {
-        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid spell id %u in |glyph command", iss.str().c_str(), _glyph->SpellID);
+        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid spell id %u in |glyph command",
+            iss.str().c_str(), _glyph->SpellID);
         return false;
     }
     return true;
 }
 
-LinkExtractor::LinkExtractor(char const* msg) : _iss(msg) { }
+LinkExtractor::LinkExtractor(char const* msg) : _iss(msg) {}
 
 LinkExtractor::~LinkExtractor()
 {
@@ -581,14 +635,15 @@ bool LinkExtractor::IsValidMessage()
         {
             if (commandChar == *validSequenceIterator)
             {
-                if (validSequenceIterator == validSequence+4)
+                if (validSequenceIterator == validSequence + 4)
                     validSequenceIterator = validSequence;
                 else
                     ++validSequenceIterator;
             }
             else
             {
-                LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): invalid sequence, expected '%c' but got '%c'", _iss.str().c_str(), *validSequenceIterator, commandChar);
+                LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): invalid sequence, expected '%c' but got '%c'",
+                    _iss.str().c_str(), *validSequenceIterator, commandChar);
                 return false;
             }
         }
@@ -601,82 +656,88 @@ bool LinkExtractor::IsValidMessage()
 
         switch (commandChar)
         {
-            case 'c':
-                if (!ReadHex(_iss, color, 8))
+        case 'c':
+            if (!ReadHex(_iss, color, 8))
+            {
+                LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): invalid hexadecimal number while reading color",
+                    _iss.str().c_str());
+                return false;
+            }
+            break;
+        case 'H':
+            // read chars up to colon = link type
+            _iss.getline(buffer, 256, DELIMITER);
+            if (_iss.eof())
+            {
+                LOG_TRACE(
+                    "chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly", _iss.str().c_str());
+                return false;
+            }
+
+            if (strcmp(buffer, "item") == 0)
+                link = new ItemChatLink();
+            else if (strcmp(buffer, "quest") == 0)
+                link = new QuestChatLink();
+            else if (strcmp(buffer, "trade") == 0)
+                link = new TradeChatLink();
+            else if (strcmp(buffer, "talent") == 0)
+                link = new TalentChatLink();
+            else if (strcmp(buffer, "spell") == 0)
+                link = new SpellChatLink();
+            else if (strcmp(buffer, "enchant") == 0)
+                link = new EnchantmentChatLink();
+            else if (strcmp(buffer, "achievement") == 0)
+                link = new AchievementChatLink();
+            else if (strcmp(buffer, "glyph") == 0)
+                link = new GlyphChatLink();
+            else
+            {
+                LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): user sent unsupported link type '%s'",
+                    _iss.str().c_str(), buffer);
+                return false;
+            }
+            _links.push_back(link);
+            link->SetColor(color);
+            if (!link->Initialize(_iss))
+                return false;
+            break;
+        case 'h':
+            // if h is next element in sequence, this one must contain the linked text :)
+            if (*validSequenceIterator == 'h')
+            {
+                // links start with '['
+                if (_iss.get() != '[')
                 {
-                    LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): invalid hexadecimal number while reading color", _iss.str().c_str());
+                    LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): link caption doesn't start with '['",
+                        _iss.str().c_str());
                     return false;
                 }
-                break;
-            case 'H':
-                // read chars up to colon = link type
-                _iss.getline(buffer, 256, DELIMITER);
+                _iss.getline(buffer, 256, ']');
                 if (_iss.eof())
                 {
-                    LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly", _iss.str().c_str());
+                    LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly",
+                        _iss.str().c_str());
                     return false;
                 }
 
-                if (strcmp(buffer, "item") == 0)
-                    link = new ItemChatLink();
-                else if (strcmp(buffer, "quest") == 0)
-                    link = new QuestChatLink();
-                else if (strcmp(buffer, "trade") == 0)
-                    link = new TradeChatLink();
-                else if (strcmp(buffer, "talent") == 0)
-                    link = new TalentChatLink();
-                else if (strcmp(buffer, "spell") == 0)
-                    link = new SpellChatLink();
-                else if (strcmp(buffer, "enchant") == 0)
-                    link = new EnchantmentChatLink();
-                else if (strcmp(buffer, "achievement") == 0)
-                    link = new AchievementChatLink();
-                else if (strcmp(buffer, "glyph") == 0)
-                    link = new GlyphChatLink();
-                else
-                {
-                    LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): user sent unsupported link type '%s'", _iss.str().c_str(), buffer);
+                if (!link)
                     return false;
-                }
-                _links.push_back(link);
-                link->SetColor(color);
-                if (!link->Initialize(_iss))
+
+                if (!link->ValidateName(buffer, _iss.str().c_str()))
                     return false;
-                break;
-            case 'h':
-                // if h is next element in sequence, this one must contain the linked text :)
-                if (*validSequenceIterator == 'h')
-                {
-                    // links start with '['
-                    if (_iss.get() != '[')
-                    {
-                        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): link caption doesn't start with '['", _iss.str().c_str());
-                        return false;
-                    }
-                    _iss.getline(buffer, 256, ']');
-                    if (_iss.eof())
-                    {
-                        LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly", _iss.str().c_str());
-                        return false;
-                    }
-
-                    if (!link)
-                        return false;
-
-                    if (!link->ValidateName(buffer, _iss.str().c_str()))
-                        return false;
-                }
-                break;
-            case 'r':
-                if (link)
-                    link->SetBounds(startPos, _iss.tellg());
-                break;
-            case '|':
-                // no further payload
-                break;
-            default:
-                LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid command |%c", _iss.str().c_str(), commandChar);
-                return false;
+            }
+            break;
+        case 'r':
+            if (link)
+                link->SetBounds(startPos, _iss.tellg());
+            break;
+        case '|':
+            // no further payload
+            break;
+        default:
+            LOG_TRACE(
+                "chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid command |%c", _iss.str().c_str(), commandChar);
+            return false;
         }
     }
 

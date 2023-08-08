@@ -1,4 +1,4 @@
-BasedOnStyle: LLVM
+BasedOnStyle: Microsoft
 IndentWidth: 4
 Language: Cpp
 DerivePointerAlignment: true
@@ -6,4 +6,4 @@ PointerAlignment: Left
 AlignAfterOpenBracket: false
 SpaceInEmptyBlock: false
 BreakBeforeBraces: Allman
-ColumnLimit: 130
+ColumnLimit: 200
