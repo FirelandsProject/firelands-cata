@@ -20,6 +20,9 @@ CREATE TABLE IF NOT EXISTS `pet_aura` (
   `maxDuration` int NOT NULL DEFAULT '0',
   `remainTime` int NOT NULL DEFAULT '0',
   `remainCharges` tinyint unsigned NOT NULL DEFAULT '0',
+  `critChance` float NOT NULL DEFAULT '0',
+  `applyResilience` tinyint(3) NOT NULL DEFAULT '0',
+  
   PRIMARY KEY (`guid`,`casterGuid`,`spell`,`effectMask`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Pet System';
 
