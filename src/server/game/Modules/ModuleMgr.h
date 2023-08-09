@@ -19,7 +19,6 @@
 #define _MODULE_MGR_H_
 
 #include "Define.h"
-#include "Util.h"
 #include <string>
 #include <string_view>
 #include <vector>

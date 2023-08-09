@@ -18,30 +18,36 @@
 #ifndef DBUpdater_h__
 #define DBUpdater_h__
 
-#include "Define.h"
 #include "DatabaseEnvFwd.h"
+#include "Define.h"
 #include <string>
 
-template <class T>
-class DatabaseWorkerPool;
+template <class T> class DatabaseWorkerPool;
 
 namespace boost
 {
-    namespace filesystem
-    {
-        class path;
-    }
+namespace filesystem
+{
+class path;
 }
+} // namespace boost
 
 class FC_DATABASE_API UpdateException : public std::exception
 {
-public:
-    UpdateException(std::string const& msg) : _msg(msg) { }
-    ~UpdateException() throw() { }
+  public:
+    UpdateException(std::string const& msg) : _msg(msg)
+    {
+    }
+    ~UpdateException() throw()
+    {
+    }
 
-    char const* what() const throw() override { return _msg.c_str(); }
+    char const* what() const throw() override
+    {
+        return _msg.c_str();
+    }
 
-private:
+  private:
     std::string const _msg;
 };
 
@@ -53,19 +59,18 @@ enum BaseLocation
 
 class DBUpdaterUtil
 {
-public:
+  public:
     static std::string GetCorrectedMySQLExecutable();
 
     static bool CheckExecutable();
 
-private:
+  private:
     static std::string& corrected_path();
 };
 
-template <class T>
-class FC_DATABASE_API DBUpdater
+template <class T> class FC_DATABASE_API DBUpdater
 {
-public:
+  public:
     using Path = boost::filesystem::path;
 
     static inline std::string GetConfigEntry();
@@ -81,15 +86,20 @@ public:
     static bool Create(DatabaseWorkerPool<T>& pool);
 
     static bool Update(DatabaseWorkerPool<T>& pool);
+    static bool Update(DatabaseWorkerPool<T>& pool, std::string_view modulesList = {});
+    static bool Update(DatabaseWorkerPool<T>& pool, std::vector<std::string> const* setDirectories);
 
     static bool Populate(DatabaseWorkerPool<T>& pool);
 
-private:
+    // module
+    static std::string GetDBModuleName();
+
+  private:
     static QueryResult Retrieve(DatabaseWorkerPool<T>& pool, std::string const& query);
     static void Apply(DatabaseWorkerPool<T>& pool, std::string const& query);
     static void ApplyFile(DatabaseWorkerPool<T>& pool, Path const& path);
-    static void ApplyFile(DatabaseWorkerPool<T>& pool, std::string const& host, std::string const& user,
-        std::string const& password, std::string const& port_or_socket, std::string const& database, Path const& path);
+    static void ApplyFile(
+        DatabaseWorkerPool<T>& pool, std::string const& host, std::string const& user, std::string const& password, std::string const& port_or_socket, std::string const& database, Path const& path);
 };
 
 #endif // DBUpdater_h__
