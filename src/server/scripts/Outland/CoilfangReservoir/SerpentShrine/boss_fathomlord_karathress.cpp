@@ -22,87 +22,89 @@ SDComment: Cyclone workaround
 SDCategory: Coilfang Resevoir, Serpent Shrine Cavern
 EndScriptData */
 
-#include "ScriptMgr.h"
 #include "InstanceScript.h"
 #include "MotionMaster.h"
 #include "ObjectAccessor.h"
+#include "ScriptMgr.h"
 #include "ScriptedEscortAI.h"
-#include "serpent_shrine.h"
 #include "TemporarySummon.h"
+#include "serpent_shrine.h"
 
 enum FathomlordKarathress
 {
-    SAY_AGGRO                       = 0,
-    SAY_GAIN_BLESSING               = 1,
-    SAY_GAIN_ABILITY1               = 2,
-    SAY_GAIN_ABILITY2               = 3,
-    SAY_GAIN_ABILITY3               = 4,
-    SAY_SLAY                        = 5,
-    SAY_DEATH                       = 6,
+    SAY_AGGRO = 0,
+    SAY_GAIN_BLESSING = 1,
+    SAY_GAIN_ABILITY1 = 2,
+    SAY_GAIN_ABILITY2 = 3,
+    SAY_GAIN_ABILITY3 = 4,
+    SAY_SLAY = 5,
+    SAY_DEATH = 6,
 
-    //Karathress spells
-    SPELL_CATACLYSMIC_BOLT          = 38441,
-    SPELL_POWER_OF_SHARKKIS         = 38455,
-    SPELL_POWER_OF_TIDALVESS        = 38452,
-    SPELL_POWER_OF_CARIBDIS         = 38451,
-    SPELL_ENRAGE                    = 24318,
-    SPELL_SEAR_NOVA                 = 38445,
-    SPELL_BLESSING_OF_THE_TIDES     = 38449,
+    // Karathress spells
+    SPELL_CATACLYSMIC_BOLT = 38441,
+    SPELL_POWER_OF_SHARKKIS = 38455,
+    SPELL_POWER_OF_TIDALVESS = 38452,
+    SPELL_POWER_OF_CARIBDIS = 38451,
+    SPELL_ENRAGE = 24318,
+    SPELL_SEAR_NOVA = 38445,
+    SPELL_BLESSING_OF_THE_TIDES = 38449,
 
-    //Sharkkis spells
-    SPELL_LEECHING_THROW            = 29436,
-    SPELL_THE_BEAST_WITHIN          = 38373,
-    SPELL_MULTISHOT                 = 38366,
-    SPELL_SUMMON_FATHOM_LURKER      = 38433,
-    SPELL_SUMMON_FATHOM_SPOREBAT    = 38431,
-    SPELL_PET_ENRAGE                = 19574,
+    // Sharkkis spells
+    SPELL_LEECHING_THROW = 29436,
+    SPELL_THE_BEAST_WITHIN = 38373,
+    SPELL_MULTISHOT = 38366,
+    SPELL_SUMMON_FATHOM_LURKER = 38433,
+    SPELL_SUMMON_FATHOM_SPOREBAT = 38431,
+    SPELL_PET_ENRAGE = 19574,
 
-    //Tidalvess spells
-    SPELL_FROST_SHOCK               = 38234,
-    SPELL_SPITFIRE_TOTEM            = 38236,
-    SPELL_POISON_CLEANSING_TOTEM    = 38306,
+    // Tidalvess spells
+    SPELL_FROST_SHOCK = 38234,
+    SPELL_SPITFIRE_TOTEM = 38236,
+    SPELL_POISON_CLEANSING_TOTEM = 38306,
     // Spell obsolete
-    SPELL_EARTHBIND_TOTEM           = 38304,
-    SPELL_EARTHBIND_TOTEM_EFFECT    = 6474,
-    SPELL_WINDFURY_WEAPON           = 38184,
+    SPELL_EARTHBIND_TOTEM = 38304,
+    SPELL_EARTHBIND_TOTEM_EFFECT = 6474,
+    SPELL_WINDFURY_WEAPON = 38184,
 
-    //Caribdis Spells
-    SPELL_WATER_BOLT_VOLLEY         = 38335,
-    SPELL_TIDAL_SURGE               = 38358,
-    SPELL_TIDAL_SURGE_FREEZE        = 38357,
-    SPELL_HEAL                      = 38330,
-    SPELL_SUMMON_CYCLONE            = 38337,
-    SPELL_CYCLONE_CYCLONE           = 29538,
+    // Caribdis Spells
+    SPELL_WATER_BOLT_VOLLEY = 38335,
+    SPELL_TIDAL_SURGE = 38358,
+    SPELL_TIDAL_SURGE_FREEZE = 38357,
+    SPELL_HEAL = 38330,
+    SPELL_SUMMON_CYCLONE = 38337,
+    SPELL_CYCLONE_CYCLONE = 29538,
 
-    //Yells and Quotes
-    SOUND_GAIN_BLESSING_OF_TIDES    = 11278,
-    SOUND_MISC                      = 11283,
+    // Yells and Quotes
+    SOUND_GAIN_BLESSING_OF_TIDES = 11278,
+    SOUND_MISC = 11283,
 
-    //Summoned Unit GUIDs
-    CREATURE_CYCLONE                = 22104,
-    CREATURE_FATHOM_SPOREBAT        = 22120,
-    CREATURE_FATHOM_LURKER          = 22119,
-    CREATURE_SPITFIRE_TOTEM         = 22091,
-    CREATURE_EARTHBIND_TOTEM        = 22486,
+    // Summoned Unit GUIDs
+    CREATURE_CYCLONE = 22104,
+    CREATURE_FATHOM_SPOREBAT = 22120,
+    CREATURE_FATHOM_LURKER = 22119,
+    CREATURE_SPITFIRE_TOTEM = 22091,
+    CREATURE_EARTHBIND_TOTEM = 22486,
     CREATURE_POISON_CLEANSING_TOTEM = 22487,
 };
 
-//entry and position for Seer Olum
-#define SEER_OLUM                  22820
-#define OLUM_X                     446.78f
-#define OLUM_Y                     -542.76f
-#define OLUM_Z                     -7.54773f
-#define OLUM_O                     0.401581f
+// entry and position for Seer Olum
+#define SEER_OLUM 22820
+#define OLUM_X 446.78f
+#define OLUM_Y -542.76f
+#define OLUM_Z -7.54773f
+#define OLUM_O 0.401581f
 
-#define SAY_GAIN_BLESSING_OF_TIDES      "Your overconfidence will be your undoing! Guards, lend me your strength!"
-#define SAY_MISC                        "Alana be'lendor!" //don't know what use this
+#define SAY_GAIN_BLESSING_OF_TIDES "Your overconfidence will be your undoing! Guards, lend me your strength!"
+#define SAY_MISC "Alana be'lendor!" // don't know what use this
 
 #define MAX_ADVISORS 3
-//Fathom-Lord Karathress AI
+// Fathom-Lord Karathress AI
 class boss_fathomlord_karathress : public CreatureScript
 {
-public:
-    boss_fathomlord_karathress() : CreatureScript("boss_fathomlord_karathress") { }
+  public:
+    boss_fathomlord_karathress() : CreatureScript("boss_fathomlord_karathress")
+    {
+    }
 
     CreatureAI* GetAI(Creature* creature) const override
     {
@@ -120,7 +122,7 @@ public:
         void Initialize()
         {
             CataclysmicBolt_Timer = 10000;
-            Enrage_Timer = 600000;                              //10 minutes
+            Enrage_Timer = 600000;                     // 10 minutes
             SearNova_Timer = 20000 + rand32() % 40000; // 20 - 60 seconds
 
             BlessingOfTides = false;
@@ -207,7 +209,7 @@ public:
 
             instance->SetData(DATA_FATHOMLORDKARATHRESSEVENT, DONE);
 
-            //support for quest 10944
+            // support for quest 10944
             me->SummonCreature(SEER_OLUM, OLUM_X, OLUM_Y, OLUM_Z, OLUM_O, TEMPSUMMON_TIMED_DESPAWN, 3600000);
         }
 
@@ -218,7 +220,7 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
-            //Only if not incombat check if the event is started
+            // Only if not incombat check if the event is started
             if (!me->IsInCombat() && instance->GetData(DATA_KARATHRESSEVENT))
             {
                 if (Unit* target = ObjectAccessor::GetUnit(*me, instance->GetGuidData(DATA_KARATHRESSEVENT_STARTER)))
@@ -228,47 +230,53 @@ public:
                 }
             }
 
-            //Return since we have no target
+            // Return since we have no target
             if (!UpdateVictim())
                 return;
 
-            //someone evaded!
+            // someone evaded!
             if (!instance->GetData(DATA_KARATHRESSEVENT))
             {
                 EnterEvadeMode();
                 return;
             }
 
-            //CataclysmicBolt_Timer
+            // CataclysmicBolt_Timer
             if (CataclysmicBolt_Timer <= diff)
             {
-                //select a random unit other than the main tank
+                // select a random unit other than the main tank
                 Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1);
 
-                //if there aren't other units, cast on the tank
+                // if there aren't other units, cast on the tank
                 if (!target)
                     target = me->GetVictim();
 
                 if (target)
                     DoCast(target, SPELL_CATACLYSMIC_BOLT);
                 CataclysmicBolt_Timer = 10000;
-            } else CataclysmicBolt_Timer -= diff;
+            }
+            else
+                CataclysmicBolt_Timer -= diff;
 
-            //SearNova_Timer
+            // SearNova_Timer
             if (SearNova_Timer <= diff)
             {
                 DoCastVictim(SPELL_SEAR_NOVA);
                 SearNova_Timer = 20000 + rand32() % 40000;
-            } else SearNova_Timer -= diff;
+            }
+            else
+                SearNova_Timer -= diff;
 
-            //Enrage_Timer
+            // Enrage_Timer
             if (Enrage_Timer <= diff)
             {
                 DoCast(me, SPELL_ENRAGE);
                 Enrage_Timer = 90000;
-            } else Enrage_Timer -= diff;
+            }
+            else
+                Enrage_Timer -= diff;
 
-            //Blessing of Tides Trigger
+            // Blessing of Tides Trigger
             if (!HealthAbovePct(75) && !BlessingOfTides)
             {
                 BlessingOfTides = true;
@@ -294,14 +302,15 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-
 };
 
-//Fathom-Guard Sharkkis AI
+// Fathom-Guard Sharkkis AI
 class boss_fathomguard_sharkkis : public CreatureScript
 {
-public:
-    boss_fathomguard_sharkkis() : CreatureScript("boss_fathomguard_sharkkis") { }
+  public:
+    boss_fathomguard_sharkkis() : CreatureScript("boss_fathomguard_sharkkis")
+    {
+    }
 
     CreatureAI* GetAI(Creature* creature) const override
     {
@@ -343,7 +352,7 @@ public:
 
             Creature* Pet = ObjectAccessor::GetCreature(*me, SummonedPet);
             if (Pet && Pet->IsAlive())
-                Pet->DealDamage(Pet, Pet->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
+                Pet->KillSelf();
 
             SummonedPet.Clear();
 
@@ -364,39 +373,43 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
-            //Only if not incombat check if the event is started
+            // Only if not incombat check if the event is started
             if (!me->IsInCombat() && instance->GetData(DATA_KARATHRESSEVENT))
             {
                 if (Unit* target = ObjectAccessor::GetUnit(*me, instance->GetGuidData(DATA_KARATHRESSEVENT_STARTER)))
                     AttackStart(target);
             }
 
-            //Return since we have no target
+            // Return since we have no target
             if (!UpdateVictim())
                 return;
 
-            //someone evaded!
+            // someone evaded!
             if (!instance->GetData(DATA_KARATHRESSEVENT))
             {
                 EnterEvadeMode();
                 return;
             }
 
-            //LeechingThrow_Timer
+            // LeechingThrow_Timer
             if (LeechingThrow_Timer <= diff)
             {
                 DoCastVictim(SPELL_LEECHING_THROW);
                 LeechingThrow_Timer = 20000;
-            } else LeechingThrow_Timer -= diff;
+            }
+            else
+                LeechingThrow_Timer -= diff;
 
-            //Multishot_Timer
+            // Multishot_Timer
             if (Multishot_Timer <= diff)
             {
                 DoCastVictim(SPELL_MULTISHOT);
                 Multishot_Timer = 20000;
-            } else Multishot_Timer -= diff;
+            }
+            else
+                Multishot_Timer -= diff;
 
-            //TheBeastWithin_Timer
+            // TheBeastWithin_Timer
             if (TheBeastWithin_Timer <= diff)
             {
                 DoCast(me, SPELL_THE_BEAST_WITHIN);
@@ -406,25 +419,27 @@ public:
                     Pet->CastSpell(Pet, SPELL_PET_ENRAGE, true);
 
                 TheBeastWithin_Timer = 30000;
-            } else TheBeastWithin_Timer -= diff;
+            }
+            else
+                TheBeastWithin_Timer -= diff;
 
-            //Pet_Timer
+            // Pet_Timer
             if (Pet_Timer < diff && pet == false)
             {
                 pet = true;
-                //uint32 spell_id;
+                // uint32 spell_id;
                 uint32 pet_id;
                 if (!urand(0, 1))
                 {
-                    //spell_id = SPELL_SUMMON_FATHOM_LURKER;
+                    // spell_id = SPELL_SUMMON_FATHOM_LURKER;
                     pet_id = CREATURE_FATHOM_LURKER;
                 }
                 else
                 {
-                    //spell_id = SPELL_SUMMON_FATHOM_SPOREBAT;
+                    // spell_id = SPELL_SUMMON_FATHOM_SPOREBAT;
                     pet_id = CREATURE_FATHOM_SPOREBAT;
                 }
-                //DoCast(me, spell_id, true);
+                // DoCast(me, spell_id, true);
                 if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
                 {
                     if (Creature* Pet = DoSpawnCreature(pet_id, 0, 0, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000))
@@ -433,19 +448,22 @@ public:
                         SummonedPet = Pet->GetGUID();
                     }
                 }
-            } else Pet_Timer -= diff;
+            }
+            else
+                Pet_Timer -= diff;
 
             DoMeleeAttackIfReady();
         }
     };
-
 };
 
-//Fathom-Guard Tidalvess AI
+// Fathom-Guard Tidalvess AI
 class boss_fathomguard_tidalvess : public CreatureScript
 {
-public:
-    boss_fathomguard_tidalvess() : CreatureScript("boss_fathomguard_tidalvess") { }
+  public:
+    boss_fathomguard_tidalvess() : CreatureScript("boss_fathomguard_tidalvess")
+    {
+    }
 
     CreatureAI* GetAI(Creature* creature) const override
     {
@@ -497,18 +515,18 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
-            //Only if not incombat check if the event is started
+            // Only if not incombat check if the event is started
             if (!me->IsInCombat() && instance->GetData(DATA_KARATHRESSEVENT))
             {
                 if (Unit* target = ObjectAccessor::GetUnit(*me, instance->GetGuidData(DATA_KARATHRESSEVENT_STARTER)))
                     AttackStart(target);
             }
 
-            //Return since we have no target
+            // Return since we have no target
             if (!UpdateVictim())
                 return;
 
-            //someone evaded!
+            // someone evaded!
             if (!instance->GetData(DATA_KARATHRESSEVENT))
             {
                 EnterEvadeMode();
@@ -520,14 +538,16 @@ public:
                 DoCast(me, SPELL_WINDFURY_WEAPON);
             }
 
-            //FrostShock_Timer
+            // FrostShock_Timer
             if (FrostShock_Timer <= diff)
             {
                 DoCastVictim(SPELL_FROST_SHOCK);
                 FrostShock_Timer = 25000 + rand32() % 5000;
-            } else FrostShock_Timer -= diff;
+            }
+            else
+                FrostShock_Timer -= diff;
 
-            //Spitfire_Timer
+            // Spitfire_Timer
             if (Spitfire_Timer <= diff)
             {
                 DoCast(me, SPELL_SPITFIRE_TOTEM);
@@ -539,7 +559,7 @@ public:
             else
                 Spitfire_Timer -= diff;
 
-            //PoisonCleansing_Timer
+            // PoisonCleansing_Timer
             if (PoisonCleansing_Timer <= diff)
             {
                 DoCast(me, SPELL_POISON_CLEANSING_TOTEM);
@@ -548,7 +568,7 @@ public:
             else
                 PoisonCleansing_Timer -= diff;
 
-            //Earthbind_Timer
+            // Earthbind_Timer
             if (Earthbind_Timer <= diff)
             {
                 DoCast(me, SPELL_EARTHBIND_TOTEM);
@@ -560,14 +580,15 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-
 };
 
-//Fathom-Guard Caribdis AI
+// Fathom-Guard Caribdis AI
 class boss_fathomguard_caribdis : public CreatureScript
 {
-public:
-    boss_fathomguard_caribdis() : CreatureScript("boss_fathomguard_caribdis") { }
+  public:
+    boss_fathomguard_caribdis() : CreatureScript("boss_fathomguard_caribdis")
+    {
+    }
 
     CreatureAI* GetAI(Creature* creature) const override
     {
@@ -618,32 +639,34 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
-            //Only if not incombat check if the event is started
+            // Only if not incombat check if the event is started
             if (!me->IsInCombat() && instance->GetData(DATA_KARATHRESSEVENT))
             {
                 if (Unit* target = ObjectAccessor::GetUnit(*me, instance->GetGuidData(DATA_KARATHRESSEVENT_STARTER)))
                     AttackStart(target);
             }
 
-            //Return since we have no target
+            // Return since we have no target
             if (!UpdateVictim())
                 return;
 
-            //someone evaded!
+            // someone evaded!
             if (!instance->GetData(DATA_KARATHRESSEVENT))
             {
                 EnterEvadeMode();
                 return;
             }
 
-            //WaterBoltVolley_Timer
+            // WaterBoltVolley_Timer
             if (WaterBoltVolley_Timer <= diff)
             {
                 DoCastVictim(SPELL_WATER_BOLT_VOLLEY);
                 WaterBoltVolley_Timer = 30000;
-            } else WaterBoltVolley_Timer -= diff;
+            }
+            else
+                WaterBoltVolley_Timer -= diff;
 
-            //TidalSurge_Timer
+            // TidalSurge_Timer
             if (TidalSurge_Timer <= diff)
             {
                 DoCastVictim(SPELL_TIDAL_SURGE);
@@ -651,12 +674,14 @@ public:
                 if (me->GetVictim())
                     me->EnsureVictim()->CastSpell(me->GetVictim(), SPELL_TIDAL_SURGE_FREEZE, true);
                 TidalSurge_Timer = 15000 + rand32() % 5000;
-            } else TidalSurge_Timer -= diff;
+            }
+            else
+                TidalSurge_Timer -= diff;
 
-            //Cyclone_Timer
+            // Cyclone_Timer
             if (Cyclone_Timer <= diff)
             {
-                //DoCast(me, SPELL_SUMMON_CYCLONE); // Doesn't work
+                // DoCast(me, SPELL_SUMMON_CYCLONE); // Doesn't work
                 Cyclone_Timer = 30000 + rand32() % 10000;
 
                 if (Creature* Cyclone = me->SummonCreature(CREATURE_CYCLONE, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), float(rand32() % 5), TEMPSUMMON_TIMED_DESPAWN, 15000))
@@ -672,7 +697,7 @@ public:
             else
                 Cyclone_Timer -= diff;
 
-            //Heal_Timer
+            // Heal_Timer
             if (Heal_Timer <= diff)
             {
                 // It can be cast on any of the mobs

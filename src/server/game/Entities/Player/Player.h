@@ -2233,6 +2233,8 @@ class FC_GAME_API Player : public Unit, public GridObject<Player>
         return m_spellPenetrationItemMod;
     }
 
+    bool CanApplyResilience() const override { return true; }
+
     float GetExpertiseDodgeOrParryReduction(WeaponAttackType attType) const;
     void UpdateBlockPercentage();
     void UpdateCritPercentage(WeaponAttackType attType);

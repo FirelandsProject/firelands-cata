@@ -22,44 +22,50 @@ Comment: Some spells not implemented
 Category: Caverns of Time, The Dark Portal
 */
 
-#include "ScriptMgr.h"
 #include "InstanceScript.h"
+#include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "the_black_morass.h"
 
 enum Enums
 {
-    SAY_ENTER           = 0,
-    SAY_AGGRO           = 1,
-    SAY_BANISH          = 2,
-    SAY_SLAY            = 3,
-    SAY_DEATH           = 4,
-    EMOTE_FRENZY        = 5,
+    SAY_ENTER = 0,
+    SAY_AGGRO = 1,
+    SAY_BANISH = 2,
+    SAY_SLAY = 3,
+    SAY_DEATH = 4,
+    EMOTE_FRENZY = 5,
 
-    SPELL_CLEAVE        = 40504,
-    SPELL_TIME_STOP     = 31422,
-    SPELL_ENRAGE        = 37605,
-    SPELL_SAND_BREATH   = 31473,
+    SPELL_CLEAVE = 40504,
+    SPELL_TIME_STOP = 31422,
+    SPELL_ENRAGE = 37605,
+    SPELL_SAND_BREATH = 31473,
     H_SPELL_SAND_BREATH = 39049
 };
 
 enum Events
 {
-    EVENT_SANDBREATH    = 1,
-    EVENT_TIMESTOP      = 2,
-    EVENT_FRENZY        = 3
+    EVENT_SANDBREATH = 1,
+    EVENT_TIMESTOP = 2,
+    EVENT_FRENZY = 3
 };
 
 class boss_aeonus : public CreatureScript
 {
-public:
-    boss_aeonus() : CreatureScript("boss_aeonus") { }
+  public:
+    boss_aeonus() : CreatureScript("boss_aeonus")
+    {
+    }
 
     struct boss_aeonusAI : public BossAI
     {
-        boss_aeonusAI(Creature* creature) : BossAI(creature, TYPE_AEONUS) { }
+        boss_aeonusAI(Creature* creature) : BossAI(creature, TYPE_AEONUS)
+        {
+        }
 
-        void Reset() override { }
+        void Reset() override
+        {
+        }
 
         void JustEngagedWith(Unit* /*who*/) override
         {
@@ -73,13 +79,13 @@ public:
         void MoveInLineOfSight(Unit* who) override
 
         {
-            //Despawn Time Keeper
+            // Despawn Time Keeper
             if (who->GetTypeId() == TYPEID_UNIT && who->GetEntry() == NPC_TIME_KEEPER)
             {
                 if (me->IsWithinDistInMap(who, 20.0f))
                 {
                     Talk(SAY_BANISH);
-                    me->DealDamage(who, who->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
+                    Unit::DealDamage(me, who, who->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
                 }
             }
 
@@ -102,7 +108,7 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
-            //Return since we have no target
+            // Return since we have no target
             if (!UpdateVictim())
                 return;
 
@@ -115,21 +121,21 @@ public:
             {
                 switch (eventId)
                 {
-                    case EVENT_SANDBREATH:
-                        DoCastVictim(SPELL_SAND_BREATH);
-                        events.ScheduleEvent(EVENT_SANDBREATH, urand(15000, 25000));
-                        break;
-                    case EVENT_TIMESTOP:
-                        DoCastVictim(SPELL_TIME_STOP);
-                        events.ScheduleEvent(EVENT_TIMESTOP, urand(20000, 35000));
-                        break;
-                    case EVENT_FRENZY:
-                         Talk(EMOTE_FRENZY);
-                         DoCast(me, SPELL_ENRAGE);
-                        events.ScheduleEvent(EVENT_FRENZY, urand(20000, 35000));
-                        break;
-                    default:
-                        break;
+                case EVENT_SANDBREATH:
+                    DoCastVictim(SPELL_SAND_BREATH);
+                    events.ScheduleEvent(EVENT_SANDBREATH, urand(15000, 25000));
+                    break;
+                case EVENT_TIMESTOP:
+                    DoCastVictim(SPELL_TIME_STOP);
+                    events.ScheduleEvent(EVENT_TIMESTOP, urand(20000, 35000));
+                    break;
+                case EVENT_FRENZY:
+                    Talk(EMOTE_FRENZY);
+                    DoCast(me, SPELL_ENRAGE);
+                    events.ScheduleEvent(EVENT_FRENZY, urand(20000, 35000));
+                    break;
+                default:
+                    break;
                 }
 
                 if (me->HasUnitState(UNIT_STATE_CASTING))

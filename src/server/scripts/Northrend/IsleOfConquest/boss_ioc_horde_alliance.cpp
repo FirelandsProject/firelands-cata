@@ -15,34 +15,38 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "BattlegroundIC.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
-#include "BattlegroundIC.h"
 
 enum BossSpells
 {
-    SPELL_BRUTAL_STRIKE       = 58460,
-    SPELL_DAGGER_THROW        = 67280,
-    SPELL_CRUSHING_LEAP       = 68506,
-    SPELL_RAGE                = 66776
+    SPELL_BRUTAL_STRIKE = 58460,
+    SPELL_DAGGER_THROW = 67280,
+    SPELL_CRUSHING_LEAP = 68506,
+    SPELL_RAGE = 66776
 };
 
 enum BossEvents
 {
-    EVENT_BRUTAL_STRIKE       = 1,
-    EVENT_DAGGER_THROW        = 2,
-    EVENT_CRUSHING_LEAP       = 3,
-    EVENT_CHECK_RANGE         = 4
+    EVENT_BRUTAL_STRIKE = 1,
+    EVENT_DAGGER_THROW = 2,
+    EVENT_CRUSHING_LEAP = 3,
+    EVENT_CHECK_RANGE = 4
 };
 
 class boss_ioc_horde_alliance : public CreatureScript
 {
-public:
-    boss_ioc_horde_alliance() : CreatureScript("boss_ioc_horde_alliance") { }
+  public:
+    boss_ioc_horde_alliance() : CreatureScript("boss_ioc_horde_alliance")
+    {
+    }
 
     struct boss_ioc_horde_allianceAI : public ScriptedAI
     {
-        boss_ioc_horde_allianceAI(Creature* creature) : ScriptedAI(creature) { }
+        boss_ioc_horde_allianceAI(Creature* creature) : ScriptedAI(creature)
+        {
+        }
 
         void Reset() override
         {
@@ -63,15 +67,15 @@ public:
         void JustEngagedWith(Unit* /*who*/) override
         {
             _events.ScheduleEvent(EVENT_BRUTAL_STRIKE, 5 * IN_MILLISECONDS);
-            _events.ScheduleEvent(EVENT_DAGGER_THROW,  7 * IN_MILLISECONDS);
-            _events.ScheduleEvent(EVENT_CHECK_RANGE,   1 * IN_MILLISECONDS);
+            _events.ScheduleEvent(EVENT_DAGGER_THROW, 7 * IN_MILLISECONDS);
+            _events.ScheduleEvent(EVENT_CHECK_RANGE, 1 * IN_MILLISECONDS);
             _events.ScheduleEvent(EVENT_CRUSHING_LEAP, 15 * IN_MILLISECONDS);
         }
 
         void SpellHit(Unit* caster, SpellInfo const* /*spell*/) override
         {
             if (caster->IsVehicle())
-                me->Kill(caster);
+                Unit::Kill(me, caster);
         }
 
         void UpdateAI(uint32 diff) override
@@ -88,35 +92,35 @@ public:
             {
                 switch (eventId)
                 {
-                    case EVENT_BRUTAL_STRIKE:
-                        DoCastVictim(SPELL_BRUTAL_STRIKE);
-                        _events.ScheduleEvent(EVENT_BRUTAL_STRIKE, 5 * IN_MILLISECONDS);
-                        break;
-                    case EVENT_DAGGER_THROW:
-                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1))
-                            DoCast(target, SPELL_DAGGER_THROW);
-                        _events.ScheduleEvent(EVENT_DAGGER_THROW, 7 * IN_MILLISECONDS);
-                        break;
-                    case EVENT_CRUSHING_LEAP:
-                        DoCastVictim(SPELL_CRUSHING_LEAP);
-                        _events.ScheduleEvent(EVENT_CRUSHING_LEAP, 25 * IN_MILLISECONDS);
-                        break;
-                    case EVENT_CHECK_RANGE:
-                        if (me->GetDistance(me->GetHomePosition()) > 25.0f)
-                            DoCast(me, SPELL_RAGE);
-                        else
-                            me->RemoveAurasDueToSpell(SPELL_RAGE);
-                        _events.ScheduleEvent(EVENT_CHECK_RANGE, 1 * IN_MILLISECONDS);
-                        break;
-                    default:
-                        break;
+                case EVENT_BRUTAL_STRIKE:
+                    DoCastVictim(SPELL_BRUTAL_STRIKE);
+                    _events.ScheduleEvent(EVENT_BRUTAL_STRIKE, 5 * IN_MILLISECONDS);
+                    break;
+                case EVENT_DAGGER_THROW:
+                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1))
+                        DoCast(target, SPELL_DAGGER_THROW);
+                    _events.ScheduleEvent(EVENT_DAGGER_THROW, 7 * IN_MILLISECONDS);
+                    break;
+                case EVENT_CRUSHING_LEAP:
+                    DoCastVictim(SPELL_CRUSHING_LEAP);
+                    _events.ScheduleEvent(EVENT_CRUSHING_LEAP, 25 * IN_MILLISECONDS);
+                    break;
+                case EVENT_CHECK_RANGE:
+                    if (me->GetDistance(me->GetHomePosition()) > 25.0f)
+                        DoCast(me, SPELL_RAGE);
+                    else
+                        me->RemoveAurasDueToSpell(SPELL_RAGE);
+                    _events.ScheduleEvent(EVENT_CHECK_RANGE, 1 * IN_MILLISECONDS);
+                    break;
+                default:
+                    break;
                 }
             }
 
             DoMeleeAttackIfReady();
         }
 
-    private:
+      private:
         EventMap _events;
     };
 

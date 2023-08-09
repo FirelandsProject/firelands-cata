@@ -1,105 +1,105 @@
 /*
-* This file is part of the FirelandsCore Project. See AUTHORS file for Copyright information
-*
-* This program is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by the
-* Free Software Foundation; either version 2 of the License, or (at your
-* option) any later version.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-* FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for
-* more details.
-*
-* You should have received a copy of the GNU Affero General Public License along
-* with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * This file is part of the FirelandsCore Project. See AUTHORS file for Copyright information
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by the
+ * Free Software Foundation; either version 2 of the License, or (at your
+ * option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
-#include "firelands.h"
 #include "InstanceScript.h"
-#include "PassiveAI.h"
-#include "PathGenerator.h"
 #include "Map.h"
 #include "MotionMaster.h"
 #include "MoveSplineInit.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "Optional.h"
+#include "PassiveAI.h"
+#include "PathGenerator.h"
 #include "Player.h"
-#include "ScriptedCreature.h"
 #include "ScriptMgr.h"
+#include "ScriptedCreature.h"
 #include "Spell.h"
-#include "SpellScript.h"
-#include "SpellAuras.h"
 #include "SpellAuraEffects.h"
+#include "SpellAuras.h"
+#include "SpellScript.h"
+#include "firelands.h"
 
 enum Texts
 {
     // Lord Rhyolith
-    SAY_ENGAGE                  = 0,
-    SAY_CONCUSSIVE_STOMP        = 1,
-    SAY_ANNOUNCE_DRINK_MAGMA    = 2,
-    SAY_HEATED_VOLCANO          = 3,
+    SAY_ENGAGE = 0,
+    SAY_CONCUSSIVE_STOMP = 1,
+    SAY_ANNOUNCE_DRINK_MAGMA = 2,
+    SAY_HEATED_VOLCANO = 3,
     SAY_ANNOUNCE_ARMOR_WEAKENED = 4,
-    SAY_ARMOR_WEAKENED          = 5,
-    SAY_ANNOUNCE_ARMOR_BROKEN   = 6,
-    SAY_ARMOR_BROKEN            = 7,
-    SAY_DEATH                   = 8,
-    SAY_SLAY                    = 9
+    SAY_ARMOR_WEAKENED = 5,
+    SAY_ANNOUNCE_ARMOR_BROKEN = 6,
+    SAY_ARMOR_BROKEN = 7,
+    SAY_DEATH = 8,
+    SAY_SLAY = 9
 };
 
 enum Spells
 {
     // Lord Rhyolith
-    SPELL_OBSIDIAN_ARMOR                = 98632,
-    SPELL_BALANCE_BAR                   = 98226,
-    SPELL_CONCUSSIVE_STOMP              = 97282,
-    SPELL_HEATED_VOLCANO                = 98493,
-    SPELL_DRINK_MAGMA                   = 98034,
-    SPELL_MOLTEN_SPEW                   = 98043,
-    SPELL_LAVA_LINE                     = 100650,
-    SPELL_SUMMON_TUBE                   = 98266, // Serverside spell
-    SPELL_SUMMON_FRAGMENT_OF_RHYOLITH   = 98135,
-    SPELL_SUMMON_SPARK_OF_RHYOLITH      = 98553,
-    SPELL_SUMMON_ROCK_ELEMENTALS        = 98146,
-    SPELL_IMMOLATION_1                  = 99846,
-    SPELL_UNLEASHED_FLAME               = 101324,
-    SPELL_SUMMON_ARMOR_FRAGMENT         = 98558,
-    SPELL_SUPERHEATED                   = 101304,
-    SPELL_BURNING_FEET                  = 98837,
+    SPELL_OBSIDIAN_ARMOR = 98632,
+    SPELL_BALANCE_BAR = 98226,
+    SPELL_CONCUSSIVE_STOMP = 97282,
+    SPELL_HEATED_VOLCANO = 98493,
+    SPELL_DRINK_MAGMA = 98034,
+    SPELL_MOLTEN_SPEW = 98043,
+    SPELL_LAVA_LINE = 100650,
+    SPELL_SUMMON_TUBE = 98266, // Serverside spell
+    SPELL_SUMMON_FRAGMENT_OF_RHYOLITH = 98135,
+    SPELL_SUMMON_SPARK_OF_RHYOLITH = 98553,
+    SPELL_SUMMON_ROCK_ELEMENTALS = 98146,
+    SPELL_IMMOLATION_1 = 99846,
+    SPELL_UNLEASHED_FLAME = 101324,
+    SPELL_SUMMON_ARMOR_FRAGMENT = 98558,
+    SPELL_SUPERHEATED = 101304,
+    SPELL_BURNING_FEET = 98837,
 
     // Feet
-    SPELL_RIDE_VEHICLE                  = 98843,
-    SPELL_START_FIGHT                   = 103019, // Serverside spell
-    SPELL_FOOT_DAMAGE_TRACKER           = 98192,  // Serverside spell
+    SPELL_RIDE_VEHICLE = 98843,
+    SPELL_START_FIGHT = 103019,        // Serverside spell
+    SPELL_FOOT_DAMAGE_TRACKER = 98192, // Serverside spell
 
     // Volcano
-    SPELL_VOLCANO_BASE                  = 98250,
-    SPELL_ERUPTION                      = 98264,
-    SPELL_ERUPTION_AURA                 = 98492,
-    SPELL_EXPLOSION                     = 97719,
-    SPELL_MAGMA                         = 98472,
-    SPELL_MAGMA_FLOW                    = 97225,
-    SPELL_MAGMA_FLOW_MISSILE            = 97230,
-    SPELL_MAGMA_FLOW_DAMAGE             = 97234,
-    SPELL_MOLTEN_ARMOR_10N              = 98255, // Duplicate enum as NullCreatureAI does not have access to the raid mode macro
+    SPELL_VOLCANO_BASE = 98250,
+    SPELL_ERUPTION = 98264,
+    SPELL_ERUPTION_AURA = 98492,
+    SPELL_EXPLOSION = 97719,
+    SPELL_MAGMA = 98472,
+    SPELL_MAGMA_FLOW = 97225,
+    SPELL_MAGMA_FLOW_MISSILE = 97230,
+    SPELL_MAGMA_FLOW_DAMAGE = 97234,
+    SPELL_MOLTEN_ARMOR_10N = 98255, // Duplicate enum as NullCreatureAI does not have access to the raid mode macro
 
     // Pillar
-    SPELL_LAVA_TUBE                     = 98265,
+    SPELL_LAVA_TUBE = 98265,
 
     // Fragment of Rhyolith
-    SPELL_MELTDOWN                      = 98646,
+    SPELL_MELTDOWN = 98646,
 
     // Spark of Rhyolith
-    SPELL_IMMOLATION_2                  = 98597,
-    SPELL_INFERNAL_RAGE                 = 98596,
+    SPELL_IMMOLATION_2 = 98597,
+    SPELL_INFERNAL_RAGE = 98596,
 
     // Unleashed Flame
-    SPELL_UNLEASHED_FLAME_AURA          = 101313,
-    SPELL_UNLEASHED_FLAME_CHANNELING    = 101314,
+    SPELL_UNLEASHED_FLAME_AURA = 101313,
+    SPELL_UNLEASHED_FLAME_CHANNELING = 101314,
 
     // Liquid Obsidian
-    SPELL_FUSE                          = 99875
+    SPELL_FUSE = 99875
 };
 
 #define SPELL_MOLTEN_ARMOR RAID_MODE<uint32>(98255, 101157, 101158, 101159)
@@ -146,13 +146,13 @@ enum Actions
     ACTION_RECALCULATE_DAMAGE_REDUCTION_MOD = 1,
 
     // Movement Controller - Lord Rhyolith
-    ACTION_ENCOUNTER_STARTED        = 1,
-    ACTION_STOP_MOVEMENT_CONTROL    = 2,
+    ACTION_ENCOUNTER_STARTED = 1,
+    ACTION_STOP_MOVEMENT_CONTROL = 2,
 
     // Volcano
-    ACTION_ACTIVATE_VOLCANO         = 1,
-    ACTION_SCHEDULE_MAGMA_FLOW      = 2,
-    ACTION_DESTROY_VOLCANO          = 3
+    ACTION_ACTIVATE_VOLCANO = 1,
+    ACTION_SCHEDULE_MAGMA_FLOW = 2,
+    ACTION_DESTROY_VOLCANO = 3
 };
 
 enum AIAnimKits
@@ -171,16 +171,16 @@ enum MovePoints
 
 enum Balance : uint32
 {
-    MIN_LEFT_BALANCE    = 0,
-    CENTER_BALANCE      = 25,
-    MAX_RIGHT_BALANCE   = 50
+    MIN_LEFT_BALANCE = 0,
+    CENTER_BALANCE = 25,
+    MAX_RIGHT_BALANCE = 50
 };
 
 enum Data
 {
-    DATA_CURRENT_BALANCE            = 0,
-    DATA_DAMAGE_PER_SECOND          = 0,
-    DATA_RECENTLY_BROKEN_VOLCANO    = 0,
+    DATA_CURRENT_BALANCE = 0,
+    DATA_DAMAGE_PER_SECOND = 0,
+    DATA_RECENTLY_BROKEN_VOLCANO = 0,
 };
 
 enum WorldStates
@@ -188,27 +188,21 @@ enum WorldStates
     WORLD_STATE_ID_NOT_AN_AMBI_TURNER = 5931
 };
 
-static Position const MovementControllerSummonPosition  = { -366.00174f,  -349.65277f,  100.378845f, 1.7802358f };
-static Position const PlateauPlatformCenterPosition     = { -371.577393f, -318.680725f, 102.f };
-static constexpr float PlateauRadius                    = 50.f;
+static Position const MovementControllerSummonPosition = {-366.00174f, -349.65277f, 100.378845f, 1.7802358f};
+static Position const PlateauPlatformCenterPosition = {-371.577393f, -318.680725f, 102.f};
+static constexpr float PlateauRadius = 50.f;
 
-static std::array<uint32, 3> TransformationEntries =
-{
-    NPC_LORD_RHYOLITH_DAMAGED_1,
-    NPC_LORD_RHYOLITH_DAMAGED_2,
-    NPC_LORD_RHYOLITH_PHASE_TWO
-};
+static std::array<uint32, 3> TransformationEntries = {NPC_LORD_RHYOLITH_DAMAGED_1, NPC_LORD_RHYOLITH_DAMAGED_2, NPC_LORD_RHYOLITH_PHASE_TWO};
 
-static std::array<float, 2> BalanceDamageThresholds =
-{
-    3000.f, // Hotfix (2011-07-01): Rhyolith is now slightly easier to turn in 10-player mode.
-    9000.f
-};
+static std::array<float, 2> BalanceDamageThresholds = {3000.f, // Hotfix (2011-07-01): Rhyolith is now slightly easier to turn in 10-player mode.
+    9000.f};
 
 struct boss_lord_rhyolith : public BossAI
 {
-    boss_lord_rhyolith(Creature* creature) : BossAI(creature, DATA_LORD_RHYOLITH),
-        _currentBalance(CENTER_BALANCE), _transformationCount(0), _hasBrokenFirstVolcano(false), _achievementFailed(false), _hasBurningFeet(false) { }
+    boss_lord_rhyolith(Creature* creature)
+        : BossAI(creature, DATA_LORD_RHYOLITH), _currentBalance(CENTER_BALANCE), _transformationCount(0), _hasBrokenFirstVolcano(false), _achievementFailed(false), _hasBurningFeet(false)
+    {
+    }
 
     void InitializeAI() override
     {
@@ -221,7 +215,7 @@ struct boss_lord_rhyolith : public BossAI
         DoCastSelf(SPELL_OBSIDIAN_ARMOR, CastSpellExtraArgs().AddSpellMod(SPELLVALUE_AURA_STACK, 80));
 
         uint8 seatId = 1;
-        for (uint16 entry : { NPC_LEFT_FOOT, NPC_RIGHT_FOOT })
+        for (uint16 entry : {NPC_LEFT_FOOT, NPC_RIGHT_FOOT})
         {
             if (Creature* foot = DoSummon(entry, me->GetPosition(), 0, TEMPSUMMON_MANUAL_DESPAWN))
             {
@@ -246,7 +240,7 @@ struct boss_lord_rhyolith : public BossAI
         me->GetMap()->SetWorldState(WORLD_STATE_ID_NOT_AN_AMBI_TURNER, 0);
 
         uint8 frameIndex = 2;
-        for (uint32 type : { DATA_LEFT_FOOT, DATA_RIGHT_FOOT })
+        for (uint32 type : {DATA_LEFT_FOOT, DATA_RIGHT_FOOT})
         {
             if (Creature* foot = instance->GetCreature(type))
             {
@@ -318,52 +312,53 @@ struct boss_lord_rhyolith : public BossAI
 
         switch (summon->GetEntry())
         {
-            case NPC_MOVEMENT_CONTROLLER_LORD_RHYOLITH:
-                summons.Summon(summon);
-                break;
-            case NPC_VOLCANO:
-                summon->CastSpell(nullptr, SPELL_VOLCANO_BASE);
-                summon->SetDisplayId(summon->GetCreatureTemplate()->Modelid2);
-                summons.Summon(summon);
-                break;
-            case NPC_PILLAR:
-                summon->CastSpell(nullptr, SPELL_LAVA_TUBE);
-                summon->GetMotionMaster()->MovePoint(POINT_NONE, summon->GetPositionX(), summon->GetPositionY(), summon->GetPositionZ() + 6.f, false, 2.f);
-                summon->m_Events.AddEventAtOffset([summon]()
+        case NPC_MOVEMENT_CONTROLLER_LORD_RHYOLITH:
+            summons.Summon(summon);
+            break;
+        case NPC_VOLCANO:
+            summon->CastSpell(nullptr, SPELL_VOLCANO_BASE);
+            summon->SetDisplayId(summon->GetCreatureTemplate()->Modelid2);
+            summons.Summon(summon);
+            break;
+        case NPC_PILLAR:
+            summon->CastSpell(nullptr, SPELL_LAVA_TUBE);
+            summon->GetMotionMaster()->MovePoint(POINT_NONE, summon->GetPositionX(), summon->GetPositionY(), summon->GetPositionZ() + 6.f, false, 2.f);
+            summon->m_Events.AddEventAtOffset(
+                [summon]()
                 {
                     summon->GetMotionMaster()->MovePoint(POINT_NONE, summon->GetPositionX(), summon->GetPositionY(), summon->GetPositionZ() - 6.f, false, 2.f);
                     summon->DespawnOrUnsummon(4s + 500ms);
-                }, 11s);
-                summons.Summon(summon);
-                break;
-            case NPC_FRAGMENT_OF_RHYOLITH:
-                summon->CastSpell(nullptr, SPELL_MELTDOWN);
-                [[fallthrough]];
-            case NPC_SPARK_OF_RHYOLITH:
-                summon->SetCorpseDelay(3);
-                summon->SetReactState(REACT_PASSIVE);
-                summon->m_Events.AddEventAtOffset([summon]()
+                },
+                11s);
+            summons.Summon(summon);
+            break;
+        case NPC_FRAGMENT_OF_RHYOLITH:
+            summon->CastSpell(nullptr, SPELL_MELTDOWN);
+            [[fallthrough]];
+        case NPC_SPARK_OF_RHYOLITH:
+            summon->SetCorpseDelay(3);
+            summon->SetReactState(REACT_PASSIVE);
+            summon->m_Events.AddEventAtOffset(
+                [summon]()
                 {
                     summon->SetReactState(REACT_AGGRESSIVE);
                     summon->SetInCombatWithZone();
 
                     if (summon->GetEntry() == NPC_SPARK_OF_RHYOLITH)
                         summon->CastSpell(nullptr, SPELL_IMMOLATION_2);
-                }, 1s);
-                summons.Summon(summon);
-                break;
-            case NPC_UNLEASHED_FLAME:
-                summon->CastSpell(nullptr, SPELL_UNLEASHED_FLAME_AURA);
-                summon->CastSpell(nullptr, SPELL_UNLEASHED_FLAME_CHANNELING);
-                summon->m_Events.AddEventAtOffset([summon]()
-                {
-                    summon->GetMotionMaster()->MoveCirclePath(summon->GetPositionX(), summon->GetPositionY(), summon->GetPositionZ(), 10.f, true, 6);
-                }, 1s);
-                summons.Summon(summon);
-                break;
-            default:
-                BossAI::JustSummoned(summon);
-                break;
+                },
+                1s);
+            summons.Summon(summon);
+            break;
+        case NPC_UNLEASHED_FLAME:
+            summon->CastSpell(nullptr, SPELL_UNLEASHED_FLAME_AURA);
+            summon->CastSpell(nullptr, SPELL_UNLEASHED_FLAME_CHANNELING);
+            summon->m_Events.AddEventAtOffset([summon]() { summon->GetMotionMaster()->MoveCirclePath(summon->GetPositionX(), summon->GetPositionY(), summon->GetPositionZ(), 10.f, true, 6); }, 1s);
+            summons.Summon(summon);
+            break;
+        default:
+            BossAI::JustSummoned(summon);
+            break;
         }
     }
 
@@ -374,20 +369,19 @@ struct boss_lord_rhyolith : public BossAI
 
         switch (pointId)
         {
-            case POINT_DRINK_MAGMA:
-                Talk(SAY_ANNOUNCE_DRINK_MAGMA);
-                DoCastSelf(SPELL_DRINK_MAGMA);
-                break;
-            default:
-                break;
+        case POINT_DRINK_MAGMA:
+            Talk(SAY_ANNOUNCE_DRINK_MAGMA);
+            DoCastSelf(SPELL_DRINK_MAGMA);
+            break;
+        default:
+            break;
         }
     }
 
     void DamageTaken(Unit* /*attacker*/, uint32& damage) override
     {
-        if ((me->HealthBelowPctDamaged(75, damage) && _transformationCount == 0)
-            || (me->HealthBelowPctDamaged(50, damage) && _transformationCount == 1)
-            || (me->HealthBelowPctDamaged(25, damage) && _transformationCount == 2))
+        if ((me->HealthBelowPctDamaged(75, damage) && _transformationCount == 0) || (me->HealthBelowPctDamaged(50, damage) && _transformationCount == 1) ||
+            (me->HealthBelowPctDamaged(25, damage) && _transformationCount == 2))
         {
             me->UpdateEntry(TransformationEntries[_transformationCount], nullptr, false);
             {
@@ -404,7 +398,7 @@ struct boss_lord_rhyolith : public BossAI
             me->GetMotionMaster()->Clear(MOTION_SLOT_ACTIVE);
             me->StopMoving();
 
-            for (uint32 type : { DATA_LEFT_FOOT, DATA_RIGHT_FOOT })
+            for (uint32 type : {DATA_LEFT_FOOT, DATA_RIGHT_FOOT})
             {
                 if (Creature* foot = instance->GetCreature(type))
                 {
@@ -449,17 +443,17 @@ struct boss_lord_rhyolith : public BossAI
     {
         switch (action)
         {
-            case ACTION_DROP_MOLTEN_ARMOR_CHARGE:
-                if (Aura* armorAura = me->GetAura(SPELL_MOLTEN_ARMOR))
-                    armorAura->ModStackAmount(-1);
+        case ACTION_DROP_MOLTEN_ARMOR_CHARGE:
+            if (Aura* armorAura = me->GetAura(SPELL_MOLTEN_ARMOR))
+                armorAura->ModStackAmount(-1);
 
-                for (uint32 type : { DATA_LEFT_FOOT, DATA_RIGHT_FOOT })
-                    if (Creature* foot = instance->GetCreature(type))
-                        if (Aura* armorAura = foot->GetAura(SPELL_MOLTEN_ARMOR))
-                            armorAura->ModStackAmount(-1);
-                break;
-            default:
-                break;
+            for (uint32 type : {DATA_LEFT_FOOT, DATA_RIGHT_FOOT})
+                if (Creature* foot = instance->GetCreature(type))
+                    if (Aura* armorAura = foot->GetAura(SPELL_MOLTEN_ARMOR))
+                        armorAura->ModStackAmount(-1);
+            break;
+        default:
+            break;
         }
     }
 
@@ -467,10 +461,10 @@ struct boss_lord_rhyolith : public BossAI
     {
         switch (type)
         {
-            case DATA_CURRENT_BALANCE:
-                return _currentBalance;
-            default:
-                return 0;
+        case DATA_CURRENT_BALANCE:
+            return _currentBalance;
+        default:
+            return 0;
         }
 
         return 0;
@@ -480,12 +474,12 @@ struct boss_lord_rhyolith : public BossAI
     {
         switch (type)
         {
-            case DATA_RECENTLY_BROKEN_VOLCANO:
-                if (_recentlyBrokenVolcanos.empty())
-                    return ObjectGuid::Empty;
-                return _recentlyBrokenVolcanos.front();
-            default:
+        case DATA_RECENTLY_BROKEN_VOLCANO:
+            if (_recentlyBrokenVolcanos.empty())
                 return ObjectGuid::Empty;
+            return _recentlyBrokenVolcanos.front();
+        default:
+            return ObjectGuid::Empty;
         }
 
         return ObjectGuid::Empty;
@@ -505,186 +499,186 @@ struct boss_lord_rhyolith : public BossAI
         {
             switch (eventId)
             {
-                case EVENT_CONCUSSIVE_STOMP:
-                    Talk(SAY_CONCUSSIVE_STOMP);
-                    DoCastAOE(SPELL_CONCUSSIVE_STOMP);
-                    events.Repeat(30s);
-                    break;
-                case EVENT_UPDATE_BALANCE:
+            case EVENT_CONCUSSIVE_STOMP:
+                Talk(SAY_CONCUSSIVE_STOMP);
+                DoCastAOE(SPELL_CONCUSSIVE_STOMP);
+                events.Repeat(30s);
+                break;
+            case EVENT_UPDATE_BALANCE:
+            {
+                uint32 damageLeft = 0;
+                uint32 damageRight = 0;
+                int16 balanceOffset = 0;
+
+                if (Creature* footLeft = instance->GetCreature(DATA_LEFT_FOOT))
+                    if (CreatureAI* ai = footLeft->AI())
+                        damageLeft = ai->GetData(DATA_DAMAGE_PER_SECOND);
+
+                if (Creature* footRight = instance->GetCreature(DATA_RIGHT_FOOT))
+                    if (CreatureAI* ai = footRight->AI())
+                        damageRight = ai->GetData(DATA_DAMAGE_PER_SECOND);
+
+                if (damageLeft != damageRight)
                 {
-                    uint32 damageLeft = 0;
-                    uint32 damageRight = 0;
-                    int16 balanceOffset = 0;
+                    uint8 is25ManRaid = Is25ManRaid();
+                    balanceOffset -= uint8(static_cast<float>(damageLeft) / BalanceDamageThresholds[is25ManRaid]);
+                    balanceOffset += uint8(static_cast<float>(damageRight) / BalanceDamageThresholds[is25ManRaid]);
+                }
 
-                    if (Creature* footLeft = instance->GetCreature(DATA_LEFT_FOOT))
-                        if (CreatureAI* ai = footLeft->AI())
-                            damageLeft = ai->GetData(DATA_DAMAGE_PER_SECOND);
+                _currentBalance = std::clamp<int8>(CENTER_BALANCE + balanceOffset, MIN_LEFT_BALANCE, MAX_RIGHT_BALANCE);
 
-                    if (Creature* footRight = instance->GetCreature(DATA_RIGHT_FOOT))
-                        if (CreatureAI* ai = footRight->AI())
-                            damageRight = ai->GetData(DATA_DAMAGE_PER_SECOND);
+                if (!_achievementFailed && _currentBalance < CENTER_BALANCE)
+                {
+                    me->GetMap()->SetWorldState(WORLD_STATE_ID_NOT_AN_AMBI_TURNER, 1);
+                    _achievementFailed = true;
+                }
 
-                    if (damageLeft != damageRight)
-                    {
-                        uint8 is25ManRaid = Is25ManRaid();
-                        balanceOffset -= uint8(static_cast<float>(damageLeft) / BalanceDamageThresholds[is25ManRaid]);
-                        balanceOffset += uint8(static_cast<float>(damageRight) / BalanceDamageThresholds[is25ManRaid]);
-                    }
+                // Balance updated, update player power
+                for (auto const& i : me->GetMap()->GetPlayers())
+                    if (Player* player = i.GetSource())
+                        player->SetPower(POWER_ALTERNATE_POWER, _currentBalance);
 
-                    _currentBalance = std::clamp<int8>(CENTER_BALANCE + balanceOffset, MIN_LEFT_BALANCE, MAX_RIGHT_BALANCE);
+                events.Repeat(500ms); // The timer for this event is very inconsistent in sniffs
+                break;
+            }
+            case EVENT_HEATED_VOLCANO:
+                Talk(SAY_HEATED_VOLCANO);
+                DoCastAOE(SPELL_HEATED_VOLCANO, CastSpellExtraArgs().AddSpellMod(SPELLVALUE_MAX_TARGETS, 1));
+                events.Repeat(25s);
+                break;
+            case EVENT_BALANCE_FEET_HEALTH:
+            {
+                Creature* footLeft = instance->GetCreature(DATA_LEFT_FOOT);
+                Creature* footRight = instance->GetCreature(DATA_RIGHT_FOOT);
 
-                    if (!_achievementFailed && _currentBalance < CENTER_BALANCE)
-                    {
-                        me->GetMap()->SetWorldState(WORLD_STATE_ID_NOT_AN_AMBI_TURNER, 1);
-                        _achievementFailed = true;
-                    }
-
-                    // Balance updated, update player power
-                    for (auto const& i : me->GetMap()->GetPlayers())
-                        if (Player* player = i.GetSource())
-                            player->SetPower(POWER_ALTERNATE_POWER, _currentBalance);
-
-                    events.Repeat(500ms); // The timer for this event is very inconsistent in sniffs
+                if (!footLeft || !footRight)
+                {
+                    // One of the feet is missing. Encounter broke. Reset.
+                    EnterEvadeMode(EVADE_REASON_OTHER);
                     break;
                 }
-                case EVENT_HEATED_VOLCANO:
-                    Talk(SAY_HEATED_VOLCANO);
-                    DoCastAOE(SPELL_HEATED_VOLCANO, CastSpellExtraArgs().AddSpellMod(SPELLVALUE_MAX_TARGETS, 1));
-                    events.Repeat(25s);
-                    break;
-                case EVENT_BALANCE_FEET_HEALTH:
+
+                float targetHealthPct = (footLeft->GetHealthPct() + footRight->GetHealthPct()) / 2;
+                footLeft->SetHealth(CalculatePct(footLeft->GetMaxHealth(), targetHealthPct));
+                footRight->SetHealth(CalculatePct(footRight->GetMaxHealth(), targetHealthPct));
+
+                // Deal damage to trigger the damage taken hook, which manages the model changes and phase switch
+                if (targetHealthPct < me->GetHealthPct())
+                    Unit::DealDamage(me, me, CalculatePct(me->GetMaxHealth(), me->GetHealthPct() - targetHealthPct));
+                events.Repeat(5s);
+                break;
+            }
+            case EVENT_LAVA_LINE:
+                if (!_recentlyBrokenVolcanos.empty())
                 {
-                    Creature* footLeft = instance->GetCreature(DATA_LEFT_FOOT);
-                    Creature* footRight = instance->GetCreature(DATA_RIGHT_FOOT);
-
-                    if (!footLeft || !footRight)
-                    {
-                        // One of the feet is missing. Encounter broke. Reset.
-                        EnterEvadeMode(EVADE_REASON_OTHER);
-                        break;
-                    }
-
-                    float targetHealthPct = (footLeft->GetHealthPct() + footRight->GetHealthPct()) / 2;
-                    footLeft->SetHealth(CalculatePct(footLeft->GetMaxHealth(), targetHealthPct));
-                    footRight->SetHealth(CalculatePct(footRight->GetMaxHealth(), targetHealthPct));
-
-                    // Deal damage to trigger the damage taken hook, which manages the model changes and phase switch
-                    if (targetHealthPct < me->GetHealthPct())
-                        me->DealDamage(me, CalculatePct(me->GetMaxHealth(), me->GetHealthPct() - targetHealthPct));
-                    events.Repeat(5s);
-                    break;
+                    DoCastAOE(SPELL_LAVA_LINE);
+                    _recentlyBrokenVolcanos.pop();
                 }
-                case EVENT_LAVA_LINE:
-                    if (!_recentlyBrokenVolcanos.empty())
-                    {
-                        DoCastAOE(SPELL_LAVA_LINE);
-                        _recentlyBrokenVolcanos.pop();
-                    }
-                    events.Repeat(10s);
-                    break;
-                case EVENT_THERMAL_VENT:
-                    DoCastAOE(SPELL_SUMMON_ROCK_ELEMENTALS);
-                    events.Repeat(23s);
-                    break;
-                case EVENT_STAND_UP:
-                    me->SetAIAnimKitId(0);
-                    events.ScheduleEvent(EVENT_TURN_AGGRESSIVE, 3s + 600ms);
-                    break;
-                case EVENT_TURN_AGGRESSIVE:
-                    me->SetReactState(REACT_AGGRESSIVE);
-                    break;
-                case EVENT_UNLEASHED_FLAME:
-                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 50.f, true))
-                        DoCast(target, SPELL_UNLEASHED_FLAME);
-                    events.Repeat(6s);
-                    break;
-                case EVENT_SUPERHEATED:
-                    DoCastSelf(SPELL_SUPERHEATED);
-                    events.Repeat(10s);
-                    break;
-                case EVENT_SEARCH_FOR_VOLANOS:
+                events.Repeat(10s);
+                break;
+            case EVENT_THERMAL_VENT:
+                DoCastAOE(SPELL_SUMMON_ROCK_ELEMENTALS);
+                events.Repeat(23s);
+                break;
+            case EVENT_STAND_UP:
+                me->SetAIAnimKitId(0);
+                events.ScheduleEvent(EVENT_TURN_AGGRESSIVE, 3s + 600ms);
+                break;
+            case EVENT_TURN_AGGRESSIVE:
+                me->SetReactState(REACT_AGGRESSIVE);
+                break;
+            case EVENT_UNLEASHED_FLAME:
+                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 50.f, true))
+                    DoCast(target, SPELL_UNLEASHED_FLAME);
+                events.Repeat(6s);
+                break;
+            case EVENT_SUPERHEATED:
+                DoCastSelf(SPELL_SUPERHEATED);
+                events.Repeat(10s);
+                break;
+            case EVENT_SEARCH_FOR_VOLANOS:
+            {
+                // There does not seem to be any serverside spell for searching for volcanos, so we have to do it like this
+                bool isOnAVolcano = false;
+                for (ObjectGuid const& summonGuid : summons)
                 {
-                    // There does not seem to be any serverside spell for searching for volcanos, so we have to do it like this
-                    bool isOnAVolcano = false;
-                    for (ObjectGuid const& summonGuid : summons)
-                    {
-                        Creature* summon = ObjectAccessor::GetCreature(*me, summonGuid);
-                        if (!summon || summon->GetOriginalEntry() != NPC_VOLCANO)
-                            continue;
+                    Creature* summon = ObjectAccessor::GetCreature(*me, summonGuid);
+                    if (!summon || summon->GetOriginalEntry() != NPC_VOLCANO)
+                        continue;
 
-                        if (summon->GetEntry() == NPC_VOLCANO || summon->GetEntry() == NPC_VOLCANO_HEATED || summon->GetEntry() == NPC_VOLCANO_CRATER)
+                    if (summon->GetEntry() == NPC_VOLCANO || summon->GetEntry() == NPC_VOLCANO_HEATED || summon->GetEntry() == NPC_VOLCANO_CRATER)
+                    {
+                        if (me->GetExactDist2d(summon) < 10.f)
                         {
-                            if (me->GetExactDist2d(summon) < 10.f)
+                            if (summon->GetEntry() == NPC_VOLCANO || summon->GetEntry() == NPC_VOLCANO_HEATED)
                             {
-                                if (summon->GetEntry() == NPC_VOLCANO || summon->GetEntry() == NPC_VOLCANO_HEATED)
+                                // Volcano has been heated, the Obsidian Armor is being weakened
+                                if (summon->GetEntry() == NPC_VOLCANO_HEATED)
                                 {
-                                    // Volcano has been heated, the Obsidian Armor is being weakened
-                                    if (summon->GetEntry() == NPC_VOLCANO_HEATED)
+                                    Talk(SAY_ANNOUNCE_ARMOR_WEAKENED);
+                                    Talk(SAY_ARMOR_WEAKENED);
+                                    if (Aura* armorAura = me->GetAura(SPELL_OBSIDIAN_ARMOR, me->GetGUID()))
+                                        armorAura->ModStackAmount(-16);
+
+                                    for (uint32 type : {DATA_LEFT_FOOT, DATA_RIGHT_FOOT})
                                     {
-                                        Talk(SAY_ANNOUNCE_ARMOR_WEAKENED);
-                                        Talk(SAY_ARMOR_WEAKENED);
-                                        if (Aura* armorAura = me->GetAura(SPELL_OBSIDIAN_ARMOR, me->GetGUID()))
-                                            armorAura->ModStackAmount(-16);
-
-                                        for (uint32 type : { DATA_LEFT_FOOT, DATA_RIGHT_FOOT })
+                                        if (Creature* foot = instance->GetCreature(type))
                                         {
-                                            if (Creature* foot = instance->GetCreature(type))
-                                            {
-                                                if (Aura* armorAura = foot->GetAura(SPELL_OBSIDIAN_ARMOR))
-                                                    armorAura->ModStackAmount(-16);
+                                            if (Aura* armorAura = foot->GetAura(SPELL_OBSIDIAN_ARMOR))
+                                                armorAura->ModStackAmount(-16);
 
-                                                if (CreatureAI* ai = foot->AI())
-                                                    ai->DoAction(ACTION_RECALCULATE_DAMAGE_REDUCTION_MOD);
-                                            }
-                                        }
-
-                                        if (IsHeroic())
-                                            for (uint8 i = 0; i < 5; ++i)
-                                                DoCastSelf(SPELL_SUMMON_ARMOR_FRAGMENT);
-                                    }
-
-                                    if (CreatureAI* ai = summon->AI())
-                                    {
-                                        ai->DoAction(ACTION_DESTROY_VOLCANO);
-                                        _recentlyBrokenVolcanos.push(summonGuid);
-                                        if (!_hasBrokenFirstVolcano)
-                                        {
-                                            _hasBrokenFirstVolcano = true;
-                                            events.ScheduleEvent(EVENT_LAVA_LINE, 11s);
+                                            if (CreatureAI* ai = foot->AI())
+                                                ai->DoAction(ACTION_RECALCULATE_DAMAGE_REDUCTION_MOD);
                                         }
                                     }
+
+                                    if (IsHeroic())
+                                        for (uint8 i = 0; i < 5; ++i)
+                                            DoCastSelf(SPELL_SUMMON_ARMOR_FRAGMENT);
                                 }
 
-                                isOnAVolcano = true;
+                                if (CreatureAI* ai = summon->AI())
+                                {
+                                    ai->DoAction(ACTION_DESTROY_VOLCANO);
+                                    _recentlyBrokenVolcanos.push(summonGuid);
+                                    if (!_hasBrokenFirstVolcano)
+                                    {
+                                        _hasBrokenFirstVolcano = true;
+                                        events.ScheduleEvent(EVENT_LAVA_LINE, 11s);
+                                    }
+                                }
                             }
+
+                            isOnAVolcano = true;
                         }
                     }
-
-                    if (isOnAVolcano && !_hasBurningFeet)
-                    {
-                        DoCastSelf(SPELL_BURNING_FEET);
-
-                        for (uint32 type : { DATA_LEFT_FOOT, DATA_RIGHT_FOOT })
-                            if (Creature* foot = instance->GetCreature(type))
-                                foot->CastSpell(nullptr, SPELL_BURNING_FEET);
-
-                        _hasBurningFeet = true;
-                    }
-                    else if (!isOnAVolcano && _hasBurningFeet)
-                    {
-                        me->RemoveAurasDueToSpell(SPELL_BURNING_FEET);
-                        for (uint32 type : { DATA_LEFT_FOOT, DATA_RIGHT_FOOT })
-                            if (Creature* foot = instance->GetCreature(type))
-                                foot->RemoveAurasDueToSpell(SPELL_BURNING_FEET);
-
-                        _hasBurningFeet = false;
-                    }
-
-                    events.Repeat(500ms);
-                    break;
                 }
-                default:
-                    break;
+
+                if (isOnAVolcano && !_hasBurningFeet)
+                {
+                    DoCastSelf(SPELL_BURNING_FEET);
+
+                    for (uint32 type : {DATA_LEFT_FOOT, DATA_RIGHT_FOOT})
+                        if (Creature* foot = instance->GetCreature(type))
+                            foot->CastSpell(nullptr, SPELL_BURNING_FEET);
+
+                    _hasBurningFeet = true;
+                }
+                else if (!isOnAVolcano && _hasBurningFeet)
+                {
+                    me->RemoveAurasDueToSpell(SPELL_BURNING_FEET);
+                    for (uint32 type : {DATA_LEFT_FOOT, DATA_RIGHT_FOOT})
+                        if (Creature* foot = instance->GetCreature(type))
+                            foot->RemoveAurasDueToSpell(SPELL_BURNING_FEET);
+
+                    _hasBurningFeet = false;
+                }
+
+                events.Repeat(500ms);
+                break;
+            }
+            default:
+                break;
             }
 
             if (me->HasUnitState(UNIT_STATE_CASTING))
@@ -693,12 +687,13 @@ struct boss_lord_rhyolith : public BossAI
 
         DoMeleeAttackIfReady();
     }
-private:
+
+  private:
     void CleanupEncounter()
     {
         instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
 
-        for (uint32 type : { DATA_LEFT_FOOT, DATA_RIGHT_FOOT })
+        for (uint32 type : {DATA_LEFT_FOOT, DATA_RIGHT_FOOT})
         {
             if (Creature* foot = instance->GetCreature(type))
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, foot);
@@ -745,7 +740,9 @@ static Optional<Position> GetIntersectionPoint(Position const& start, Position c
 
 struct npc_rhyolith_movement_controller_lord_rhyolith : public NullCreatureAI
 {
-    npc_rhyolith_movement_controller_lord_rhyolith(Creature* creature) : NullCreatureAI(creature), _instance(nullptr) { }
+    npc_rhyolith_movement_controller_lord_rhyolith(Creature* creature) : NullCreatureAI(creature), _instance(nullptr)
+    {
+    }
 
     void InitializeAI() override
     {
@@ -756,16 +753,16 @@ struct npc_rhyolith_movement_controller_lord_rhyolith : public NullCreatureAI
     {
         switch (action)
         {
-            case ACTION_ENCOUNTER_STARTED:
-                // Launch an initial spline for the boss
-                _events.ScheduleEvent(EVENT_MOVE_LORD_RHYOLITH, 1ms);
-                _events.ScheduleEvent(EVENT_TELEPORT, 1s);
-                break;
-            case ACTION_STOP_MOVEMENT_CONTROL:
-                _events.Reset();
-                break;
-            default:
-                break;
+        case ACTION_ENCOUNTER_STARTED:
+            // Launch an initial spline for the boss
+            _events.ScheduleEvent(EVENT_MOVE_LORD_RHYOLITH, 1ms);
+            _events.ScheduleEvent(EVENT_TELEPORT, 1s);
+            break;
+        case ACTION_STOP_MOVEMENT_CONTROL:
+            _events.Reset();
+            break;
+        default:
+            break;
         }
     }
 
@@ -777,58 +774,59 @@ struct npc_rhyolith_movement_controller_lord_rhyolith : public NullCreatureAI
         {
             switch (eventId)
             {
-                case EVENT_TELEPORT:
-                    if (Creature* rhyolith = _instance->GetCreature(DATA_LORD_RHYOLITH))
+            case EVENT_TELEPORT:
+                if (Creature* rhyolith = _instance->GetCreature(DATA_LORD_RHYOLITH))
+                {
+                    if (!rhyolith->IsAIEnabled())
+                        break;
+
+                    float angle = rhyolith->GetOrientation();
+                    uint32 balance = rhyolith->AI()->GetData(DATA_CURRENT_BALANCE);
+
+                    if (balance < 25)
+                        angle += CalculatePct(float(M_PI_4), uint32(25) - balance);
+                    else if (balance > 25)
+                        angle -= CalculatePct(float(M_PI_4), balance - uint32(25));
+
+                    Position lineDest = rhyolith->GetPosition();
+                    lineDest.m_positionX += 1.f * std::cos(angle);
+                    lineDest.m_positionY += 1.f * std::sin(angle);
+
+                    Optional<Position> destination = GetIntersectionPoint(rhyolith->GetPosition(), lineDest, PlateauPlatformCenterPosition, PlateauRadius);
+                    if (!destination.has_value())
                     {
-                        if (!rhyolith->IsAIEnabled())
-                            break;
-
-                        float angle = rhyolith->GetOrientation();
-                        uint32 balance = rhyolith->AI()->GetData(DATA_CURRENT_BALANCE);
-
-                        if (balance < 25)
-                            angle += CalculatePct(float(M_PI_4), uint32(25) - balance);
-                        else if (balance > 25)
-                            angle -= CalculatePct(float(M_PI_4), balance - uint32(25));
-
-                        Position lineDest = rhyolith->GetPosition();
-                        lineDest.m_positionX += 1.f * std::cos(angle);
-                        lineDest.m_positionY += 1.f * std::sin(angle);
-
-                        Optional<Position> destination = GetIntersectionPoint(rhyolith->GetPosition(), lineDest, PlateauPlatformCenterPosition, PlateauRadius);
-                        if (!destination.has_value())
-                        {
-                            // No intersections. The boss literally broke. Time for a reset.
-                            if (CreatureAI* ai = rhyolith->AI())
-                                ai->EnterEvadeMode();
-                            break;
-                        }
-
-                        Position previousPosition = me->GetPosition();
-
-                        me->NearTeleportTo(*destination);
-
-                        if (*destination != previousPosition)
-                            _events.RescheduleEvent(EVENT_MOVE_LORD_RHYOLITH, 400ms);
-
-                        _events.Repeat(1s);
+                        // No intersections. The boss literally broke. Time for a reset.
+                        if (CreatureAI* ai = rhyolith->AI())
+                            ai->EnterEvadeMode();
+                        break;
                     }
-                    break;
-                case EVENT_MOVE_LORD_RHYOLITH:
-                    if (Creature* rhyolith = _instance->GetCreature(DATA_LORD_RHYOLITH))
-                    {
-                        if (!rhyolith->IsMovementPreventedByCasting())
-                            rhyolith->GetMotionMaster()->MovePoint(POINT_DRINK_MAGMA, me->GetPosition());
-                        else
-                            _events.RescheduleEvent(EVENT_MOVE_LORD_RHYOLITH, 400ms);
-                    }
-                    break;
-                default:
-                    break;
+
+                    Position previousPosition = me->GetPosition();
+
+                    me->NearTeleportTo(*destination);
+
+                    if (*destination != previousPosition)
+                        _events.RescheduleEvent(EVENT_MOVE_LORD_RHYOLITH, 400ms);
+
+                    _events.Repeat(1s);
+                }
+                break;
+            case EVENT_MOVE_LORD_RHYOLITH:
+                if (Creature* rhyolith = _instance->GetCreature(DATA_LORD_RHYOLITH))
+                {
+                    if (!rhyolith->IsMovementPreventedByCasting())
+                        rhyolith->GetMotionMaster()->MovePoint(POINT_DRINK_MAGMA, me->GetPosition());
+                    else
+                        _events.RescheduleEvent(EVENT_MOVE_LORD_RHYOLITH, 400ms);
+                }
+                break;
+            default:
+                break;
             }
         }
     }
-private:
+
+  private:
     EventMap _events;
     InstanceScript* _instance;
 };
@@ -837,7 +835,7 @@ struct npc_rhyolith_foot : public NullCreatureAI
 {
     npc_rhyolith_foot(Creature* creature) : NullCreatureAI(creature), _damageCleanupTimer(500), _damageReductionModifier(0.f)
     {
-        _damagePerSecond = { };
+        _damagePerSecond = {};
     }
 
     void DamageTaken(Unit* /*attacker*/, uint32& damage) override
@@ -852,10 +850,10 @@ struct npc_rhyolith_foot : public NullCreatureAI
     {
         switch (type)
         {
-            case DATA_DAMAGE_PER_SECOND:
-                return _damagePerSecond[0] + _damagePerSecond[1];
-            default:
-                return 0;
+        case DATA_DAMAGE_PER_SECOND:
+            return _damagePerSecond[0] + _damagePerSecond[1];
+        default:
+            return 0;
         }
 
         return 0;
@@ -865,14 +863,12 @@ struct npc_rhyolith_foot : public NullCreatureAI
     {
         switch (action)
         {
-            case ACTION_RECALCULATE_DAMAGE_REDUCTION_MOD:
-                _damageReductionModifier = 100.f * (1.f - me->GetTotalAuraMultiplier(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, [&](AuraEffect const* aurEff)
-                {
-                    return aurEff->GetSpellInfo()->Id == SPELL_OBSIDIAN_ARMOR;
-                }));
-                break;
-            default:
-                break;
+        case ACTION_RECALCULATE_DAMAGE_REDUCTION_MOD:
+            _damageReductionModifier =
+                100.f * (1.f - me->GetTotalAuraMultiplier(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, [&](AuraEffect const* aurEff) { return aurEff->GetSpellInfo()->Id == SPELL_OBSIDIAN_ARMOR; }));
+            break;
+        default:
+            break;
         }
     }
 
@@ -888,7 +884,7 @@ struct npc_rhyolith_foot : public NullCreatureAI
         }
     }
 
-private:
+  private:
     int32 _damageCleanupTimer;
     float _damageReductionModifier;
     std::array<uint32, 2> _damagePerSecond;
@@ -896,34 +892,36 @@ private:
 
 struct npc_rhyolith_volcano : public NullCreatureAI
 {
-    npc_rhyolith_volcano(Creature* creature) : NullCreatureAI(creature) { }
+    npc_rhyolith_volcano(Creature* creature) : NullCreatureAI(creature)
+    {
+    }
 
     void DoAction(int32 action) override
     {
         switch (action)
         {
-            case ACTION_ACTIVATE_VOLCANO:
-                me->UpdateEntry(NPC_VOLCANO_HEATED, nullptr, false);
-                if (CreatureTemplate const* transformTemplate = sObjectMgr->GetCreatureTemplate(NPC_VOLCANO_HEATED))
-                    me->SetDisplayId(transformTemplate->Modelid2);
-                _events.ScheduleEvent(EVENT_ERUPTION, 5s);
-                break;
-            case ACTION_SCHEDULE_MAGMA_FLOW:
-                _events.ScheduleEvent(EVENT_MAGMA_FLOW, 4s);
-                break;
-            case ACTION_DESTROY_VOLCANO:
-                _events.CancelEvent(EVENT_ERUPTION);
-                me->RemoveAurasDueToSpell(SPELL_VOLCANO_BASE);
-                me->RemoveAurasDueToSpell(SPELL_ERUPTION);
-                DoCastSelf(SPELL_EXPLOSION);
-                DoCastSelf(SPELL_MAGMA);
+        case ACTION_ACTIVATE_VOLCANO:
+            me->UpdateEntry(NPC_VOLCANO_HEATED, nullptr, false);
+            if (CreatureTemplate const* transformTemplate = sObjectMgr->GetCreatureTemplate(NPC_VOLCANO_HEATED))
+                me->SetDisplayId(transformTemplate->Modelid2);
+            _events.ScheduleEvent(EVENT_ERUPTION, 5s);
+            break;
+        case ACTION_SCHEDULE_MAGMA_FLOW:
+            _events.ScheduleEvent(EVENT_MAGMA_FLOW, 4s);
+            break;
+        case ACTION_DESTROY_VOLCANO:
+            _events.CancelEvent(EVENT_ERUPTION);
+            me->RemoveAurasDueToSpell(SPELL_VOLCANO_BASE);
+            me->RemoveAurasDueToSpell(SPELL_ERUPTION);
+            DoCastSelf(SPELL_EXPLOSION);
+            DoCastSelf(SPELL_MAGMA);
 
-                me->UpdateEntry(NPC_VOLCANO_CRATER, nullptr, false);
-                if (CreatureTemplate const* transformTemplate = sObjectMgr->GetCreatureTemplate(NPC_VOLCANO_CRATER))
-                    me->SetDisplayId(transformTemplate->Modelid2);
-                break;
-            default:
-                break;
+            me->UpdateEntry(NPC_VOLCANO_CRATER, nullptr, false);
+            if (CreatureTemplate const* transformTemplate = sObjectMgr->GetCreatureTemplate(NPC_VOLCANO_CRATER))
+                me->SetDisplayId(transformTemplate->Modelid2);
+            break;
+        default:
+            break;
         }
     }
 
@@ -935,24 +933,27 @@ struct npc_rhyolith_volcano : public NullCreatureAI
         {
             switch (eventId)
             {
-                case EVENT_ERUPTION:
-                    DoCastSelf(SPELL_ERUPTION);
-                    break;
-                case EVENT_MAGMA_FLOW:
-                    DoCastSelf(SPELL_MAGMA_FLOW);
-                    break;
-                default:
-                    break;
+            case EVENT_ERUPTION:
+                DoCastSelf(SPELL_ERUPTION);
+                break;
+            case EVENT_MAGMA_FLOW:
+                DoCastSelf(SPELL_MAGMA_FLOW);
+                break;
+            default:
+                break;
             }
         }
     }
-private:
+
+  private:
     EventMap _events;
 };
 
 struct npc_rhyolith_liquid_obsidian : public PassiveAI
 {
-    npc_rhyolith_liquid_obsidian(Creature* creature) : PassiveAI(creature), _instance(nullptr) { }
+    npc_rhyolith_liquid_obsidian(Creature* creature) : PassiveAI(creature), _instance(nullptr)
+    {
+    }
 
     void InitializeAI() override
     {
@@ -972,25 +973,25 @@ struct npc_rhyolith_liquid_obsidian : public PassiveAI
         {
             switch (eventId)
             {
-                case EVENT_FUSE_WITH_LORD_RHYOLITH:
-                    if (Creature* rhyolith = _instance->GetCreature(DATA_LORD_RHYOLITH))
+            case EVENT_FUSE_WITH_LORD_RHYOLITH:
+                if (Creature* rhyolith = _instance->GetCreature(DATA_LORD_RHYOLITH))
+                {
+                    if (me->GetExactDist2d(rhyolith) < 10.f)
+                        DoCastSelf(SPELL_FUSE);
+                    else
                     {
-                        if (me->GetExactDist2d(rhyolith) < 10.f)
-                            DoCastSelf(SPELL_FUSE);
-                        else
-                        {
-                            me->GetMotionMaster()->MovePoint(POINT_NONE, rhyolith->GetPosition());
-                            _events.Repeat(1s);
-                        }
+                        me->GetMotionMaster()->MovePoint(POINT_NONE, rhyolith->GetPosition());
+                        _events.Repeat(1s);
                     }
-                    break;
-                default:
-                    break;
+                }
+                break;
+            default:
+                break;
             }
         }
     }
 
-private:
+  private:
     InstanceScript* _instance;
     EventMap _events;
 };
@@ -999,7 +1000,7 @@ class spell_rhyolith_drink_magma : public SpellScript
 {
     bool Validate(SpellInfo const* /*spell*/) override
     {
-        return ValidateSpellInfo({ SPELL_MOLTEN_SPEW });
+        return ValidateSpellInfo({SPELL_MOLTEN_SPEW});
     }
 
     void HandleDummyEffect(SpellEffIndex /*effIndex*/)
@@ -1054,7 +1055,8 @@ class spell_rhyolith_concussive_stomp : public SpellScript
         OnObjectAreaTargetSelect.Register(&spell_rhyolith_concussive_stomp::StoreVolcanoTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ENEMY);
         OnEffectHitTarget.Register(&spell_rhyolith_concussive_stomp::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
-private:
+
+  private:
     std::vector<ObjectGuid> _volcanoTargetGUIDs;
 };
 
@@ -1062,17 +1064,14 @@ class spell_rhyolith_heated_volcano : public SpellScript
 {
     bool Validate(SpellInfo const* /*spell*/) override
     {
-        return ValidateSpellInfo({ SPELL_ERUPTION });
+        return ValidateSpellInfo({SPELL_ERUPTION});
     }
 
     void FilterTargets(std::list<WorldObject*>& targets)
     {
         // Hotfix (2011-07-06): Lord Rhyolith now prefers to activate volcanoes that are in front of him over volcanoes that are behind him.
         std::list<WorldObject*> targetsCopy = targets;
-        targetsCopy.remove_if([&](WorldObject const* target)
-        {
-            return !GetCaster()->isInFront(target);
-        });
+        targetsCopy.remove_if([&](WorldObject const* target) { return !GetCaster()->isInFront(target); });
 
         if (!targetsCopy.empty())
             targets = targetsCopy;
@@ -1096,7 +1095,7 @@ class spell_rhyolith_lava_strike_visual : public SpellScript
 {
     void SetDest(SpellDestination& dest)
     {
-        dest.RelocateOffset({ frand(-20.f, 20.f), frand(-20.f, 20.f), frand(25.f, 70.f), 0.f });
+        dest.RelocateOffset({frand(-20.f, 20.f), frand(-20.f, 20.f), frand(25.f, 70.f), 0.f});
     }
 
     void Register()
@@ -1105,7 +1104,7 @@ class spell_rhyolith_lava_strike_visual : public SpellScript
     }
 };
 
-class spell_rhyolith_lava_strike: public SpellScript
+class spell_rhyolith_lava_strike : public SpellScript
 {
     void FilterTargets(std::list<WorldObject*>& targets)
     {
@@ -1135,7 +1134,7 @@ class spell_rhyolith_lava_line : public SpellScript
 {
     bool Validate(SpellInfo const* /*spell*/) override
     {
-        return ValidateSpellInfo({ SPELL_SUMMON_TUBE });
+        return ValidateSpellInfo({SPELL_SUMMON_TUBE});
     }
 
     void FilterTargets(std::list<WorldObject*>& targets)
@@ -1148,10 +1147,7 @@ class spell_rhyolith_lava_line : public SpellScript
         {
             ObjectGuid volcanoGuid = ai->GetGUID(DATA_RECENTLY_BROKEN_VOLCANO);
             if (!volcanoGuid.IsEmpty())
-                targets.remove_if([volcanoGuid](WorldObject const* target)
-                {
-                    return target->GetGUID() != volcanoGuid;
-                });
+                targets.remove_if([volcanoGuid](WorldObject const* target) { return target->GetGUID() != volcanoGuid; });
         }
     }
 
@@ -1168,7 +1164,6 @@ class spell_rhyolith_lava_line : public SpellScript
         Position summonDest = target->GetPosition();
         summonDest.m_positionZ -= 6.f;
         caster->CastSpell(summonDest, SPELL_SUMMON_TUBE);
-
     }
 
     void Register() override
@@ -1178,7 +1173,7 @@ class spell_rhyolith_lava_line : public SpellScript
     }
 };
 
-static constexpr float Magnitude = 1.f;  // Maximum wave outbreak
+static constexpr float Magnitude = 1.f; // Maximum wave outbreak
 
 static Position GetSineWavePoint(Position const& origin, float angle, uint32 auraTickNumber, float frequency)
 {
@@ -1199,11 +1194,7 @@ class spell_rhyolith_magma_flow : public AuraScript
 {
     bool Validate(SpellInfo const* /*spell*/) override
     {
-        return ValidateSpellInfo(
-        {
-            SPELL_MAGMA_FLOW_DAMAGE,
-            SPELL_MAGMA_FLOW_MISSILE
-        });
+        return ValidateSpellInfo({SPELL_MAGMA_FLOW_DAMAGE, SPELL_MAGMA_FLOW_MISSILE});
     }
 
     bool Load() override
@@ -1259,7 +1250,8 @@ class spell_rhyolith_magma_flow : public AuraScript
         OnEffectPeriodic.Register(&spell_rhyolith_magma_flow::HandleEffectPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
         AfterEffectRemove.Register(&spell_rhyolith_magma_flow::HandleEffectRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
-private:
+
+  private:
     bool _detonated = false;
     uint8 _lineCount = 0;
     float _angleOffset = 0.f;
@@ -1271,7 +1263,7 @@ class spell_rhyolith_immolation : public AuraScript
 {
     bool Validate(SpellInfo const* /*spell*/) override
     {
-        return ValidateSpellInfo({ SPELL_INFERNAL_RAGE });
+        return ValidateSpellInfo({SPELL_INFERNAL_RAGE});
     }
 
     void HandleEffectPeriodic(AuraEffect const* aurEff)
@@ -1303,7 +1295,6 @@ class spell_rhyolith_meltdown : public SpellScript
         targets = _storedTargets;
     }
 
-
     void CalculateDamage()
     {
         Unit* caster = GetCaster();
@@ -1322,7 +1313,8 @@ class spell_rhyolith_meltdown : public SpellScript
         BeforeCast.Register(&spell_rhyolith_meltdown::CalculateDamage);
         OnEffectLaunchTarget.Register(&spell_rhyolith_meltdown::ModifyDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
-private:
+
+  private:
     int32 damage = 0;
     std::list<WorldObject*> _storedTargets;
 };
@@ -1362,7 +1354,7 @@ class spell_rhyolith_summon_rock_elementals : public SpellScript
         AfterCast.Register(&spell_rhyolith_summon_rock_elementals::SummonElementals);
     }
 
-private:
+  private:
     std::vector<ObjectGuid> _elementalTargetGUIDs;
     uint32 _summonSpellId = 0;
 };
