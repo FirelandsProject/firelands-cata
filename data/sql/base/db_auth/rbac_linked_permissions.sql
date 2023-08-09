@@ -652,7 +652,11 @@ INSERT INTO `rbac_linked_permissions` (`id`, `linkedId`) VALUES
 	(199, 496),
 	(199, 507),
 	(199, 525),
-	(199, 534);
+	(199, 534),
+	(196, 1434),
+	(197, 1434),
+	(198, 1434);
+	
 /*!40000 ALTER TABLE `rbac_linked_permissions` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

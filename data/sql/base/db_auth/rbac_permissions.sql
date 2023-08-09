@@ -663,7 +663,10 @@ INSERT INTO `rbac_permissions` (`id`, `name`) VALUES
 	(867, 'Command: reload quest_greeting_locale'),
 	(870, 'Command: debug threatinfo'),
 	(872, 'Command: server debug'),
-	(873, 'Command: reload creature_movement_override');
+	(873, 'Command: reload creature_movement_override'),
+	(874, 'Command: npc reload'),
+	(1434,'Command: anticheat');
+
 /*!40000 ALTER TABLE `rbac_permissions` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
