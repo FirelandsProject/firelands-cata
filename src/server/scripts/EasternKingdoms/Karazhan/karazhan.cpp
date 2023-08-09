@@ -1,4 +1,4 @@
- /*
+/*
  * This file is part of the FirelandsCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -27,14 +27,14 @@ npc_barnes
 npc_image_of_medivh
 EndContentData */
 
-#include "ScriptMgr.h"
-#include "InstanceScript.h"
 #include "karazhan.h"
+#include "InstanceScript.h"
 #include "Log.h"
 #include "Map.h"
 #include "MotionMaster.h"
 #include "ObjectAccessor.h"
 #include "Player.h"
+#include "ScriptMgr.h"
 #include "ScriptedEscortAI.h"
 #include "ScriptedGossip.h"
 #include "TemporarySummon.h"
@@ -42,43 +42,43 @@ EndContentData */
 enum Spells
 {
     // Barnes
-    SPELL_SPOTLIGHT             = 25824,
-    SPELL_TUXEDO                = 32616,
+    SPELL_SPOTLIGHT = 25824,
+    SPELL_TUXEDO = 32616,
 
     // Berthold
-    SPELL_TELEPORT              = 39567,
+    SPELL_TELEPORT = 39567,
 
     // Image of Medivh
-    SPELL_FIRE_BALL             = 30967,
-    SPELL_UBER_FIREBALL         = 30971,
-    SPELL_CONFLAGRATION_BLAST   = 30977,
-    SPELL_MANA_SHIELD           = 31635
+    SPELL_FIRE_BALL = 30967,
+    SPELL_UBER_FIREBALL = 30971,
+    SPELL_CONFLAGRATION_BLAST = 30977,
+    SPELL_MANA_SHIELD = 31635
 };
 
 enum Creatures
 {
-    NPC_ARCANAGOS               = 17652,
-    NPC_SPOTLIGHT               = 19525
+    NPC_ARCANAGOS = 17652,
+    NPC_SPOTLIGHT = 19525
 };
 
 /*######
 # npc_barnesAI
 ######*/
 
-#define GOSSIP_READY        "I'm not an actor."
+#define GOSSIP_READY "I'm not an actor."
 
-#define SAY_READY           "Splendid, I'm going to get the audience ready. Break a leg!"
-#define SAY_OZ_INTRO1       "Finally, everything is in place. Are you ready for your big stage debut?"
-#define OZ_GOSSIP1          "I'm not an actor."
-#define SAY_OZ_INTRO2       "Don't worry, you'll be fine. You look like a natural!"
-#define OZ_GOSSIP2          "Ok, I'll give it a try, then."
+#define SAY_READY "Splendid, I'm going to get the audience ready. Break a leg!"
+#define SAY_OZ_INTRO1 "Finally, everything is in place. Are you ready for your big stage debut?"
+#define OZ_GOSSIP1 "I'm not an actor."
+#define SAY_OZ_INTRO2 "Don't worry, you'll be fine. You look like a natural!"
+#define OZ_GOSSIP2 "Ok, I'll give it a try, then."
 
-#define SAY_RAJ_INTRO1      "The romantic plays are really tough, but you'll do better this time. You have TALENT. Ready?"
-#define RAJ_GOSSIP1         "I've never been more ready."
+#define SAY_RAJ_INTRO1 "The romantic plays are really tough, but you'll do better this time. You have TALENT. Ready?"
+#define RAJ_GOSSIP1 "I've never been more ready."
 
-#define OZ_GM_GOSSIP1       "[GM] Change event to EVENT_OZ"
-#define OZ_GM_GOSSIP2       "[GM] Change event to EVENT_HOOD"
-#define OZ_GM_GOSSIP3       "[GM] Change event to EVENT_RAJ"
+#define OZ_GM_GOSSIP1 "[GM] Change event to EVENT_OZ"
+#define OZ_GM_GOSSIP2 "[GM] Change event to EVENT_HOOD"
+#define OZ_GM_GOSSIP3 "[GM] Change event to EVENT_RAJ"
 
 struct Dialogue
 {
@@ -86,49 +86,32 @@ struct Dialogue
     uint32 timer;
 };
 
-static Dialogue OzDialogue[]=
-{
-    {0, 6000},
-    {1, 18000},
-    {2, 9000},
-    {3, 15000}
-};
+static Dialogue OzDialogue[] = {{0, 6000}, {1, 18000}, {2, 9000}, {3, 15000}};
 
-static Dialogue HoodDialogue[]=
-{
-    {4, 6000},
-    {5, 10000},
-    {6, 14000},
-    {7, 15000}
-};
+static Dialogue HoodDialogue[] = {{4, 6000}, {5, 10000}, {6, 14000}, {7, 15000}};
 
-static Dialogue RAJDialogue[]=
-{
-    {8, 5000},
-    {9, 7000},
-    {10, 14000},
-    {11, 14000}
-};
+static Dialogue RAJDialogue[] = {{8, 5000}, {9, 7000}, {10, 14000}, {11, 14000}};
 
 // Entries and spawn locations for creatures in Oz event
-float Spawns[6][2]=
-{
-    {17535, -10896},                                        // Dorothee
-    {17546, -10891},                                        // Roar
-    {17547, -10884},                                        // Tinhead
-    {17543, -10902},                                        // Strawman
-    {17603, -10892},                                        // Grandmother
-    {17534, -10900},                                        // Julianne
+float Spawns[6][2] = {
+    {17535, -10896}, // Dorothee
+    {17546, -10891}, // Roar
+    {17547, -10884}, // Tinhead
+    {17543, -10902}, // Strawman
+    {17603, -10892}, // Grandmother
+    {17534, -10900}, // Julianne
 };
 
-#define SPAWN_Z             90.5f
-#define SPAWN_Y             -1758
-#define SPAWN_O             4.738f
+#define SPAWN_Z 90.5f
+#define SPAWN_Y -1758
+#define SPAWN_O 4.738f
 
 class npc_barnes : public CreatureScript
 {
-public:
-    npc_barnes() : CreatureScript("npc_barnes") { }
+  public:
+    npc_barnes() : CreatureScript("npc_barnes")
+    {
+    }
 
     struct npc_barnesAI : public EscortAI
     {
@@ -174,44 +157,44 @@ public:
         {
             instance->SetBossState(DATA_OPERA_PERFORMANCE, IN_PROGRESS);
 
-            //resets count for this event, in case earlier failed
+            // resets count for this event, in case earlier failed
             if (m_uiEventId == EVENT_OZ)
                 instance->SetData(DATA_OPERA_OZ_DEATHCOUNT, IN_PROGRESS);
 
             Start(false, false);
         }
 
-        void JustEngagedWith(Unit* /*who*/) override { }
+        void JustEngagedWith(Unit* /*who*/) override
+        {
+        }
 
         void WaypointReached(uint32 waypointId, uint32 /*pathId*/) override
         {
             switch (waypointId)
             {
-                case 0:
-                    DoCast(me, SPELL_TUXEDO, false);
-                    instance->DoUseDoorOrButton(instance->GetGuidData(DATA_GO_STAGEDOORLEFT));
-                    break;
-                case 4:
-                    TalkCount = 0;
-                    SetEscortPaused(true);
+            case 0:
+                DoCast(me, SPELL_TUXEDO, false);
+                instance->DoUseDoorOrButton(instance->GetGuidData(DATA_GO_STAGEDOORLEFT));
+                break;
+            case 4:
+                TalkCount = 0;
+                SetEscortPaused(true);
 
-                    if (Creature* spotlight = me->SummonCreature(NPC_SPOTLIGHT,
-                        me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0.0f,
-                        TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 60000))
-                    {
-                        spotlight->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                        spotlight->CastSpell(spotlight, SPELL_SPOTLIGHT, false);
-                        m_uiSpotlightGUID = spotlight->GetGUID();
-                    }
-                    break;
-                case 8:
-                    instance->DoUseDoorOrButton(instance->GetGuidData(DATA_GO_STAGEDOORLEFT));
-                    PerformanceReady = true;
-                    break;
-                case 9:
-                    PrepareEncounter();
-                    instance->DoUseDoorOrButton(instance->GetGuidData(DATA_GO_CURTAINS));
-                    break;
+                if (Creature* spotlight = me->SummonCreature(NPC_SPOTLIGHT, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0.0f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 60000))
+                {
+                    spotlight->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                    spotlight->CastSpell(spotlight, SPELL_SPOTLIGHT, false);
+                    m_uiSpotlightGUID = spotlight->GetGUID();
+                }
+                break;
+            case 8:
+                instance->DoUseDoorOrButton(instance->GetGuidData(DATA_GO_STAGEDOORLEFT));
+                PerformanceReady = true;
+                break;
+            case 9:
+                PrepareEncounter();
+                instance->DoUseDoorOrButton(instance->GetGuidData(DATA_GO_CURTAINS));
+                break;
             }
         }
 
@@ -221,30 +204,30 @@ public:
 
             switch (m_uiEventId)
             {
-                case EVENT_OZ:
-                    if (OzDialogue[count].textid)
-                         text = OzDialogue[count].textid;
-                    if (OzDialogue[count].timer)
-                        TalkTimer = OzDialogue[count].timer;
-                    break;
+            case EVENT_OZ:
+                if (OzDialogue[count].textid)
+                    text = OzDialogue[count].textid;
+                if (OzDialogue[count].timer)
+                    TalkTimer = OzDialogue[count].timer;
+                break;
 
-                case EVENT_HOOD:
-                    if (HoodDialogue[count].textid)
-                        text = HoodDialogue[count].textid;
-                    if (HoodDialogue[count].timer)
-                        TalkTimer = HoodDialogue[count].timer;
-                    break;
+            case EVENT_HOOD:
+                if (HoodDialogue[count].textid)
+                    text = HoodDialogue[count].textid;
+                if (HoodDialogue[count].timer)
+                    TalkTimer = HoodDialogue[count].timer;
+                break;
 
-                case EVENT_RAJ:
-                     if (RAJDialogue[count].textid)
-                         text = RAJDialogue[count].textid;
-                    if (RAJDialogue[count].timer)
-                        TalkTimer = RAJDialogue[count].timer;
-                    break;
+            case EVENT_RAJ:
+                if (RAJDialogue[count].textid)
+                    text = RAJDialogue[count].textid;
+                if (RAJDialogue[count].timer)
+                    TalkTimer = RAJDialogue[count].timer;
+                break;
             }
 
             if (text)
-                 CreatureAI::Talk(text);
+                CreatureAI::Talk(text);
         }
 
         void PrepareEncounter()
@@ -255,18 +238,18 @@ public:
 
             switch (m_uiEventId)
             {
-                case EVENT_OZ:
-                    index = 0;
-                    count = 4;
-                    break;
-                case EVENT_HOOD:
-                    index = 4;
-                    count = index+1;
-                    break;
-                case EVENT_RAJ:
-                    index = 5;
-                    count = index+1;
-                    break;
+            case EVENT_OZ:
+                index = 0;
+                count = 4;
+                break;
+            case EVENT_HOOD:
+                index = 4;
+                count = index + 1;
+                break;
+            case EVENT_RAJ:
+                index = 5;
+                count = index + 1;
+                break;
             }
 
             for (; index < count; ++index)
@@ -274,7 +257,7 @@ public:
                 uint32 entry = ((uint32)Spawns[index][0]);
                 float PosX = Spawns[index][1];
 
-                if (Creature* creature = me->SummonCreature(entry, PosX, SPAWN_Y, SPAWN_Z, SPAWN_O, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, HOUR*2*IN_MILLISECONDS))
+                if (Creature* creature = me->SummonCreature(entry, PosX, SPAWN_Y, SPAWN_Z, SPAWN_O, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, HOUR * 2 * IN_MILLISECONDS))
                 {
                     // In case database has bad flags
                     creature->SetUInt32Value(UNIT_FIELD_FLAGS, 0);
@@ -304,7 +287,9 @@ public:
 
                     Talk(TalkCount);
                     ++TalkCount;
-                } else TalkTimer -= diff;
+                }
+                else
+                    TalkTimer -= diff;
             }
 
             if (PerformanceReady)
@@ -335,7 +320,9 @@ public:
                         }
 
                         WipeTimer = 15000;
-                    } else WipeTimer -= diff;
+                    }
+                    else
+                        WipeTimer -= diff;
                 }
             }
         }
@@ -347,30 +334,30 @@ public:
 
             switch (action)
             {
-                case GOSSIP_ACTION_INFO_DEF + 1:
-                    AddGossipItemFor(player, GOSSIP_ICON_CHAT, OZ_GOSSIP2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-                    SendGossipMenuFor(player, 8971, me->GetGUID());
-                    break;
-                case GOSSIP_ACTION_INFO_DEF + 2:
-                    CloseGossipMenuFor(player);
-                    m_uiEventId = urand(EVENT_OZ, EVENT_RAJ);
-                    StartEvent();
-                    break;
-                case GOSSIP_ACTION_INFO_DEF + 3:
-                    CloseGossipMenuFor(player);
-                    m_uiEventId = EVENT_OZ;
-                    LOG_DEBUG("scripts", "player (%s) manually set Opera event to EVENT_OZ", player->GetGUID().ToString().c_str());
-                    break;
-                case GOSSIP_ACTION_INFO_DEF + 4:
-                    CloseGossipMenuFor(player);
-                    m_uiEventId = EVENT_HOOD;
-                    LOG_DEBUG("scripts", "player (%s) manually set Opera event to EVENT_HOOD", player->GetGUID().ToString().c_str());
-                    break;
-                case GOSSIP_ACTION_INFO_DEF + 5:
-                    CloseGossipMenuFor(player);
-                    m_uiEventId = EVENT_RAJ;
-                    LOG_DEBUG("scripts", "player (%s) manually set Opera event to EVENT_RAJ", player->GetGUID().ToString().c_str());
-                    break;
+            case GOSSIP_ACTION_INFO_DEF + 1:
+                AddGossipItemFor(player, GOSSIP_ICON_CHAT, OZ_GOSSIP2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+                SendGossipMenuFor(player, 8971, me->GetGUID());
+                break;
+            case GOSSIP_ACTION_INFO_DEF + 2:
+                CloseGossipMenuFor(player);
+                m_uiEventId = urand(EVENT_OZ, EVENT_RAJ);
+                StartEvent();
+                break;
+            case GOSSIP_ACTION_INFO_DEF + 3:
+                CloseGossipMenuFor(player);
+                m_uiEventId = EVENT_OZ;
+                LOG_DEBUG("scripts", "player (%s) manually set Opera event to EVENT_OZ", player->GetGUID().ToString().c_str());
+                break;
+            case GOSSIP_ACTION_INFO_DEF + 4:
+                CloseGossipMenuFor(player);
+                m_uiEventId = EVENT_HOOD;
+                LOG_DEBUG("scripts", "player (%s) manually set Opera event to EVENT_HOOD", player->GetGUID().ToString().c_str());
+                break;
+            case GOSSIP_ACTION_INFO_DEF + 5:
+                CloseGossipMenuFor(player);
+                m_uiEventId = EVENT_RAJ;
+                LOG_DEBUG("scripts", "player (%s) manually set Opera event to EVENT_RAJ", player->GetGUID().ToString().c_str());
+                break;
             }
 
             return true;
@@ -416,24 +403,25 @@ public:
 # npc_image_of_medivh
 ####*/
 
-#define SAY_DIALOG_MEDIVH_1         "You've got my attention, dragon. You'll find I'm not as easily scared as the villagers below."
-#define SAY_DIALOG_ARCANAGOS_2      "Your dabbling in the arcane has gone too far, Medivh. You've attracted the attention of powers beyond your understanding. You must leave Karazhan at once!"
-#define SAY_DIALOG_MEDIVH_3         "You dare challenge me at my own dwelling? Your arrogance is astounding, even for a dragon!"
-#define SAY_DIALOG_ARCANAGOS_4      "A dark power seeks to use you, Medivh! If you stay, dire days will follow. You must hurry, we don't have much time!"
-#define SAY_DIALOG_MEDIVH_5         "I do not know what you speak of, dragon... but I will not be bullied by this display of insolence. I'll leave Karazhan when it suits me!"
-#define SAY_DIALOG_ARCANAGOS_6      "You leave me no alternative. I will stop you by force if you won't listen to reason!"
-#define EMOTE_DIALOG_MEDIVH_7       "begins to cast a spell of great power, weaving his own essence into the magic."
-#define SAY_DIALOG_ARCANAGOS_8      "What have you done, wizard? This cannot be! I'm burning from... within!"
-#define SAY_DIALOG_MEDIVH_9         "He should not have angered me. I must go... recover my strength now..."
-
+#define SAY_DIALOG_MEDIVH_1 "You've got my attention, dragon. You'll find I'm not as easily scared as the villagers below."
+#define SAY_DIALOG_ARCANAGOS_2 "Your dabbling in the arcane has gone too far, Medivh. You've attracted the attention of powers beyond your understanding. You must leave Karazhan at once!"
+#define SAY_DIALOG_MEDIVH_3 "You dare challenge me at my own dwelling? Your arrogance is astounding, even for a dragon!"
+#define SAY_DIALOG_ARCANAGOS_4 "A dark power seeks to use you, Medivh! If you stay, dire days will follow. You must hurry, we don't have much time!"
+#define SAY_DIALOG_MEDIVH_5 "I do not know what you speak of, dragon... but I will not be bullied by this display of insolence. I'll leave Karazhan when it suits me!"
+#define SAY_DIALOG_ARCANAGOS_6 "You leave me no alternative. I will stop you by force if you won't listen to reason!"
+#define EMOTE_DIALOG_MEDIVH_7 "begins to cast a spell of great power, weaving his own essence into the magic."
+#define SAY_DIALOG_ARCANAGOS_8 "What have you done, wizard? This cannot be! I'm burning from... within!"
+#define SAY_DIALOG_MEDIVH_9 "He should not have angered me. I must go... recover my strength now..."
 
 static float MedivPos[4] = {-11161.49f, -1902.24f, 91.48f, 1.94f};
 static float ArcanagosPos[4] = {-11169.75f, -1881.48f, 95.39f, 4.83f};
 
 class npc_image_of_medivh : public CreatureScript
 {
-public:
-    npc_image_of_medivh() : CreatureScript("npc_image_of_medivh") { }
+  public:
+    npc_image_of_medivh() : CreatureScript("npc_image_of_medivh")
+    {
+    }
 
     struct npc_image_of_medivhAI : public ScriptedAI
     {
@@ -479,7 +467,9 @@ public:
                 me->DespawnOrUnsummon();
             }
         }
-        void JustEngagedWith(Unit* /*who*/) override { }
+        void JustEngagedWith(Unit* /*who*/) override
+        {
+        }
 
         void MovementInform(uint32 type, uint32 id) override
         {
@@ -512,7 +502,8 @@ public:
         {
             switch (step)
             {
-            case 0: return 9999999;
+            case 0:
+                return 9999999;
             case 1:
                 me->Yell(SAY_DIALOG_MEDIVH_1, LANG_UNIVERSAL);
                 return 10000;
@@ -583,7 +574,7 @@ public:
             }
             case 15:
                 if (Creature* arca = ObjectAccessor::GetCreature(*me, ArcanagosGUID))
-                    arca->DealDamage(arca, arca->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
+                    arca->KillSelf();
                 return 5000;
             default:
                 return 9999999;
@@ -596,7 +587,9 @@ public:
             {
                 if (EventStarted)
                     YellTimer = NextStep(Step++);
-            } else YellTimer -= diff;
+            }
+            else
+                YellTimer -= diff;
 
             if (Step >= 7 && Step <= 12)
             {
@@ -607,14 +600,18 @@ public:
                     if (arca)
                         arca->CastSpell(me, SPELL_FIRE_BALL, false);
                     FireArcanagosTimer = 6000;
-                } else FireArcanagosTimer -= diff;
+                }
+                else
+                    FireArcanagosTimer -= diff;
 
                 if (FireMedivhTimer <= diff)
                 {
                     if (arca)
                         DoCast(arca, SPELL_FIRE_BALL);
                     FireMedivhTimer = 5000;
-                } else FireMedivhTimer -= diff;
+                }
+                else
+                    FireMedivhTimer -= diff;
             }
         }
     };

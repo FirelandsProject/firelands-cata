@@ -22,44 +22,50 @@ Comment: More abilities need to be implemented
 Category: Caverns of Time, The Black Morass
 */
 
-#include "ScriptMgr.h"
 #include "InstanceScript.h"
+#include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "the_black_morass.h"
 
 enum Enums
 {
-    SAY_ENTER               = 0,
-    SAY_AGGRO               = 1,
-    SAY_BANISH              = 2,
-    SAY_SLAY                = 3,
-    SAY_DEATH               = 4,
+    SAY_ENTER = 0,
+    SAY_AGGRO = 1,
+    SAY_BANISH = 2,
+    SAY_SLAY = 3,
+    SAY_DEATH = 4,
 
-    SPELL_HASTE             = 31458,
-    SPELL_MORTAL_WOUND      = 31464,
-    SPELL_WING_BUFFET       = 31475,
-    H_SPELL_WING_BUFFET     = 38593,
-    SPELL_REFLECT           = 38592                       //Not Implemented (Heroic mod)
+    SPELL_HASTE = 31458,
+    SPELL_MORTAL_WOUND = 31464,
+    SPELL_WING_BUFFET = 31475,
+    H_SPELL_WING_BUFFET = 38593,
+    SPELL_REFLECT = 38592 // Not Implemented (Heroic mod)
 };
 
 enum Events
 {
-    EVENT_HASTE             = 1,
-    EVENT_MORTAL_WOUND      = 2,
-    EVENT_WING_BUFFET       = 3,
-    EVENT_SPELL_REFLECTION  = 4
+    EVENT_HASTE = 1,
+    EVENT_MORTAL_WOUND = 2,
+    EVENT_WING_BUFFET = 3,
+    EVENT_SPELL_REFLECTION = 4
 };
 
 class boss_temporus : public CreatureScript
 {
-public:
-    boss_temporus() : CreatureScript("boss_temporus") { }
+  public:
+    boss_temporus() : CreatureScript("boss_temporus")
+    {
+    }
 
     struct boss_temporusAI : public BossAI
     {
-        boss_temporusAI(Creature* creature) : BossAI(creature, TYPE_TEMPORUS) { }
+        boss_temporusAI(Creature* creature) : BossAI(creature, TYPE_TEMPORUS)
+        {
+        }
 
-        void Reset() override { }
+        void Reset() override
+        {
+        }
 
         void JustEngagedWith(Unit* /*who*/) override
         {
@@ -87,14 +93,14 @@ public:
         void MoveInLineOfSight(Unit* who) override
 
         {
-            //Despawn Time Keeper
+            // Despawn Time Keeper
             if (who->GetTypeId() == TYPEID_UNIT && who->GetEntry() == NPC_TIME_KEEPER)
             {
                 if (me->IsWithinDistInMap(who, 20.0f))
                 {
                     Talk(SAY_BANISH);
 
-                    me->DealDamage(who, who->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
+                    Unit::DealDamage(me, who, who->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
                 }
             }
 
@@ -103,7 +109,7 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
-            //Return since we have no target
+            // Return since we have no target
             if (!UpdateVictim())
                 return;
 
@@ -116,24 +122,24 @@ public:
             {
                 switch (eventId)
                 {
-                    case EVENT_HASTE:
-                        DoCast(me, SPELL_HASTE);
-                        events.ScheduleEvent(EVENT_HASTE, urand(20000, 25000));
-                        break;
-                    case EVENT_MORTAL_WOUND:
-                        DoCast(me, SPELL_MORTAL_WOUND);
-                        events.ScheduleEvent(EVENT_MORTAL_WOUND, urand(10000, 20000));
-                        break;
-                    case EVENT_WING_BUFFET:
-                         DoCast(me, SPELL_WING_BUFFET);
-                        events.ScheduleEvent(EVENT_WING_BUFFET, urand(20000, 30000));
-                        break;
-                    case EVENT_SPELL_REFLECTION: // Only in Heroic
-                        DoCast(me, SPELL_REFLECT);
-                        events.ScheduleEvent(EVENT_SPELL_REFLECTION, urand(25000, 35000));
-                        break;
-                    default:
-                        break;
+                case EVENT_HASTE:
+                    DoCast(me, SPELL_HASTE);
+                    events.ScheduleEvent(EVENT_HASTE, urand(20000, 25000));
+                    break;
+                case EVENT_MORTAL_WOUND:
+                    DoCast(me, SPELL_MORTAL_WOUND);
+                    events.ScheduleEvent(EVENT_MORTAL_WOUND, urand(10000, 20000));
+                    break;
+                case EVENT_WING_BUFFET:
+                    DoCast(me, SPELL_WING_BUFFET);
+                    events.ScheduleEvent(EVENT_WING_BUFFET, urand(20000, 30000));
+                    break;
+                case EVENT_SPELL_REFLECTION: // Only in Heroic
+                    DoCast(me, SPELL_REFLECT);
+                    events.ScheduleEvent(EVENT_SPELL_REFLECTION, urand(25000, 35000));
+                    break;
+                default:
+                    break;
                 }
 
                 if (me->HasUnitState(UNIT_STATE_CASTING))

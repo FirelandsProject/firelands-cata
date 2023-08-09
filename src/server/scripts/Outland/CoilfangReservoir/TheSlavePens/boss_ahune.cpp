@@ -15,7 +15,6 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ScriptMgr.h"
 #include "CreatureTextMgr.h"
 #include "GameObject.h"
 #include "GameObjectAI.h"
@@ -26,6 +25,7 @@
 #include "MotionMaster.h"
 #include "ObjectAccessor.h"
 #include "Player.h"
+#include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptedGossip.h"
 #include "SpellAuraEffects.h"
@@ -36,107 +36,107 @@
 enum Spells
 {
     // Ahune
-    SPELL_SYNCH_HEALTH                  = 46430,
-    SPELL_AHUNES_SHIELD                 = 45954,
-    SPELL_STAY_SUBMERGED                = 46981,
-    SPELL_AHUNE_SELF_STUN               = 46416,
-    SPELL_AHUNE_ACHIEVEMENT             = 62043,
-    SPELL_AHUNE_SPANKY_HANDS            = 46146,
-    SPELL_COLD_SLAP                     = 46145,
-    SPELL_RESURFACE                     = 46402,
-    SPELL_SUBMERGED                     = 37751,
-    SPELL_STAND                         = 37752,
+    SPELL_SYNCH_HEALTH = 46430,
+    SPELL_AHUNES_SHIELD = 45954,
+    SPELL_STAY_SUBMERGED = 46981,
+    SPELL_AHUNE_SELF_STUN = 46416,
+    SPELL_AHUNE_ACHIEVEMENT = 62043,
+    SPELL_AHUNE_SPANKY_HANDS = 46146,
+    SPELL_COLD_SLAP = 46145,
+    SPELL_RESURFACE = 46402,
+    SPELL_SUBMERGED = 37751,
+    SPELL_STAND = 37752,
 
-    //Earther Ring Flamecaller
-    SPELL_FIND_OPENING_VISUAL           = 45964,
-    SPELL_FIND_OPENING_BEAM_END         = 46333,
-    SPELL_FIND_OPENING_TRIGGER          = 46341,
-    SPELL_FIND_OPENING_CHANNEL          = 46345,
-    SPELL_BONFIRE_VISUAL                = 46339,
-    SPELL_FOUND_OPENING                 = 46421,
+    // Earther Ring Flamecaller
+    SPELL_FIND_OPENING_VISUAL = 45964,
+    SPELL_FIND_OPENING_BEAM_END = 46333,
+    SPELL_FIND_OPENING_TRIGGER = 46341,
+    SPELL_FIND_OPENING_CHANNEL = 46345,
+    SPELL_BONFIRE_VISUAL = 46339,
+    SPELL_FOUND_OPENING = 46421,
 
-    //Ahune Bunny
-    SPELL_SUMMON_COLDWEAVE              = 46143,
-    SPELL_SUMMON_FROSTWIND              = 46382,
-    SPELL_SUMMON_HAILSTONE              = 46176,
-    SPELL_SUMMONING_VISUAL_1            = 45937,
-    SPELL_SUMMONING_RHYME_AURA          = 45926,
-    SPELL_SUMMONING_RHYME_BONFIRE       = 45930,
-    SPELL_FORCE_WHISP_FLIGHT            = 46603,
-    SPELL_SHAMANS_LOOK_FOR_OPENING      = 46422,
-    SPELL_CLOSE_OPENING_VISUAL          = 46236,
-    SPELL_ICE_BOMBARD                   = 46397,
-    SPELL_ICE_BOMBARDMENT_DEST_PICKER   = 46398,
-    SPELL_ICE_BOMBARDMENT               = 46396,
+    // Ahune Bunny
+    SPELL_SUMMON_COLDWEAVE = 46143,
+    SPELL_SUMMON_FROSTWIND = 46382,
+    SPELL_SUMMON_HAILSTONE = 46176,
+    SPELL_SUMMONING_VISUAL_1 = 45937,
+    SPELL_SUMMONING_RHYME_AURA = 45926,
+    SPELL_SUMMONING_RHYME_BONFIRE = 45930,
+    SPELL_FORCE_WHISP_FLIGHT = 46603,
+    SPELL_SHAMANS_LOOK_FOR_OPENING = 46422,
+    SPELL_CLOSE_OPENING_VISUAL = 46236,
+    SPELL_ICE_BOMBARD = 46397,
+    SPELL_ICE_BOMBARDMENT_DEST_PICKER = 46398,
+    SPELL_ICE_BOMBARDMENT = 46396,
 
     // Ice Spear
-    SPELL_SUMMON_ICE_SPEAR_BUNNY        = 46359,
-    SPELL_ICE_SPEAR_KNOCKBACK           = 46360,
-    SPELL_SUMMON_ICE_SPEAR_GO           = 46369,
-    SPELL_ICE_SPEAR_AURA                = 46371,
-    SPELL_ICE_SPEAR_TARGET_PICKER       = 46372,
-    SPELL_ICE_SPEAR_DELAY               = 46878,
-    SPELL_ICE_SPEAR_VISUAL              = 75498,
+    SPELL_SUMMON_ICE_SPEAR_BUNNY = 46359,
+    SPELL_ICE_SPEAR_KNOCKBACK = 46360,
+    SPELL_SUMMON_ICE_SPEAR_GO = 46369,
+    SPELL_ICE_SPEAR_AURA = 46371,
+    SPELL_ICE_SPEAR_TARGET_PICKER = 46372,
+    SPELL_ICE_SPEAR_DELAY = 46878,
+    SPELL_ICE_SPEAR_VISUAL = 75498,
 
     // Slippery Floor
-    SPELL_SLIPPERY_FLOOR_AMBIENT        = 46314,
-    SPELL_SLIPPERY_FLOOR_PERIODIC       = 46320,
-    SPELL_SLIPPERY_FLOOR_SLIP           = 45947,
-    SPELL_SLIPPERY_FLOOR_YOU_SLIPPED    = 45946,
+    SPELL_SLIPPERY_FLOOR_AMBIENT = 46314,
+    SPELL_SLIPPERY_FLOOR_PERIODIC = 46320,
+    SPELL_SLIPPERY_FLOOR_SLIP = 45947,
+    SPELL_SLIPPERY_FLOOR_YOU_SLIPPED = 45946,
 
     // Frozen Core
-    SPELL_SUICIDE                       = 45254,
-    SPELL_SUMMON_LOOT_MISSILE           = 45941,
-    SPELL_FROZEN_CORE_GETS_HIT          = 46810,
-    SPELL_MINION_DESPAWNER              = 46843,
-    SPELL_GHOST_DISGUISE                = 46786
+    SPELL_SUICIDE = 45254,
+    SPELL_SUMMON_LOOT_MISSILE = 45941,
+    SPELL_FROZEN_CORE_GETS_HIT = 46810,
+    SPELL_MINION_DESPAWNER = 46843,
+    SPELL_GHOST_DISGUISE = 46786
 };
 
 enum Emotes
 {
-    EMOTE_EARTHEN_ASSAULT               = 0,
-    EMOTE_RETREAT                       = 0,
-    EMOTE_RESURFACE                     = 1
+    EMOTE_EARTHEN_ASSAULT = 0,
+    EMOTE_RETREAT = 0,
+    EMOTE_RESURFACE = 1
 };
 
 enum Says
 {
-    SAY_PLAYER_TEXT_1                    = 0,
-    SAY_PLAYER_TEXT_2                    = 1,
-    SAY_PLAYER_TEXT_3                    = 2
+    SAY_PLAYER_TEXT_1 = 0,
+    SAY_PLAYER_TEXT_2 = 1,
+    SAY_PLAYER_TEXT_3 = 2
 };
 
 enum Events
 {
-    EVENT_EMERGE                        = 1,
-    EVENT_INITIAL_EMERGE                = 2,
-    EVENT_SYNCH_HEALTH                  = 3,
-    EVENT_LOOKFOROPENING_0              = 4,
-    EVENT_LOOKFOROPENING_1              = 5,
-    EVENT_LOOKFOROPENING_2              = 6,
-    EVENT_SUMMON_HAILSTONE              = 7,
-    EVENT_SUMMON_COLDWEAVE              = 8,
-    EVENT_SUMMON_FROSTWIND              = 9,
-    EVENT_SUMMON_AHUNE                  = 10,
-    EVENT_CLOSE_OPENING                 = 11,
-    EVENT_AHUNE_PHASE_ONE               = 12,
-    EVENT_AHUNE_PHASE_TWO               = 13,
-    EVENT_START_LOOKING_FOR_OPENING     = 14,
-    EVENT_STOP_LOOKING_FOR_OPENING      = 15
+    EVENT_EMERGE = 1,
+    EVENT_INITIAL_EMERGE = 2,
+    EVENT_SYNCH_HEALTH = 3,
+    EVENT_LOOKFOROPENING_0 = 4,
+    EVENT_LOOKFOROPENING_1 = 5,
+    EVENT_LOOKFOROPENING_2 = 6,
+    EVENT_SUMMON_HAILSTONE = 7,
+    EVENT_SUMMON_COLDWEAVE = 8,
+    EVENT_SUMMON_FROSTWIND = 9,
+    EVENT_SUMMON_AHUNE = 10,
+    EVENT_CLOSE_OPENING = 11,
+    EVENT_AHUNE_PHASE_ONE = 12,
+    EVENT_AHUNE_PHASE_TWO = 13,
+    EVENT_START_LOOKING_FOR_OPENING = 14,
+    EVENT_STOP_LOOKING_FOR_OPENING = 15
 };
 
 enum Actions
 {
-    ACTION_START_EVENT                  = -2574500,
-    ACTION_AHUNE_RETREAT                = -2586500,
-    ACTION_AHUNE_RESURFACE              = -2586501,
-    ACTION_EMOTE_RESURFACE              = -2575400
+    ACTION_START_EVENT = -2574500,
+    ACTION_AHUNE_RETREAT = -2586500,
+    ACTION_AHUNE_RESURFACE = -2586501,
+    ACTION_EMOTE_RESURFACE = -2575400
 };
 
 enum Phases
 {
-    PHASE_ONE                   = 0,
-    PHASE_TWO                   = 1
+    PHASE_ONE = 0,
+    PHASE_TWO = 1
 };
 
 enum Points
@@ -148,31 +148,27 @@ enum Points
 
 enum Misc
 {
-    MAX_FLAMECALLERS    = 3
+    MAX_FLAMECALLERS = 3
 };
 
-Position const SummonPositions[] =
-{
-    { -99.1021f, -233.7526f, -1.22307f, 1.588250f },  // Ahune
-    { -98.0151f, -230.4555f, -1.21089f, 1.797689f },  // Frozen Core
-    { -143.172f, -147.6801f, -3.16113f, 4.852015f },  // Bonfire Bunny 000
-    { -134.304f, -145.7803f, -1.70332f, 4.677482f },  // Bonfire Bunny 001
-    { -125.036f, -144.2065f, -1.91660f, 4.991642f },  // Bonfire Bunny 002
-    { -69.8121f, -162.4954f, -2.30451f, 1.710423f },  // Wisp Source Bunny
-    { -98.1029f, -230.7864f, -10.8085f, 1.448623f }   // Wisp Dest Bunny
+Position const SummonPositions[] = {
+    {-99.1021f, -233.7526f, -1.22307f, 1.588250f}, // Ahune
+    {-98.0151f, -230.4555f, -1.21089f, 1.797689f}, // Frozen Core
+    {-143.172f, -147.6801f, -3.16113f, 4.852015f}, // Bonfire Bunny 000
+    {-134.304f, -145.7803f, -1.70332f, 4.677482f}, // Bonfire Bunny 001
+    {-125.036f, -144.2065f, -1.91660f, 4.991642f}, // Bonfire Bunny 002
+    {-69.8121f, -162.4954f, -2.30451f, 1.710423f}, // Wisp Source Bunny
+    {-98.1029f, -230.7864f, -10.8085f, 1.448623f}  // Wisp Dest Bunny
 };
 
-Position const FlameCallerSpots[] =
-{
-    { -145.2233f, -137.5543f, -1.59056f, 5.427049f },
-    { -137.4383f, -136.4050f, -1.72384f, 5.336747f },
-    { -129.0413f, -132.1494f, -2.09285f, 5.460842f }
-};
+Position const FlameCallerSpots[] = {{-145.2233f, -137.5543f, -1.59056f, 5.427049f}, {-137.4383f, -136.4050f, -1.72384f, 5.336747f}, {-129.0413f, -132.1494f, -2.09285f, 5.460842f}};
 
 class boss_ahune : public CreatureScript
 {
-public:
-    boss_ahune() : CreatureScript("boss_ahune") { }
+  public:
+    boss_ahune() : CreatureScript("boss_ahune")
+    {
+    }
 
     struct boss_ahuneAI : public BossAI
     {
@@ -201,9 +197,9 @@ public:
             instance->DoCastSpellOnPlayers(SPELL_AHUNE_ACHIEVEMENT);
 
             if (Creature* ahuneBunny = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_AHUNE_BUNNY)))
-                me->Kill(ahuneBunny);
+                Unit::Kill(me, ahuneBunny);
             if (Creature* frozenCore = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_FROZEN_CORE)))
-                me->Kill(frozenCore);
+                Unit::Kill(me, frozenCore);
 
             Map::PlayerList const& players = me->GetMap()->GetPlayers();
             if (!players.isEmpty())
@@ -236,23 +232,23 @@ public:
             {
                 switch (eventId)
                 {
-                    case EVENT_INITIAL_EMERGE:
-                        DoCast(me, SPELL_STAND);
-                        DoCast(me, SPELL_AHUNE_SPANKY_HANDS);
-                        DoCast(me, SPELL_AHUNES_SHIELD);
-                        break;
-                    case EVENT_EMERGE:
-                        Emerge();
-                        break;
-                    case EVENT_SYNCH_HEALTH:
-                        if (Creature* frozenCore = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_FROZEN_CORE)))
-                            DoCast(frozenCore, SPELL_SYNCH_HEALTH, true);
-                        else
-                            DoCast(me, SPELL_SUICIDE);
-                        events.Repeat(Seconds(3));
-                        break;
-                    default:
-                        break;
+                case EVENT_INITIAL_EMERGE:
+                    DoCast(me, SPELL_STAND);
+                    DoCast(me, SPELL_AHUNE_SPANKY_HANDS);
+                    DoCast(me, SPELL_AHUNES_SHIELD);
+                    break;
+                case EVENT_EMERGE:
+                    Emerge();
+                    break;
+                case EVENT_SYNCH_HEALTH:
+                    if (Creature* frozenCore = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_FROZEN_CORE)))
+                        DoCast(frozenCore, SPELL_SYNCH_HEALTH, true);
+                    else
+                        DoCast(me, SPELL_SUICIDE);
+                    events.Repeat(Seconds(3));
+                    break;
+                default:
+                    break;
                 }
             }
             DoMeleeAttackIfReady();
@@ -293,8 +289,10 @@ public:
 
 class npc_frozen_core : public CreatureScript
 {
-public:
-    npc_frozen_core() : CreatureScript("npc_frozen_core") { }
+  public:
+    npc_frozen_core() : CreatureScript("npc_frozen_core")
+    {
+    }
 
     struct npc_frozen_coreAI : public ScriptedAI
     {
@@ -315,7 +313,7 @@ public:
         void JustDied(Unit* /*killer*/) override
         {
             if (Creature* ahune = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_AHUNE)))
-                me->Kill(ahune);
+                Unit::Kill(me, ahune);
 
             DoCast(SPELL_SUMMON_LOOT_MISSILE);
             DoCast(SPELL_MINION_DESPAWNER);
@@ -347,20 +345,20 @@ public:
             {
                 switch (eventId)
                 {
-                    case EVENT_SYNCH_HEALTH:
-                        if (Creature* ahune = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_AHUNE)))
-                            DoCast(ahune, SPELL_SYNCH_HEALTH, true);
-                        else
-                            DoCast(me, SPELL_SUICIDE);
-                        _events.Repeat(Seconds(3));
-                        break;
-                    default:
-                        break;
+                case EVENT_SYNCH_HEALTH:
+                    if (Creature* ahune = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_AHUNE)))
+                        DoCast(ahune, SPELL_SYNCH_HEALTH, true);
+                    else
+                        DoCast(me, SPELL_SUICIDE);
+                    _events.Repeat(Seconds(3));
+                    break;
+                default:
+                    break;
                 }
             }
         }
 
-    private:
+      private:
         InstanceScript* _instance;
         EventMap _events;
     };
@@ -373,8 +371,10 @@ public:
 
 class npc_ahune_bunny : public CreatureScript
 {
-public:
-    npc_ahune_bunny() : CreatureScript("npc_ahune_bunny") { }
+  public:
+    npc_ahune_bunny() : CreatureScript("npc_ahune_bunny")
+    {
+    }
 
     struct npc_ahune_bunnyAI : public ScriptedAI
     {
@@ -445,60 +445,60 @@ public:
             {
                 switch (eventId)
                 {
-                    case EVENT_START_LOOKING_FOR_OPENING:
-                        Talk(EMOTE_EARTHEN_ASSAULT);
-                        for (uint8 counter = 0; counter < MAX_FLAMECALLERS; ++counter)
-                            if (Creature* flamecaller = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_FLAMECALLER_000 + counter)))
-                                DoCast(flamecaller, SPELL_SHAMANS_LOOK_FOR_OPENING, true);
-                        break;
-                    case EVENT_SUMMON_HAILSTONE:
-                        DoCast(SPELL_SUMMON_HAILSTONE);
-                        break;
-                    case EVENT_SUMMON_COLDWEAVE:
-                        DoCast(SPELL_SUMMON_COLDWEAVE);
-                        DoCast(SPELL_SUMMON_COLDWEAVE);
-                        _events.Repeat(Seconds(8));
-                        if (_submerged)
-                            _events.ScheduleEvent(EVENT_SUMMON_FROSTWIND, Seconds(4), 0, PHASE_ONE);
-                        break;
-                    case EVENT_SUMMON_FROSTWIND:
-                        DoCast(SPELL_SUMMON_FROSTWIND);
-                        break;
-                    case EVENT_SUMMON_AHUNE:
-                        if (TempSummon* ahune = me->SummonCreature(NPC_AHUNE, SummonPositions[0], TEMPSUMMON_DEAD_DESPAWN))
-                        {
-                            ahune->SummonCreature(NPC_FROZEN_CORE, SummonPositions[1], TEMPSUMMON_CORPSE_DESPAWN);
-                            ahune->SetInCombatWithZone();
-                            DoCast(ahune, SPELL_RESURFACE);
-                        }
-                        break;
-                    case EVENT_CLOSE_OPENING:
-                        if (Creature* flamecaller = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_FLAMECALLER_000)))
-                            flamecaller->AI()->DoAction(ACTION_EMOTE_RESURFACE);
-                        DoCast(SPELL_CLOSE_OPENING_VISUAL);
-                        DoCast(me, SPELL_ICE_BOMBARD);
-                        break;
-                    case EVENT_AHUNE_PHASE_TWO:
-                        if (Creature* flamecaller = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_FLAMECALLER_000)))
-                            DoCast(flamecaller, SPELL_FOUND_OPENING);
-                        if (Creature* ahune = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_AHUNE)))
-                            ahune->AI()->DoAction(ACTION_AHUNE_RETREAT);
-                        _events.Reset();
-                        _events.SetPhase(PHASE_TWO);
-                        _events.ScheduleEvent(EVENT_CLOSE_OPENING, Seconds(25), 0, PHASE_TWO);
-                        _events.ScheduleEvent(EVENT_AHUNE_PHASE_ONE, Seconds(35), 0, PHASE_TWO);
-                        break;
-                    case EVENT_AHUNE_PHASE_ONE:
-                        _submerged = true;
-                        _events.Reset();
-                        _events.SetPhase(PHASE_ONE);
-                        _events.ScheduleEvent(EVENT_SUMMON_COLDWEAVE, Seconds(8), 0, PHASE_ONE);
-                        _events.ScheduleEvent(EVENT_SUMMON_HAILSTONE, Seconds(5), 0, PHASE_ONE);
-                        _events.ScheduleEvent(EVENT_START_LOOKING_FOR_OPENING, Seconds(5), 0, PHASE_ONE);
-                        _events.ScheduleEvent(EVENT_AHUNE_PHASE_TWO, Seconds(100), 0, PHASE_ONE);
-                        break;
-                    default:
-                        break;
+                case EVENT_START_LOOKING_FOR_OPENING:
+                    Talk(EMOTE_EARTHEN_ASSAULT);
+                    for (uint8 counter = 0; counter < MAX_FLAMECALLERS; ++counter)
+                        if (Creature* flamecaller = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_FLAMECALLER_000 + counter)))
+                            DoCast(flamecaller, SPELL_SHAMANS_LOOK_FOR_OPENING, true);
+                    break;
+                case EVENT_SUMMON_HAILSTONE:
+                    DoCast(SPELL_SUMMON_HAILSTONE);
+                    break;
+                case EVENT_SUMMON_COLDWEAVE:
+                    DoCast(SPELL_SUMMON_COLDWEAVE);
+                    DoCast(SPELL_SUMMON_COLDWEAVE);
+                    _events.Repeat(Seconds(8));
+                    if (_submerged)
+                        _events.ScheduleEvent(EVENT_SUMMON_FROSTWIND, Seconds(4), 0, PHASE_ONE);
+                    break;
+                case EVENT_SUMMON_FROSTWIND:
+                    DoCast(SPELL_SUMMON_FROSTWIND);
+                    break;
+                case EVENT_SUMMON_AHUNE:
+                    if (TempSummon* ahune = me->SummonCreature(NPC_AHUNE, SummonPositions[0], TEMPSUMMON_DEAD_DESPAWN))
+                    {
+                        ahune->SummonCreature(NPC_FROZEN_CORE, SummonPositions[1], TEMPSUMMON_CORPSE_DESPAWN);
+                        ahune->SetInCombatWithZone();
+                        DoCast(ahune, SPELL_RESURFACE);
+                    }
+                    break;
+                case EVENT_CLOSE_OPENING:
+                    if (Creature* flamecaller = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_FLAMECALLER_000)))
+                        flamecaller->AI()->DoAction(ACTION_EMOTE_RESURFACE);
+                    DoCast(SPELL_CLOSE_OPENING_VISUAL);
+                    DoCast(me, SPELL_ICE_BOMBARD);
+                    break;
+                case EVENT_AHUNE_PHASE_TWO:
+                    if (Creature* flamecaller = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_FLAMECALLER_000)))
+                        DoCast(flamecaller, SPELL_FOUND_OPENING);
+                    if (Creature* ahune = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_AHUNE)))
+                        ahune->AI()->DoAction(ACTION_AHUNE_RETREAT);
+                    _events.Reset();
+                    _events.SetPhase(PHASE_TWO);
+                    _events.ScheduleEvent(EVENT_CLOSE_OPENING, Seconds(25), 0, PHASE_TWO);
+                    _events.ScheduleEvent(EVENT_AHUNE_PHASE_ONE, Seconds(35), 0, PHASE_TWO);
+                    break;
+                case EVENT_AHUNE_PHASE_ONE:
+                    _submerged = true;
+                    _events.Reset();
+                    _events.SetPhase(PHASE_ONE);
+                    _events.ScheduleEvent(EVENT_SUMMON_COLDWEAVE, Seconds(8), 0, PHASE_ONE);
+                    _events.ScheduleEvent(EVENT_SUMMON_HAILSTONE, Seconds(5), 0, PHASE_ONE);
+                    _events.ScheduleEvent(EVENT_START_LOOKING_FOR_OPENING, Seconds(5), 0, PHASE_ONE);
+                    _events.ScheduleEvent(EVENT_AHUNE_PHASE_TWO, Seconds(100), 0, PHASE_ONE);
+                    break;
+                default:
+                    break;
                 }
             }
         }
@@ -510,11 +510,11 @@ public:
                     flamecaller->AI()->EnterEvadeMode();
         }
 
-        private:
-            InstanceScript* _instance;
-            EventMap _events;
-            SummonList _summons;
-            bool _submerged;
+      private:
+        InstanceScript* _instance;
+        EventMap _events;
+        SummonList _summons;
+        bool _submerged;
     };
 
     CreatureAI* GetAI(Creature* creature) const override
@@ -525,8 +525,10 @@ public:
 
 class npc_earthen_ring_flamecaller : public CreatureScript
 {
-public:
-    npc_earthen_ring_flamecaller() : CreatureScript("npc_earthen_ring_flamecaller") { }
+  public:
+    npc_earthen_ring_flamecaller() : CreatureScript("npc_earthen_ring_flamecaller")
+    {
+    }
 
     struct npc_earthen_ring_flamecallerAI : public ScriptedAI
     {
@@ -548,20 +550,20 @@ public:
 
             switch (pointId)
             {
-                case POINT_FLAMECALLER_000:
-                    _mySpot = POINT_FLAMECALLER_000;
-                    me->SetOrientation(FlameCallerSpots[_mySpot].GetOrientation());
-                    break;
-                case POINT_FLAMECALLER_001:
-                    _mySpot = POINT_FLAMECALLER_001;
-                    me->SetOrientation(FlameCallerSpots[_mySpot].GetOrientation());
-                    break;
-                case POINT_FLAMECALLER_002:
-                    _mySpot = POINT_FLAMECALLER_002;
-                    me->SetOrientation(FlameCallerSpots[_mySpot].GetOrientation());
-                    break;
-                default:
-                    break;
+            case POINT_FLAMECALLER_000:
+                _mySpot = POINT_FLAMECALLER_000;
+                me->SetOrientation(FlameCallerSpots[_mySpot].GetOrientation());
+                break;
+            case POINT_FLAMECALLER_001:
+                _mySpot = POINT_FLAMECALLER_001;
+                me->SetOrientation(FlameCallerSpots[_mySpot].GetOrientation());
+                break;
+            case POINT_FLAMECALLER_002:
+                _mySpot = POINT_FLAMECALLER_002;
+                me->SetOrientation(FlameCallerSpots[_mySpot].GetOrientation());
+                break;
+            default:
+                break;
             }
 
             DoCast(me, SPELL_FIND_OPENING_CHANNEL);
@@ -571,14 +573,14 @@ public:
         {
             switch (spellInfo->Id)
             {
-                case SPELL_SHAMANS_LOOK_FOR_OPENING:
-                    _events.ScheduleEvent(EVENT_LOOKFOROPENING_0, Seconds(17));
-                    break;
-                case SPELL_FOUND_OPENING:
-                    Talk(EMOTE_RETREAT);
-                    break;
-                default:
-                    break;
+            case SPELL_SHAMANS_LOOK_FOR_OPENING:
+                _events.ScheduleEvent(EVENT_LOOKFOROPENING_0, Seconds(17));
+                break;
+            case SPELL_FOUND_OPENING:
+                Talk(EMOTE_RETREAT);
+                break;
+            default:
+                break;
             }
         }
 
@@ -596,23 +598,23 @@ public:
             {
                 switch (eventId)
                 {
-                    case EVENT_LOOKFOROPENING_0:
-                        LookOpening(true, 0);
-                        _events.ScheduleEvent(EVENT_LOOKFOROPENING_1, Seconds(26));
-                        break;
-                    case EVENT_LOOKFOROPENING_1:
-                        LookOpening(true, 1);
-                        _events.ScheduleEvent(EVENT_LOOKFOROPENING_2, Seconds(25));
-                        break;
-                    case EVENT_LOOKFOROPENING_2:
-                        LookOpening(true, 2);
-                        _events.ScheduleEvent(EVENT_STOP_LOOKING_FOR_OPENING, Seconds(27));
-                        break;
-                    case EVENT_STOP_LOOKING_FOR_OPENING:
-                        LookOpening(false, _mySpot);
-                        break;
-                    default:
-                        break;
+                case EVENT_LOOKFOROPENING_0:
+                    LookOpening(true, 0);
+                    _events.ScheduleEvent(EVENT_LOOKFOROPENING_1, Seconds(26));
+                    break;
+                case EVENT_LOOKFOROPENING_1:
+                    LookOpening(true, 1);
+                    _events.ScheduleEvent(EVENT_LOOKFOROPENING_2, Seconds(25));
+                    break;
+                case EVENT_LOOKFOROPENING_2:
+                    LookOpening(true, 2);
+                    _events.ScheduleEvent(EVENT_STOP_LOOKING_FOR_OPENING, Seconds(27));
+                    break;
+                case EVENT_STOP_LOOKING_FOR_OPENING:
+                    LookOpening(false, _mySpot);
+                    break;
+                default:
+                    break;
                 }
             }
         }
@@ -639,7 +641,7 @@ public:
                 }
         }
 
-    private:
+      private:
         EventMap _events;
         InstanceScript* _instance;
         uint8 _mySpot;
@@ -653,12 +655,16 @@ public:
 
 class go_ahune_ice_stone : public GameObjectScript
 {
-public:
-    go_ahune_ice_stone() : GameObjectScript("go_ahune_ice_stone") { }
+  public:
+    go_ahune_ice_stone() : GameObjectScript("go_ahune_ice_stone")
+    {
+    }
 
     struct go_ahune_ice_stoneAI : public GameObjectAI
     {
-        go_ahune_ice_stoneAI(GameObject* go) : GameObjectAI(go), instance(go->GetInstanceScript()) { }
+        go_ahune_ice_stoneAI(GameObject* go) : GameObjectAI(go), instance(go->GetInstanceScript())
+        {
+        }
 
         InstanceScript* instance;
 
@@ -688,14 +694,16 @@ public:
 // 46430 - Synch Health
 class spell_ahune_synch_health : public SpellScriptLoader
 {
-public:
-    spell_ahune_synch_health() : SpellScriptLoader("spell_ahune_synch_health") { }
+  public:
+    spell_ahune_synch_health() : SpellScriptLoader("spell_ahune_synch_health")
+    {
+    }
 
     class spell_ahune_synch_health_SpellScript : public SpellScript
     {
         bool Validate(SpellInfo const* /*spellInfo*/) override
         {
-            return ValidateSpellInfo({ SPELL_SYNCH_HEALTH });
+            return ValidateSpellInfo({SPELL_SYNCH_HEALTH});
         }
 
         void HandleScript(SpellEffIndex /*effIndex*/)
@@ -720,14 +728,16 @@ public:
 // 45926 - Summoning Rhyme Aura
 class spell_summoning_rhyme_aura : public SpellScriptLoader
 {
-public:
-    spell_summoning_rhyme_aura() : SpellScriptLoader("spell_summoning_rhyme_aura") { }
+  public:
+    spell_summoning_rhyme_aura() : SpellScriptLoader("spell_summoning_rhyme_aura")
+    {
+    }
 
     class spell_summoning_rhyme_aura_AuraScript : public AuraScript
     {
         bool Validate(SpellInfo const* /*spellInfo*/) override
         {
-            return ValidateSpellInfo({ SPELL_FORCE_WHISP_FLIGHT, SPELL_SUMMONING_RHYME_BONFIRE });
+            return ValidateSpellInfo({SPELL_FORCE_WHISP_FLIGHT, SPELL_SUMMONING_RHYME_BONFIRE});
         }
 
         void PeriodicTick(AuraEffect const* aurEff)
@@ -745,17 +755,17 @@ public:
 
             switch (aurEff->GetTickNumber())
             {
-                case 1:
-                    sCreatureTextMgr->SendChat(caster, SAY_PLAYER_TEXT_1, nullptr, CHAT_MSG_SAY, LANG_UNIVERSAL, TEXT_RANGE_NORMAL, 0, TEAM_OTHER, false, player);
-                    player->CastSpell(player, SPELL_SUMMONING_RHYME_BONFIRE, true);
-                    break;
-                case 2:
-                    sCreatureTextMgr->SendChat(caster, SAY_PLAYER_TEXT_2, nullptr, CHAT_MSG_SAY, LANG_UNIVERSAL, TEXT_RANGE_NORMAL, 0, TEAM_OTHER, false, player);
-                    break;
-                case 3:
-                    sCreatureTextMgr->SendChat(caster, SAY_PLAYER_TEXT_3, nullptr, CHAT_MSG_SAY, LANG_UNIVERSAL, TEXT_RANGE_NORMAL, 0, TEAM_OTHER, false, player);
-                    Remove();
-                    break;
+            case 1:
+                sCreatureTextMgr->SendChat(caster, SAY_PLAYER_TEXT_1, nullptr, CHAT_MSG_SAY, LANG_UNIVERSAL, TEXT_RANGE_NORMAL, 0, TEAM_OTHER, false, player);
+                player->CastSpell(player, SPELL_SUMMONING_RHYME_BONFIRE, true);
+                break;
+            case 2:
+                sCreatureTextMgr->SendChat(caster, SAY_PLAYER_TEXT_2, nullptr, CHAT_MSG_SAY, LANG_UNIVERSAL, TEXT_RANGE_NORMAL, 0, TEAM_OTHER, false, player);
+                break;
+            case 3:
+                sCreatureTextMgr->SendChat(caster, SAY_PLAYER_TEXT_3, nullptr, CHAT_MSG_SAY, LANG_UNIVERSAL, TEXT_RANGE_NORMAL, 0, TEAM_OTHER, false, player);
+                Remove();
+                break;
             }
         }
 
@@ -774,14 +784,16 @@ public:
 // 46878 - Summon Ice Spear Delayer
 class spell_summon_ice_spear_delayer : public SpellScriptLoader
 {
-public:
-    spell_summon_ice_spear_delayer() : SpellScriptLoader("spell_summon_ice_spear_delayer") { }
+  public:
+    spell_summon_ice_spear_delayer() : SpellScriptLoader("spell_summon_ice_spear_delayer")
+    {
+    }
 
     class spell_summon_ice_spear_delayer_AuraScript : public AuraScript
     {
         bool Validate(SpellInfo const* /*spellInfo*/) override
         {
-            return ValidateSpellInfo({ SPELL_SUMMON_ICE_SPEAR_GO, SPELL_ICE_SPEAR_KNOCKBACK });
+            return ValidateSpellInfo({SPELL_SUMMON_ICE_SPEAR_GO, SPELL_ICE_SPEAR_KNOCKBACK});
         }
 
         void PeriodicTick(AuraEffect const* aurEff)
@@ -790,21 +802,21 @@ public:
                 if (Creature* caster = tmpCaster->ToCreature())
                     switch (aurEff->GetTickNumber())
                     {
-                        case 1:
-                            caster->CastSpell(caster, SPELL_SUMMON_ICE_SPEAR_GO);
-                            break;
-                        case 3:
-                            if (GameObject* spike = caster->FindNearestGameObject(GO_ICE_SPEAR, 3.0f))
-                                spike->UseDoorOrButton();
-                            caster->AI()->DoCastAOE(SPELL_ICE_SPEAR_KNOCKBACK, true);
-                            break;
-                        case 5:
-                            if (GameObject* spike = caster->FindNearestGameObject(GO_ICE_SPEAR, 3.0f))
-                                spike->Delete();
-                            caster->DespawnOrUnsummon();
-                            break;
-                        default:
-                            break;
+                    case 1:
+                        caster->CastSpell(caster, SPELL_SUMMON_ICE_SPEAR_GO);
+                        break;
+                    case 3:
+                        if (GameObject* spike = caster->FindNearestGameObject(GO_ICE_SPEAR, 3.0f))
+                            spike->UseDoorOrButton();
+                        caster->AI()->DoCastAOE(SPELL_ICE_SPEAR_KNOCKBACK, true);
+                        break;
+                    case 5:
+                        if (GameObject* spike = caster->FindNearestGameObject(GO_ICE_SPEAR, 3.0f))
+                            spike->Delete();
+                        caster->DespawnOrUnsummon();
+                        break;
+                    default:
+                        break;
                     }
         }
 
@@ -823,14 +835,16 @@ public:
 // 46371 - Ice Spear Control Aura
 class spell_ice_spear_control_aura : public SpellScriptLoader
 {
-public:
-    spell_ice_spear_control_aura() : SpellScriptLoader("spell_ice_spear_control_aura") { }
+  public:
+    spell_ice_spear_control_aura() : SpellScriptLoader("spell_ice_spear_control_aura")
+    {
+    }
 
     class spell_ice_spear_control_aura_AuraScript : public AuraScript
     {
         bool Validate(SpellInfo const* /*spellInfo*/) override
         {
-            return ValidateSpellInfo({ SPELL_ICE_SPEAR_TARGET_PICKER });
+            return ValidateSpellInfo({SPELL_ICE_SPEAR_TARGET_PICKER});
         }
 
         void PeriodicTick(AuraEffect const* /*aurEff*/)
@@ -854,14 +868,16 @@ public:
 // 46372 - Ice Spear Target Picker
 class spell_ice_spear_target_picker : public SpellScriptLoader
 {
-public:
-    spell_ice_spear_target_picker() : SpellScriptLoader("spell_ice_spear_target_picker") { }
+  public:
+    spell_ice_spear_target_picker() : SpellScriptLoader("spell_ice_spear_target_picker")
+    {
+    }
 
     class spell_ice_spear_target_picker_SpellScript : public SpellScript
     {
-             bool Validate(SpellInfo const* /*spellInfo*/) override
+        bool Validate(SpellInfo const* /*spellInfo*/) override
         {
-            return ValidateSpellInfo({ SPELL_SUMMON_ICE_SPEAR_BUNNY });
+            return ValidateSpellInfo({SPELL_SUMMON_ICE_SPEAR_BUNNY});
         }
 
         void FilterTargets(std::list<WorldObject*>& targets)
@@ -895,14 +911,16 @@ public:
 // 46320 - Spell Slippery Floor Periodic
 class spell_slippery_floor_periodic : public SpellScriptLoader
 {
-public:
-    spell_slippery_floor_periodic() : SpellScriptLoader("spell_slippery_floor_periodic") { }
+  public:
+    spell_slippery_floor_periodic() : SpellScriptLoader("spell_slippery_floor_periodic")
+    {
+    }
 
     class spell_slippery_floor_periodic_SpellScript : public SpellScript
     {
         bool Validate(SpellInfo const* /*spellInfo*/) override
         {
-            return ValidateSpellInfo({ SPELL_SLIPPERY_FLOOR_SLIP });
+            return ValidateSpellInfo({SPELL_SLIPPERY_FLOOR_SLIP});
         }
 
         void HandleScriptEffect(SpellEffIndex /*effIndex*/)
@@ -930,14 +948,16 @@ public:
 // 46146 - Ahune Spanky Hands
 class spell_ahune_spanky_hands : public SpellScriptLoader
 {
-public:
-    spell_ahune_spanky_hands() : SpellScriptLoader("spell_ahune_spanky_hands") { }
+  public:
+    spell_ahune_spanky_hands() : SpellScriptLoader("spell_ahune_spanky_hands")
+    {
+    }
 
     class spell_ahune_spanky_hands_AuraScript : public AuraScript
     {
         bool Validate(SpellInfo const* /*spellInfo*/) override
         {
-            return ValidateSpellInfo({ SPELL_COLD_SLAP });
+            return ValidateSpellInfo({SPELL_COLD_SLAP});
         }
 
         void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
@@ -960,8 +980,10 @@ public:
 
 class spell_ahune_minion_despawner : public SpellScriptLoader
 {
-public:
-    spell_ahune_minion_despawner() : SpellScriptLoader("spell_ahune_minion_despawner") { }
+  public:
+    spell_ahune_minion_despawner() : SpellScriptLoader("spell_ahune_minion_despawner")
+    {
+    }
 
     class spell_ahune_minion_despawner_SpellScript : public SpellScript
     {
@@ -986,19 +1008,21 @@ public:
 // 46398 - Spell Ice Bombardment Dest Picker
 class spell_ice_bombardment_dest_picker : public SpellScriptLoader
 {
-public:
-    spell_ice_bombardment_dest_picker() : SpellScriptLoader("spell_ice_bombardment_dest_picker") { }
+  public:
+    spell_ice_bombardment_dest_picker() : SpellScriptLoader("spell_ice_bombardment_dest_picker")
+    {
+    }
 
     class spell_ice_bombardment_dest_picker_SpellScript : public SpellScript
     {
         bool Validate(SpellInfo const* /*spellInfo*/) override
         {
-            return ValidateSpellInfo({ SPELL_ICE_BOMBARDMENT });
+            return ValidateSpellInfo({SPELL_ICE_BOMBARDMENT});
         }
 
         void HandleScriptEffect(SpellEffIndex /*effIndex*/)
         {
-            GetCaster()->CastSpell({ GetHitDest()->GetPositionX(), GetHitDest()->GetPositionY(), GetHitDest()->GetPositionZ() }, SPELL_ICE_BOMBARDMENT, true);
+            GetCaster()->CastSpell({GetHitDest()->GetPositionX(), GetHitDest()->GetPositionY(), GetHitDest()->GetPositionZ()}, SPELL_ICE_BOMBARDMENT, true);
         }
 
         void Register() override

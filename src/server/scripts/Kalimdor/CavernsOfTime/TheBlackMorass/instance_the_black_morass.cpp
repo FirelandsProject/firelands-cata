@@ -22,11 +22,11 @@ Comment: Quest support: 9836, 10297. Currently in progress.
 Category: Caverns of Time, The Black Morass
 */
 
-#include "ScriptMgr.h"
 #include "InstanceScript.h"
 #include "Log.h"
 #include "Map.h"
 #include "Player.h"
+#include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "SpellInfo.h"
 #include "TemporarySummon.h"
@@ -34,35 +34,24 @@ Category: Caverns of Time, The Black Morass
 
 enum Misc
 {
-    SPELL_RIFT_CHANNEL                = 31387,
-    RIFT_BOSS                         = 1
+    SPELL_RIFT_CHANNEL = 31387,
+    RIFT_BOSS = 1
 };
 
-inline uint32 RandRiftBoss() { return ((rand32() % 2) ? NPC_RIFT_KEEPER : NPC_RIFT_LORD); }
-
-float PortalLocation[4][4]=
+inline uint32 RandRiftBoss()
 {
-    {-2041.06f, 7042.08f, 29.99f, 1.30f},
-    {-1968.18f, 7042.11f, 21.93f, 2.12f},
-    {-1885.82f, 7107.36f, 22.32f, 3.07f},
-    {-1928.11f, 7175.95f, 22.11f, 3.44f}
-};
+    return ((rand32() % 2) ? NPC_RIFT_KEEPER : NPC_RIFT_LORD);
+}
+
+float PortalLocation[4][4] = {{-2041.06f, 7042.08f, 29.99f, 1.30f}, {-1968.18f, 7042.11f, 21.93f, 2.12f}, {-1885.82f, 7107.36f, 22.32f, 3.07f}, {-1928.11f, 7175.95f, 22.11f, 3.44f}};
 
 struct Wave
 {
-    uint32 PortalBoss;                                      //protector of current portal
-    uint32 NextPortalTime;                                  //time to next portal, or 0 if portal boss need to be killed
+    uint32 PortalBoss;     // protector of current portal
+    uint32 NextPortalTime; // time to next portal, or 0 if portal boss need to be killed
 };
 
-static Wave RiftWaves[]=
-{
-    { RIFT_BOSS,                0 },
-    { NPC_CRONO_LORD_DEJA,      0 },
-    { RIFT_BOSS,           120000 },
-    { NPC_TEMPORUS,        140000 },
-    { RIFT_BOSS,           120000 },
-    { NPC_AEONUS,               0 }
-};
+static Wave RiftWaves[] = {{RIFT_BOSS, 0}, {NPC_CRONO_LORD_DEJA, 0}, {RIFT_BOSS, 120000}, {NPC_TEMPORUS, 140000}, {RIFT_BOSS, 120000}, {NPC_AEONUS, 0}};
 
 enum EventIds
 {
@@ -71,8 +60,10 @@ enum EventIds
 
 class instance_the_black_morass : public InstanceMapScript
 {
-public:
-    instance_the_black_morass() : InstanceMapScript(TBMScriptName, 269) { }
+  public:
+    instance_the_black_morass() : InstanceMapScript(TBMScriptName, 269)
+    {
+    }
 
     struct instance_the_black_morass_InstanceMapScript : public InstanceScript
     {
@@ -86,22 +77,22 @@ public:
 
         uint32 mRiftPortalCount;
         uint32 mShieldPercent;
-        uint8  mRiftWaveCount;
-        uint8  mRiftWaveId;
+        uint8 mRiftWaveCount;
+        uint8 mRiftWaveId;
 
         ObjectGuid _medivhGUID;
-        uint8  _currentRiftId;
+        uint8 _currentRiftId;
 
         void Clear()
         {
             memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
-            mRiftPortalCount    = 0;
-            mShieldPercent      = 100;
-            mRiftWaveCount      = 0;
-            mRiftWaveId         = 0;
+            mRiftPortalCount = 0;
+            mShieldPercent = 100;
+            mRiftWaveCount = 0;
+            mRiftWaveId = 0;
 
-            _currentRiftId      = 0;
+            _currentRiftId = 0;
         }
 
         void InitWorldState(bool Enable = true)
@@ -133,7 +124,7 @@ public:
                 _medivhGUID = creature->GetGUID();
         }
 
-        //what other conditions to check?
+        // what other conditions to check?
         bool CanProgressEvent()
         {
             if (instance->GetPlayers().isEmpty())
@@ -176,7 +167,7 @@ public:
                         {
                             if (medivh->IsAlive())
                             {
-                                medivh->DealDamage(medivh, medivh->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
+                                medivh->KillSelf();
                                 m_auiEncounter[0] = FAIL;
                                 m_auiEncounter[1] = NOT_STARTED;
                             }
@@ -195,7 +186,7 @@ public:
 
                     if (data == DONE)
                     {
-                        //this may be completed further out in the post-event
+                        // this may be completed further out in the post-event
                         LOG_DEBUG("scripts", "Instance The Black Morass: Event completed.");
                         Map::PlayerList const& players = instance->GetPlayers();
 
@@ -265,8 +256,9 @@ public:
 
             Position pos = me->GetRandomNearPosition(10.0f);
 
-            //normalize Z-level if we can, if rift is not at ground level.
-            pos.m_positionZ = std::max(me->GetMap()->GetHeight(me->GetPhaseShift(), pos.m_positionX, pos.m_positionY, MAX_HEIGHT), me->GetMap()->GetWaterLevel(me->GetPhaseShift(), pos.m_positionX, pos.m_positionY));
+            // normalize Z-level if we can, if rift is not at ground level.
+            pos.m_positionZ = std::max(
+                me->GetMap()->GetHeight(me->GetPhaseShift(), pos.m_positionX, pos.m_positionY, MAX_HEIGHT), me->GetMap()->GetWaterLevel(me->GetPhaseShift(), pos.m_positionX, pos.m_positionY));
 
             if (Creature* summon = me->SummonCreature(entry, pos, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 600000))
                 return summon;
@@ -288,9 +280,7 @@ public:
 
                 _currentRiftId = tmp;
 
-                Creature* temp = medivh->SummonCreature(NPC_TIME_RIFT,
-                    PortalLocation[tmp][0], PortalLocation[tmp][1], PortalLocation[tmp][2], PortalLocation[tmp][3],
-                    TEMPSUMMON_CORPSE_DESPAWN, 0);
+                Creature* temp = medivh->SummonCreature(NPC_TIME_RIFT, PortalLocation[tmp][0], PortalLocation[tmp][1], PortalLocation[tmp][2], PortalLocation[tmp][3], TEMPSUMMON_CORPSE_DESPAWN, 0);
                 if (temp)
                 {
                     temp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -315,7 +305,7 @@ public:
             if (m_auiEncounter[1] != IN_PROGRESS)
                 return;
 
-            //add delay timer?
+            // add delay timer?
             if (!CanProgressEvent())
             {
                 Clear();
@@ -339,8 +329,8 @@ public:
                 Events.RescheduleEvent(EVENT_NEXT_PORTAL, nextPortalTime);
         }
 
-        protected:
-            EventMap Events;
+      protected:
+        EventMap Events;
     };
 
     InstanceScript* GetInstanceScript(InstanceMap* map) const override
