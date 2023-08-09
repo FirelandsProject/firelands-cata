@@ -24,36 +24,34 @@
 #include <stack>
 #include <string>
 
-template <class T>
-class DatabaseWorkerPool;
+template <class T> class DatabaseWorkerPool;
 
 // A helper class to initiate all database worker pools,
 // handles updating, delays preparing of statements and cleans up on failure.
 class FC_DATABASE_API DatabaseLoader
 {
-public:
-    DatabaseLoader(std::string const& logger, uint32 const defaultUpdateMask);
+  public:
+    DatabaseLoader(std::string const& logger, uint32 const defaultUpdateMask = 0, std::string_view modulesList = {});
 
     // Register a database to the loader (lazy implemented)
-    template <class T>
-    DatabaseLoader& AddDatabase(DatabaseWorkerPool<T>& pool, std::string const& name);
+    template <class T> DatabaseLoader& AddDatabase(DatabaseWorkerPool<T>& pool, std::string const& name);
 
     // Load all databases
     bool Load();
 
     enum DatabaseTypeFlags
     {
-        DATABASE_NONE       = 0,
+        DATABASE_NONE = 0,
 
-        DATABASE_LOGIN      = 1,
-        DATABASE_CHARACTER  = 2,
-        DATABASE_WORLD      = 4,
-        DATABASE_HOTFIX     = 8,
+        DATABASE_LOGIN = 1,
+        DATABASE_CHARACTER = 2,
+        DATABASE_WORLD = 4,
+        DATABASE_HOTFIX = 8,
 
-        DATABASE_MASK_ALL   = DATABASE_LOGIN | DATABASE_CHARACTER | DATABASE_WORLD | DATABASE_HOTFIX
+        DATABASE_MASK_ALL = DATABASE_LOGIN | DATABASE_CHARACTER | DATABASE_WORLD | DATABASE_HOTFIX
     };
 
-private:
+  private:
     bool OpenDatabases();
     bool PopulateDatabases();
     bool UpdateDatabases();
@@ -67,6 +65,7 @@ private:
     bool Process(std::queue<Predicate>& queue);
 
     std::string const _logger;
+    std::string_view _modulesList;
     bool const _autoSetup;
     uint32 const _updateFlags;
 

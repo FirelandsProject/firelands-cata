@@ -16,12 +16,17 @@
  */
 
 #include "ModuleMgr.h"
+#include "Util.h"
+
 namespace
 {
 std::string _modulesList;
 }
 
-void Firelands::Module::SetEnableModulesList(std::string_view modulesList) { _modulesList = std::string{modulesList}; }
+void Firelands::Module::SetEnableModulesList(std::string_view modulesList)
+{
+    _modulesList = std::string{modulesList};
+}
 
 std::vector<std::string_view> Firelands::Module::GetEnableModulesList()
 {

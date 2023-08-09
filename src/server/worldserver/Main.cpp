@@ -92,16 +92,14 @@ int m_ServiceStatus = -1;
 class FreezeDetector
 {
   public:
-    FreezeDetector(Firelands::Asio::IoContext &ioContext, uint32 maxCoreStuckTime)
-        : _timer(ioContext), _worldLoopCounter(0), _lastChangeMsTime(getMSTime()), _maxCoreStuckTimeInMs(maxCoreStuckTime)
+    FreezeDetector(Firelands::Asio::IoContext &ioContext, uint32 maxCoreStuckTime) : _timer(ioContext), _worldLoopCounter(0), _lastChangeMsTime(getMSTime()), _maxCoreStuckTimeInMs(maxCoreStuckTime)
     {
     }
 
     static void Start(std::shared_ptr<FreezeDetector> const &freezeDetector)
     {
         freezeDetector->_timer.expires_from_now(boost::posix_time::seconds(5));
-        freezeDetector->_timer.async_wait(
-            std::bind(&FreezeDetector::Handler, std::weak_ptr<FreezeDetector>(freezeDetector), std::placeholders::_1));
+        freezeDetector->_timer.async_wait(std::bind(&FreezeDetector::Handler, std::weak_ptr<FreezeDetector>(freezeDetector), std::placeholders::_1));
     }
 
     static void Handler(std::weak_ptr<FreezeDetector> freezeDetectorRef, boost::system::error_code const &error);
@@ -147,8 +145,7 @@ extern int main(int argc, char **argv)
 
     Optional<UINT> newTimerResolution;
     boost::system::error_code dllError;
-    std::shared_ptr<boost::dll::shared_library> winmm(
-        new boost::dll::shared_library("winmm.dll", dllError, boost::dll::load_mode::search_system_folders),
+    std::shared_ptr<boost::dll::shared_library> winmm(new boost::dll::shared_library("winmm.dll", dllError, boost::dll::load_mode::search_system_folders),
         [&](boost::dll::shared_library *lib)
         {
             try
@@ -206,10 +203,8 @@ extern int main(int argc, char **argv)
         []()
         {
             LOG_INFO("server.worldserver", "Using configuration file %s.", sConfigMgr->GetFilename().c_str());
-            LOG_INFO("server.worldserver", "Using SSL version: %s (library: %s)", OPENSSL_VERSION_TEXT,
-                SSLeay_version(SSLEAY_VERSION));
-            LOG_INFO("server.worldserver", "Using Boost version: %i.%i.%i", BOOST_VERSION / 100000, BOOST_VERSION / 100 % 1000,
-                BOOST_VERSION % 100);
+            LOG_INFO("server.worldserver", "Using SSL version: %s (library: %s)", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
+            LOG_INFO("server.worldserver", "Using Boost version: %i.%i.%i", BOOST_VERSION / 100000, BOOST_VERSION / 100 % 1000, BOOST_VERSION % 100);
         });
 
     OpenSSLCrypto::threadsSetup();
@@ -262,8 +257,7 @@ extern int main(int argc, char **argv)
         threadPool->push_back(std::thread([ioContext]() { ioContext->run(); }));
 
     // Set process priority according to configuration settings
-    SetProcessPriority("server.worldserver", sConfigMgr->GetIntDefault(CONFIG_PROCESSOR_AFFINITY, 0),
-        sConfigMgr->GetBoolDefault(CONFIG_HIGH_PRIORITY, false));
+    SetProcessPriority("server.worldserver", sConfigMgr->GetIntDefault(CONFIG_PROCESSOR_AFFINITY, 0), sConfigMgr->GetBoolDefault(CONFIG_HIGH_PRIORITY, false));
 
     sConfigMgr->LoadConfigsModules();
 
@@ -302,6 +296,8 @@ extern int main(int argc, char **argv)
             sScriptReloadMgr->Unload();
         });
 
+    Firelands::Module::SetEnableModulesList(FC_MODULES_LIST);
+
     // Initialize the World
     sWorld->SetInitialWorldSettings();
 
@@ -325,8 +321,7 @@ extern int main(int argc, char **argv)
     std::shared_ptr<std::thread> soapThread;
     if (sConfigMgr->GetBoolDefault("SOAP.Enabled", false))
     {
-        soapThread.reset(new std::thread(TCSoapThread, sConfigMgr->GetStringDefault("SOAP.IP", "127.0.0.1"),
-                             uint16(sConfigMgr->GetIntDefault("SOAP.Port", 7878))),
+        soapThread.reset(new std::thread(TCSoapThread, sConfigMgr->GetStringDefault("SOAP.IP", "127.0.0.1"), uint16(sConfigMgr->GetIntDefault("SOAP.Port", 7878))),
             [](std::thread *thr)
             {
                 thr->join();
@@ -378,8 +373,7 @@ extern int main(int argc, char **argv)
     }
 
     // Set server online (allow connecting now)
-    LoginDatabase.DirectPExecute(
-        "UPDATE realmlist SET flag = flag & ~%u, population = 0 WHERE id = '%u'", REALM_FLAG_OFFLINE, realm.Id.Realm);
+    LoginDatabase.DirectPExecute("UPDATE realmlist SET flag = flag & ~%u, population = 0 WHERE id = '%u'", REALM_FLAG_OFFLINE, realm.Id.Realm);
     realm.PopulationLevel = 0.0f;
     realm.Flags = RealmFlags(realm.Flags & ~uint32(REALM_FLAG_OFFLINE));
 
@@ -431,13 +425,11 @@ void ShutdownCLIThread(std::thread *cliThread)
             LPSTR errorBuffer;
 
             DWORD formatReturnCode =
-                FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS,
-                    nullptr, errorCode, 0, (LPTSTR)&errorBuffer, 0, nullptr);
+                FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, errorCode, 0, (LPTSTR)&errorBuffer, 0, nullptr);
             if (!formatReturnCode)
                 errorBuffer = "Unknown error";
 
-            LOG_DEBUG("server.worldserver", "Error cancelling I/O of CliThread, error code %u, detail: %s", uint32(errorCode),
-                errorBuffer);
+            LOG_DEBUG("server.worldserver", "Error cancelling I/O of CliThread, error code %u, detail: %s", uint32(errorCode), errorBuffer);
 
             if (!formatReturnCode)
                 LocalFree(errorBuffer);
@@ -577,8 +569,7 @@ bool LoadRealmInfo(Firelands::Asio::IoContext &ioContext)
 
     Field *fields = result->Fetch();
     realm.Name = fields[1].GetString();
-    Optional<boost::asio::ip::tcp::endpoint> externalAddress =
-        resolver.Resolve(boost::asio::ip::tcp::v4(), fields[2].GetString(), "");
+    Optional<boost::asio::ip::tcp::endpoint> externalAddress = resolver.Resolve(boost::asio::ip::tcp::v4(), fields[2].GetString(), "");
     if (!externalAddress)
     {
         LOG_ERROR("server.worldserver", "Could not resolve address %s", fields[2].GetString().c_str());
@@ -587,8 +578,7 @@ bool LoadRealmInfo(Firelands::Asio::IoContext &ioContext)
 
     realm.ExternalAddress = Firelands::make_unique<boost::asio::ip::address>(externalAddress->address());
 
-    Optional<boost::asio::ip::tcp::endpoint> localAddress =
-        resolver.Resolve(boost::asio::ip::tcp::v4(), fields[3].GetString(), "");
+    Optional<boost::asio::ip::tcp::endpoint> localAddress = resolver.Resolve(boost::asio::ip::tcp::v4(), fields[3].GetString(), "");
     if (!localAddress)
     {
         LOG_ERROR("server.worldserver", "Could not resolve address %s", fields[3].GetString().c_str());
@@ -597,8 +587,7 @@ bool LoadRealmInfo(Firelands::Asio::IoContext &ioContext)
 
     realm.LocalAddress = Firelands::make_unique<boost::asio::ip::address>(localAddress->address());
 
-    Optional<boost::asio::ip::tcp::endpoint> localSubmask =
-        resolver.Resolve(boost::asio::ip::tcp::v4(), fields[4].GetString(), "");
+    Optional<boost::asio::ip::tcp::endpoint> localSubmask = resolver.Resolve(boost::asio::ip::tcp::v4(), fields[4].GetString(), "");
     if (!localSubmask)
     {
         LOG_ERROR("server.worldserver", "Could not resolve address %s", fields[4].GetString().c_str());
@@ -623,11 +612,8 @@ bool StartDB()
     MySQL::Library_Init();
 
     // Load databases
-    DatabaseLoader loader("server.worldserver", DatabaseLoader::DATABASE_NONE);
-    loader.AddDatabase(LoginDatabase, "Login")
-        .AddDatabase(CharacterDatabase, "Character")
-        .AddDatabase(WorldDatabase, "World")
-        .AddDatabase(HotfixDatabase, "Hotfix");
+    DatabaseLoader loader("server.worldserver", DatabaseLoader::DATABASE_NONE, FC_MODULES_LIST);
+    loader.AddDatabase(LoginDatabase, "Login").AddDatabase(CharacterDatabase, "Character").AddDatabase(WorldDatabase, "World").AddDatabase(HotfixDatabase, "Hotfix");
 
     if (!loader.Load())
         return false;
@@ -640,8 +626,7 @@ bool StartDB()
         return false;
     }
 
-    QueryResult realmIdQuery =
-        LoginDatabase.PQuery("SELECT `Region`,`Battlegroup` FROM `realmlist` WHERE `id`=%u", realm.Id.Realm);
+    QueryResult realmIdQuery = LoginDatabase.PQuery("SELECT `Region`,`Battlegroup` FROM `realmlist` WHERE `id`=%u", realm.Id.Realm);
     if (!realmIdQuery)
     {
         LOG_ERROR("server.worldserver", "Realm id %u not defined in realmlist table", realm.Id.Realm);
@@ -651,8 +636,7 @@ bool StartDB()
     realm.Id.Region = (*realmIdQuery)[0].GetUInt8();
     realm.Id.Site = (*realmIdQuery)[1].GetUInt8();
 
-    LOG_INFO("server.worldserver", "Realm running as realm ID %u region %u battlegroup %u", realm.Id.Realm,
-        uint32(realm.Id.Region), uint32(realm.Id.Site));
+    LOG_INFO("server.worldserver", "Realm running as realm ID %u region %u battlegroup %u", realm.Id.Realm, uint32(realm.Id.Region), uint32(realm.Id.Site));
 
     ///- Clean the database before starting
     ClearOnlineAccounts();
@@ -700,13 +684,11 @@ variables_map GetConsoleArguments(int argc, char **argv, fs::path &configFile, s
     (void)configService;
 
     options_description all("Allowed options");
-    all.add_options()("help,h", "print usage message")("version,v", "print version build info")("config,c",
-        value<fs::path>(&configFile)->default_value(fs::absolute(_FIRELANDS_CORE_CONFIG)),
-        "use <arg> as configuration file")("update-databases-only,u", "updates databases only");
+    all.add_options()("help,h", "print usage message")("version,v", "print version build info")(
+        "config,c", value<fs::path>(&configFile)->default_value(fs::absolute(_FIRELANDS_CORE_CONFIG)), "use <arg> as configuration file")("update-databases-only,u", "updates databases only");
 #ifdef _WIN32
     options_description win("Windows platform specific options");
-    win.add_options()(
-        "service,s", value<std::string>(&configService)->default_value(""), "Windows service options: [install | uninstall]");
+    win.add_options()("service,s", value<std::string>(&configService)->default_value(""), "Windows service options: [install | uninstall]");
 
     all.add(win);
 #endif

@@ -67,18 +67,14 @@ char serviceDescription[] = "Firelands World of Warcraft emulator auth service";
  */
 int m_ServiceStatus = -1;
 
-void ServiceStatusWatcher(std::weak_ptr<Firelands::Asio::DeadlineTimer> serviceStatusWatchTimerRef,
-    std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error);
+void ServiceStatusWatcher(std::weak_ptr<Firelands::Asio::DeadlineTimer> serviceStatusWatchTimerRef, std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error);
 #endif
 
 bool StartDB();
 void StopDB();
-void SignalHandler(
-    std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error, int signalNumber);
-void KeepDatabaseAliveHandler(
-    std::weak_ptr<Firelands::Asio::DeadlineTimer> dbPingTimerRef, int32 dbPingInterval, boost::system::error_code const& error);
-void BanExpiryHandler(std::weak_ptr<Firelands::Asio::DeadlineTimer> banExpiryCheckTimerRef, int32 banExpiryCheckInterval,
-    boost::system::error_code const& error);
+void SignalHandler(std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error, int signalNumber);
+void KeepDatabaseAliveHandler(std::weak_ptr<Firelands::Asio::DeadlineTimer> dbPingTimerRef, int32 dbPingInterval, boost::system::error_code const& error);
+void BanExpiryHandler(std::weak_ptr<Firelands::Asio::DeadlineTimer> banExpiryCheckTimerRef, int32 banExpiryCheckInterval, boost::system::error_code const& error);
 variables_map GetConsoleArguments(int argc, char** argv, fs::path& configFile, std::string& configService);
 
 int main(int argc, char** argv)
@@ -116,10 +112,8 @@ int main(int argc, char** argv)
         []()
         {
             LOG_INFO("server.authserver", "Using configuration file %s.", sConfigMgr->GetFilename().c_str());
-            LOG_INFO(
-                "server.authserver", "Using SSL version: %s (library: %s)", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
-            LOG_INFO("server.authserver", "Using Boost version: %i.%i.%i", BOOST_VERSION / 100000, BOOST_VERSION / 100 % 1000,
-                BOOST_VERSION % 100);
+            LOG_INFO("server.authserver", "Using SSL version: %s (library: %s)", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
+            LOG_INFO("server.authserver", "Using Boost version: %i.%i.%i", BOOST_VERSION / 100000, BOOST_VERSION / 100 % 1000, BOOST_VERSION % 100);
         });
 
     // authserver PID file creation
@@ -180,26 +174,21 @@ int main(int argc, char** argv)
 #if FC_PLATFORM == FC_PLATFORM_WINDOWS
     signals.add(SIGBREAK);
 #endif
-    signals.async_wait(std::bind(
-        &SignalHandler, std::weak_ptr<Firelands::Asio::IoContext>(ioContext), std::placeholders::_1, std::placeholders::_2));
+    signals.async_wait(std::bind(&SignalHandler, std::weak_ptr<Firelands::Asio::IoContext>(ioContext), std::placeholders::_1, std::placeholders::_2));
 
     // Set process priority according to configuration settings
-    SetProcessPriority("server.authserver", sConfigMgr->GetIntDefault(CONFIG_PROCESSOR_AFFINITY, 0),
-        sConfigMgr->GetBoolDefault(CONFIG_HIGH_PRIORITY, false));
+    SetProcessPriority("server.authserver", sConfigMgr->GetIntDefault(CONFIG_PROCESSOR_AFFINITY, 0), sConfigMgr->GetBoolDefault(CONFIG_HIGH_PRIORITY, false));
 
     // Enabled a timed callback for handling the database keep alive ping
     int32 dbPingInterval = sConfigMgr->GetIntDefault("MaxPingTime", 30);
     std::shared_ptr<Firelands::Asio::DeadlineTimer> dbPingTimer = std::make_shared<Firelands::Asio::DeadlineTimer>(*ioContext);
     dbPingTimer->expires_from_now(boost::posix_time::minutes(dbPingInterval));
-    dbPingTimer->async_wait(std::bind(&KeepDatabaseAliveHandler, std::weak_ptr<Firelands::Asio::DeadlineTimer>(dbPingTimer),
-        dbPingInterval, std::placeholders::_1));
+    dbPingTimer->async_wait(std::bind(&KeepDatabaseAliveHandler, std::weak_ptr<Firelands::Asio::DeadlineTimer>(dbPingTimer), dbPingInterval, std::placeholders::_1));
 
     int32 banExpiryCheckInterval = sConfigMgr->GetIntDefault("BanExpiryCheckInterval", 60);
-    std::shared_ptr<Firelands::Asio::DeadlineTimer> banExpiryCheckTimer =
-        std::make_shared<Firelands::Asio::DeadlineTimer>(*ioContext);
+    std::shared_ptr<Firelands::Asio::DeadlineTimer> banExpiryCheckTimer = std::make_shared<Firelands::Asio::DeadlineTimer>(*ioContext);
     banExpiryCheckTimer->expires_from_now(boost::posix_time::seconds(banExpiryCheckInterval));
-    banExpiryCheckTimer->async_wait(std::bind(&BanExpiryHandler,
-        std::weak_ptr<Firelands::Asio::DeadlineTimer>(banExpiryCheckTimer), banExpiryCheckInterval, std::placeholders::_1));
+    banExpiryCheckTimer->async_wait(std::bind(&BanExpiryHandler, std::weak_ptr<Firelands::Asio::DeadlineTimer>(banExpiryCheckTimer), banExpiryCheckInterval, std::placeholders::_1));
 
 #if FC_PLATFORM == FC_PLATFORM_WINDOWS
     std::shared_ptr<Firelands::Asio::DeadlineTimer> serviceStatusWatchTimer;
@@ -208,8 +197,7 @@ int main(int argc, char** argv)
         serviceStatusWatchTimer = std::make_shared<Firelands::Asio::DeadlineTimer>(*ioContext);
         serviceStatusWatchTimer->expires_from_now(boost::posix_time::seconds(1));
         serviceStatusWatchTimer->async_wait(
-            std::bind(&ServiceStatusWatcher, std::weak_ptr<Firelands::Asio::DeadlineTimer>(serviceStatusWatchTimer),
-                std::weak_ptr<Firelands::Asio::IoContext>(ioContext), std::placeholders::_1));
+            std::bind(&ServiceStatusWatcher, std::weak_ptr<Firelands::Asio::DeadlineTimer>(serviceStatusWatchTimer), std::weak_ptr<Firelands::Asio::IoContext>(ioContext), std::placeholders::_1));
     }
 #endif
 
@@ -234,7 +222,7 @@ bool StartDB()
     // Load databases
     // NOTE: While authserver is singlethreaded you should keep synch_threads == 1.
     // Increasing it is just silly since only 1 will be used ever.
-    DatabaseLoader loader("server.authserver", DatabaseLoader::DATABASE_NONE);
+    DatabaseLoader loader("server.authserver");
     loader.AddDatabase(LoginDatabase, "Login");
 
     if (!loader.Load())
@@ -252,16 +240,14 @@ void StopDB()
     MySQL::Library_End();
 }
 
-void SignalHandler(
-    std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error, int /*signalNumber*/)
+void SignalHandler(std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error, int /*signalNumber*/)
 {
     if (!error)
         if (std::shared_ptr<Firelands::Asio::IoContext> ioContext = ioContextRef.lock())
             ioContext->stop();
 }
 
-void KeepDatabaseAliveHandler(
-    std::weak_ptr<Firelands::Asio::DeadlineTimer> dbPingTimerRef, int32 dbPingInterval, boost::system::error_code const& error)
+void KeepDatabaseAliveHandler(std::weak_ptr<Firelands::Asio::DeadlineTimer> dbPingTimerRef, int32 dbPingInterval, boost::system::error_code const& error)
 {
     if (!error)
     {
@@ -276,8 +262,7 @@ void KeepDatabaseAliveHandler(
     }
 }
 
-void BanExpiryHandler(std::weak_ptr<Firelands::Asio::DeadlineTimer> banExpiryCheckTimerRef, int32 banExpiryCheckInterval,
-    boost::system::error_code const& error)
+void BanExpiryHandler(std::weak_ptr<Firelands::Asio::DeadlineTimer> banExpiryCheckTimerRef, int32 banExpiryCheckInterval, boost::system::error_code const& error)
 {
     if (!error)
     {
@@ -287,15 +272,13 @@ void BanExpiryHandler(std::weak_ptr<Firelands::Asio::DeadlineTimer> banExpiryChe
             LoginDatabase.Execute(LoginDatabase.GetPreparedStatement(LOGIN_UPD_EXPIRED_ACCOUNT_BANS));
 
             banExpiryCheckTimer->expires_from_now(boost::posix_time::seconds(banExpiryCheckInterval));
-            banExpiryCheckTimer->async_wait(
-                std::bind(&BanExpiryHandler, banExpiryCheckTimerRef, banExpiryCheckInterval, std::placeholders::_1));
+            banExpiryCheckTimer->async_wait(std::bind(&BanExpiryHandler, banExpiryCheckTimerRef, banExpiryCheckInterval, std::placeholders::_1));
         }
     }
 }
 
 #if FC_PLATFORM == FC_PLATFORM_WINDOWS
-void ServiceStatusWatcher(std::weak_ptr<Firelands::Asio::DeadlineTimer> serviceStatusWatchTimerRef,
-    std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error)
+void ServiceStatusWatcher(std::weak_ptr<Firelands::Asio::DeadlineTimer> serviceStatusWatchTimerRef, std::weak_ptr<Firelands::Asio::IoContext> ioContextRef, boost::system::error_code const& error)
 {
     if (!error)
     {
@@ -306,8 +289,7 @@ void ServiceStatusWatcher(std::weak_ptr<Firelands::Asio::DeadlineTimer> serviceS
             else if (std::shared_ptr<Firelands::Asio::DeadlineTimer> serviceStatusWatchTimer = serviceStatusWatchTimerRef.lock())
             {
                 serviceStatusWatchTimer->expires_from_now(boost::posix_time::seconds(1));
-                serviceStatusWatchTimer->async_wait(
-                    std::bind(&ServiceStatusWatcher, serviceStatusWatchTimerRef, ioContextRef, std::placeholders::_1));
+                serviceStatusWatchTimer->async_wait(std::bind(&ServiceStatusWatcher, serviceStatusWatchTimerRef, ioContextRef, std::placeholders::_1));
             }
         }
     }
@@ -317,12 +299,11 @@ void ServiceStatusWatcher(std::weak_ptr<Firelands::Asio::DeadlineTimer> serviceS
 variables_map GetConsoleArguments(int argc, char** argv, fs::path& configFile, std::string& configService)
 {
     options_description all("Allowed options");
-    all.add_options()("help,h", "print usage message")("version,v", "print version build info")("config,c",
-        value<fs::path>(&configFile)->default_value(fs::absolute(_FIRELANDS_REALM_CONFIG)), "use <arg> as configuration file");
+    all.add_options()("help,h", "print usage message")("version,v", "print version build info")(
+        "config,c", value<fs::path>(&configFile)->default_value(fs::absolute(_FIRELANDS_REALM_CONFIG)), "use <arg> as configuration file");
 #if FC_PLATFORM == FC_PLATFORM_WINDOWS
     options_description win("Windows platform specific options");
-    win.add_options()(
-        "service,s", value<std::string>(&configService)->default_value(""), "Windows service options: [install | uninstall]");
+    win.add_options()("service,s", value<std::string>(&configService)->default_value(""), "Windows service options: [install | uninstall]");
 
     all.add(win);
 #else
