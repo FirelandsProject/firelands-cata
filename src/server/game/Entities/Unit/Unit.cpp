@@ -218,10 +218,7 @@ void DamageInfo::BlockDamage(uint32 amount)
     }
 }
 
-uint32 DamageInfo::GetHitMask() const
-{
-    return m_hitMask;
-}
+uint32 DamageInfo::GetHitMask() const { return m_hitMask; }
 
 HealInfo::HealInfo(Unit* healer, Unit* target, uint32 heal, SpellInfo const* spellInfo, SpellSchoolMask schoolMask)
     : _healer(healer), _target(target), _heal(heal), _effectiveHeal(0), _absorb(0), _spellInfo(spellInfo), _schoolMask(schoolMask), _hitMask(0)
@@ -238,10 +235,7 @@ void HealInfo::AbsorbHeal(uint32 amount)
     _hitMask |= PROC_HIT_ABSORB;
 }
 
-uint32 HealInfo::GetHitMask() const
-{
-    return _hitMask;
-}
+uint32 HealInfo::GetHitMask() const { return _hitMask; }
 
 ProcEventInfo::ProcEventInfo(
     Unit* actor, Unit* actionTarget, Unit* procTarget, uint32 typeMask, uint32 spellTypeMask, uint32 spellPhaseMask, uint32 hitMask, Spell* spell, DamageInfo* damageInfo, HealInfo* healInfo)
@@ -272,16 +266,11 @@ SpellSchoolMask ProcEventInfo::GetSchoolMask() const
     return SPELL_SCHOOL_MASK_NONE;
 }
 
-DispelableAura::DispelableAura(Aura* aura, int32 dispelChance, uint8 dispelCharges) : _aura(aura), _chance(dispelChance), _charges(dispelCharges)
-{
-}
+DispelableAura::DispelableAura(Aura* aura, int32 dispelChance, uint8 dispelCharges) : _aura(aura), _chance(dispelChance), _charges(dispelCharges) {}
 
 DispelableAura::~DispelableAura() = default;
 
-bool DispelableAura::RollDispel() const
-{
-    return roll_chance_i(_chance);
-}
+bool DispelableAura::RollDispel() const { return roll_chance_i(_chance); }
 
 Unit::Unit(bool isWorldObject)
     : WorldObject(isWorldObject), m_lastSanctuaryTime(0), LastCharmerGUID(), m_ControlledByPlayer(false), movespline(new Movement::MoveSpline()), m_AutoRepeatFirstCast(false), m_procDeep(0),
@@ -589,10 +578,7 @@ void Unit::DisableSpline()
     movespline->_Interrupt();
 }
 
-void Unit::resetAttackTimer(WeaponAttackType type)
-{
-    m_attackTimer[type] = uint32(GetAttackTime(type) * m_modAttackSpeedPct[type]);
-}
+void Unit::resetAttackTimer(WeaponAttackType type) { m_attackTimer[type] = uint32(GetAttackTime(type) * m_modAttackSpeedPct[type]); }
 
 bool Unit::IsWithinCombatRange(Unit const* obj, float dist2compare) const
 {
@@ -878,15 +864,16 @@ bool Unit::HasBreakableByDamageCrowdControlAura(Unit* excludeCasterChannel) cons
 
     if (attacker && attacker != victim)
     {
-        Player* killer = attacker->ToPlayer();
+        if (Player* killer = attacker->ToPlayer())
+        {
+            // in bg, count dmg if victim is also a player
+            if (victim->GetTypeId() == TYPEID_PLAYER)
+                if (Battleground* bg = killer->GetBattleground())
+                    bg->UpdatePlayerScore(killer, SCORE_DAMAGE_DONE, damage);
 
-        // in bg, count dmg if victim is also a player
-        if (victim->GetTypeId() == TYPEID_PLAYER)
-            if (Battleground* bg = killer->GetBattleground())
-                bg->UpdatePlayerScore(killer, SCORE_DAMAGE_DONE, damage);
-
-        killer->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DAMAGE_DONE, health > damage ? damage : health, 0, 0, victim);
-        killer->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_HIT_DEALT, damage);
+            killer->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DAMAGE_DONE, health > damage ? damage : health, 0, 0, victim);
+            killer->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_HIT_DEALT, damage);
+        }
     }
 
     if (victim->GetTypeId() == TYPEID_PLAYER)
@@ -3133,15 +3120,9 @@ bool Unit::IsMovementPreventedByCasting() const
     return true;
 }
 
-void Unit::AddSummonedCreature(ObjectGuid guid, uint32 entry)
-{
-    m_SummonedCreatures[guid] = entry;
-}
+void Unit::AddSummonedCreature(ObjectGuid guid, uint32 entry) { m_SummonedCreatures[guid] = entry; }
 
-void Unit::RemoveSummonedCreature(ObjectGuid guid)
-{
-    m_SummonedCreatures.erase(guid);
-}
+void Unit::RemoveSummonedCreature(ObjectGuid guid) { m_SummonedCreatures.erase(guid); }
 
 Creature* Unit::GetSummonedCreatureByEntry(uint32 entry)
 {
@@ -3160,15 +3141,9 @@ void Unit::UnsummonCreatureByEntry(uint32 entry, uint32 ms /* = 0*/)
             tempSummon->UnSummon(ms);
 }
 
-bool Unit::isInFrontInMap(Unit const* target, float distance, float arc) const
-{
-    return IsWithinDistInMap(target, distance) && HasInArc(arc, target);
-}
+bool Unit::isInFrontInMap(Unit const* target, float distance, float arc) const { return IsWithinDistInMap(target, distance) && HasInArc(arc, target); }
 
-bool Unit::isInBackInMap(Unit const* target, float distance, float arc) const
-{
-    return IsWithinDistInMap(target, distance) && !HasInArc(2 * float(M_PI) - arc, target);
-}
+bool Unit::isInBackInMap(Unit const* target, float distance, float arc) const { return IsWithinDistInMap(target, distance) && !HasInArc(2 * float(M_PI) - arc, target); }
 
 bool Unit::isInAccessiblePlaceFor(Creature const* c) const
 {
@@ -3178,15 +3153,9 @@ bool Unit::isInAccessiblePlaceFor(Creature const* c) const
         return c->CanWalk() || c->CanFly();
 }
 
-bool Unit::IsInWater() const
-{
-    return GetLiquidStatus() & (LIQUID_MAP_IN_WATER | LIQUID_MAP_UNDER_WATER);
-}
+bool Unit::IsInWater() const { return GetLiquidStatus() & (LIQUID_MAP_IN_WATER | LIQUID_MAP_UNDER_WATER); }
 
-bool Unit::IsUnderWater() const
-{
-    return GetLiquidStatus() & LIQUID_MAP_UNDER_WATER;
-}
+bool Unit::IsUnderWater() const { return GetLiquidStatus() & LIQUID_MAP_UNDER_WATER; }
 
 void Unit::ProcessPositionDataChanged(PositionFullTerrainStatus const& data)
 {
@@ -3226,10 +3195,7 @@ void Unit::ProcessTerrainStatusUpdate(ZLiquidStatus /*oldLiquidStatus*/, Optiona
             CastSpell(this, curLiquid->SpellID, true);
     }
 }
-void Unit::DeMorph()
-{
-    SetDisplayId(GetNativeDisplayId());
-}
+void Unit::DeMorph() { SetDisplayId(GetNativeDisplayId()); }
 
 Aura* Unit::_TryStackingOrRefreshingExistingAura(
     SpellInfo const* newAura, uint8 effMask, Unit* caster, int32* baseAmount /*= nullptr*/, Item* castItem /*= nullptr*/, ObjectGuid casterGUID /*= ObjectGuid::Empty*/)
@@ -4020,10 +3986,7 @@ void Unit::RemoveNotOwnLimitedTargetAuras(bool onPhaseChange /*= false*/)
     }
 }
 
-template <typename InterruptFlag> bool IsInterruptFlagIgnoredForSpell(InterruptFlag /*flag*/, Unit const* /*unit*/, SpellInfo const* /*spellInfo*/)
-{
-    return false;
-}
+template <typename InterruptFlag> bool IsInterruptFlagIgnoredForSpell(InterruptFlag /*flag*/, Unit const* /*unit*/, SpellInfo const* /*spellInfo*/) { return false; }
 
 template <> bool IsInterruptFlagIgnoredForSpell(SpellAuraInterruptFlags flag, Unit const* unit, SpellInfo const* spellInfo)
 {
@@ -4406,10 +4369,7 @@ AuraEffect* Unit::GetAuraEffect(AuraType type, SpellFamilyNames family, uint32 f
     return nullptr;
 }
 
-AuraEffect* Unit::GetDummyAuraEffect(SpellFamilyNames name, uint32 iconId, uint8 effIndex) const
-{
-    return GetAuraEffect(SPELL_AURA_DUMMY, name, iconId, effIndex);
-}
+AuraEffect* Unit::GetDummyAuraEffect(SpellFamilyNames name, uint32 iconId, uint8 effIndex) const { return GetAuraEffect(SPELL_AURA_DUMMY, name, iconId, effIndex); }
 
 AuraApplication* Unit::GetAuraApplication(uint32 spellId, ObjectGuid casterGUID, ObjectGuid itemCasterGUID, uint8 reqEffMask, AuraApplication* except) const
 {
@@ -4530,10 +4490,7 @@ bool Unit::HasAura(uint32 spellId, ObjectGuid casterGUID, ObjectGuid itemCasterG
     return false;
 }
 
-bool Unit::HasAuraType(AuraType auraType) const
-{
-    return (!m_modAuras[auraType].empty());
-}
+bool Unit::HasAuraType(AuraType auraType) const { return (!m_modAuras[auraType].empty()); }
 
 bool Unit::HasAuraTypeWithCaster(AuraType auraType, ObjectGuid caster) const
 {
@@ -5600,15 +5557,9 @@ ReputationRank Unit::GetFactionReactionTo(FactionTemplateEntry const* factionTem
     return REP_NEUTRAL;
 }
 
-bool Unit::IsHostileTo(Unit const* unit) const
-{
-    return GetReactionTo(unit) <= REP_HOSTILE;
-}
+bool Unit::IsHostileTo(Unit const* unit) const { return GetReactionTo(unit) <= REP_HOSTILE; }
 
-bool Unit::IsFriendlyTo(Unit const* unit) const
-{
-    return GetReactionTo(unit) >= REP_FRIENDLY;
-}
+bool Unit::IsFriendlyTo(Unit const* unit) const { return GetReactionTo(unit) >= REP_FRIENDLY; }
 
 bool Unit::IsHostileToPlayers() const
 {
@@ -5636,15 +5587,9 @@ bool Unit::IsNeutralToAll() const
     return my_faction->IsNeutralToAll();
 }
 
-void Unit::_addAttacker(Unit* pAttacker)
-{
-    m_attackers.insert(pAttacker);
-}
+void Unit::_addAttacker(Unit* pAttacker) { m_attackers.insert(pAttacker); }
 
-void Unit::_removeAttacker(Unit* pAttacker)
-{
-    m_attackers.erase(pAttacker);
-}
+void Unit::_removeAttacker(Unit* pAttacker) { m_attackers.erase(pAttacker); }
 
 Unit* Unit::getAttackerForHelper() const // If someone wants to help, who to give them
 {
@@ -6451,15 +6396,9 @@ void Unit::RemoveAllControlled()
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PET_IN_COMBAT); // m_controlled is now empty, so we know none of our minions are in combat
 }
 
-bool Unit::isPossessedByPlayer() const
-{
-    return HasUnitState(UNIT_STATE_POSSESSED) && GetCharmerGUID().IsPlayer();
-}
+bool Unit::isPossessedByPlayer() const { return HasUnitState(UNIT_STATE_POSSESSED) && GetCharmerGUID().IsPlayer(); }
 
-bool Unit::isPossessing(Unit* u) const
-{
-    return u->isPossessed() && GetCharmedGUID() == u->GetGUID();
-}
+bool Unit::isPossessing(Unit* u) const { return u->isPossessed() && GetCharmedGUID() == u->GetGUID(); }
 
 bool Unit::isPossessing() const
 {
@@ -6550,10 +6489,7 @@ void Unit::RemovePlayerFromVision(Player* player)
     }
 }
 
-void Unit::RemoveBindSightAuras()
-{
-    RemoveAurasByType(SPELL_AURA_BIND_SIGHT);
-}
+void Unit::RemoveBindSightAuras() { RemoveAurasByType(SPELL_AURA_BIND_SIGHT); }
 
 void Unit::RemoveCharmAuras()
 {
@@ -8494,10 +8430,7 @@ void Unit::SetImmuneToNPC(bool apply, bool keepCombat)
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC);
 }
 
-bool Unit::IsThreatened() const
-{
-    return !m_threatManager.IsThreatListEmpty();
-}
+bool Unit::IsThreatened() const { return !m_threatManager.IsThreatListEmpty(); }
 
 bool Unit::isTargetableForAttack(bool checkFakeDeath) const
 {
@@ -8513,10 +8446,7 @@ bool Unit::isTargetableForAttack(bool checkFakeDeath) const
     return !HasUnitState(UNIT_STATE_UNATTACKABLE) && (!checkFakeDeath || !HasUnitState(UNIT_STATE_DIED));
 }
 
-bool Unit::IsValidAttackTarget(Unit const* target) const
-{
-    return _IsValidAttackTarget(target, nullptr);
-}
+bool Unit::IsValidAttackTarget(Unit const* target) const { return _IsValidAttackTarget(target, nullptr); }
 
 // function based on function Unit::CanAttack from 13850 client
 bool Unit::_IsValidAttackTarget(Unit const* target, SpellInfo const* bySpell, WorldObject const* obj) const
@@ -8638,10 +8568,7 @@ bool Unit::_IsValidAttackTarget(Unit const* target, SpellInfo const* bySpell, Wo
     return true;
 }
 
-bool Unit::IsValidAssistTarget(Unit const* target) const
-{
-    return _IsValidAssistTarget(target, nullptr);
-}
+bool Unit::IsValidAssistTarget(Unit const* target) const { return _IsValidAssistTarget(target, nullptr); }
 
 // function based on function Unit::CanAssist from 13850 client
 bool Unit::_IsValidAssistTarget(Unit const* target, SpellInfo const* bySpell) const
@@ -8916,10 +8843,7 @@ bool Unit::IsAlwaysDetectableFor(WorldObject const* seer) const
     return false;
 }
 
-bool Unit::IsVisible() const
-{
-    return (m_serverSideVisibility.GetValue(SERVERSIDE_VISIBILITY_GM) > SEC_PLAYER) ? false : true;
-}
+bool Unit::IsVisible() const { return (m_serverSideVisibility.GetValue(SERVERSIDE_VISIBILITY_GM) > SEC_PLAYER) ? false : true; }
 
 void Unit::SetVisible(bool x)
 {
@@ -9065,15 +8989,9 @@ void Unit::UpdateSpeed(UnitMoveType mtype)
     SetSpeedRate(mtype, speed);
 }
 
-float Unit::GetSpeed(UnitMoveType mtype) const
-{
-    return m_speed_rate[mtype] * (IsControlledByPlayer() ? playerBaseMoveSpeed[mtype] : baseMoveSpeed[mtype]);
-}
+float Unit::GetSpeed(UnitMoveType mtype) const { return m_speed_rate[mtype] * (IsControlledByPlayer() ? playerBaseMoveSpeed[mtype] : baseMoveSpeed[mtype]); }
 
-void Unit::SetSpeed(UnitMoveType mtype, float newValue)
-{
-    SetSpeedRate(mtype, newValue / (IsControlledByPlayer() ? playerBaseMoveSpeed[mtype] : baseMoveSpeed[mtype]));
-}
+void Unit::SetSpeed(UnitMoveType mtype, float newValue) { SetSpeedRate(mtype, newValue / (IsControlledByPlayer() ? playerBaseMoveSpeed[mtype] : baseMoveSpeed[mtype])); }
 
 void Unit::SetSpeedRate(UnitMoveType mtype, float rate)
 {
@@ -9275,10 +9193,7 @@ void Unit::AtEnterCombat()
     Unit::ProcSkillsAndAuras(this, nullptr, PROC_FLAG_ENTER_COMBAT, PROC_FLAG_NONE, PROC_SPELL_TYPE_MASK_ALL, PROC_SPELL_PHASE_NONE, PROC_HIT_NONE, nullptr, nullptr, nullptr);
 }
 
-void Unit::AtExitCombat()
-{
-    RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags::LeavingCombat);
-}
+void Unit::AtExitCombat() { RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags::LeavingCombat); }
 
 void Unit::AtTargetAttacked(Unit* target, bool canInitialAggro)
 {
@@ -9649,10 +9564,7 @@ uint32 Unit::GetCreatureTypeMask() const
     return (creatureType >= 1) ? (1 << (creatureType - 1)) : 0;
 }
 
-void Unit::SetShapeshiftForm(ShapeshiftForm form)
-{
-    SetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_SHAPESHIFT_FORM, form);
-}
+void Unit::SetShapeshiftForm(ShapeshiftForm form) { SetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_SHAPESHIFT_FORM, form); }
 
 bool Unit::IsInFeralForm() const
 {
@@ -10362,10 +10274,7 @@ void Unit::AIUpdateTick(uint32 diff)
     }
 }
 
-void Unit::PushAI(UnitAI* newAI)
-{
-    i_AIs.emplace(newAI);
-}
+void Unit::PushAI(UnitAI* newAI) { i_AIs.emplace(newAI); }
 
 void Unit::SetAI(UnitAI* newAI)
 {
@@ -10597,9 +10506,7 @@ CharmInfo::CharmInfo(Unit* unit)
     }
 }
 
-CharmInfo::~CharmInfo()
-{
-}
+CharmInfo::~CharmInfo() {}
 
 void CharmInfo::RestoreState()
 {
@@ -10840,10 +10747,7 @@ void CharmInfo::SetSpellAutocast(SpellInfo const* spellInfo, bool state)
     }
 }
 
-bool Unit::isFrozen() const
-{
-    return HasAuraState(AURA_STATE_FROZEN);
-}
+bool Unit::isFrozen() const { return HasAuraState(AURA_STATE_FROZEN); }
 
 uint32 createProcHitMask(SpellNonMeleeDamage* damageInfo, SpellMissInfo missCondition)
 {
@@ -11088,10 +10992,7 @@ void Unit::TriggerAurasProcOnEvent(ProcEventInfo& eventInfo, AuraApplicationProc
         SetCantProc(false);
 }
 
-SpellSchoolMask Unit::GetMeleeDamageSchoolMask() const
-{
-    return SPELL_SCHOOL_MASK_NORMAL;
-}
+SpellSchoolMask Unit::GetMeleeDamageSchoolMask() const { return SPELL_SCHOOL_MASK_NORMAL; }
 
 ObjectGuid Unit::GetCharmerOrOwnerOrOwnGUID() const
 {
@@ -11151,10 +11052,7 @@ void Unit::SendPetAIReaction(ObjectGuid guid)
 
 ///----------End of Pet responses methods----------
 
-void Unit::PropagateSpeedChange()
-{
-    GetMotionMaster()->PropagateSpeedChange();
-}
+void Unit::PropagateSpeedChange() { GetMotionMaster()->PropagateSpeedChange(); }
 
 void Unit::StopMoving()
 {
@@ -11399,10 +11297,7 @@ Unit* Unit::SelectNearbyTarget(Unit* exclude, float dist) const
     return Firelands::Containers::SelectRandomContainerElement(targets);
 }
 
-void ApplyPercentModFloatVar(float& var, float val, bool apply)
-{
-    var *= (apply ? (100.0f + val) / 100.0f : 100.0f / (100.0f + val));
-}
+void ApplyPercentModFloatVar(float& var, float val, bool apply) { var *= (apply ? (100.0f + val) / 100.0f : 100.0f / (100.0f + val)); }
 
 void Unit::ApplyAttackTimePercentMod(WeaponAttackType att, float val, bool apply)
 {
@@ -12628,15 +12523,9 @@ void Unit::RemoveVehicleKit(bool onRemoveFromWorld /*= false*/)
     RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK | UNIT_NPC_FLAG_PLAYER_VEHICLE);
 }
 
-bool Unit::IsOnVehicle(Unit const* vehicle) const
-{
-    return m_vehicle && m_vehicle == vehicle->GetVehicleKit();
-}
+bool Unit::IsOnVehicle(Unit const* vehicle) const { return m_vehicle && m_vehicle == vehicle->GetVehicleKit(); }
 
-Unit* Unit::GetVehicleBase() const
-{
-    return m_vehicle ? m_vehicle->GetBase() : nullptr;
-}
+Unit* Unit::GetVehicleBase() const { return m_vehicle ? m_vehicle->GetBase() : nullptr; }
 
 Creature* Unit::GetVehicleCreatureBase() const
 {
@@ -12867,10 +12756,7 @@ void Unit::CancelSpellMissiles(uint32 spellId, bool reverseMissile /*= false*/)
     }
 }
 
-bool Unit::CanApplyResilience() const
-{
-    return !IsVehicle() && GetOwnerGUID().IsPlayer();
-}
+bool Unit::CanApplyResilience() const { return !IsVehicle() && GetOwnerGUID().IsPlayer(); }
 
 /*static*/ void Unit::ApplyResilience(Unit const* victim, int32* damage)
 {
@@ -13769,10 +13655,7 @@ void Unit::_ExitVehicle(Position const* exitPosition)
     }
 }
 
-bool Unit::IsFalling() const
-{
-    return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_FALLING | MOVEMENTFLAG_FALLING_FAR) || movespline->isFalling();
-}
+bool Unit::IsFalling() const { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_FALLING | MOVEMENTFLAG_FALLING_FAR) || movespline->isFalling(); }
 
 bool Unit::CanSwim() const
 {
@@ -14099,10 +13982,7 @@ bool Unit::UpdatePosition(float x, float y, float z, float orientation, bool tel
     return (relocated || turn);
 }
 
-bool Unit::UpdatePosition(Position const& pos, bool teleport)
-{
-    return UpdatePosition(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation(), teleport);
-}
+bool Unit::UpdatePosition(Position const& pos, bool teleport) { return UpdatePosition(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation(), teleport); }
 
 //! Only server-side orientation update, does not broadcast to client
 void Unit::UpdateOrientation(float orientation)
@@ -14120,20 +14000,11 @@ void Unit::UpdateHeight(float newZ)
         GetVehicleKit()->RelocatePassengers();
 }
 
-void Unit::ClearPendingMovementChangeForType(MovementChangeType changeType)
-{
-    m_pendingMovementChanges.erase(changeType);
-}
+void Unit::ClearPendingMovementChangeForType(MovementChangeType changeType) { m_pendingMovementChanges.erase(changeType); }
 
-void Unit::AssignPendingMovementChange(MovementChangeType changeType, PlayerMovementPendingChange&& newChange)
-{
-    m_pendingMovementChanges[changeType] = newChange;
-}
+void Unit::AssignPendingMovementChange(MovementChangeType changeType, PlayerMovementPendingChange&& newChange) { m_pendingMovementChanges[changeType] = newChange; }
 
-PlayerMovementPendingChange const* Unit::GetPendingMovementChange(MovementChangeType changeType) const
-{
-    return Firelands::Containers::MapGetValuePtr(m_pendingMovementChanges, changeType);
-}
+PlayerMovementPendingChange const* Unit::GetPendingMovementChange(MovementChangeType changeType) const { return Firelands::Containers::MapGetValuePtr(m_pendingMovementChanges, changeType); }
 
 void Unit::CheckPendingMovementAcks()
 {
@@ -14252,10 +14123,7 @@ void Unit::PurgeAndApplyPendingMovementChanges(bool informObservers /* = true */
     m_pendingMovementChanges.clear();
 }
 
-PlayerMovementPendingChange::PlayerMovementPendingChange()
-{
-    time = GameTime::GetGameTimeMS();
-}
+PlayerMovementPendingChange::PlayerMovementPendingChange() { time = GameTime::GetGameTimeMS(); }
 
 // baseRage means damage taken when attacker = false
 void Unit::RewardRage(uint32 baseRage, bool attacker)
@@ -14397,25 +14265,13 @@ uint32 Unit::GetResistance(SpellSchoolMask mask) const
     return uint32(resist);
 }
 
-void CharmInfo::SetIsCommandAttack(bool val)
-{
-    _isCommandAttack = val;
-}
+void CharmInfo::SetIsCommandAttack(bool val) { _isCommandAttack = val; }
 
-bool CharmInfo::IsCommandAttack()
-{
-    return _isCommandAttack;
-}
+bool CharmInfo::IsCommandAttack() { return _isCommandAttack; }
 
-void CharmInfo::SetIsCommandFollow(bool val)
-{
-    _isCommandFollow = val;
-}
+void CharmInfo::SetIsCommandFollow(bool val) { _isCommandFollow = val; }
 
-bool CharmInfo::IsCommandFollow()
-{
-    return _isCommandFollow;
-}
+bool CharmInfo::IsCommandFollow() { return _isCommandFollow; }
 
 void CharmInfo::SaveStayPosition()
 {
@@ -14438,40 +14294,19 @@ void CharmInfo::GetStayPosition(float& x, float& y, float& z)
     z = _stayZ;
 }
 
-void CharmInfo::SetIsAtStay(bool val)
-{
-    _isAtStay = val;
-}
+void CharmInfo::SetIsAtStay(bool val) { _isAtStay = val; }
 
-bool CharmInfo::IsAtStay()
-{
-    return _isAtStay;
-}
+bool CharmInfo::IsAtStay() { return _isAtStay; }
 
-void CharmInfo::SetIsFollowing(bool val)
-{
-    _isFollowing = val;
-}
+void CharmInfo::SetIsFollowing(bool val) { _isFollowing = val; }
 
-bool CharmInfo::IsFollowing()
-{
-    return _isFollowing;
-}
+bool CharmInfo::IsFollowing() { return _isFollowing; }
 
-void CharmInfo::SetIsReturning(bool val)
-{
-    _isReturning = val;
-}
+void CharmInfo::SetIsReturning(bool val) { _isReturning = val; }
 
-bool CharmInfo::IsReturning()
-{
-    return _isReturning;
-}
+bool CharmInfo::IsReturning() { return _isReturning; }
 
-void Unit::SetOrientationTowards(WorldObject const* target)
-{
-    SetOrientation(GetAngle(target));
-}
+void Unit::SetOrientationTowards(WorldObject const* target) { SetOrientation(GetAngle(target)); }
 
 void Unit::SetFacingTo(float ori, bool force)
 {
@@ -14732,10 +14567,7 @@ void Unit::SendMovementSetSplineAnim(AnimationTier anim)
     SendMessageToSet(packet.Write(), false);
 }
 
-bool Unit::IsSplineEnabled() const
-{
-    return movespline->Initialized() && !movespline->Finalized();
-}
+bool Unit::IsSplineEnabled() const { return movespline->Initialized() && !movespline->Finalized(); }
 
 void Unit::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* target) const
 {
@@ -15041,15 +14873,9 @@ void Unit::Talk(uint32 textId, ChatMsg msgType, float textRange, WorldObject con
     Cell::VisitWorldObjects(this, worker, textRange);
 }
 
-void Unit::Say(uint32 textId, WorldObject const* target /*= nullptr*/)
-{
-    Talk(textId, CHAT_MSG_MONSTER_SAY, sWorld->getFloatConfig(CONFIG_LISTEN_RANGE_SAY), target);
-}
+void Unit::Say(uint32 textId, WorldObject const* target /*= nullptr*/) { Talk(textId, CHAT_MSG_MONSTER_SAY, sWorld->getFloatConfig(CONFIG_LISTEN_RANGE_SAY), target); }
 
-void Unit::Yell(uint32 textId, WorldObject const* target /*= nullptr*/)
-{
-    Talk(textId, CHAT_MSG_MONSTER_YELL, sWorld->getFloatConfig(CONFIG_LISTEN_RANGE_YELL), target);
-}
+void Unit::Yell(uint32 textId, WorldObject const* target /*= nullptr*/) { Talk(textId, CHAT_MSG_MONSTER_YELL, sWorld->getFloatConfig(CONFIG_LISTEN_RANGE_YELL), target); }
 
 void Unit::TextEmote(uint32 textId, WorldObject const* target /*= nullptr*/, bool isBossEmote /*= false*/)
 {
@@ -15410,10 +15236,7 @@ void Unit::ProcessItemCast(PendingSpellCastRequest const& castRequest, SpellCast
     }
 }
 
-void Unit::SetGameClientMovingMe(GameClient* gameClientMovingMe)
-{
-    _gameClientMovingMe = gameClientMovingMe;
-}
+void Unit::SetGameClientMovingMe(GameClient* gameClientMovingMe) { _gameClientMovingMe = gameClientMovingMe; }
 
 void Unit::GetAttackableUnitListInRange(std::list<Unit*>& list, float fMaxSearchRange) const
 {
