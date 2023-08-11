@@ -2,16 +2,16 @@
  * This file is part of the FirelandsCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Affero General Public License as published by the
+ * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU Affero General Public License along
+ * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -20,7 +20,7 @@
 #include "loadlib.h"
 #include <cstdio>
 
-u_map_fcc MverMagic = {{'R', 'E', 'V', 'M'}};
+u_map_fcc MverMagic = { {'R','E','V','M'} };
 
 ChunkedFile::ChunkedFile()
 {
@@ -28,7 +28,10 @@ ChunkedFile::ChunkedFile()
     data_size = 0;
 }
 
-ChunkedFile::~ChunkedFile() { free(); }
+ChunkedFile::~ChunkedFile()
+{
+    free();
+}
 
 bool ChunkedFile::loadFile(HANDLE mpq, std::string const& fileName, bool log)
 {
@@ -43,7 +46,7 @@ bool ChunkedFile::loadFile(HANDLE mpq, std::string const& fileName, bool log)
 
     data_size = SFileGetFileSize(file, nullptr);
     data = new uint8[data_size];
-    SFileReadFile(file, data, data_size, nullptr /*bytesRead*/, nullptr);
+    SFileReadFile(file, data, data_size, nullptr/*bytesRead*/, nullptr);
 
     parseChunks();
     if (prepareLoadedData())
@@ -86,8 +89,17 @@ void ChunkedFile::free()
     data_size = 0;
 }
 
-u_map_fcc InterestingChunks[] = {
-    {{'R', 'E', 'V', 'M'}}, {{'N', 'I', 'A', 'M'}}, {{'O', '2', 'H', 'M'}}, {{'K', 'N', 'C', 'M'}}, {{'T', 'V', 'C', 'M'}}, {{'O', 'M', 'W', 'M'}}, {{'Q', 'L', 'C', 'M'}}, {{'O', 'B', 'F', 'M'}}};
+u_map_fcc InterestingChunks[] =
+{
+    { { 'R', 'E', 'V', 'M' } },
+    { { 'N', 'I', 'A', 'M' } },
+    { { 'O', '2', 'H', 'M' } },
+    { { 'K', 'N', 'C', 'M' } },
+    { { 'T', 'V', 'C', 'M' } },
+    { { 'O', 'M', 'W', 'M' } },
+    { { 'Q', 'L', 'C', 'M' } },
+    { { 'O', 'B', 'F', 'M' } }
+};
 
 bool IsInterestingChunk(u_map_fcc const& fcc)
 {
@@ -115,7 +127,7 @@ void ChunkedFile::parseChunks()
 
                 FileChunk* chunk = new FileChunk(ptr, size);
                 chunk->parseSubChunks();
-                chunks.insert({std::string(header.fcc_txt, 4), chunk});
+                chunks.insert({ std::string(header.fcc_txt, 4), chunk });
             }
 
             // move to next chunk
@@ -159,7 +171,7 @@ void FileChunk::parseSubChunks()
 
                 FileChunk* chunk = new FileChunk(ptr, subsize);
                 chunk->parseSubChunks();
-                subchunks.insert({std::string(header.fcc_txt, 4), chunk});
+                subchunks.insert({ std::string(header.fcc_txt, 4), chunk });
             }
 
             // move to next chunk
@@ -178,3 +190,4 @@ FileChunk* FileChunk::GetSubChunk(std::string const& name)
 
     return NULL;
 }
+
