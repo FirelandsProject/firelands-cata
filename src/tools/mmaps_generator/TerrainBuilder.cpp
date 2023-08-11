@@ -29,7 +29,7 @@
 struct map_fileheader
 {
     uint32 mapMagic;
-    char const* versionMagic;
+    uint32 versionMagic;
     uint32 buildMagic;
     uint32 areaMapOffset;
     uint32 areaMapSize;
@@ -78,13 +78,17 @@ struct map_liquidHeader
 
 namespace MMAP
 {
-char const* MAP_VERSION_MAGIC = "v1.6";
+uint32 const MAP_VERSION_MAGIC = 10;
 
-TerrainBuilder::TerrainBuilder(bool skipLiquid) : m_skipLiquid(skipLiquid) {}
-TerrainBuilder::~TerrainBuilder() {}
+TerrainBuilder::TerrainBuilder(bool skipLiquid) : m_skipLiquid(skipLiquid)
+{
+}
+TerrainBuilder::~TerrainBuilder()
+{
+}
 
 /**************************************************************************/
-void TerrainBuilder::getLoopVars(Spot portion, int& loopStart, int& loopEnd, int& loopInc)
+void TerrainBuilder::getLoopVars(Spot portion, int &loopStart, int &loopEnd, int &loopInc)
 {
     switch (portion)
     {
@@ -117,7 +121,7 @@ void TerrainBuilder::getLoopVars(Spot portion, int& loopStart, int& loopEnd, int
 }
 
 /**************************************************************************/
-void TerrainBuilder::loadMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData& meshData)
+void TerrainBuilder::loadMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData &meshData)
 {
     if (loadMap(mapID, tileX, tileY, meshData, ENTIRE))
     {
@@ -129,12 +133,12 @@ void TerrainBuilder::loadMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData&
 }
 
 /**************************************************************************/
-bool TerrainBuilder::loadMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData& meshData, Spot portion)
+bool TerrainBuilder::loadMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData &meshData, Spot portion)
 {
     char mapFileName[255];
     sprintf(mapFileName, "maps/%03u%02u%02u.map", mapID, tileY, tileX);
 
-    FILE* mapFile = fopen(mapFileName, "rb");
+    FILE *mapFile = fopen(mapFileName, "rb");
     if (!mapFile)
     {
         int32 parentMapId = sMapStore[mapID].ParentMapID;
@@ -289,7 +293,7 @@ bool TerrainBuilder::loadMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData&
         if (fread(&lheader, sizeof(map_liquidHeader), 1, mapFile) != 1)
             printf("TerrainBuilder::loadMap: Failed to read some data expected 1, read 0\n");
 
-        float* liquid_map = nullptr;
+        float *liquid_map = nullptr;
 
         if (!(lheader.flags & MAP_LIQUID_NO_TYPE))
         {
@@ -336,8 +340,8 @@ bool TerrainBuilder::loadMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData&
                     col >= lheader.offsetX + lheader.width)
                 {
                     // dummy vert using invalid height
-                    meshData.liquidVerts.append(
-                        (xoffset + col * GRID_PART_SIZE) * -1, INVALID_MAP_LIQ_HEIGHT, (yoffset + row * GRID_PART_SIZE) * -1);
+                    meshData.liquidVerts.append((xoffset + col * GRID_PART_SIZE) * -1, INVALID_MAP_LIQ_HEIGHT,
+                                                (yoffset + row * GRID_PART_SIZE) * -1);
                     continue;
                 }
 
@@ -354,8 +358,8 @@ bool TerrainBuilder::loadMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData&
             {
                 row = i / V9_SIZE;
                 col = i % V9_SIZE;
-                meshData.liquidVerts.append(
-                    (xoffset + col * GRID_PART_SIZE) * -1, lheader.liquidLevel, (yoffset + row * GRID_PART_SIZE) * -1);
+                meshData.liquidVerts.append((xoffset + col * GRID_PART_SIZE) * -1, lheader.liquidLevel,
+                                            (yoffset + row * GRID_PART_SIZE) * -1);
             }
         }
 
@@ -385,18 +389,18 @@ bool TerrainBuilder::loadMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData&
     int loopStart = 0, loopEnd = 0, loopInc = 0, tTriCount = 4;
     bool useTerrain, useLiquid;
 
-    float* lverts = meshData.liquidVerts.getCArray();
-    int* ltris = ltriangles.getCArray();
+    float *lverts = meshData.liquidVerts.getCArray();
+    int *ltris = ltriangles.getCArray();
 
-    float* tverts = meshData.solidVerts.getCArray();
-    int* ttris = ttriangles.getCArray();
+    float *tverts = meshData.solidVerts.getCArray();
+    int *ttris = ttriangles.getCArray();
 
     if ((ltriangles.size() + ttriangles.size()) == 0)
         return false;
 
     // make a copy of liquid vertices
     // used to pad right-bottom frame due to lost vertex data at extraction
-    float* lverts_copy = nullptr;
+    float *lverts_copy = nullptr;
     if (meshData.liquidVerts.size())
     {
         lverts_copy = new float[meshData.liquidVerts.size()];
@@ -531,7 +535,7 @@ bool TerrainBuilder::loadMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData&
 }
 
 /**************************************************************************/
-void TerrainBuilder::getHeightCoord(int index, Grid grid, float xOffset, float yOffset, float* coord, float* v)
+void TerrainBuilder::getHeightCoord(int index, Grid grid, float xOffset, float yOffset, float *coord, float *v)
 {
     // wow coords: x, y, height
     // coord is mirroed about the horizontal axes
@@ -551,7 +555,7 @@ void TerrainBuilder::getHeightCoord(int index, Grid grid, float xOffset, float y
 }
 
 /**************************************************************************/
-void TerrainBuilder::getHeightTriangle(int square, Spot triangle, int* indices, bool liquid /* = false*/)
+void TerrainBuilder::getHeightTriangle(int square, Spot triangle, int *indices, bool liquid /* = false*/)
 {
     int rowOffset = square / V8_SIZE;
     if (!liquid)
@@ -599,7 +603,7 @@ void TerrainBuilder::getHeightTriangle(int square, Spot triangle, int* indices, 
 }
 
 /**************************************************************************/
-void TerrainBuilder::getLiquidCoord(int index, int index2, float xOffset, float yOffset, float* coord, float* v)
+void TerrainBuilder::getLiquidCoord(int index, int index2, float xOffset, float yOffset, float *coord, float *v)
 {
     // wow coords: x, y, height
     // coord is mirroed about the horizontal axes
@@ -638,7 +642,7 @@ uint8 TerrainBuilder::getLiquidType(int square, const uint8 liquid_type[16][16])
 }
 
 /**************************************************************************/
-bool TerrainBuilder::loadVMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData& meshData)
+bool TerrainBuilder::loadVMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData &meshData)
 {
     std::unique_ptr<VMapManager2> vmapManager = VMapFactory::CreateVMapManager();
     int result = vmapManager->loadSingleMap(mapID, "vmaps", tileX, tileY);
@@ -655,7 +659,7 @@ bool TerrainBuilder::loadVMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData
         if (!instanceTrees[mapID])
             break;
 
-        ModelInstance* models = nullptr;
+        ModelInstance *models = nullptr;
         uint32 count = 0;
         instanceTrees[mapID]->getModelInstances(models, count);
 
@@ -667,7 +671,7 @@ bool TerrainBuilder::loadVMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData
             ModelInstance instance = models[i];
 
             // model instances exist in tree even though there are instances of that model in this tile
-            WorldModel* worldModel = instance.getWorldModel();
+            WorldModel *worldModel = instance.getWorldModel();
             if (!worldModel)
                 continue;
 
@@ -692,7 +696,7 @@ bool TerrainBuilder::loadVMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData
                 std::vector<G3D::Vector3> tempVertices;
                 std::vector<G3D::Vector3> transformedVertices;
                 std::vector<MeshTriangle> tempTriangles;
-                WmoLiquid* liquid = nullptr;
+                WmoLiquid *liquid = nullptr;
 
                 it->getMeshData(tempVertices, tempTriangles, liquid);
 
@@ -714,8 +718,8 @@ bool TerrainBuilder::loadVMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData
                     liquid->getPosInfo(tilesX, tilesY, corner);
                     vertsX = tilesX + 1;
                     vertsY = tilesY + 1;
-                    uint8* flags = liquid->GetFlagsStorage();
-                    float* data = liquid->GetHeightStorage();
+                    uint8 *flags = liquid->GetFlagsStorage();
+                    float *data = liquid->GetHeightStorage();
                     uint8 type = NAV_AREA_EMPTY;
 
                     // convert liquid type to NavTerrain
@@ -736,8 +740,8 @@ bool TerrainBuilder::loadVMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData
                     {
                         for (uint32 y = 0; y < vertsY; ++y)
                         {
-                            vert =
-                                G3D::Vector3(corner.x + x * GRID_PART_SIZE, corner.y + y * GRID_PART_SIZE, data[y * vertsX + x]);
+                            vert = G3D::Vector3(corner.x + x * GRID_PART_SIZE, corner.y + y * GRID_PART_SIZE,
+                                                data[y * vertsX + x]);
                             vert = vert * rotation * scale + position;
                             vert.x *= -1.f;
                             vert.y *= -1.f;
@@ -777,8 +781,8 @@ bool TerrainBuilder::loadVMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData
 
                     for (uint32 j = 0; j < liqTris.size() / 3; ++j)
                     {
-                        meshData.liquidTris.append(
-                            liqTris[j * 3 + 1] + liqOffset, liqTris[j * 3 + 2] + liqOffset, liqTris[j * 3] + liqOffset);
+                        meshData.liquidTris.append(liqTris[j * 3 + 1] + liqOffset, liqTris[j * 3 + 2] + liqOffset,
+                                                   liqTris[j * 3] + liqOffset);
                         meshData.liquidType.append(type);
                     }
                 }
@@ -792,8 +796,8 @@ bool TerrainBuilder::loadVMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData
 }
 
 /**************************************************************************/
-void TerrainBuilder::transform(std::vector<G3D::Vector3>& source, std::vector<G3D::Vector3>& transformedVertices, float scale,
-    G3D::Matrix3& rotation, G3D::Vector3& position)
+void TerrainBuilder::transform(std::vector<G3D::Vector3> &source, std::vector<G3D::Vector3> &transformedVertices,
+                               float scale, G3D::Matrix3 &rotation, G3D::Vector3 &position)
 {
     for (std::vector<G3D::Vector3>::iterator it = source.begin(); it != source.end(); ++it)
     {
@@ -806,7 +810,7 @@ void TerrainBuilder::transform(std::vector<G3D::Vector3>& source, std::vector<G3
 }
 
 /**************************************************************************/
-void TerrainBuilder::copyVertices(std::vector<G3D::Vector3>& source, G3D::Array<float>& dest)
+void TerrainBuilder::copyVertices(std::vector<G3D::Vector3> &source, G3D::Array<float> &dest)
 {
     for (std::vector<G3D::Vector3>::iterator it = source.begin(); it != source.end(); ++it)
     {
@@ -817,7 +821,7 @@ void TerrainBuilder::copyVertices(std::vector<G3D::Vector3>& source, G3D::Array<
 }
 
 /**************************************************************************/
-void TerrainBuilder::copyIndices(std::vector<MeshTriangle>& source, G3D::Array<int>& dest, int offset, bool flip)
+void TerrainBuilder::copyIndices(std::vector<MeshTriangle> &source, G3D::Array<int> &dest, int offset, bool flip)
 {
     if (flip)
     {
@@ -840,20 +844,20 @@ void TerrainBuilder::copyIndices(std::vector<MeshTriangle>& source, G3D::Array<i
 }
 
 /**************************************************************************/
-void TerrainBuilder::copyIndices(G3D::Array<int>& source, G3D::Array<int>& dest, int offset)
+void TerrainBuilder::copyIndices(G3D::Array<int> &source, G3D::Array<int> &dest, int offset)
 {
-    int* src = source.getCArray();
+    int *src = source.getCArray();
     for (int32 i = 0; i < source.size(); ++i)
         dest.append(src[i] + offset);
 }
 
 /**************************************************************************/
-void TerrainBuilder::cleanVertices(G3D::Array<float>& verts, G3D::Array<int>& tris)
+void TerrainBuilder::cleanVertices(G3D::Array<float> &verts, G3D::Array<int> &tris)
 {
     std::map<int, int> vertMap;
 
-    int* t = tris.getCArray();
-    float* v = verts.getCArray();
+    int *t = tris.getCArray();
+    float *v = verts.getCArray();
 
     G3D::Array<float> cleanVerts;
     int index, count = 0;
@@ -891,14 +895,14 @@ void TerrainBuilder::cleanVertices(G3D::Array<float>& verts, G3D::Array<int>& tr
 }
 
 /**************************************************************************/
-void TerrainBuilder::loadOffMeshConnections(
-    uint32 mapID, uint32 tileX, uint32 tileY, MeshData& meshData, char const* offMeshFilePath)
+void TerrainBuilder::loadOffMeshConnections(uint32 mapID, uint32 tileX, uint32 tileY, MeshData &meshData,
+                                            char const *offMeshFilePath)
 {
     // no meshfile input given?
     if (offMeshFilePath == nullptr)
         return;
 
-    FILE* fp = fopen(offMeshFilePath, "rb");
+    FILE *fp = fopen(offMeshFilePath, "rb");
     if (!fp)
     {
         printf(" loadOffMeshConnections:: input file %s not found!\n", offMeshFilePath);
@@ -907,14 +911,14 @@ void TerrainBuilder::loadOffMeshConnections(
 
     // pretty silly thing, as we parse entire file and load only the tile we need
     // but we don't expect this file to be too large
-    char* buf = new char[512];
+    char *buf = new char[512];
     while (fgets(buf, 512, fp))
     {
         float p0[3], p1[3];
         uint32 mid, tx, ty;
         float size;
-        if (sscanf(buf, "%u %u,%u (%f %f %f) (%f %f %f) %f", &mid, &tx, &ty, &p0[0], &p0[1], &p0[2], &p1[0], &p1[1], &p1[2],
-                &size) != 10)
+        if (sscanf(buf, "%u %u,%u (%f %f %f) (%f %f %f) %f", &mid, &tx, &ty, &p0[0], &p0[1], &p0[2], &p1[0], &p1[1],
+                   &p1[2], &size) != 10)
             continue;
 
         if (mapID == mid && tileX == tx && tileY == ty)
