@@ -59,7 +59,7 @@
 BOOST_1_74_FIBONACCI_HEAP_MSVC_COMPILE_FIX(RespawnListContainer::value_type)
 
 u_map_magic MapMagic        = { {'M','A','P','S'} };
-u_map_magic MapVersionMagic = { {'v','1','.','6'} };
+uint32 MapVersionMagic      = 10;
 u_map_magic MapAreaMagic    = { {'A','R','E','A'} };
 u_map_magic MapHeightMagic  = { {'M','H','G','T'} };
 u_map_magic MapLiquidMagic  = { {'M','L','I','Q'} };
@@ -111,13 +111,13 @@ void Map::DiscoverGridMapFiles()
     if (FILE* tileList = fopen(tileListName.c_str(), "rb"))
     {
         u_map_magic mapMagic;
-        u_map_magic versionMagic;
+        uint32 versionMagic;
         uint32 build;
         char tilesData[MAX_NUMBER_OF_GRIDS * MAX_NUMBER_OF_GRIDS];
         if (fread(&mapMagic.asUInt, sizeof(u_map_magic), 1, tileList) == 1
             && mapMagic.asUInt == MapMagic.asUInt
-            && fread(&versionMagic.asUInt, sizeof(versionMagic.asUInt), 1, tileList) == 1
-            && versionMagic.asUInt == MapVersionMagic.asUInt
+            && fread(&versionMagic, sizeof(versionMagic), 1, tileList) == 1
+            && versionMagic == MapVersionMagic
             && fread(&build, sizeof(build), 1, tileList) == 1
             && fread(&tilesData[0], MAX_NUMBER_OF_GRIDS * MAX_NUMBER_OF_GRIDS, 1, tileList) == 1)
         {
@@ -162,11 +162,11 @@ bool Map::ExistMap(uint32 mapid, int gx, int gy, bool log /*= true*/)
         map_fileheader header;
         if (fread(&header, sizeof(header), 1, file) == 1)
         {
-            if (header.mapMagic.asUInt != MapMagic.asUInt || header.versionMagic.asUInt != MapVersionMagic.asUInt)
+            if (header.mapMagic.asUInt != MapMagic.asUInt || header.versionMagic != MapVersionMagic)
             {
                 if (log)
                     LOG_ERROR("maps", "Map file '%s' is from an incompatible map version (%.*s v%u), %.*s v%u is expected. Please pull your source, recompile tools and recreate maps using the updated mapextractor, then replace your old map files with new files. If you still have problems search on forum for error FCE00018.",
-                        fileName.c_str(), 4, header.mapMagic.asChar, header.versionMagic.asUInt, 4, MapMagic.asChar, MapVersionMagic.asUInt);
+                        fileName.c_str(), 4, header.mapMagic.asChar, header.versionMagic, 4, MapMagic.asChar, MapVersionMagic);
             }
             else
                 ret = true;
@@ -1798,7 +1798,7 @@ GridMap::LoadResult GridMap::loadData(const char* filename)
         return LoadResult::InvalidFile;
     }
 
-    if (header.mapMagic.asUInt == MapMagic.asUInt && header.versionMagic.asUInt == MapVersionMagic.asUInt)
+    if (header.mapMagic.asUInt == MapMagic.asUInt && header.versionMagic == MapVersionMagic)
     {
         // load up area data
         if (header.areaMapOffset && !loadAreaData(in, header.areaMapOffset, header.areaMapSize))
@@ -1833,7 +1833,7 @@ GridMap::LoadResult GridMap::loadData(const char* filename)
     }
 
     LOG_ERROR("maps", "Map file '%s' is from an incompatible map version (%.*s v%u), %.*s v%u is expected. Please pull your source, recompile tools and recreate maps using the updated mapextractor, then replace your old map files with new files. If you still have problems search on forum for error FCE00018.",
-        filename, 4, header.mapMagic.asChar, header.versionMagic.asUInt, 4, MapMagic.asChar, MapVersionMagic.asUInt);
+        filename, 4, header.mapMagic.asChar, header.versionMagic, 4, MapMagic.asChar, MapVersionMagic);
     fclose(in);
     return LoadResult::InvalidFile;
 }
