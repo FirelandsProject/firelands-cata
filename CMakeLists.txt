@@ -116,8 +116,10 @@ add_subdirectory(deps)
 # add core sources
 add_subdirectory(src)
 
-# add custom mods
-add_subdirectory(mods)
+if(SERVERS)
+  # add custom mods
+  add_subdirectory(mods)
+endif()
 
 include(CTest)
 if(BUILD_TESTING)
