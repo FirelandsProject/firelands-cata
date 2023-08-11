@@ -1,9 +1,11 @@
-BasedOnStyle: Microsoft
+BasedOnStyle: LLVM
 IndentWidth: 4
+---
 Language: Cpp
-DerivePointerAlignment: true
+DerivePointerAlignment: false
 PointerAlignment: Left
 AlignAfterOpenBracket: false
 SpaceInEmptyBlock: false
 BreakBeforeBraces: Allman
 ColumnLimit: 200
+NamespaceIndentation: All
