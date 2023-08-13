@@ -42,7 +42,7 @@
 
 namespace G3D {
 
-    
+
 NetAddress::NetAddress() {
     System::memset(&addr, 0, sizeof(addr));
 }
@@ -73,7 +73,7 @@ void NetAddress::init
     uint16                      port) {
 
     uint32 addr;
-    
+
     if (hostname == "") {
         addr = INADDR_NONE;
     } else {
@@ -152,7 +152,7 @@ void NetAddress::localHostAddresses(Array<NetAddress>& array) {
         struct in_addr addr;
         memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
         array.append(NetAddress(addr));
-    }    
+    }
 }
 
 void NetAddress::serialize(class BinaryOutput& b) const {

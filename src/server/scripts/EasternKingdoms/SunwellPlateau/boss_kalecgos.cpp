@@ -194,7 +194,7 @@ struct boss_kalecgos : public BossAI
 
     void DamageTaken(Unit* who, uint32& damage) override
     {
-        if (damage >= me->GetHealth() && who->GetGUID() != me->GetGUID())
+        if (damage >= me->GetHealth() && (!who || who->GetGUID() != me->GetGUID()))
             damage = 0;
     }
 
@@ -364,7 +364,7 @@ struct boss_kalecgos_human : public ScriptedAI
 
     void DamageTaken(Unit* who, uint32& damage) override
     {
-        if (who->GetGUID() != _sathGUID)
+        if (!who || who->GetGUID() != _sathGUID)
             damage = 0;
 
         if (HealthBelowPct(75) && _events.IsInPhase(PHASE_SAY_ONE))
@@ -479,7 +479,7 @@ struct boss_sathrovarr : public BossAI
 
     void DamageTaken(Unit* who, uint32& damage) override
     {
-        if (damage >= me->GetHealth() && who->GetGUID() != me->GetGUID())
+        if (damage >= me->GetHealth() && (!who || who->GetGUID() != me->GetGUID()))
             damage = 0;
     }
 

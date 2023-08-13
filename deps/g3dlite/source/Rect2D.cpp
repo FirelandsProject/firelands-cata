@@ -1,8 +1,8 @@
 /**
  @file Rect2D.cpp
- 
+
  @maintainer Morgan McGuire, http://graphics.cs.williams.edu
-  
+
   @created 2003-11-13
   @created 2011-06-16
 
@@ -30,7 +30,7 @@ void Rect2D::serialize(class BinaryOutput& b) const {
     max.serialize(b);
 }
 
-    
+
 void Rect2D::deserialize(class BinaryInput& b) {
     min.deserialize(b);
     max.deserialize(b);

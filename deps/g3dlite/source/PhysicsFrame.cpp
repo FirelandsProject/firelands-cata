@@ -2,7 +2,7 @@
  \file PhysicsFrame.cpp
 
  \maintainer Morgan McGuire, http://graphics.cs.williams.edu
- 
+
  \created 2002-07-09
  \edited  2013-04-25
 */
@@ -48,11 +48,11 @@ PhysicsFrame::PhysicsFrame(const Any& a) {
 
     if (beginsWith(n, "vector3") || beginsWith(n, "point3")) {
         *this = PhysicsFrame(Point3(a));
-    } else if (beginsWith(n, "matrix3")) {        
+    } else if (beginsWith(n, "matrix3")) {
         *this = PhysicsFrame(Matrix3(a));
-    } else if (beginsWith(n, "cframe") || beginsWith(n, "coordinateframe") || beginsWith(n, "matrix4")) {        
+    } else if (beginsWith(n, "cframe") || beginsWith(n, "coordinateframe") || beginsWith(n, "matrix4")) {
         *this = CoordinateFrame(a);
-    } else if (beginsWith(n, "uprightframe")) {        
+    } else if (beginsWith(n, "uprightframe")) {
         *this = UprightFrame(a).toCoordinateFrame();
     } else if (beginsWith(n, "pframe") || beginsWith(n, "physicsframe")) {
         if (a.type() == Any::ARRAY) {
@@ -89,7 +89,7 @@ PhysicsFrame PhysicsFrame::operator*(const PhysicsFrame& other) const {
 
 PhysicsFrame::operator CoordinateFrame() const {
     CoordinateFrame f;
-    
+
     f.translation = translation;
     f.rotation    = rotation.toRotationMatrix();
 

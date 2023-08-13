@@ -45,7 +45,7 @@ UprightFrame& UprightFrame::operator=(const Any& any) {
     *this = UprightFrame(any);
     return *this;
 }
-    
+
 CoordinateFrame UprightFrame::toCoordinateFrame() const {
     CoordinateFrame cframe;
 
@@ -75,7 +75,7 @@ void UprightFrame::unwrapYaw(UprightFrame* a, int N) {
         const float prev = a[i - 1].yaw;
         float& cur = a[i].yaw;
 
-        // No two angles should be more than pi (i.e., 180-degrees) apart.  
+        // No two angles should be more than pi (i.e., 180-degrees) apart.
         if (abs(cur - prev) > G3D::pi()) {
             // These angles must have wrapped at zero, causing them
             // to be interpolated the long way.
@@ -83,14 +83,14 @@ void UprightFrame::unwrapYaw(UprightFrame* a, int N) {
             // Find canonical [0, 2pi] versions of these numbers
             float p = (float)wrap(prev, twoPi());
             float c = (float)wrap(cur, twoPi());
-            
+
             // Find the difference -pi < diff < pi between the current and previous values
             float diff = c - p;
             if (diff < -G3D::pi()) {
                 diff += (float)twoPi();
             } else if (diff > G3D::pi()) {
                 diff -= (float)twoPi();
-            } 
+            }
 
             // Offset the current from the previous by the difference
             // between them.

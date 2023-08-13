@@ -198,7 +198,7 @@ static bool BaseFile_Read(
                 nLastError = errno;
                 return false;
             }
-            
+
             dwBytesRead = (DWORD)(size_t)bytes_read;
         }
     }
@@ -285,7 +285,7 @@ static bool BaseFile_Write(TFileStream * pStream, ULONGLONG * pByteOffset, const
             nLastError = errno;
             return false;
         }
-        
+
         dwBytesWritten = (DWORD)(size_t)bytes_written;
     }
 #endif
@@ -346,7 +346,7 @@ static bool BaseFile_SetSize(TFileStream * pStream, ULONGLONG NewFileSize)
         return bResult;
     }
 #endif
-    
+
 #if defined(PLATFORM_MAC) || defined(PLATFORM_LINUX)
     {
         if(ftruncate((intptr_t)pStream->Base.File.hFile, (off_t)NewFileSize) == -1)
@@ -354,7 +354,7 @@ static bool BaseFile_SetSize(TFileStream * pStream, ULONGLONG NewFileSize)
             nLastError = errno;
             return false;
         }
-        
+
         return true;
     }
 #endif
@@ -385,7 +385,7 @@ static bool BaseFile_Switch(TFileStream * pStream, TFileStream * pNewStream)
         nLastError = errno;
         return false;
     }
-    
+
     return true;
 #endif
 }
@@ -431,14 +431,14 @@ static bool BaseFile_Create(
 #if defined(PLATFORM_MAC) || defined(PLATFORM_LINUX)
     {
         intptr_t handle;
-        
+
         handle = open(szFileName, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
         if(handle == -1)
         {
             nLastError = errno;
             return false;
         }
-        
+
         pStream->Base.File.hFile = (HANDLE)handle;
     }
 #endif
@@ -753,7 +753,7 @@ static bool BaseHttp_Read(
             // Add range request to the HTTP headers
             // http://www.clevercomponents.com/articles/article015/resuming.asp
             _stprintf(szRangeRequest, _T("Range: bytes=%d-%d"), dwStartOffset, dwEndOffset);
-            HttpAddRequestHeaders(hRequest, szRangeRequest, 0xFFFFFFFF, HTTP_ADDREQ_FLAG_ADD_IF_NEW); 
+            HttpAddRequestHeaders(hRequest, szRangeRequest, 0xFFFFFFFF, HTTP_ADDREQ_FLAG_ADD_IF_NEW);
 
             // Send the request to the server
             if(HttpSendRequest(hRequest, NULL, 0, NULL, 0))
@@ -1086,7 +1086,7 @@ static void LinearStream_Close(TLinearStream * pStream)
     if(pStream->pBitmap != NULL)
         STORM_FREE(pStream->pBitmap);
     pStream->pBitmap = NULL;
-    
+
     // Call the base class for closing the stream
     return pStream->BaseClose(pStream);
 }
@@ -1274,7 +1274,7 @@ static bool PartialStream_GetBitmap(
         pBitmap->BitmapSize = BitmapSize;
         pBitmap->BlockSize = pStream->BlockSize;
         pBitmap->Reserved = 0;
-        
+
         // Is there at least one incomplete block?
         for(DWORD i = 0; i < pStream->BlockCount; i++)
         {
@@ -1287,7 +1287,7 @@ static bool PartialStream_GetBitmap(
 
         bResult = true;
     }
-    
+
     // Do we have enough space for supplying the bitmap?
     if(Length >= TotalLength)
     {
@@ -1423,10 +1423,10 @@ static const char * MpqeKey_Diablo3_Install_itIT    = "expand 32-byte kVVY40000B
 static const char * MpqeKey_Diablo3_Install_koKR    = "expand 32-byte k6YWH0000474ARZTN0000NVWDVNFQ0000VDH98TS40000E9CH";   // 8TS4VNFQRZTN6YWHE9CHVDH9NVWD474A
 static const char * MpqeKey_Diablo3_Install_plPL    = "expand 32-byte k4ZJJ0000BLJBF4LZ0000A6GAZ32D00003AZQLJ520000XVKK";   // LJ52Z32DF4LZ4ZJJXVKK3AZQA6GABLJB
 static const char * MpqeKey_Diablo3_Install_ptBR    = "expand 32-byte k545Y0000XYAGCUE20000WHE7HY2E0000JPVYK6BD0000KNLB";   // K6BDHY2ECUE2545YKNLBJPVYWHE7XYAG
-static const char * MpqeKey_Diablo3_Install_ruRU    = "expand 32-byte kXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";   // 
+static const char * MpqeKey_Diablo3_Install_ruRU    = "expand 32-byte kXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";   //
 static const char * MpqeKey_Diablo3_Install_zhTW    = "expand 32-byte kMRUC0000AA8HV3ZZ0000UX2TQTN80000A8CG6VWC0000ZXV8";   // 6VWCQTN8V3ZZMRUCZXV8A8CGUX2TAA8H
-static const char * MpqeKey_Diablo3_Install_zhCN    = "expand 32-byte kXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";   // 
-                                                                      
+static const char * MpqeKey_Diablo3_Install_zhCN    = "expand 32-byte kXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";   //
+
 static const char * MpqKeyArray[] =
 {
     MpqeKey_Starcraft2_Install_deDE,
@@ -1505,7 +1505,7 @@ static void DecryptFileChunk(
         KeyShuffled[0x04] = KeyMirror[0x0D];
         KeyShuffled[0x01] = KeyMirror[0x0E];
         KeyShuffled[0x00] = KeyMirror[0x0F];
-        
+
         // Shuffle the key - part 2
         for(DWORD i = 0; i < RoundCount; i += 2)
         {
@@ -1594,7 +1594,7 @@ static const char * DetectFileKey(LPBYTE pbEncryptedHeader)
         memcpy(Key, MpqKeyArray[i], MPQE_CHUNK_SIZE);
         BSWAP_ARRAY32_UNSIGNED(Key, MPQE_CHUNK_SIZE);
 
-        // Try to decrypt with the given key 
+        // Try to decrypt with the given key
         memcpy(FileHeader, pbEncryptedHeader, MPQE_CHUNK_SIZE);
         DecryptFileChunk((LPDWORD)FileHeader, Key, ByteOffset, MPQE_CHUNK_SIZE);
 
@@ -1661,7 +1661,7 @@ static bool EncryptedStream_Read(
             assert(false);
         }
 
-        // Free decryption buffer        
+        // Free decryption buffer
         STORM_FREE(pbMpqData);
     }
 
@@ -1805,7 +1805,7 @@ TFileStream * FileStream_OpenFile(
     // Allocate file stream for each stream provider
     switch(dwStreamFlags & STREAM_PROVIDER_MASK)
     {
-        case STREAM_PROVIDER_LINEAR:    // Allocate structure for linear stream 
+        case STREAM_PROVIDER_LINEAR:    // Allocate structure for linear stream
             StreamSize = sizeof(TLinearStream);
             break;
 
@@ -1961,7 +1961,7 @@ bool FileStream_GetSize(TFileStream * pStream, ULONGLONG & FileSize)
  * \a NewFileSize File size to set
  */
 bool FileStream_SetSize(TFileStream * pStream, ULONGLONG NewFileSize)
-{                                 
+{
     if(pStream->dwFlags & STREAM_FLAG_READ_ONLY)
         return false;
 

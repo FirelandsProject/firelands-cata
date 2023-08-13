@@ -46,7 +46,7 @@ public:
 
     VNTi() : index(0) {}
 
-    VNTi(const Vector3& v, const Vector3& n, const Vector2& t, int i) : 
+    VNTi(const Vector3& v, const Vector3& n, const Vector2& t, int i) :
         vertex(v), normal(n), texCoord(t), index(i) {}
 };
 
@@ -94,15 +94,15 @@ private:
     float                   normalSmoothingAngle;
 
     /**
-     Returns the index of the vertex in 
+     Returns the index of the vertex in
      outputVertexArray/outputNormalArray/outputTexCoordArray
-     that is within the global tolerances of v,n,t. If there 
+     that is within the global tolerances of v,n,t. If there
      is no such vertex, adds it to the arrays and returns that index.
 
      Called from updateTriLists().
      */
     int getIndex(const Vector3& v, const Vector3& n, const Vector2& t) {
-        PointHashGrid<VNTi>::SphereIterator it = 
+        PointHashGrid<VNTi>::SphereIterator it =
                 weldGrid.begin(Sphere(v, vertexWeldRadius));
 
         if (n.isZero()) {
@@ -148,15 +148,15 @@ private:
      Called from process()
      */
     void updateTriLists
-    (Array<Array<int>*>&         indexArrayArray, 
+    (Array<Array<int>*>&         indexArrayArray,
      const Array<Vector3>&       vertexArray,
      const Array<Vector3>&       normalArray,
      const Array<Vector2>&       texCoordArray) {
-     
+
 #       ifdef VERBOSE
             debugPrintf("WeldHelper::updateTriLists\n");
 #       endif
-          
+
         // Compute a hash grid so that we can find neighbors quickly.
         // It begins empty and is extended as the tri lists are iterated
         // through.
@@ -193,16 +193,16 @@ private:
 
         Called from process() */
     void unroll
-    (const Array<Array<int>*>&   indexArrayArray, 
-     const Array<Vector3>&       vertexArray, 
-     const Array<Vector2>&       texCoordArray, 
-     Array<Vector3>&             unrolledVertexArray, 
+    (const Array<Array<int>*>&   indexArrayArray,
+     const Array<Vector3>&       vertexArray,
+     const Array<Vector2>&       texCoordArray,
+     Array<Vector3>&             unrolledVertexArray,
      Array<Vector2>&             unrolledTexCoordArray) {
 
 #       ifdef VERBOSE
             debugPrintf("WeldHelper::unroll\n");
 #       endif
-       
+
         int numTriLists = indexArrayArray.size();
         for (int t = 0; t < numTriLists; ++t) {
             if (indexArrayArray[t] != NULL) {
@@ -220,7 +220,7 @@ private:
         Sliver triangles have a zero surface normal, which we will later take to
         match *any* surface normal. */
     void computeFaceNormals
-    (const Array<Vector3>&  vertexArray, 
+    (const Array<Vector3>&  vertexArray,
      Array<Vector3>&        faceNormalArray) {
 #       ifdef VERBOSE
             debugPrintf("WeldHelper::computeFaceNormals\n");
@@ -248,8 +248,8 @@ private:
      with neighbors within the angular cutoff.
      */
     void smoothNormals
-    (const Array<Point3>& vertexArray, 
-     const Array<Vector3>& normalArray, 
+    (const Array<Point3>& vertexArray,
+     const Array<Vector3>& normalArray,
      Array<Vector3>&       smoothNormalArray) {
         if (normalSmoothingAngle <= 0) {
             smoothNormalArray = normalArray;
@@ -307,7 +307,7 @@ private:
                 const bool indeterminate = average.isZero();
                 // Never "smooth" a normal so far that it points backwards
                 const bool backFacing    = original.dot(average) < 0;
-                
+
                 if (indeterminate || backFacing) {
                     // Revert to the face normal
                     smoothNormalArray[v] = original;
@@ -330,35 +330,35 @@ private:
             for (int v = 0; v < normalArray.size(); ++v) {
                 grid.insert(VN(vertexArray[v], normalArray[v]));
             }
-            
+
             // OPT: this step could be done on multiple threads
-            for (int v = 0; v < normalArray.size(); ++v) {            
+            for (int v = 0; v < normalArray.size(); ++v) {
                 // Compute the sum of all nearby normals within the cutoff angle.
                 // Search within the vertexWeldRadius, since those are the vertices
                 // that will collapse to the same point.
-                PointHashGrid<VN>::SphereIterator it = 
+                PointHashGrid<VN>::SphereIterator it =
                     grid.begin(Sphere(vertexArray[v], vertexWeldRadius));
-                
+
                 Vector3 sum;
-                
+
                 const Vector3& original = normalArray[v];
                 while (it.isValid()) {
                     const Vector3& N = it->normal;
                     const float cosAngle = N.dot(original);
-                    
+
                     if (cosAngle > cosThresholdAngle) {
                         // This normal is close enough to consider.  Avoid underflow by scaling up
                         sum += (N * 256.0f);
                     }
                     ++it;
                 }
-                
+
                 const Vector3& average = sum.directionOrZero();
-                
+
                 const bool indeterminate = average.isZero();
                 // Never "smooth" a normal so far that it points backwards
                 const bool backFacing    = original.dot(average) < 0;
-                
+
                 if (indeterminate || backFacing) {
                     // Revert to the face normal
                     smoothNormalArray[v] = original;
@@ -383,12 +383,12 @@ public:
 
     3. At each vertex, average all normals that are within normalSmoothingAngle.
 
-    4. Generate output indexArrayArray.  While doing so, merge all vertices where 
+    4. Generate output indexArrayArray.  While doing so, merge all vertices where
        the distance between position, texCoord, and normal is within the thresholds.
      */
     void process
     ( Array<Vector3>&     vertexArray,
-      Array<Vector2>&     texCoordArray, 
+      Array<Vector2>&     texCoordArray,
       Array<Vector3>&     normalArray,
       Array<Array<int>*>& indexArrayArray,
       float               normAngle,
@@ -405,7 +405,7 @@ public:
         const bool hasTexCoords = (texCoordArray.size() > 0);
 
         if (hasTexCoords) {
-            debugAssertM(vertexArray.size() == texCoordArray.size(), 
+            debugAssertM(vertexArray.size() == texCoordArray.size(),
                 "Input arrays are not parallel.");
         }
 
@@ -426,10 +426,10 @@ public:
         }
 
         // Generate a flat (unrolled) triangle list with texture coordinates.
-        unroll(indexArrayArray, vertexArray, texCoordArray, 
+        unroll(indexArrayArray, vertexArray, texCoordArray,
             unrolledVertexArray, unrolledTexCoordArray);
 
-        // Put the output back into the input slots. 
+        // Put the output back into the input slots.
         outputVertexArray   = &vertexArray;
         outputNormalArray   = &normalArray;
         outputTexCoordArray = &texCoordArray;
@@ -437,7 +437,7 @@ public:
         outputNormalArray->fastClear();
         outputTexCoordArray->fastClear();
 
-        // For every three vertices, generate their face normal and store it at 
+        // For every three vertices, generate their face normal and store it at
         // each vertex. The output array has the same length as the input.
         computeFaceNormals(unrolledVertexArray, unrolledFaceNormalArray);
 
@@ -483,15 +483,15 @@ void Welder::Settings::deserialize(class BinaryInput& b) {
 
 void Welder::weld
 (Array<Vector3>&     vertexArray,
- Array<Vector2>&     texCoordArray, 
+ Array<Vector2>&     texCoordArray,
  Array<Vector3>&     normalArray,
  Array<Array<int>*>& indexArrayArray,
  const Welder::Settings& settings) {
 
     _internal::WeldHelper(settings.vertexWeldRadius).process
-        (vertexArray, texCoordArray, normalArray, indexArrayArray, 
+        (vertexArray, texCoordArray, normalArray, indexArrayArray,
          settings.normalSmoothingAngle, settings.textureWeldRadius, settings.normalWeldRadius);
-        
+
 }
 
 

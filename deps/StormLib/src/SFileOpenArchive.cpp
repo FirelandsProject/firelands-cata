@@ -147,7 +147,7 @@ bool WINAPI SFileOpenArchive(
     TFileStream * pStream = NULL;       // Open file stream
     TMPQArchive * ha = NULL;            // Archive handle
     ULONGLONG FileSize = 0;             // Size of the file
-    int nError = ERROR_SUCCESS;   
+    int nError = ERROR_SUCCESS;
 
     // Verify the parameters
     if(szMpqName == NULL || *szMpqName == 0 || phMpq == NULL)
@@ -165,7 +165,7 @@ bool WINAPI SFileOpenArchive(
         if(pStream == NULL)
             nError = GetLastError();
     }
-    
+
     // Allocate the MPQhandle
     if(nError == ERROR_SUCCESS)
     {

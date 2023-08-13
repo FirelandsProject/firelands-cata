@@ -52,16 +52,16 @@ public:
      Array<int>&           _toNew,
      Array<int>&           _toOld,
      float                 _radius);
-        
+
     /**
      Computes the grid index from an ordinate.
      */
     void toGridCoords(Vector3 v, int& x, int& y, int& z) const;
 
-    /** Gets the index of a vertex, adding it to 
+    /** Gets the index of a vertex, adding it to
         newVertexArray if necessary. */
     int getIndex(const Vector3& vertex);
-    
+
     void weld();
 };
 
@@ -77,7 +77,7 @@ template<> struct HashTrait<G3D::_internal::Welder::List*> {
 namespace G3D {
 namespace _internal {
 
-Welder::Welder(    
+Welder::Welder(
     const Array<Vector3>& _oldVertexArray,
     Array<Vector3>&       _newVertexArray,
     Array<int>&           _toNew,
@@ -186,7 +186,7 @@ void Welder::weld() {
         getIndex(oldVertexArray[i]);
     }
 
-    // Now create the official remapping by snapping to 
+    // Now create the official remapping by snapping to
     // nearby vertices.
     toNew.resize(oldVertexArray.size());
     toOld.resize(newVertexArray.size());

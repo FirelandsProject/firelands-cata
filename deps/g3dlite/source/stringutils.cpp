@@ -13,7 +13,7 @@
 #include <algorithm>
 
 #ifdef G3D_WINDOWS
-extern "C" {    
+extern "C" {
     // Define functions for ffmpeg since we don't link in gcc's c library
     extern int strncasecmp(const char *string1, const char *string2, size_t count) { return _strnicmp(string1, string2, count); }
     extern int strcasecmp(const char *string1, const char *string2) { return _stricmp(string1, string2); }
@@ -113,7 +113,7 @@ std::string replace(const std::string& s, const std::string& pattern, const std:
 }
 
 bool isValidIdentifier(const std::string& s) {
-    if (s.length() > 0 && (isLetter(s[0]) || s[0] == '_')) {   
+    if (s.length() > 0 && (isLetter(s[0]) || s[0] == '_')) {
         for (size_t i = 1; i < s.length() ; ++i) {
             if (!( isLetter(s[i]) || (s[i] == '_') || isDigit(s[i]) )) {
                 return false;
@@ -232,11 +232,11 @@ Array<std::string> stringSplit(
     char                        splitChar) {
 
     Array<std::string> out;
-    
+
     // Pointers to the beginning and end of the substring
     const char* start = x.c_str();
     const char* stop = start;
-    
+
     while ((stop = strchr(start, splitChar))) {
         out.append(std::string(start, stop - start));
         start = stop + 1;
@@ -244,7 +244,7 @@ Array<std::string> stringSplit(
 
     // Append the last one
     out.append(std::string(start));
-    
+
     return out;
 }
 
@@ -291,7 +291,7 @@ std::string trimWhitespace(const std::string& s) {
         return s;
     }
     size_t left = 0;
-    
+
     // Trim from left
     while ((left < s.length()) && iswspace(s[left])) {
         ++left;
@@ -302,7 +302,7 @@ std::string trimWhitespace(const std::string& s) {
     while ((right > left) && iswspace(s[right])) {
         --right;
     }
-    
+
     return s.substr(left, right - left + 1);
 }
 

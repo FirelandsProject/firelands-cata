@@ -60,7 +60,7 @@
 
 static const TCHAR * szWorkDir = MAKE_PATH("Work");
 
-static unsigned int AddFlags[] = 
+static unsigned int AddFlags[] =
 {
 //  Compression          Encryption             Fixed key           Single Unit            Sector CRC
     0                 |  0                   |  0                 | 0                    | 0,
@@ -300,7 +300,7 @@ static bool CompareArchivedFiles(const char * szFileName, HANDLE hFile1, HANDLE 
         // No more bytes ==> OK
         if(dwRead1 == 0)
             break;
-        
+
         // Test the content
         if((nDiff = GetFirstDiffer(pbBuffer1, pbBuffer2, dwRead1)) != -1)
         {
@@ -344,7 +344,7 @@ static bool CompareArchivedFilesRR(const char * /* szFileName */, HANDLE hFile1,
             DWORD dwRandom     = rand() * rand();
             DWORD dwMoveMethod = dwRandom % 3;
             DWORD dwPosition   = dwRandom % dwFileSize1;
-            DWORD dwToRead     = dwRandom % dwBlockSize; 
+            DWORD dwToRead     = dwRandom % dwBlockSize;
 
             // Also test negative seek
             if(rand() & 1)
@@ -385,7 +385,7 @@ static bool CompareArchivedFilesRR(const char * /* szFileName */, HANDLE hFile1,
                 nError = ERROR_CAN_NOT_COMPLETE;
                 break;
             }
-            
+
             // Test the content
             if(dwRead1 != 0 && memcmp(pbBuffer1, pbBuffer2, dwRead1))
             {
@@ -486,7 +486,7 @@ static int ComparePklibCompressions()
 
     memset(Decompressed, 0, cbDecompressed);
     SCompImplode(Compressed, &cbCompressed, Decompressed, cbDecompressed);
-    
+
     cbDecompressed = sizeof(Decompressed);
     SCompExplode(Decompressed, &cbDecompressed, Compressed, cbCompressed);
 
@@ -609,7 +609,7 @@ __TryToDecompress:
                 if(nDcmpLength1 != nDcmpLength2)
                 {
                     _tprintf(_T("Difference in compressed blocks lengths (%u vs %u)\n"), nDcmpLength1, nDcmpLength2);
-                    goto __TryToDecompress;             
+                    goto __TryToDecompress;
                 }
 
                 // Compare the output
@@ -716,7 +716,7 @@ __TryAgain:
                 _tprintf(_T("Length of uncompressed data does not agree with original data length !!!\n"));
                 goto __TryAgain;
             }
-            
+
             // Check decompressed block against original block
             if((nDiff = GetFirstDiffer(pbDecompressed, pbOriginal, nOriginalLength)) != -1)
             {
@@ -806,7 +806,7 @@ static int TestArchiveOpenAndClose(const TCHAR * szMpqName)
     // Verify the MPQ listfile
     if(nError == ERROR_SUCCESS)
     {
-        SFileVerifyFile(hMpq, szFileName1, 0xFFFFFFFF); 
+        SFileVerifyFile(hMpq, szFileName1, 0xFFFFFFFF);
         if(!CompareArchivedFilesRR(szFileName1, hFile1, hFile2, 0x100000))
             nError = ERROR_CAN_NOT_COMPLETE;
     }
@@ -917,7 +917,7 @@ static int TestCreateArchive(const TCHAR * szMpqName)
     TFileStream * pStream;
     const TCHAR * szFileName1 = MAKE_PATH("FileTest.exe");
     const TCHAR * szFileName2 = MAKE_PATH("ZeroSize.txt");
-    HANDLE hMpq = NULL;                 // Handle of created archive 
+    HANDLE hMpq = NULL;                 // Handle of created archive
     DWORD dwVerifyResult;
     DWORD dwFileCount = 0;
     LCID LocaleIDs[] = {0x000, 0x405, 0x406, 0x407, 0xFFFF};
@@ -935,7 +935,7 @@ static int TestCreateArchive(const TCHAR * szMpqName)
     if(nError == ERROR_SUCCESS)
     {
         ULONGLONG FileSize = 0x100000;
-      
+
         FileStream_SetSize(pStream, FileSize);
         FileStream_Close(pStream);
     }
@@ -973,11 +973,11 @@ static int TestCreateArchive(const TCHAR * szMpqName)
             }
         }
 
-        
+
         // Delete a file in the middle of the file table
         SFileRemoveFile(hMpq, "FileTest_10.exe");
         SFileAddFileEx(hMpq, szFileName1, "FileTest_xx.exe", MPQ_FILE_COMPRESS | MPQ_FILE_ENCRYPTED, MPQ_COMPRESSION_ZLIB);
-        
+
         // Try to decrement max file count
         dwFileCount = SFileGetMaxFileCount(hMpq);
         SFileSetMaxFileCount(hMpq, dwFileCount - 1);
@@ -1031,7 +1031,7 @@ static int TestCreateArchive(const TCHAR * szMpqName)
             nError = GetLastError();
             _tprintf(_T("Failed to rename the file\n"));
         }
-        
+
         if(nError == ERROR_SUCCESS)
             _tprintf(_T("Rename test succeeded.\n\n"));
         else
@@ -1060,7 +1060,7 @@ static int TestCreateArchive(const TCHAR * szMpqName)
 static int TestCreateArchive_PaliRoharBug(const TCHAR * szMpqName)
 {
     const TCHAR * szFileName = MAKE_PATH("FileTest.exe");
-    HANDLE hMpq = NULL;                 // Handle of created archive 
+    HANDLE hMpq = NULL;                 // Handle of created archive
     DWORD dwMaxFileCount = 0;
     DWORD dwMpqFlags = MPQ_FILE_ENCRYPTED | MPQ_FILE_COMPRESS;
     char szMpqFileName[MAX_PATH];
@@ -1157,7 +1157,7 @@ static int TestCreateArchiveFromMemory(const TCHAR * szMpqName)
     char* data = new char [FILE_SIZE];          // random memory data
     char szFileName[100];
     int i;
- 
+
     // Create an mpq file for testing
     if(SFileCreateArchive(szMpqName, MPQ_CREATE_ARCHIVE_V2|MPQ_CREATE_ATTRIBUTES, 0x100000, &hMPQ))
     {
@@ -1275,7 +1275,7 @@ static int TestFileReadAndWrite(
 static int TestSignatureVerify(const TCHAR * szMpqName)
 {
     HANDLE hMpq;
-    
+
     if(SFileOpenArchive(szMpqName, 0, 0, &hMpq))
     {
         _tprintf(_T("Verifying digital signature in %s:\n"), szMpqName);
@@ -1284,11 +1284,11 @@ static int TestSignatureVerify(const TCHAR * szMpqName)
             case ERROR_NO_SIGNATURE:
                 _tprintf(_T("No digital signature present.\n"));
                 break;
-        
+
             case ERROR_VERIFY_FAILED:
                 _tprintf(_T("Failed to verify signature.\n"));
                 break;
-            
+
             case ERROR_WEAK_SIGNATURE_OK:
                 _tprintf(_T("Weak signature is OK.\n"));
                 break;
@@ -1305,7 +1305,7 @@ static int TestSignatureVerify(const TCHAR * szMpqName)
                 _tprintf(_T("Strong signature mismatch.\n"));
                 break;
         }
-        
+
         SFileCloseArchive(hMpq);
         _tprintf(_T("\n"));
     }
@@ -1319,7 +1319,7 @@ static int TestCreateArchiveCopy(const TCHAR * szMpqName, const TCHAR * szMpqCop
     TFileStream * pStream;
     TCHAR  szLocalFile[MAX_PATH];
     HANDLE hMpq1 = NULL;                // Handle of existing archive
-    HANDLE hMpq2 = NULL;                // Handle of created archive 
+    HANDLE hMpq2 = NULL;                // Handle of created archive
     DWORD dwHashTableSize = 0;
     int nError = ERROR_SUCCESS;
 
@@ -1336,7 +1336,7 @@ static int TestCreateArchiveCopy(const TCHAR * szMpqName, const TCHAR * szMpqCop
     if(nError == ERROR_SUCCESS)
     {
         ULONGLONG FileSize = 0x100000;
-        
+
         FileStream_SetSize(pStream, FileSize);
         FileStream_Close(pStream);
     }
@@ -1493,7 +1493,7 @@ static int TestOpenPatchedArchive(const TCHAR * szMpqName, ...)
     {
         TCHAR * szPatchChain = NULL;
         DWORD cbPatchChain = 0;
-        
+
         // Get the patch chain
         SFileGetFileInfo(hFile, SFILE_INFO_PATCH_CHAIN, szPatchChain, cbPatchChain, &cbPatchChain);
         szPatchChain = (TCHAR *)(new BYTE[cbPatchChain]);
@@ -1515,11 +1515,11 @@ static int TestOpenPatchedArchive(const TCHAR * szMpqName, ...)
             if(pbFullFile != NULL)
             {
                 if(!SFileReadFile(hFile, pbFullFile, dwFileSize))
-                {           
+                {
                     nError = GetLastError();
                     printf("Failed to read full patched file data \"%s\"\n", szFileName);
                 }
-                
+
                 if(nError == ERROR_SUCCESS)
                 {
                     MergeLocalPath(szLocFileName, MAKE_PATH("Work//"), GetPlainFileNameA(szFileName));
@@ -1530,7 +1530,7 @@ static int TestOpenPatchedArchive(const TCHAR * szMpqName, ...)
                         FileStream_Close(pStream);
                     }
                 }
-                
+
                 delete [] pbFullFile;
             }
         }
@@ -1762,7 +1762,7 @@ static int TestSearchAllArchives(const TCHAR * szSearchMask)
 
 //-----------------------------------------------------------------------------
 // Main
-// 
+//
 
 int main(void)
 {
@@ -1850,10 +1850,10 @@ int main(void)
 //      nError = TestSignatureVerify(MAKE_PATH("2004 - World of Warcraft/WoW-2.3.3.7799-to-2.4.0.8089-enUS-patch.exe"));
 //      nError = TestSignatureVerify(MAKE_PATH("2004 - World of Warcraft/standalone.MPQ"));
 
-    // Compact the archive        
+    // Compact the archive
 //  if(nError == ERROR_SUCCESS)
 //      nError = TestMpqCompacting(MAKE_PATH("wow-update-base-14333.MPQ"));
-    
+
     // Create copy of the archive, appending some bytes before the MPQ header
 //  if(nError == ERROR_SUCCESS)
 //      nError = TestCreateArchiveCopy(MAKE_PATH("PartialMPQs/interface.MPQ.part"), MAKE_PATH("PartialMPQs/interface-copy.MPQ.part"), NULL);

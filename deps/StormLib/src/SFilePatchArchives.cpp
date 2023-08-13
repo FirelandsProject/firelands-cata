@@ -60,7 +60,7 @@ static void Decompress_RLE(LPBYTE pbDecompressed, DWORD cbDecompressed, LPBYTE p
 {
     LPBYTE pbDecompressedEnd = pbDecompressed + cbDecompressed;
     LPBYTE pbCompressedEnd = pbCompressed + cbCompressed;
-    BYTE RepeatCount; 
+    BYTE RepeatCount;
     BYTE OneByte;
 
     // Cut the initial DWORD from the compressed chunk
@@ -74,7 +74,7 @@ static void Decompress_RLE(LPBYTE pbDecompressed, DWORD cbDecompressed, LPBYTE p
     while(pbCompressed < pbCompressedEnd && pbDecompressed < pbDecompressedEnd)
     {
         OneByte = *pbCompressed++;
-        
+
         // Is it a repetition byte ?
         if(OneByte & 0x80)
         {

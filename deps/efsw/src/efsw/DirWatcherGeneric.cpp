@@ -363,7 +363,7 @@ DirWatcherGeneric * DirWatcherGeneric::createDirectory( std::string newdir )
 
 		/// Creates the new directory watcher of the subfolder and check for new files
 		dw = new DirWatcherGeneric( this, Watch, dir, Recursive );
-		
+
 		dw->addChilds();
 
 		dw->watch();
@@ -448,4 +448,4 @@ bool DirWatcherGeneric::pathInWatches( std::string path )
 	return false;
 }
 
-} 
+}

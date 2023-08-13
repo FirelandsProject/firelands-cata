@@ -182,10 +182,10 @@ int SAttrLoadAttributes(TMPQArchive * ha)
             }
         }
 
-        // 
-        // Note: Version 7.00 of StormLib saved the (attributes) incorrectly. 
+        //
+        // Note: Version 7.00 of StormLib saved the (attributes) incorrectly.
         // Sometimes, number of entries in the (attributes) was 1 item less
-        // than block table size. 
+        // than block table size.
         // If we encounter such table, we will zero all three arrays
         //
 

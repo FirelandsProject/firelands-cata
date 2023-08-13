@@ -81,7 +81,7 @@ void InitializeMpqCryptography()
         register_hash(&sha1_desc);
 
         // Use LibTomMath as support math library for LibTomCrypt
-        ltc_mp = ltm_desc;    
+        ltc_mp = ltm_desc;
 
         // Don't do that again
         bMpqCryptographyInitialized = true;
@@ -94,7 +94,7 @@ void InitializeMpqCryptography()
 DWORD GetHashTableSizeForFileCount(DWORD dwFileCount)
 {
     DWORD dwPowerOfTwo;
-    
+
     // Round the hash table size up to the nearest power of two
     for(dwPowerOfTwo = HASH_TABLE_SIZE_MIN; dwPowerOfTwo < HASH_TABLE_SIZE_MAX; dwPowerOfTwo <<= 1)
     {
@@ -445,16 +445,16 @@ DWORD DetectFileKeyByKnownContent(void * pvFileContent, DWORD nDwords, ...)
     DWORD saveKey1;
     DWORD dwTemp;
     DWORD i, j;
-    
+
     // We need at least two DWORDS to detect the file key
     if(nDwords < 0x02 || nDwords > 0x10)
         return 0;
-    
+
     va_start(argList, nDwords);
     for(i = 0; i < nDwords; i++)
         dwDecrypted[i] = va_arg(argList, DWORD);
     va_end(argList);
-    
+
     dwTemp = (*pdwContent ^ dwDecrypted[0]) - 0xEEEEEEEE;
     for(i = 0; i < 0x100; i++)      // Try all 256 possibilities
     {
@@ -550,7 +550,7 @@ bool IsValidMpqHandle(TMPQArchive * ha)
         return false;
     if(ha->pHeader == NULL || ha->pHeader->dwID != ID_MPQ)
         return false;
-    
+
     return (bool)(ha->pHeader->dwID == ID_MPQ);
 }
 
@@ -801,7 +801,7 @@ int LoadMpqTable(
 }
 
 void CalculateRawSectorOffset(
-    ULONGLONG & RawFilePos, 
+    ULONGLONG & RawFilePos,
     TMPQFile * hf,
     DWORD dwSectorOffset)
 {
@@ -968,7 +968,7 @@ int AllocateSectorOffsets(TMPQFile * hf, bool bLoadFromFile)
 
     // Calculate the number of file sectors
     dwSectorOffsLen = (hf->dwSectorCount + 1) * sizeof(DWORD);
-    
+
     // If MPQ_FILE_SECTOR_CRC flag is set, there will either be extra DWORD
     // or an array of MD5's. Either way, we read at least 4 bytes more
     // in order to save additional read from the file.
@@ -1066,7 +1066,7 @@ int AllocateSectorOffsets(TMPQFile * hf, bool bLoadFromFile)
             //
             // These extra values are, however, include in the dwCmpSize in the file
             // table. We cannot ignore them, because compacting archive would fail
-            // 
+            //
 
             if(hf->SectorOffsets[0] > dwSectorOffsLen)
             {
@@ -1109,7 +1109,7 @@ int AllocateSectorChecksums(TMPQFile * hf, bool bLoadFromFile)
     // Caller must ensure that we are only called when we have sector checksums
     assert(pFileEntry->dwFlags & MPQ_FILE_SECTOR_CRC);
 
-    // 
+    //
     // Older MPQs store an array of CRC32's after
     // the raw file data in the MPQ.
     //
@@ -1147,7 +1147,7 @@ int AllocateSectorChecksums(TMPQFile * hf, bool bLoadFromFile)
         // Calculate offset of the CRC table
         dwCrcSize = hf->dwSectorCount * sizeof(DWORD);
         dwCrcOffset = hf->SectorOffsets[hf->dwSectorCount];
-        CalculateRawSectorOffset(RawFilePos, hf, dwCrcOffset); 
+        CalculateRawSectorOffset(RawFilePos, hf, dwCrcOffset);
 
         // Now read the table from the MPQ
         return LoadMpqTable(ha, RawFilePos, hf->SectorChksums, dwCompressedSize, dwCrcSize, 0);
@@ -1200,7 +1200,7 @@ int WriteSectorOffsets(TMPQFile * hf)
     // Write sector offsets to the archive
     if(!FileStream_Write(ha->pStream, &RawFilePos, hf->SectorOffsets, dwSectorOffsLen))
         return GetLastError();
-    
+
     // Not necessary, as the sector checksums
     // are going to be freed when this is done.
 //  BSWAP_ARRAY32_UNSIGNED(hf->SectorOffsets, dwSectorOffsLen);
@@ -1259,7 +1259,7 @@ int WriteSectorChecksums(TMPQFile * hf)
     // are going to be freed when this is done.
 //  BSWAP_ARRAY32_UNSIGNED(hf->SectorChksums, dwCrcSize);
 
-    // Store the sector CRCs 
+    // Store the sector CRCs
     hf->SectorOffsets[hf->dwSectorCount + 1] = hf->SectorOffsets[hf->dwSectorCount] + dwCompressedSize;
     pFileEntry->dwCmpSize += dwCompressedSize;
     STORM_FREE(pbCompressed);
@@ -1525,7 +1525,7 @@ bool IsPseudoFileName(const char * szFileName, DWORD * pdwFileIndex)
 bool IsValidMD5(LPBYTE pbMd5)
 {
     BYTE BitSummary = 0;
-    
+
     // The MD5 is considered invalid of it is zeroed
     BitSummary |= pbMd5[0x00] | pbMd5[0x01] | pbMd5[0x02] | pbMd5[0x03] | pbMd5[0x04] | pbMd5[0x05] | pbMd5[0x06] | pbMd5[0x07];
     BitSummary |= pbMd5[0x08] | pbMd5[0x09] | pbMd5[0x0A] | pbMd5[0x0B] | pbMd5[0x0C] | pbMd5[0x0D] | pbMd5[0x0E] | pbMd5[0x0F];
@@ -1660,7 +1660,7 @@ void ConvertTMPQUserData(void *userData)
 void ConvertTMPQHeader(void *header)
 {
 	TMPQHeader * theHeader = (TMPQHeader *)header;
-	
+
 	theHeader->dwID = SwapUInt32(theHeader->dwID);
 	theHeader->dwHeaderSize = SwapUInt32(theHeader->dwHeaderSize);
 	theHeader->dwArchiveSize = SwapUInt32(theHeader->dwArchiveSize);
@@ -1675,7 +1675,7 @@ void ConvertTMPQHeader(void *header)
 	{
 		// Swap the hi-block table position
 		theHeader->HiBlockTablePos64 = SwapUInt64(theHeader->HiBlockTablePos64);
-		
+
         theHeader->wHashTablePosHi = SwapUInt16(theHeader->wHashTablePosHi);
 		theHeader->wBlockTablePosHi = SwapUInt16(theHeader->wBlockTablePosHi);
 

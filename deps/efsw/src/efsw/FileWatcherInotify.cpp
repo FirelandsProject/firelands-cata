@@ -48,7 +48,7 @@ FileWatcherInotify::~FileWatcherInotify()
 	mInitOK = false;
 
 	efSAFE_DELETE( mThread );
-	
+
 	WatchMap::iterator iter = mWatches.begin();
 	WatchMap::iterator end = mWatches.end();
 

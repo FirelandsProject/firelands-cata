@@ -54,7 +54,7 @@ WatcherKqueue::WatcherKqueue(WatchID watchid, const std::string& dirname, FileWa
 	if ( -1 == mKqueue )
 	{
 		efDEBUG( "kqueue() returned invalid descriptor for directory %s. File descriptors count: %ld\n", Directory.c_str(), mWatcher->mFileDescriptorCount );
-		
+
 		mInitOK = false;
 		mErrno = errno;
 	}
@@ -80,7 +80,7 @@ WatcherKqueue::~WatcherKqueue()
 	}
 
 	close( mKqueue );
-	
+
 	mWatcher->removeFD();
 }
 
@@ -98,18 +98,18 @@ void WatcherKqueue::addAll()
 
 	// add base dir
 	int fd = open( Directory.c_str(), O_EVTONLY );
-	
+
 	if ( -1 == fd )
 	{
 		efDEBUG( "addAll(): Couldn't open folder: %s\n", Directory.c_str() );
-		
+
 		if ( EACCES != errno )
 		{
 			mInitOK = false;
 		}
 
 		mErrno = errno;
-		
+
 		return;
 	}
 
@@ -186,16 +186,16 @@ void WatcherKqueue::addFile(const std::string& name, bool emitEvents)
 	if( fd == -1 )
 	{
 		efDEBUG( "addFile(): Could open file descriptor for %s. File descriptor count: %ld\n", name.c_str(), mWatcher->mFileDescriptorCount );
-		
+
 		Errors::Log::createLastError( Errors::FileNotReadable, name );
-		
+
 		if ( EACCES != errno )
 		{
 			mInitOK = false;
 		}
 
 		mErrno = errno;
-		
+
 		return;
 	}
 

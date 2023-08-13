@@ -151,7 +151,7 @@ void Image4::copyArray(const Color3unorm8* src, int w, int h) {
 
     int N = w * h;
     Color4* dst = data.getCArray();
-    
+
     // Add alpha and convert
     for (int i = 0; i < N; ++i) {
         dst[i] = Color4(Color3(src[i]), 1.0f);
@@ -170,7 +170,7 @@ void Image4::copyArray(const Color3* src, int w, int h) {
 
     int N = w * h;
     Color4* dst = data.getCArray();
-    
+
     // Add alpha
     for (int i = 0; i < N; ++i) {
         dst[i] = Color4(src[i], 1.0f);

@@ -1,8 +1,8 @@
 /**
  @file Vector3int16.cpp
- 
+
  @author Morgan McGuire, http://graphics.cs.williams.edu
-  
+
  @created 2003-04-07
  @edited  2006-01-17
  */
@@ -46,7 +46,7 @@ std::string Vector3int16::toString() const {
     return G3D::format("(%d, %d, %d)", x, y, z);
 }
 
-    
+
 Vector3int16 Vector3int16::floor(const Vector3& v) {
     return Vector3int16(iFloor(v.x), iFloor(v.y), iFloor(v.z));
 }
