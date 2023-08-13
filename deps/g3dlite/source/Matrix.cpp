@@ -350,9 +350,9 @@ Vector3 Matrix::toVector3() const {
 
 Vector4 Matrix::toVector4() const {
     debugAssert(
-        ((impl->R == 4) && (impl->C == 1)) || 
+        ((impl->R == 4) && (impl->C == 1)) ||
         ((impl->R == 1) && (impl->C == 4)));
-    
+
     if (impl->R > impl->C) {
         return Vector4(impl->get(0,0), impl->get(1,0), impl->get(2, 0), impl->get(3,0));
     } else {
@@ -766,14 +766,14 @@ void Matrix::Impl::transpose(Impl& out) const {
     } else {
         for (int r = 0; r < R; ++r) {
             for (int c = 0; c < C; ++c) {
-                out.set(c, r, get(r, c)); 
+                out.set(c, r, get(r, c));
             }
         }
     }
 }
 
 
-void Matrix::Impl::adjoint(Impl& out) const {    
+void Matrix::Impl::adjoint(Impl& out) const {
     cofactor(out);
     // Transpose is safe to perform in place
     out.transpose(out);
@@ -786,7 +786,7 @@ void Matrix::Impl::cofactor(Impl& out) const {
         for(int c = 0; c < C; ++c) {
             out.set(r, c, cofactor(r, c));
         }
-    } 
+    }
 }
 
 
@@ -847,13 +847,13 @@ Matrix::T Matrix::Impl::determinant() const {
           float cofactor00 = elt[1][1] * elt[2][2] - elt[1][2] * elt[2][1];
           float cofactor10 = elt[1][2] * elt[2][0] - elt[1][0] * elt[2][2];
           float cofactor20 = elt[1][0] * elt[2][1] - elt[1][1] * elt[2][0];
-      
+
           return Matrix::T(
             elt[0][0] * cofactor00 +
             elt[0][1] * cofactor10 +
             elt[0][2] * cofactor20);
         }
-      
+
     default:
         {
             // Determinant of an n x n matrix is the dot product of the first
@@ -893,7 +893,7 @@ Matrix Matrix::pseudoInverse(float tolerance) const {
 }
 
 /*
-    Public function for testing purposes only. Use pseudoInverse(), as it contains optimizations for 
+    Public function for testing purposes only. Use pseudoInverse(), as it contains optimizations for
     nonsingular matrices with at least one small (<5) dimension.
 */
 // See http://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_pseudoinverse
@@ -920,7 +920,7 @@ Matrix Matrix::svdPseudoInverse(float tolerance) const {
     }
 
     Matrix X;
-    
+
     int r = 0;
     for (int i = 0; i < d.size(); ++i) {
         if (d[i] > tolerance) {
@@ -928,13 +928,13 @@ Matrix Matrix::svdPseudoInverse(float tolerance) const {
             ++r;
         }
     }
-    
+
     if (r == 0) {
         // There were no non-zero elements
         X = zero(cols(), rows());
     } else {
         // Use the first r columns
-        
+
         // Test code (the rest is below)
         /*
         d.resize(r);
@@ -943,7 +943,7 @@ Matrix Matrix::svdPseudoInverse(float tolerance) const {
         Matrix testX = testV * Matrix::fromDiagonal(d) * testU.transpose();
         X = testX;
         */
-        
+
 
         // We want to do this:
         //
@@ -953,7 +953,7 @@ Matrix Matrix::svdPseudoInverse(float tolerance) const {
         //
         // but creating a large diagonal matrix and then
         // multiplying by it is wasteful.  So we instead
-        // explicitly perform A = (D * U')' = U * D, and 
+        // explicitly perform A = (D * U')' = U * D, and
         // then multiply X = V * A'.
 
         Matrix A = Matrix(U.rows(), r);
@@ -973,14 +973,14 @@ Matrix Matrix::svdPseudoInverse(float tolerance) const {
 
         //
         // Compute X = V.subMatrix(0, V.rows() - 1, 0, r - 1) * A.transpose()
-        // 
+        //
         // Avoid the explicit subMatrix call, and by storing A' instead of A, avoid
         // both the transpose and the memory incoherence of striding across memory
         // in big steps.
 
-        alwaysAssertM(A.cols() == r, 
+        alwaysAssertM(A.cols() == r,
             "Internal dimension mismatch during pseudoInverse()");
-        alwaysAssertM(V.cols() >= r, 
+        alwaysAssertM(V.cols() >= r,
             "Internal dimension mismatch during pseudoInverse()");
 
         X = Matrix(V.rows(), A.rows());
@@ -1023,7 +1023,7 @@ Matrix Matrix::vectorPseudoInverse() const {
     for (int r = 0; r < rows(); ++r) {
         const T* MyRow = impl->elt[r];
         for (int c = 0; c < cols(); ++c) {
-            Aelt[c][r] = T(MyRow[c] * x); 
+            Aelt[c][r] = T(MyRow[c] * x);
         }
     }
     return Matrix(A);
@@ -1052,7 +1052,7 @@ Matrix Matrix::rowPartPseudoInverse() const{
             Belt[i][j] = sum;
         }
     }
-    
+
     // B has size m x m
     switch (m) {
     case 2:
@@ -1116,14 +1116,14 @@ Matrix Matrix::col2PseudoInverse(const Matrix& B) const {
     (void)n;
 
     // Row-major 2x2 matrix
-    const float B2[2][2] = 
-       {{B.get(0,0), B.get(0,1)}, 
+    const float B2[2][2] =
+       {{B.get(0,0), B.get(0,1)},
         {B.get(1,0), B.get(1,1)}};
 
     float det = (B2[0][0]*B2[1][1]) - (B2[0][1]*B2[1][0]);
 
     if (fuzzyEq(det, T(0))) {
-        
+
         // Matrix was singular; the block matrix pseudo-inverse can't
         // handle that, so fall back to the old case
         return svdPseudoInverse();
@@ -1154,7 +1154,7 @@ Matrix Matrix::col3PseudoInverse(const Matrix& B) const {
     int m = rows();
     int n = cols();
 
-    Matrix3 B3 = B.toMatrix3(); 
+    Matrix3 B3 = B.toMatrix3();
     if (fuzzyEq(B3.determinant(), (T)0.0)) {
 
         // Matrix was singular; the block matrix pseudo-inverse can't
@@ -1190,7 +1190,7 @@ Matrix Matrix::col4PseudoInverse(const Matrix& B) const {
     int m = rows();
     int n = cols();
 
-    Matrix4 B4 = B.toMatrix4(); 
+    Matrix4 B4 = B.toMatrix4();
     if (fuzzyEq(B4.determinant(), (T)0.0)) {
 
         // Matrix was singular; the block matrix pseudo-inverse can't
@@ -1229,14 +1229,14 @@ Matrix Matrix::row2PseudoInverse(const Matrix& B) const {
     (void)m;
 
     // Row-major 2x2 matrix
-    const float B2[2][2] = 
-       {{B.get(0,0), B.get(0,1)}, 
+    const float B2[2][2] =
+       {{B.get(0,0), B.get(0,1)},
         {B.get(1,0), B.get(1,1)}};
 
     float det = (B2[0][0]*B2[1][1]) - (B2[0][1]*B2[1][0]);
 
     if (fuzzyEq(det, T(0))) {
-        
+
         // Matrix was singular; the block matrix pseudo-inverse can't
         // handle that, so fall back to the old case
         return svdPseudoInverse();
@@ -1265,7 +1265,7 @@ Matrix Matrix::row3PseudoInverse(const Matrix& B) const {
     int m = rows();
     int n = cols();
 
-    Matrix3 B3 = B.toMatrix3(); 
+    Matrix3 B3 = B.toMatrix3();
     if (fuzzyEq(B3.determinant(), (T)0.0)) {
 
         // Matrix was singular; the block matrix pseudo-inverse can't
@@ -1300,7 +1300,7 @@ Matrix Matrix::row4PseudoInverse(const Matrix& B) const {
     int m = rows();
     int n = cols();
 
-    Matrix4 B4 = B.toMatrix4(); 
+    Matrix4 B4 = B.toMatrix4();
     if (fuzzyEq(B4.determinant(), (T)0.0)) {
 
         // Matrix was singular; the block matrix pseudo-inverse can't
@@ -1336,7 +1336,7 @@ Matrix Matrix::partitionPseudoInverse() const {
     // Logic:
     // A^-1 = (A'A)^-1 A'
     // A has few (n) columns, so A'A is small (n x n) and fast to invert
-    
+
     int m = rows();
     int n = cols();
 
@@ -1351,7 +1351,7 @@ Matrix Matrix::partitionPseudoInverse() const {
 }
 
 void Matrix::Impl::inverseInPlaceGaussJordan() {
-    debugAssertM(R == C, 
+    debugAssertM(R == C,
         format(
         "Cannot perform Gauss-Jordan inverse on a non-square matrix."
         " (Argument was %dx%d)",
@@ -1415,9 +1415,9 @@ void Matrix::Impl::inverseInPlaceGaussJordan() {
         }
 
         // The pivot is now at [row, col]
-        rowIndex[c] = row; 
+        rowIndex[c] = row;
         colIndex[c] = col;
-    
+
         double piv = elt[col][col];
 
         debugAssertM(piv != 0.0, "Matrix is singular");
@@ -1454,8 +1454,8 @@ void Matrix::Impl::inverseInPlaceGaussJordan() {
                 SWAP(elt[k][rowIndex[i]], elt[k][colIndex[i]]);
             }
         }
-    } 
-    
+    }
+
 #   undef SWAP
 }
 
@@ -1482,17 +1482,17 @@ bool Matrix::Impl::allNonZero() const {
 }
 
 
-/** Helper for svdCore */ 
+/** Helper for svdCore */
 static double pythag(double a, double b) {
-    
+
     double at = fabs(a), bt = fabs(b), ct, result;
 
-    if (at > bt) { 
-        ct = bt / at; 
-        result = at * sqrt(1.0 + square(ct)); 
-    } else if (bt > 0.0) { 
-        ct = at / bt; 
-        result = bt * sqrt(1.0 + square(ct)); 
+    if (at > bt) {
+        ct = bt / at;
+        result = at * sqrt(1.0 + square(ct));
+    } else if (bt > 0.0) {
+        ct = at / bt;
+        result = bt * sqrt(1.0 + square(ct));
     } else {
         result = 0.0;
     }
@@ -1511,20 +1511,20 @@ const char* Matrix::svdCore(float** U, int rows, int cols, float* D, float** V) 
 
     // Temp row vector
     double* rv1;
-  
+
     debugAssertM(rows >= cols, "Must have more rows than columns");
-  
+
     rv1 = (double*)System::alignedMalloc(cols * sizeof(double), 16);
     debugAssert(rv1);
 
     // Householder reduction to bidiagonal form
     for (i = 0; i < cols; ++i) {
-        
+
         // Left-hand reduction
         l = i + 1;
         rv1[i] = scale * g;
         g = s = scale = 0.0;
-        
+
         if (i < rows) {
 
             for (k = i; k < rows; ++k) {
@@ -1542,7 +1542,7 @@ const char* Matrix::svdCore(float** U, int rows, int cols, float* D, float** V) 
                 g = -sign(f)*(sqrt(s));
                 h = f * g - s;
                 U[i][i] = (float)(f - g);
-                
+
                 if (i != cols - 1) {
                     for (j = l; j < cols; ++j) {
 
@@ -1562,7 +1562,7 @@ const char* Matrix::svdCore(float** U, int rows, int cols, float* D, float** V) 
             }
         }
         D[i] = (float)(scale * g);
-    
+
         // right-hand reduction
         g = s = scale = 0.0;
         if (i < rows && i != cols - 1) {
@@ -1592,7 +1592,7 @@ const char* Matrix::svdCore(float** U, int rows, int cols, float* D, float** V) 
                             s += ((double)U[j][k] * (double)U[i][k]);
                         }
 
-                        for (k = l; k < cols; ++k) { 
+                        for (k = l; k < cols; ++k) {
                             U[j][k] += (float)(s * rv1[k]);
                         }
                     }
@@ -1606,7 +1606,7 @@ const char* Matrix::svdCore(float** U, int rows, int cols, float* D, float** V) 
 
         anorm = max(anorm, fabs((double)D[i]) + fabs(rv1[i]));
     }
-  
+
     // accumulate the right-hand transformation
     for (i = cols - 1; i >= 0; --i) {
         if (i < cols - 1) {
@@ -1615,7 +1615,7 @@ const char* Matrix::svdCore(float** U, int rows, int cols, float* D, float** V) 
                     V[j][i] = (float)(((double)U[i][j] / (double)U[i][l]) / g);
                 }
 
-                // double division to avoid underflow 
+                // double division to avoid underflow
                 for (j = l; j < cols; ++j) {
                     for (s = 0.0, k = l; k < cols; ++k) {
                         s += ((double)U[i][k] * (double)V[k][j]);
@@ -1636,7 +1636,7 @@ const char* Matrix::svdCore(float** U, int rows, int cols, float* D, float** V) 
         g = rv1[i];
         l = i;
     }
-  
+
     // accumulate the left-hand transformation
     for (i = cols - 1; i >= 0; --i) {
         l = i + 1;
@@ -1656,7 +1656,7 @@ const char* Matrix::svdCore(float** U, int rows, int cols, float* D, float** V) 
                     }
 
                     f = (s / (double)U[i][i]) * g;
-                    
+
                     for (k = i; k < rows; ++k) {
                         U[k][j] += (float)(f * (double)U[k][i]);
                     }
@@ -1666,7 +1666,7 @@ const char* Matrix::svdCore(float** U, int rows, int cols, float* D, float** V) 
             for (j = i; j < rows; ++j) {
                 U[j][i] = (float)((double)U[j][i]*g);
             }
-        
+
         } else {
             for (j = i; j < rows; ++j) {
                 U[j][i] = 0.0;
@@ -1677,13 +1677,13 @@ const char* Matrix::svdCore(float** U, int rows, int cols, float* D, float** V) 
 
     // diagonalize the bidiagonal form
     for (k = cols - 1; k >= 0; --k) {
-        // loop over singular values 
+        // loop over singular values
         for (its = 0; its < MAX_ITERATIONS; ++its) {
             // loop over allowed iterations
             flag = 1;
-            
+
             for (l = k; l >= 0; --l) {
-                // test for splitting 
+                // test for splitting
                 nm = l - 1;
                 if (fabs(rv1[l]) + anorm == anorm) {
                     flag = 0;
@@ -1703,7 +1703,7 @@ const char* Matrix::svdCore(float** U, int rows, int cols, float* D, float** V) 
                     if (fabs(f) + anorm != anorm) {
                         g = (double)D[i];
                         h = pythag(f, g);
-                        D[i] = (float)h; 
+                        D[i] = (float)h;
                         h = 1.0 / h;
                         c = g * h;
                         s = (- f * h);
@@ -1721,7 +1721,7 @@ const char* Matrix::svdCore(float** U, int rows, int cols, float* D, float** V) 
             if (l == k) {
                 // convergence
                 if (z < 0.0) {
-                    // make singular value nonnegative 
+                    // make singular value nonnegative
                     D[k] = (float)(-z);
 
                     for (j = 0; j < cols; ++j) {
@@ -1736,7 +1736,7 @@ const char* Matrix::svdCore(float** U, int rows, int cols, float* D, float** V) 
                 rv1 = NULL;
                 return "Failed to converge.";
             }
-    
+
             // shift from bottom 2 x 2 minor
             x = (double)D[l];
             nm = k - 1;
@@ -1746,8 +1746,8 @@ const char* Matrix::svdCore(float** U, int rows, int cols, float* D, float** V) 
             f = ((y - z) * (y + z) + (g - h) * (g + h)) / (2.0 * h * y);
             g = pythag(f, 1.0);
             f = ((x - z) * (x + z) + h * ((y / (f + SIGN(g, f))) - h)) / x;
-          
-            // next QR transformation 
+
+            // next QR transformation
             c = s = 1.0;
             for (j = l; j <= nm; ++j) {
                 i = j + 1;

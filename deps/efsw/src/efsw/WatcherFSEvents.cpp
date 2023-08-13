@@ -45,9 +45,9 @@ void WatcherFSEvents::init()
 {
 	CFStringRef CFDirectory			= CFStringCreateWithCString( NULL, Directory.c_str(), kCFStringEncodingUTF8 );
 	CFArrayRef	CFDirectoryArray	= CFArrayCreate( NULL, (const void **)&CFDirectory, 1, NULL );
-	
+
 	Uint32 streamFlags = kFSEventStreamCreateFlagNone;
-	
+
 	if ( FileWatcherFSEvents::isGranular() )
 	{
 		streamFlags = efswFSEventStreamCreateFlagFileEvents;
@@ -56,7 +56,7 @@ void WatcherFSEvents::init()
 	{
 		WatcherGen = new WatcherGeneric( ID, Directory, Listener, FWatcher, Recursive );
 	}
-	
+
 	FSEventStreamContext ctx;
 	/* Initialize context */
 	ctx.version = 0;

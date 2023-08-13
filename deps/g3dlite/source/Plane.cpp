@@ -1,8 +1,8 @@
 /**
  @file Plane.cpp
- 
+
  @maintainer Morgan McGuire, http://graphics.cs.williams.edu
- 
+
  @created 2003-02-06
  \edited  2011-02-29
  */
@@ -52,16 +52,16 @@ Plane::Plane
 (Vector4      point0,
  Vector4      point1,
  Vector4      point2) {
-    
+
     debugAssertM(
-        point0.w != 0 || 
-        point1.w != 0 || 
+        point0.w != 0 ||
+        point1.w != 0 ||
         point2.w != 0,
         "At least one point must be finite.");
 
     // Rotate the points around so that the finite points come first.
 
-    while ((point0.w == 0) && 
+    while ((point0.w == 0) &&
            ((point1.w == 0) || (point2.w != 0))) {
         Vector4 temp = point0;
         point0 = point1;

@@ -1,8 +1,8 @@
 /**
- @file Ray.cpp 
- 
+ @file Ray.cpp
+
  @maintainer Morgan McGuire, http://graphics.cs.williams.edu
- 
+
  @created 2002-07-12
  @edited  2004-03-19
  */
@@ -19,9 +19,9 @@ void Ray::set(const Vector3& origin, const Vector3& direction) {
     m_origin = origin;
     m_direction = direction;
     debugAssert(direction.isUnit());
-    
+
     m_invDirection = Vector3::one() / direction;
-    
+
     // ray slope
     ibyj = m_direction.x * m_invDirection.y;
     jbyi = m_direction.y * m_invDirection.x;
@@ -29,15 +29,15 @@ void Ray::set(const Vector3& origin, const Vector3& direction) {
     kbyj = m_direction.z * m_invDirection.y;
     ibyk = m_direction.x * m_invDirection.z;
     kbyi = m_direction.z * m_invDirection.x;
-    
+
     // precomputed terms
     c_xy = m_origin.y - jbyi * m_origin.x;
     c_xz = m_origin.z - kbyi * m_origin.x;
     c_yx = m_origin.x - ibyj * m_origin.y;
     c_yz = m_origin.z - kbyj * m_origin.y;
     c_zx = m_origin.x - ibyk * m_origin.z;
-    c_zy = m_origin.y - jbyk * m_origin.z;    
-    
+    c_zy = m_origin.y - jbyk * m_origin.z;
+
     //ray slope classification
     if (m_direction.x < 0) {
         if (m_direction.y < 0) {
@@ -117,7 +117,7 @@ void Ray::set(const Vector3& origin, const Vector3& direction) {
                         classification = PPP;
                     }
                 }
-            }            
+            }
         }
     }
 }

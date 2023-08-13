@@ -31,5 +31,5 @@ bool WatcherInotify::inParentTree( WatcherInotify * parent )
 
 	return false;
 }
-	
-} 
+
+}

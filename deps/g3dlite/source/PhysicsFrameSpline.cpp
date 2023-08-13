@@ -32,9 +32,9 @@ PhysicsFrameSpline::PhysicsFrameSpline(const Any& any) {
 
 
 bool PhysicsFrameSpline::operator==(const PhysicsFrameSpline& other) const {
-    if ((extrapolationMode == other.extrapolationMode) && 
-        (time.size() == other.size()) && 
-        (finalInterval == other.finalInterval) && 
+    if ((extrapolationMode == other.extrapolationMode) &&
+        (time.size() == other.size()) &&
+        (finalInterval == other.finalInterval) &&
         (control.size() == other.control.size())) {
         // Check actual values
         for (int i = 0; i < time.size(); ++i) {

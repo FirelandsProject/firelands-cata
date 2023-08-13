@@ -1,8 +1,8 @@
 /**
  \file ImageFormat.cpp
- 
+
  \maintainer Morgan McGuire, http://graphics.cs.williams.edu
- 
+
  \created 2003-05-23
  \edited  2013-01-12
  */
@@ -32,7 +32,7 @@ ImageFormat::ImageFormat(
     NumberFormat    _numberFormat,
     Code            _code,
     ColorSpace      _colorSpace,
-    BayerPattern    _bayerPattern) : 
+    BayerPattern    _bayerPattern) :
 
     numComponents(_numComponents),
     compressed(_compressed),
@@ -112,9 +112,9 @@ const ImageFormat* ImageFormat::stencil(int bits) {
 }
 
 
-    static const std::string nameArray[ImageFormat::CODE_NUM] = 
+    static const std::string nameArray[ImageFormat::CODE_NUM] =
     {
-        "L8", 
+        "L8",
         "L16",
         "L16F",
         "L32F",
@@ -233,7 +233,7 @@ const ImageFormat* ImageFormat::stencil(int bits) {
         "DEPTH24",
         "DEPTH32",
         "DEPTH32F",
-        
+
         "STENCIL1",
         "STENCIL4",
         "STENCIL8",
@@ -323,7 +323,7 @@ const ImageFormat* ImageFormat::getFormatWithAlpha(const ImageFormat* otherForma
     case CODE_RGB8:
         return RGBA8();
         break;
-        
+
     case CODE_RGB8I:
         return RGBA8I();
         break;
@@ -354,19 +354,19 @@ const ImageFormat* ImageFormat::getFormatWithAlpha(const ImageFormat* otherForma
     case CODE_RGBA16_SNORM:
         return RGBA16_SNORM();
         break;
-        
+
     case CODE_BGR8:
         return BGRA8();
         break;
-        
+
     case CODE_RGB16:
         return RGBA16();
         break;
-        
+
     case CODE_RGB16F:
         return RGBA16F();
         break;
-        
+
     case CODE_RGB32F:
         return RGBA32F();
         break;
@@ -374,7 +374,7 @@ const ImageFormat* ImageFormat::getFormatWithAlpha(const ImageFormat* otherForma
     case CODE_R11G11B10F:
         return RGBA16F();
         break;
-        
+
     default:
         break;
     }
@@ -433,7 +433,7 @@ const ImageFormat* ImageFormat::fromCode(ImageFormat::Code code) {
 
     case ImageFormat::CODE_LA16F:
         return ImageFormat::LA16F();
-        
+
     case ImageFormat::CODE_LA32F:
         return ImageFormat::LA32F();
 

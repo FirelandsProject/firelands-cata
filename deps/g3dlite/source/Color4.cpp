@@ -51,7 +51,7 @@ Color4::Color4(const Any& any) {
         }
     }
 }
-   
+
 
 Any Color4::toAny() const {
     Any any(Any::ARRAY, "Color4");
@@ -111,9 +111,9 @@ size_t Color4::hashCode() const {
 
 Color4 Color4::fromARGB(uint32 x) {
     return Color4(
-        (float)((x >> 16) & 0xFF), 
+        (float)((x >> 16) & 0xFF),
         (float)((x >> 8) & 0xFF),
-        (float)(x & 0xFF), 
+        (float)(x & 0xFF),
         (float)((x >> 24) & 0xFF)) / 255.0;
 }
 

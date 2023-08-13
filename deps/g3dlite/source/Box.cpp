@@ -50,7 +50,7 @@ Box::Box(const AABox& b) {
 
 
 Box::Box(BinaryInput& b) {
-    deserialize(b);    
+    deserialize(b);
 }
 
 
@@ -138,7 +138,7 @@ void Box::deserialize(class BinaryInput& b) {
     float extent2 = extent(2);
     _volume = extent0 * extent1 * extent2;
 
-    _area = 2 * 
+    _area = 2 *
         (extent0 * extent1 +
          extent1 * extent2 +
          extent2 * extent0);
@@ -161,7 +161,7 @@ void Box::init
     _edgeVector[1] = Vector3(0, bounds.y, 0);
     _edgeVector[2] = Vector3(0, 0, bounds.z);
     bool finiteExtent = true;
-    
+
     for (int i = 0; i < 3; ++i) {
         if (! G3D::isFinite(extent(i))) {
             finiteExtent = false;
@@ -179,7 +179,7 @@ void Box::init
 
     debugAssert(! _edgeVector[0].isNaN());
 
-    _area = 2 * 
+    _area = 2 *
         (bounds.x * bounds.y +
          bounds.y * bounds.z +
          bounds.z * bounds.x);
@@ -189,12 +189,12 @@ void Box::init
 Vector3 Box::corner(int i) const{
     debugAssert(i < 8);
     // The corner forms a bit mask (xyz), where a one indicates we should
-    // add half of the corresponding edge vector from center, and a zero indicates 
+    // add half of the corresponding edge vector from center, and a zero indicates
     // we should subtract it. Note:
     // 1 = 001
     // 2 = 010
     // 4 = 100
-    // 
+    //
     // The following bit-hacky code shows this directly:
     // return _center + ((_edgeVector[0] * ((i&1) - 0.5) +
     //                  _edgeVector[1] * (((i>>1)&1) - 0.5) +
@@ -211,7 +211,7 @@ Vector3 Box::corner(int i) const{
         case 6:  return _center + (0.5f * (-_edgeVector[0]  + _edgeVector[1] + _edgeVector[2]));
         default: return _center + (0.5f * ( _edgeVector[0]  + _edgeVector[1] + _edgeVector[2]));//case 7
     }
-        
+
 }
 
 float Box::volume() const {
@@ -352,7 +352,7 @@ bool Box::culledBy
 
         // Only test planes that are not masked
         if ((inMask & 1) != 0) {
-        
+
             bool culled = true;
 
             int v;
@@ -402,7 +402,7 @@ bool Box::contains
     Vector3 osPoint = M.inverse() * (point - corner(0));
 
     return
-        (osPoint.x >= 0) && 
+        (osPoint.x >= 0) &&
         (osPoint.y >= 0) &&
         (osPoint.z >= 0) &&
         (osPoint.x <= 1) &&

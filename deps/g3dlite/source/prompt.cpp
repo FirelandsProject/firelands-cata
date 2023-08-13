@@ -1,7 +1,7 @@
 /**
  @file prompt.cpp
- 
- @author Morgan McGuire, http://graphics.cs.williams.edu 
+
+ @author Morgan McGuire, http://graphics.cs.williams.edu
  @cite Windows dialog interface by Max McGuire, mmcguire@ironlore.com
  @cite Font setting code by Kurt Miller, kurt@flipcode.com
 
@@ -53,27 +53,27 @@ namespace _internal {
 class DialogTemplate {
 public:
 
-    DialogTemplate(LPCSTR caption, DWORD style, 
+    DialogTemplate(LPCSTR caption, DWORD style,
                  int x, int y, int w, int h,
                  LPCSTR font = NULL, WORD fontSize = 8) {
-    
+
       usedBufferLength = sizeof(DLGTEMPLATE);
       totalBufferLength = usedBufferLength;
 
       dialogTemplate = (DLGTEMPLATE*)malloc(totalBufferLength);
 
       dialogTemplate->style = style;
-        
+
       if (font != NULL) {
         dialogTemplate->style |= DS_SETFONT;
       }
-        
+
       dialogTemplate->x     = (short)x;
       dialogTemplate->y     = (short)y;
       dialogTemplate->cx    = (short)w;
       dialogTemplate->cy    = (short)h;
       dialogTemplate->cdit  = 0;
-        
+
       dialogTemplate->dwExtendedStyle = 0;
 
       // The dialog box doesn't have a menu or a special class
@@ -104,7 +104,7 @@ public:
       item.dwExtendedStyle = exStyle;
 
       AppendData(&item, sizeof(DLGITEMTEMPLATE));
-        
+
       AppendString(type);
       AppendString(caption);
 
@@ -130,49 +130,49 @@ public:
   void AddEditBox(LPCSTR caption, DWORD style, DWORD exStyle, int x, int y, int w, int h, WORD id) {
 
       AddStandardComponent(0x0081, caption, style, exStyle, x, y, w, h, id);
-    
+
       WORD creationDataLength = 0;
       AppendData(&creationDataLength, sizeof(WORD));
-    
+
     }
 
 
   void AddStatic(LPCSTR caption, DWORD style, DWORD exStyle, int x, int y, int w, int h, WORD id) {
 
       AddStandardComponent(0x0082, caption, style, exStyle, x, y, w, h, id);
-    
+
       WORD creationDataLength = 0;
       AppendData(&creationDataLength, sizeof(WORD));
-    
+
     }
 
 
   void AddListBox(LPCSTR caption, DWORD style, DWORD exStyle, int x, int y, int w, int h, WORD id) {
 
       AddStandardComponent(0x0083, caption, style, exStyle, x, y, w, h, id);
-    
+
       WORD creationDataLength = sizeof(WORD) + 5 * sizeof(WCHAR);
       AppendData(&creationDataLength, sizeof(WORD));
 
       AppendString("TEST");
-    
+
     }
-    
+
 
   void AddScrollBar(LPCSTR caption, DWORD style, DWORD exStyle, int x, int y, int w, int h, WORD id) {
 
       AddStandardComponent(0x0084, caption, style, exStyle, x, y, w, h, id);
-    
+
       WORD creationDataLength = 0;
       AppendData(&creationDataLength, sizeof(WORD));
-    
+
     }
 
 
   void AddComboBox(LPCSTR caption, DWORD style, DWORD exStyle, int x, int y, int w, int h, WORD id) {
 
       AddStandardComponent(0x0085, caption, style, exStyle, x, y, w, h, id);
-    
+
       WORD creationDataLength = 0;
       AppendData(&creationDataLength, sizeof(WORD));
 
@@ -196,13 +196,13 @@ public:
 
 protected:
 
-  void AddStandardComponent(WORD type, LPCSTR caption, DWORD style, DWORD exStyle, 
+  void AddStandardComponent(WORD type, LPCSTR caption, DWORD style, DWORD exStyle,
                             int x, int y, int w, int h, WORD id, LPSTR font = NULL, WORD fontSize = 8) {
 
       DLGITEMTEMPLATE item;
 
       // DWORD align the beginning of the component data
-        
+
       AlignData(sizeof(DWORD));
 
       item.style = style;
@@ -218,9 +218,9 @@ protected:
       item.dwExtendedStyle = exStyle;
 
       AppendData(&item, sizeof(DLGITEMTEMPLATE));
-        
+
       WORD preType = 0xFFFF;
-        
+
       AppendData(&preType, sizeof(WORD));
       AppendData(&type, sizeof(WORD));
 
@@ -235,11 +235,11 @@ protected:
       dialogTemplate->cdit++;
   }
 
-    
+
   void AlignData(int size) {
 
       int paddingSize = usedBufferLength % size;
-        
+
       if (paddingSize != 0) {
           EnsureSpace(paddingSize);
           usedBufferLength += paddingSize;
@@ -274,7 +274,7 @@ protected:
 
           void* newBuffer = malloc(totalBufferLength);
           memcpy(newBuffer, dialogTemplate, usedBufferLength);
-            
+
           free(dialogTemplate);
           dialogTemplate = (DLGTEMPLATE*)newBuffer;
       }
@@ -315,10 +315,10 @@ INT_PTR CALLBACK PromptDlgProc(HWND hDlg, UINT msg,
 
         HFONT hfont =
             CreateFontA(16, 0, 0, 0, FW_NORMAL,
-                       FALSE, FALSE, FALSE, 
+                       FALSE, FALSE, FALSE,
                        ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,
                         PROOF_QUALITY, FIXED_PITCH | FF_MODERN, "Courier New");
-                        
+
         SendDlgItemMessage(hDlg, IDC_MESSAGE, WM_SETFONT, (WPARAM)hfont, MAKELPARAM(TRUE,0));
 
 
@@ -364,8 +364,8 @@ static int guiPrompt(
     int height = 220;
 
     const int buttonSpacing = 2;
-    const int buttonWidth = 
-        (width - buttonSpacing * 2 - 
+    const int buttonWidth =
+        (width - buttonSpacing * 2 -
           buttonSpacing * (numChoices - 1)) / numChoices;
     const int buttonHeight = 13;
 
@@ -388,7 +388,7 @@ static int guiPrompt(
 
         dialogTemplate.AddButton(choice[i], WS_VISIBLE | WS_TABSTOP, 0,
                            x, y, buttonWidth, buttonHeight, IDC_BUTTON0 + (WORD)i);
-        
+
     }
 
     // Convert all single \n characters to \r\n for proper printing
@@ -406,7 +406,7 @@ static int guiPrompt(
     }
 
     char* newStr = (char*)malloc(strLen + 1);
-    
+
     const char* pStr2 = prompt;
     char* pNew = newStr;
 
@@ -438,7 +438,7 @@ static int guiPrompt(
 
         // The last error value.  (Which is preserved across the call).
         DWORD lastErr = GetLastError();
-    
+
         // The decoded message from FormatMessage
         LPTSTR formatMsg = NULL;
 
@@ -476,7 +476,7 @@ static int guiPrompt(
 
 
 /**
- * Show a prompt on stdout 
+ * Show a prompt on stdout
  */
 static int textPrompt(
     const char*         windowTitle,
@@ -497,7 +497,7 @@ static int textPrompt(
         printf("\n");
         printf("Choose an option by number:");
 
-        while ((c < 0) || (c >= numChoices)) { 
+        while ((c < 0) || (c >= numChoices)) {
             printf("\n");
 
             for (int i = 0; i < numChoices; ++i) {
@@ -517,9 +517,9 @@ static int textPrompt(
                 printf("%d", c);
             }
         }
-    
+
     } else if (numChoices == 1) {
-        
+
         printf("\nPress any key for '%s'...", choice[0]);
         _getch();
         c = 0;
@@ -543,7 +543,7 @@ static int guiPrompt
  const char*         prompt,
  const char**        choice,
  int                 numChoices) {
-  
+
   return prompt_cocoa(windowTitle, prompt, choice, numChoices);
 }
 
@@ -552,7 +552,7 @@ static int guiPrompt
 #endif /* G3DFIX: exclude GUI prompt code */
 int prompt(
     const char*      windowTitle,
-    const char*      prompt, 
+    const char*      prompt,
     const char**     choice,
     int              numChoices,
     bool             useGui) {
@@ -563,7 +563,7 @@ int prompt(
             return guiPrompt(windowTitle, prompt, choice, numChoices);
         }
     #endif
-    
+
         #ifdef G3D_OSX
                 if (useGui){
                     //Will default to text prompt if numChoices > 4
@@ -584,7 +584,7 @@ void msgBox(
     const std::string& title) {
 
     const char *choice[] = {"Ok"};
-    prompt(title.c_str(), message.c_str(), choice, 1, true); 
+    prompt(title.c_str(), message.c_str(), choice, 1, true);
 }
 
 #ifndef G3D_WINDOWS

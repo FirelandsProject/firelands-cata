@@ -276,4 +276,4 @@ bool FileInfo::operator!=( const FileInfo& Other ) const
 	return !(*this == Other);
 }
 
-} 
+}
