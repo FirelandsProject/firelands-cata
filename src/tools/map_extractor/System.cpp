@@ -1143,7 +1143,7 @@ void ExtractMapsFromMpq(uint32 build)
     path += "/maps/";
     CreateDir(path);
 
-    printf("Convert map files\n");
+    printf("Convert map files (%u)\n", map_count);
     for (uint32 z = 0; z < map_count; ++z)
     {
         printf("Extract %s (%d/%u)                  \n", map_ids[z].name, z + 1, map_count);
