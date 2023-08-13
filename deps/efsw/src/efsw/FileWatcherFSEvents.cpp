@@ -15,30 +15,30 @@ namespace efsw
 int getOSXReleaseNumber()
 {
 	static int osxR = -1;
-	
+
 	if ( -1 == osxR )
 	{
 		struct utsname os;
-		
+
 		if ( -1 != uname( &os ) ) {
 			std::string release( os.release );
-			
+
 			size_t pos = release.find_first_of( '.' );
-			
+
 			if ( pos != std::string::npos )
 			{
 				release = release.substr( 0, pos );
 			}
-			
+
 			int rel = 0;
-			
+
 			if ( String::fromString<int>( rel, release ) )
 			{
 				osxR = rel;
 			}
 		}
 	}
-	
+
 	return osxR;
 }
 
@@ -48,10 +48,10 @@ bool FileWatcherFSEvents::isGranular()
 }
 
 void FileWatcherFSEvents::FSEventCallback(	ConstFSEventStreamRef streamRef,
-												void *userData, 
-												size_t numEvents, 
-												void *eventPaths, 
-												const FSEventStreamEventFlags eventFlags[], 
+												void *userData,
+												size_t numEvents,
+												void *eventPaths,
+												const FSEventStreamEventFlags eventFlags[],
 												const FSEventStreamEventId eventIds[] )
 {
 	WatcherFSEvents * watcher = static_cast<WatcherFSEvents*>( userData );
@@ -78,7 +78,7 @@ FileWatcherFSEvents::FileWatcherFSEvents( FileWatcher * parent ) :
 	mThread( NULL )
 {
 	mInitOK = true;
-	
+
 	watch();
 }
 
@@ -93,7 +93,7 @@ FileWatcherFSEvents::~FileWatcherFSEvents()
 	for( ; iter != mWatches.end(); ++iter )
 	{
 		WatcherFSEvents * watch = iter->second;
-		
+
 		efSAFE_DELETE( watch );
 	}
 
@@ -107,7 +107,7 @@ WatchID FileWatcherFSEvents::addWatch( const std::string& directory, FileWatchLi
 	{
 		System::sleep( 1 );
 	}
-	
+
 	std::string dir( directory );
 
 	FileInfo fi( dir );
@@ -149,7 +149,7 @@ WatchID FileWatcherFSEvents::addWatch( const std::string& directory, FileWatchLi
 			dir = link;
 		}
 	}
-	
+
 	mLastWatchID++;
 
 	WatcherFSEvents * pWatch	= new WatcherFSEvents();
@@ -158,7 +158,7 @@ WatchID FileWatcherFSEvents::addWatch( const std::string& directory, FileWatchLi
 	pWatch->Directory			= dir;
 	pWatch->Recursive			= recursive;
 	pWatch->FWatcher			= this;
-	
+
 	pWatch->init();
 
 	Lock lock( mWatchesLock );
@@ -213,7 +213,7 @@ void FileWatcherFSEvents::watch()
 void FileWatcherFSEvents::run()
 {
 	mRunLoopRef = CFRunLoopGetCurrent();
-	
+
 	while ( mInitOK )
 	{
 		if ( !mNeedInit.empty() )

@@ -1059,7 +1059,7 @@ class FC_GAME_API Unit : public WorldObject
     bool IsWithinMeleeRangeAt(Position const& pos, Unit const* obj) const;
     bool IsWithinBoundaryRadius(const Unit* obj) const;
     float GetMeleeRange(Unit const* target) const;
-    virtual SpellSchoolMask GetMeleeDamageSchoolMask() const;
+    virtual SpellSchoolMask GetMeleeDamageSchoolMask(WeaponAttackType attackType = BASE_ATTACK) const = 0;
     uint32 m_extraAttacks;
     bool m_canDualWield;
 
@@ -2360,8 +2360,8 @@ class FC_GAME_API Unit : public WorldObject
     float SpellHealingPctDone(Unit* victim, SpellInfo const* spellProto) const;
     uint32 SpellHealingBonusTaken(Unit* caster, SpellInfo const* spellProto, uint32 healamount, DamageEffectType damagetype, uint32 stack = 1) const;
 
-    uint32 MeleeDamageBonusDone(Unit* pVictim, uint32 damage, WeaponAttackType attType, SpellInfo const* spellProto = nullptr, bool useSpellBonusData = true);
-    uint32 MeleeDamageBonusTaken(Unit* attacker, uint32 pdamage, WeaponAttackType attType, SpellInfo const* spellProto = nullptr);
+    uint32 MeleeDamageBonusDone(Unit* pVictim, uint32 damage, WeaponAttackType attType, SpellInfo const* spellProto = nullptr, bool useSpellBonusData = true, SpellSchoolMask damageSchoolMask = SPELL_SCHOOL_MASK_NORMAL);
+    uint32 MeleeDamageBonusTaken(Unit* attacker, uint32 pdamage, WeaponAttackType attType, SpellInfo const* spellProto = nullptr, SpellSchoolMask damageSchoolMask = SPELL_SCHOOL_MASK_NORMAL);
 
     bool isSpellBlocked(Unit* victim, SpellInfo const* spellProto);
     bool isBlockCritical();

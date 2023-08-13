@@ -733,13 +733,13 @@ class boss_flame_leviathan_defense_turret : public CreatureScript
 
             void DamageTaken(Unit* who, uint32 &damage) override
             {
-                if (!CanAIAttack(who))
+                if (!who || !CanAIAttack(who))
                     damage = 0;
             }
 
             bool CanAIAttack(Unit const* who) const override
             {
-                if (who->GetTypeId() != TYPEID_PLAYER || !who->GetVehicle() || who->GetVehicleBase()->GetEntry() != NPC_SEAT)
+                if (!who || who->GetTypeId() != TYPEID_PLAYER || !who->GetVehicle() || who->GetVehicleBase()->GetEntry() != NPC_SEAT)
                     return false;
                 return true;
             }

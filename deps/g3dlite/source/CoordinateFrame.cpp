@@ -36,8 +36,8 @@ namespace G3D {
 std::string CoordinateFrame::toXYZYPRDegreesString() const {
     float x,y,z,yaw,pitch,roll;
     getXYZYPRDegrees(x,y,z,yaw,pitch,roll);
-    
-    return format("CFrame::fromXYZYPRDegrees(% 5.1ff, % 5.1ff, % 5.1ff, % 5.1ff, % 5.1ff, % 5.1ff)", 
+
+    return format("CFrame::fromXYZYPRDegrees(% 5.1ff, % 5.1ff, % 5.1ff, % 5.1ff, % 5.1ff, % 5.1ff)",
                   x,y,z,yaw,pitch,roll);
 }
 
@@ -76,7 +76,7 @@ CoordinateFrame::CoordinateFrame(const Any& any) {
 
         int s = any.size();
 
-        *this = fromXYZYPRDegrees(any[0], any[1], any[2], 
+        *this = fromXYZYPRDegrees(any[0], any[1], any[2],
                                   (s > 3) ? (float)any[3].number() : 0.0f,
                                   (s > 4) ? (float)any[4].number() : 0.0f,
                                   (s > 5) ? (float)any[5].number() : 0.0f);
@@ -86,7 +86,7 @@ CoordinateFrame::CoordinateFrame(const Any& any) {
 
 Any CoordinateFrame::toAny() const {
     float x, y, z, yaw, pitch, roll;
-    getXYZYPRDegrees(x, y, z, yaw, pitch, roll); 
+    getXYZYPRDegrees(x, y, z, yaw, pitch, roll);
     Any a(Any::ARRAY, "CFrame::fromXYZYPRDegrees");
     a.append(x, y, z);
     if ( ! G3D::fuzzyEq(yaw, 0.0f) || ! G3D::fuzzyEq(pitch, 0.0f) || ! G3D::fuzzyEq(roll, 0.0f)) {
@@ -107,39 +107,39 @@ CoordinateFrame::CoordinateFrame(const class UprightFrame& f) {
 }
 
 
-CoordinateFrame::CoordinateFrame() : 
+CoordinateFrame::CoordinateFrame() :
     rotation(Matrix3::identity()), translation(Vector3::zero()) {
 }
 
-CoordinateFrame CoordinateFrame::fromXYZYPRRadians(float x, float y, float z, float yaw, 
+CoordinateFrame CoordinateFrame::fromXYZYPRRadians(float x, float y, float z, float yaw,
                                                    float pitch, float roll) {
     const Matrix3& rotation = Matrix3::fromEulerAnglesYXZ(yaw, pitch, roll);
     const Vector3 translation(x, y, z);
-    
+
     return CoordinateFrame(rotation, translation);
 }
 
 
-void CoordinateFrame::getXYZYPRRadians(float& x, float& y, float& z, 
+void CoordinateFrame::getXYZYPRRadians(float& x, float& y, float& z,
                                        float& yaw, float& pitch, float& roll) const {
     x = translation.x;
     y = translation.y;
     z = translation.z;
-    
+
     rotation.toEulerAnglesYXZ(yaw, pitch, roll);
 }
 
 
-void CoordinateFrame::getXYZYPRDegrees(float& x, float& y, float& z, 
+void CoordinateFrame::getXYZYPRDegrees(float& x, float& y, float& z,
                                        float& yaw, float& pitch, float& roll) const {
     getXYZYPRRadians(x, y, z, yaw, pitch, roll);
     yaw   = toDegrees(yaw);
     pitch = toDegrees(pitch);
     roll  = toDegrees(roll);
 }
-    
 
-CoordinateFrame CoordinateFrame::fromXYZYPRDegrees(float x, float y, float z, 
+
+CoordinateFrame CoordinateFrame::fromXYZYPRDegrees(float x, float y, float z,
                                                    float yaw, float pitch, float roll) {
     return fromXYZYPRRadians(x, y, z, toRadians(yaw), toRadians(pitch), toRadians(roll));
 }
@@ -186,7 +186,7 @@ bool CoordinateFrame::fuzzyIsIdentity() const {
 
 
 bool CoordinateFrame::isIdentity() const {
-    return 
+    return
         (translation == Vector3::zero()) &&
         (rotation == Matrix3::identity());
 }
@@ -240,15 +240,15 @@ Frustum CoordinateFrame::toWorldSpace(const Frustum& f) const {
 
 
 Plane CoordinateFrame::toWorldSpace(const Plane& plane) const {
-    // Since there is no scale factor, we don't have to 
+    // Since there is no scale factor, we don't have to
     // worry about the inverse transpose of the normal.
     Vector3 normal;
     float d;
-        
+
     plane.getEquation(normal, d);
-        
+
     const Vector3& newNormal = rotation * normal;
-        
+
     if (isFinite(d)) {
         d = (newNormal * -d + translation).dot(newNormal);
         return Plane(newNormal, newNormal * d);
@@ -276,16 +276,16 @@ Triangle CoordinateFrame::toWorldSpace(const Triangle& t) const {
 
 Cylinder CoordinateFrame::toWorldSpace(const Cylinder& c) const {
     return Cylinder(
-        pointToWorldSpace(c.point(0)), 
-        pointToWorldSpace(c.point(1)), 
+        pointToWorldSpace(c.point(0)),
+        pointToWorldSpace(c.point(1)),
         c.radius());
 }
 
 
 Capsule CoordinateFrame::toWorldSpace(const Capsule& c) const {
     return Capsule(
-        pointToWorldSpace(c.point(0)), 
-        pointToWorldSpace(c.point(1)), 
+        pointToWorldSpace(c.point(0)),
+        pointToWorldSpace(c.point(1)),
         c.radius());
 }
 
@@ -432,7 +432,7 @@ CoordinateFrame CoordinateFrame::lerp(
             q1.slerp(q2, alpha).toRotationMatrix(),
             translation * (1 - alpha) + other.translation * alpha);
     }
-} 
+}
 
 
 void CoordinateFrame::pointToWorldSpace(const Array<Vector3>& v, Array<Vector3>& vout) const {

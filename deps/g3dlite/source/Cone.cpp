@@ -65,7 +65,7 @@ Vector3 Cone::randomDirectionInCone(Random& rng) const {
 
 
             const float temp = v.dot(direction);
-        
+
             // Compute 1 / ||v||, but
             // if the vector is in the wrong hemisphere, flip the sign
             normalizer = rsqrt(vlenSquared) * sign(temp);

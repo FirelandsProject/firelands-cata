@@ -12,100 +12,70 @@
 /*****************************************************************************/
 
 #define __STORMLIB_SELF__
-#include "StormLib.h"
 #include "StormCommon.h"
+#include "StormLib.h"
 
 char StormLibCopyright[] = "StormLib v " STORMLIB_VERSION_STRING " Copyright Ladislav Zezula 1998-2014";
 
 //-----------------------------------------------------------------------------
 // Local variables
 
-DWORD g_dwMpqSignature = ID_MPQ;                // Marker for MPQ header
-DWORD g_dwHashTableKey = MPQ_KEY_HASH_TABLE;    // Key for hash table
-DWORD g_dwBlockTableKey = MPQ_KEY_BLOCK_TABLE;  // Key for block table
-LCID  g_lcFileLocale = 0;                       // Compound of file locale and platform
+DWORD g_dwMpqSignature = ID_MPQ;               // Marker for MPQ header
+DWORD g_dwHashTableKey = MPQ_KEY_HASH_TABLE;   // Key for hash table
+DWORD g_dwBlockTableKey = MPQ_KEY_BLOCK_TABLE; // Key for block table
+LCID g_lcFileLocale = 0;                       // Compound of file locale and platform
 
 //-----------------------------------------------------------------------------
 // Conversion to uppercase/lowercase
 
 // Converts ASCII characters to lowercase
 // Converts slash (0x2F) to backslash (0x5C)
-unsigned char AsciiToLowerTable[256] =
-{
-    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
-    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
-    0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x5C,
-    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F,
-    0x40, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F,
-    0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F,
-    0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F,
-    0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F,
-    0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F,
-    0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9A, 0x9B, 0x9C, 0x9D, 0x9E, 0x9F,
-    0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF,
-    0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF,
-    0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF,
-    0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF,
-    0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF,
-    0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF
-};
+unsigned char AsciiToLowerTable[256] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,
+    0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x5C, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
+    0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79,
+    0x7A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F, 0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79,
+    0x7A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F, 0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F, 0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99,
+    0x9A, 0x9B, 0x9C, 0x9D, 0x9E, 0x9F, 0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF, 0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9,
+    0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF, 0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF, 0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8, 0xD9,
+    0xDA, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF, 0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF, 0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9,
+    0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF};
 
 // Converts ASCII characters to uppercase
 // Converts slash (0x2F) to backslash (0x5C)
-unsigned char AsciiToUpperTable[256] =
-{
-    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
-    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
-    0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x5C,
-    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F,
-    0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F,
-    0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F,
-    0x60, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F,
-    0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F,
-    0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F,
-    0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9A, 0x9B, 0x9C, 0x9D, 0x9E, 0x9F,
-    0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF,
-    0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF,
-    0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF,
-    0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF,
-    0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF,
-    0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF
-};
+unsigned char AsciiToUpperTable[256] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,
+    0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x5C, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
+    0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59,
+    0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F, 0x60, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59,
+    0x5A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F, 0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F, 0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99,
+    0x9A, 0x9B, 0x9C, 0x9D, 0x9E, 0x9F, 0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF, 0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9,
+    0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF, 0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF, 0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8, 0xD9,
+    0xDA, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF, 0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF, 0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9,
+    0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF};
 
 // Converts ASCII characters to uppercase
 // Does NOT convert slash (0x2F) to backslash (0x5C)
-unsigned char AsciiToUpperTable_Slash[256] =
-{
-    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
-    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
-    0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,
-    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F,
-    0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F,
-    0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F,
-    0x60, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F,
-    0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F,
-    0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F,
-    0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9A, 0x9B, 0x9C, 0x9D, 0x9E, 0x9F,
-    0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF,
-    0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF,
-    0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF,
-    0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF,
-    0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF,
-    0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF
-};
+unsigned char AsciiToUpperTable_Slash[256] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18,
+    0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+    0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
+    0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F, 0x60, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
+    0x59, 0x5A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F, 0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F, 0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98,
+    0x99, 0x9A, 0x9B, 0x9C, 0x9D, 0x9E, 0x9F, 0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF, 0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8,
+    0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF, 0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF, 0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8,
+    0xD9, 0xDA, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF, 0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF, 0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8,
+    0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF};
 
 //-----------------------------------------------------------------------------
 // Safe string functions (for ANSI builds)
 
-char * StringCopy(char * szTarget, size_t cchTarget, const char * szSource)
+char* StringCopy(char* szTarget, size_t cchTarget, const char* szSource)
 {
     size_t cchSource = 0;
 
-    if(cchTarget > 0)
+    if (cchTarget > 0)
     {
         cchSource = strlen(szSource);
 
-        if(cchSource >= cchTarget)
+        if (cchSource >= cchTarget)
             cchSource = cchTarget - 1;
 
         memcpy(szTarget, szSource, cchSource);
@@ -115,21 +85,21 @@ char * StringCopy(char * szTarget, size_t cchTarget, const char * szSource)
     return szTarget + cchSource;
 }
 
-void StringCat(char * szTarget, size_t cchTargetMax, const char * szSource)
+void StringCat(char* szTarget, size_t cchTargetMax, const char* szSource)
 {
     // Get the current length of the target
     size_t cchTarget = strlen(szTarget);
 
     // Copy the string to the target
-    if(cchTarget < cchTargetMax)
+    if (cchTarget < cchTargetMax)
     {
         StringCopy(szTarget + cchTarget, (cchTargetMax - cchTarget), szSource);
     }
 }
 
-void StringCreatePseudoFileName(char * szBuffer, size_t cchMaxChars, unsigned int nIndex, const char * szExtension)
+void StringCreatePseudoFileName(char* szBuffer, size_t cchMaxChars, unsigned int nIndex, const char* szExtension)
 {
-    char * szBufferEnd = szBuffer + cchMaxChars;
+    char* szBufferEnd = szBuffer + cchMaxChars;
 
     // "File"
     szBuffer = StringCopy(szBuffer, (szBufferEnd - szBuffer), "File");
@@ -138,11 +108,11 @@ void StringCreatePseudoFileName(char * szBuffer, size_t cchMaxChars, unsigned in
     szBuffer = IntToString(szBuffer, szBufferEnd - szBuffer + 1, nIndex, 8);
 
     // Dot
-    if(szBuffer < szBufferEnd)
+    if (szBuffer < szBufferEnd)
         *szBuffer++ = '.';
 
     // Extension
-    while(szExtension[0] == '.')
+    while (szExtension[0] == '.')
         szExtension++;
     StringCopy(szBuffer, (szBufferEnd - szBuffer), szExtension);
 }
@@ -152,13 +122,13 @@ void StringCreatePseudoFileName(char * szBuffer, size_t cchMaxChars, unsigned in
 // In ANSI builds, TCHAR = char, so we don't need these functions implemented
 
 #ifdef _UNICODE
-void StringCopy(TCHAR * szTarget, size_t cchTarget, const char * szSource)
+void StringCopy(TCHAR* szTarget, size_t cchTarget, const char* szSource)
 {
-    if(cchTarget > 0)
+    if (cchTarget > 0)
     {
         size_t cchSource = strlen(szSource);
 
-        if(cchSource >= cchTarget)
+        if (cchSource >= cchTarget)
             cchSource = cchTarget - 1;
 
         mbstowcs(szTarget, szSource, cchSource);
@@ -166,13 +136,13 @@ void StringCopy(TCHAR * szTarget, size_t cchTarget, const char * szSource)
     }
 }
 
-void StringCopy(char * szTarget, size_t cchTarget, const TCHAR * szSource)
+void StringCopy(char* szTarget, size_t cchTarget, const TCHAR* szSource)
 {
-    if(cchTarget > 0)
+    if (cchTarget > 0)
     {
         size_t cchSource = _tcslen(szSource);
 
-        if(cchSource >= cchTarget)
+        if (cchSource >= cchTarget)
             cchSource = cchTarget - 1;
 
         wcstombs(szTarget, szSource, cchSource);
@@ -180,13 +150,13 @@ void StringCopy(char * szTarget, size_t cchTarget, const TCHAR * szSource)
     }
 }
 
-void StringCopy(TCHAR * szTarget, size_t cchTarget, const TCHAR * szSource)
+void StringCopy(TCHAR* szTarget, size_t cchTarget, const TCHAR* szSource)
 {
-    if(cchTarget > 0)
+    if (cchTarget > 0)
     {
         size_t cchSource = _tcslen(szSource);
 
-        if(cchSource >= cchTarget)
+        if (cchSource >= cchTarget)
             cchSource = cchTarget - 1;
 
         memcpy(szTarget, szSource, cchSource * sizeof(TCHAR));
@@ -194,13 +164,13 @@ void StringCopy(TCHAR * szTarget, size_t cchTarget, const TCHAR * szSource)
     }
 }
 
-void StringCat(TCHAR * szTarget, size_t cchTargetMax, const TCHAR * szSource)
+void StringCat(TCHAR* szTarget, size_t cchTargetMax, const TCHAR* szSource)
 {
     // Get the current length of the target
     size_t cchTarget = _tcslen(szTarget);
 
     // Copy the string to the target
-    if(cchTarget < cchTargetMax)
+    if (cchTarget < cchTargetMax)
     {
         StringCopy(szTarget + cchTarget, (cchTargetMax - cchTarget), szSource);
     }
@@ -210,34 +180,34 @@ void StringCat(TCHAR * szTarget, size_t cchTargetMax, const TCHAR * szSource)
 //-----------------------------------------------------------------------------
 // Storm hashing functions
 
-#define STORM_BUFFER_SIZE       0x500
+#define STORM_BUFFER_SIZE 0x500
 #define HASH_INDEX_MASK(ha) (ha->pHeader->dwHashTableSize ? (ha->pHeader->dwHashTableSize - 1) : 0)
 
-static DWORD StormBuffer[STORM_BUFFER_SIZE];    // Buffer for the decryption engine
-static bool  bMpqCryptographyInitialized = false;
+static DWORD StormBuffer[STORM_BUFFER_SIZE]; // Buffer for the decryption engine
+static bool bMpqCryptographyInitialized = false;
 
 void InitializeMpqCryptography()
 {
     DWORD dwSeed = 0x00100001;
     DWORD index1 = 0;
     DWORD index2 = 0;
-    int   i;
+    int i;
 
     // Initialize the decryption buffer.
     // Do nothing if already done.
-    if(bMpqCryptographyInitialized == false)
+    if (bMpqCryptographyInitialized == false)
     {
-        for(index1 = 0; index1 < 0x100; index1++)
+        for (index1 = 0; index1 < 0x100; index1++)
         {
-            for(index2 = index1, i = 0; i < 5; i++, index2 += 0x100)
+            for (index2 = index1, i = 0; i < 5; i++, index2 += 0x100)
             {
                 DWORD temp1, temp2;
 
                 dwSeed = (dwSeed * 125 + 3) % 0x2AAAAB;
-                temp1  = (dwSeed & 0xFFFF) << 0x10;
+                temp1 = (dwSeed & 0xFFFF) << 0x10;
 
                 dwSeed = (dwSeed * 125 + 3) % 0x2AAAAB;
-                temp2  = (dwSeed & 0xFFFF);
+                temp2 = (dwSeed & 0xFFFF);
 
                 StormBuffer[index2] = (temp1 | temp2);
             }
@@ -271,14 +241,14 @@ void InitializeMpqCryptography()
 // various game versions and localizations. Even WorldEdit, after importing a file
 // with Korean characters in the name, cannot open the file back.
 //
-DWORD HashString(const char * szFileName, DWORD dwHashType)
+DWORD HashString(const char* szFileName, DWORD dwHashType)
 {
-    LPBYTE pbKey   = (BYTE *)szFileName;
-    DWORD  dwSeed1 = 0x7FED7FED;
-    DWORD  dwSeed2 = 0xEEEEEEEE;
-    DWORD  ch;
+    LPBYTE pbKey = (BYTE*)szFileName;
+    DWORD dwSeed1 = 0x7FED7FED;
+    DWORD dwSeed2 = 0xEEEEEEEE;
+    DWORD ch;
 
-    while(*pbKey != 0)
+    while (*pbKey != 0)
     {
         // Convert the input character to uppercase
         // Convert slash (0x2F) to backslash (0x5C)
@@ -291,14 +261,14 @@ DWORD HashString(const char * szFileName, DWORD dwHashType)
     return dwSeed1;
 }
 
-DWORD HashStringSlash(const char * szFileName, DWORD dwHashType)
+DWORD HashStringSlash(const char* szFileName, DWORD dwHashType)
 {
-    LPBYTE pbKey   = (BYTE *)szFileName;
-    DWORD  dwSeed1 = 0x7FED7FED;
-    DWORD  dwSeed2 = 0xEEEEEEEE;
-    DWORD  ch;
+    LPBYTE pbKey = (BYTE*)szFileName;
+    DWORD dwSeed1 = 0x7FED7FED;
+    DWORD dwSeed2 = 0xEEEEEEEE;
+    DWORD ch;
 
-    while(*pbKey != 0)
+    while (*pbKey != 0)
     {
         // Convert the input character to uppercase
         // DON'T convert slash (0x2F) to backslash (0x5C)
@@ -311,14 +281,14 @@ DWORD HashStringSlash(const char * szFileName, DWORD dwHashType)
     return dwSeed1;
 }
 
-DWORD HashStringLower(const char * szFileName, DWORD dwHashType)
+DWORD HashStringLower(const char* szFileName, DWORD dwHashType)
 {
-    LPBYTE pbKey   = (BYTE *)szFileName;
-    DWORD  dwSeed1 = 0x7FED7FED;
-    DWORD  dwSeed2 = 0xEEEEEEEE;
-    DWORD  ch;
+    LPBYTE pbKey = (BYTE*)szFileName;
+    DWORD dwSeed1 = 0x7FED7FED;
+    DWORD dwSeed2 = 0xEEEEEEEE;
+    DWORD ch;
 
-    while(*pbKey != 0)
+    while (*pbKey != 0)
     {
         // Convert the input character to lower
         // DON'T convert slash (0x2F) to backslash (0x5C)
@@ -338,7 +308,7 @@ DWORD HashStringLower(const char * szFileName, DWORD dwHashType)
 // If the value is already a power of two, returns the same value
 DWORD GetNearestPowerOfTwo(DWORD dwFileCount)
 {
-    dwFileCount --;
+    dwFileCount--;
 
     dwFileCount |= dwFileCount >> 1;
     dwFileCount |= dwFileCount >> 2;
@@ -367,7 +337,7 @@ DWORD GetNearestPowerOfTwo(DWORD dwFileCount)
 //-----------------------------------------------------------------------------
 // Calculates a Jenkin's Encrypting and decrypting MPQ file data
 
-ULONGLONG HashStringJenkins(const char * szFileName)
+ULONGLONG HashStringJenkins(const char* szFileName)
 {
     LPBYTE pbFileName = (LPBYTE)szFileName;
     char szNameBuff[0x108];
@@ -376,13 +346,13 @@ ULONGLONG HashStringJenkins(const char * szFileName)
     unsigned int secondary_hash = 2;
 
     // Normalize the file name - convert to uppercase, and convert "/" to "\\".
-    if(pbFileName != NULL)
+    if (pbFileName != NULL)
     {
-        char * szNamePtr = szNameBuff;
-        char * szNameEnd = szNamePtr + sizeof(szNameBuff);
+        char* szNamePtr = szNameBuff;
+        char* szNameEnd = szNamePtr + sizeof(szNameBuff);
 
         // Normalize the file name. Doesn't have to be zero terminated for hashing
-        while(szNamePtr < szNameEnd && pbFileName[0] != 0)
+        while (szNamePtr < szNameEnd && pbFileName[0] != 0)
             *szNamePtr++ = (char)AsciiToLowerTable[*pbFileName++];
         nLength = szNamePtr - szNameBuff;
     }
@@ -402,13 +372,12 @@ ULONGLONG HashStringJenkins(const char * szFileName)
 DWORD GetDefaultSpecialFileFlags(DWORD dwFileSize, USHORT wFormatVersion)
 {
     // Fixed for format 1.0
-    if(wFormatVersion == MPQ_FORMAT_VERSION_1)
+    if (wFormatVersion == MPQ_FORMAT_VERSION_1)
         return MPQ_FILE_COMPRESS | MPQ_FILE_ENCRYPTED | MPQ_FILE_FIX_KEY;
 
     // Size-dependent for formats 2.0-4.0
     return (dwFileSize > 0x4000) ? (MPQ_FILE_COMPRESS | MPQ_FILE_SECTOR_CRC) : (MPQ_FILE_COMPRESS | MPQ_FILE_SINGLE_UNIT);
 }
-
 
 //-----------------------------------------------------------------------------
 // Encrypting/Decrypting MPQ data block
@@ -420,10 +389,7 @@ static DWORD EncryptUInt32Unaligned(LPDWORD DataPointer, DWORD i, DWORD dwXorKey
     DWORD dwValue32;
 
     // Retrieve the value
-    dwValue32 = ((DWORD)pbDataPointer[0] << 0x00) |
-                ((DWORD)pbDataPointer[1] << 0x08) |
-                ((DWORD)pbDataPointer[2] << 0x10) |
-                ((DWORD)pbDataPointer[3] << 0x18);
+    dwValue32 = ((DWORD)pbDataPointer[0] << 0x00) | ((DWORD)pbDataPointer[1] << 0x08) | ((DWORD)pbDataPointer[2] << 0x10) | ((DWORD)pbDataPointer[3] << 0x18);
 
     // Perform unaligned XOR
     pbDataPointer[0] = (pbDataPointer[0] ^ pbXorKey[0]);
@@ -433,7 +399,7 @@ static DWORD EncryptUInt32Unaligned(LPDWORD DataPointer, DWORD i, DWORD dwXorKey
     return dwValue32;
 }
 
-void EncryptMpqBlock(void * pvDataBlock, DWORD dwLength, DWORD dwKey1)
+void EncryptMpqBlock(void* pvDataBlock, DWORD dwLength, DWORD dwKey1)
 {
     LPDWORD DataPointer = (LPDWORD)pvDataBlock;
     DWORD dwValue32;
@@ -443,9 +409,9 @@ void EncryptMpqBlock(void * pvDataBlock, DWORD dwLength, DWORD dwKey1)
     dwLength >>= 2;
 
     // We need different approach on non-aligned buffers
-    if(STORMLIB_DWORD_ALIGNED(DataPointer))
+    if (STORMLIB_DWORD_ALIGNED(DataPointer))
     {
-        for(DWORD i = 0; i < dwLength; i++)
+        for (DWORD i = 0; i < dwLength; i++)
         {
             // Modify the second key
             dwKey2 += StormBuffer[MPQ_HASH_KEY2_MIX + (dwKey1 & 0xFF)];
@@ -459,7 +425,7 @@ void EncryptMpqBlock(void * pvDataBlock, DWORD dwLength, DWORD dwKey1)
     }
     else
     {
-        for(DWORD i = 0; i < dwLength; i++)
+        for (DWORD i = 0; i < dwLength; i++)
         {
             // Modify the second key
             dwKey2 += StormBuffer[MPQ_HASH_KEY2_MIX + (dwKey1 & 0xFF)];
@@ -485,13 +451,10 @@ static DWORD DecryptUInt32Unaligned(LPDWORD DataPointer, DWORD i, DWORD dwXorKey
     pbDataPointer[3] = (pbDataPointer[3] ^ pbXorKey[3]);
 
     // Retrieve the value
-    return ((DWORD)pbDataPointer[0] << 0x00) |
-           ((DWORD)pbDataPointer[1] << 0x08) |
-           ((DWORD)pbDataPointer[2] << 0x10) |
-           ((DWORD)pbDataPointer[3] << 0x18);
+    return ((DWORD)pbDataPointer[0] << 0x00) | ((DWORD)pbDataPointer[1] << 0x08) | ((DWORD)pbDataPointer[2] << 0x10) | ((DWORD)pbDataPointer[3] << 0x18);
 }
 
-void DecryptMpqBlock(void * pvDataBlock, DWORD dwLength, DWORD dwKey1)
+void DecryptMpqBlock(void* pvDataBlock, DWORD dwLength, DWORD dwKey1)
 {
     LPDWORD DataPointer = (LPDWORD)pvDataBlock;
     DWORD dwValue32;
@@ -501,9 +464,9 @@ void DecryptMpqBlock(void * pvDataBlock, DWORD dwLength, DWORD dwKey1)
     dwLength >>= 2;
 
     // We need different approach on non-aligned buffers
-    if(STORMLIB_DWORD_ALIGNED(DataPointer))
+    if (STORMLIB_DWORD_ALIGNED(DataPointer))
     {
-        for(DWORD i = 0; i < dwLength; i++)
+        for (DWORD i = 0; i < dwLength; i++)
         {
             // Modify the second key
             dwKey2 += StormBuffer[MPQ_HASH_KEY2_MIX + (dwKey1 & 0xFF)];
@@ -517,7 +480,7 @@ void DecryptMpqBlock(void * pvDataBlock, DWORD dwLength, DWORD dwKey1)
     }
     else
     {
-        for(DWORD i = 0; i < dwLength; i++)
+        for (DWORD i = 0; i < dwLength; i++)
         {
             // Modify the second key
             dwKey2 += StormBuffer[MPQ_HASH_KEY2_MIX + (dwKey1 & 0xFF)];
@@ -552,12 +515,12 @@ void DecryptMpqBlock(void * pvDataBlock, DWORD dwLength, DWORD dwKey1)
 DWORD DetectFileKeyBySectorSize(LPDWORD EncryptedData, DWORD dwSectorSize, DWORD dwDecrypted0)
 {
     // We must have at least 2 DWORDs there to be able to decrypt something
-    if(dwSectorSize >= 0x08)
+    if (dwSectorSize >= 0x08)
     {
         // Also try subsequent three values. This is because the value of the sector offset[0]
         // could be higher than the total size of the sector table.
         // Example MPQ: MPQ_2021_v1_CantExtractCHK.scx
-        for(DWORD dwDecrypted4 = dwDecrypted0 + 4; dwDecrypted0 < dwDecrypted4; dwDecrypted0++)
+        for (DWORD dwDecrypted4 = dwDecrypted0 + 4; dwDecrypted0 < dwDecrypted4; dwDecrypted0++)
         {
             DWORD dwDecrypted1Max = dwSectorSize + dwDecrypted0;
             DWORD dwKey1PlusKey2;
@@ -567,7 +530,7 @@ DWORD DetectFileKeyBySectorSize(LPDWORD EncryptedData, DWORD dwSectorSize, DWORD
             dwKey1PlusKey2 = (EncryptedData[0] ^ dwDecrypted0) - 0xEEEEEEEE;
 
             // Try all 256 combinations of dwKey1
-            for(DWORD i = 0; i < 0x100; i++)
+            for (DWORD i = 0; i < 0x100; i++)
             {
                 DWORD dwSaveKey1;
                 DWORD dwKey1 = dwKey1PlusKey2 - StormBuffer[MPQ_HASH_KEY2_MIX + i];
@@ -578,7 +541,7 @@ DWORD DetectFileKeyBySectorSize(LPDWORD EncryptedData, DWORD dwSectorSize, DWORD
                 DataBlock[0] = EncryptedData[0] ^ (dwKey1 + dwKey2);
 
                 // Did we obtain the same value like dwDecrypted0?
-                if(DataBlock[0] == dwDecrypted0)
+                if (DataBlock[0] == dwDecrypted0)
                 {
                     // Save this key value. Increment by one because
                     // we are decrypting sector offset table
@@ -593,7 +556,7 @@ DWORD DetectFileKeyBySectorSize(LPDWORD EncryptedData, DWORD dwSectorSize, DWORD
                     DataBlock[1] = EncryptedData[1] ^ (dwKey1 + dwKey2);
 
                     // Now compare the results
-                    if(DataBlock[1] <= dwDecrypted1Max)
+                    if (DataBlock[1] <= dwDecrypted1Max)
                         return dwSaveKey1;
                 }
             }
@@ -606,7 +569,7 @@ DWORD DetectFileKeyBySectorSize(LPDWORD EncryptedData, DWORD dwSectorSize, DWORD
 
 // Function tries to detect file encryption key based on expected file content
 // It is the same function like before, except that we know the value of the second DWORD
-DWORD DetectFileKeyByKnownContent(void * pvEncryptedData, DWORD dwDecrypted0, DWORD dwDecrypted1)
+DWORD DetectFileKeyByKnownContent(void* pvEncryptedData, DWORD dwDecrypted0, DWORD dwDecrypted1)
 {
     LPDWORD EncryptedData = (LPDWORD)pvEncryptedData;
     DWORD dwKey1PlusKey2;
@@ -616,7 +579,7 @@ DWORD DetectFileKeyByKnownContent(void * pvEncryptedData, DWORD dwDecrypted0, DW
     dwKey1PlusKey2 = (EncryptedData[0] ^ dwDecrypted0) - 0xEEEEEEEE;
 
     // Try all 256 combinations of dwKey1
-    for(DWORD i = 0; i < 0x100; i++)
+    for (DWORD i = 0; i < 0x100; i++)
     {
         DWORD dwSaveKey1;
         DWORD dwKey1 = dwKey1PlusKey2 - StormBuffer[MPQ_HASH_KEY2_MIX + i];
@@ -627,7 +590,7 @@ DWORD DetectFileKeyByKnownContent(void * pvEncryptedData, DWORD dwDecrypted0, DW
         DataBlock[0] = EncryptedData[0] ^ (dwKey1 + dwKey2);
 
         // Did we obtain the same value like dwDecrypted0?
-        if(DataBlock[0] == dwDecrypted0)
+        if (DataBlock[0] == dwDecrypted0)
         {
             // Save this key value
             dwSaveKey1 = dwKey1;
@@ -641,7 +604,7 @@ DWORD DetectFileKeyByKnownContent(void * pvEncryptedData, DWORD dwDecrypted0, DW
             DataBlock[1] = EncryptedData[1] ^ (dwKey1 + dwKey2);
 
             // Now compare the results
-            if(DataBlock[1] == dwDecrypted1)
+            if (DataBlock[1] == dwDecrypted1)
                 return dwSaveKey1;
         }
     }
@@ -650,31 +613,31 @@ DWORD DetectFileKeyByKnownContent(void * pvEncryptedData, DWORD dwDecrypted0, DW
     return 0;
 }
 
-DWORD DetectFileKeyByContent(void * pvEncryptedData, DWORD dwSectorSize, DWORD dwFileSize)
+DWORD DetectFileKeyByContent(void* pvEncryptedData, DWORD dwSectorSize, DWORD dwFileSize)
 {
     DWORD dwFileKey;
 
     // Try to break the file encryption key as if it was a WAVE file
-    if(dwSectorSize >= 0x0C)
+    if (dwSectorSize >= 0x0C)
     {
         dwFileKey = DetectFileKeyByKnownContent(pvEncryptedData, 0x46464952, dwFileSize - 8);
-        if(dwFileKey != 0)
+        if (dwFileKey != 0)
             return dwFileKey;
     }
 
     // Try to break the encryption key as if it was an EXE file
-    if(dwSectorSize > 0x40)
+    if (dwSectorSize > 0x40)
     {
         dwFileKey = DetectFileKeyByKnownContent(pvEncryptedData, 0x00905A4D, 0x00000003);
-        if(dwFileKey != 0)
+        if (dwFileKey != 0)
             return dwFileKey;
     }
 
     // Try to break the encryption key as if it was a XML file
-    if(dwSectorSize > 0x04)
+    if (dwSectorSize > 0x04)
     {
         dwFileKey = DetectFileKeyByKnownContent(pvEncryptedData, 0x6D783F3C, 0x6576206C);
-        if(dwFileKey != 0)
+        if (dwFileKey != 0)
             return dwFileKey;
     }
 
@@ -682,11 +645,7 @@ DWORD DetectFileKeyByContent(void * pvEncryptedData, DWORD dwSectorSize, DWORD d
     return 0;
 }
 
-DWORD DecryptFileKey(
-    const char * szFileName,
-    ULONGLONG MpqPos,
-    DWORD dwFileSize,
-    DWORD dwFlags)
+DWORD DecryptFileKey(const char* szFileName, ULONGLONG MpqPos, DWORD dwFileSize, DWORD dwFlags)
 {
     DWORD dwFileKey;
     DWORD dwMpqPos = (DWORD)MpqPos;
@@ -696,7 +655,7 @@ DWORD DecryptFileKey(
     dwFileKey = HashString(szFileName, MPQ_HASH_FILE_KEY);
 
     // Fix the key, if needed
-    if(dwFlags & MPQ_FILE_FIX_KEY)
+    if (dwFlags & MPQ_FILE_FIX_KEY)
         dwFileKey = (dwFileKey + dwMpqPos) ^ dwFileSize;
 
     // Return the key
@@ -706,26 +665,26 @@ DWORD DecryptFileKey(
 //-----------------------------------------------------------------------------
 // Handle validation functions
 
-TMPQArchive * IsValidMpqHandle(HANDLE hMpq)
+TMPQArchive* IsValidMpqHandle(HANDLE hMpq)
 {
-    TMPQArchive * ha = (TMPQArchive *)hMpq;
+    TMPQArchive* ha = (TMPQArchive*)hMpq;
 
     return (ha != NULL && ha->pHeader != NULL && ha->pHeader->dwID == g_dwMpqSignature) ? ha : NULL;
 }
 
-TMPQFile * IsValidFileHandle(HANDLE hFile)
+TMPQFile* IsValidFileHandle(HANDLE hFile)
 {
-    TMPQFile * hf = (TMPQFile *)hFile;
+    TMPQFile* hf = (TMPQFile*)hFile;
 
     // Must not be NULL
-    if(hf != NULL && hf->dwMagic == ID_MPQ_FILE)
+    if (hf != NULL && hf->dwMagic == ID_MPQ_FILE)
     {
         // Local file handle?
-        if(hf->pStream != NULL)
+        if (hf->pStream != NULL)
             return hf;
 
         // Also verify the MPQ handle within the file handle
-        if(IsValidMpqHandle(hf->ha))
+        if (IsValidMpqHandle(hf->ha))
             return hf;
     }
 
@@ -736,10 +695,10 @@ TMPQFile * IsValidFileHandle(HANDLE hFile)
 // Hash table and block table manipulation
 
 // Attempts to search a free hash entry, or an entry whose names and locale matches
-TMPQHash * FindFreeHashEntry(TMPQArchive * ha, DWORD dwStartIndex, DWORD dwName1, DWORD dwName2, LCID lcFileLocale)
+TMPQHash* FindFreeHashEntry(TMPQArchive* ha, DWORD dwStartIndex, DWORD dwName1, DWORD dwName2, LCID lcFileLocale)
 {
-    TMPQHash * pDeletedEntry = NULL;            // If a deleted entry was found in the continuous hash range
-    TMPQHash * pFreeEntry = NULL;               // If a free entry was found in the continuous hash range
+    TMPQHash* pDeletedEntry = NULL; // If a deleted entry was found in the continuous hash range
+    TMPQHash* pFreeEntry = NULL;    // If a free entry was found in the continuous hash range
     DWORD dwHashIndexMask = HASH_INDEX_MASK(ha);
     DWORD dwIndex;
     USHORT Locale = SFILE_LOCALE(lcFileLocale);
@@ -752,20 +711,20 @@ TMPQHash * FindFreeHashEntry(TMPQArchive * ha, DWORD dwStartIndex, DWORD dwName1
     // 2) <DELETED-ENTRY>
     // 3) <FREE-ENTRY>
     // 4) NULL
-    for(;;)
+    for (;;)
     {
-        TMPQHash * pHash = ha->pHashTable + dwIndex;
+        TMPQHash* pHash = ha->pHashTable + dwIndex;
 
         // If we found a matching entry, return that one
-        if(pHash->dwName1 == dwName1 && pHash->dwName2 == dwName2 && pHash->Locale == Locale)
+        if (pHash->dwName1 == dwName1 && pHash->dwName2 == dwName2 && pHash->Locale == Locale)
             return pHash;
 
         // If we found a deleted entry, remember it but keep searching
-        if(pHash->dwBlockIndex == HASH_ENTRY_DELETED && pDeletedEntry == NULL)
+        if (pHash->dwBlockIndex == HASH_ENTRY_DELETED && pDeletedEntry == NULL)
             pDeletedEntry = pHash;
 
         // If we found a free entry, we need to stop searching
-        if(pHash->dwBlockIndex == HASH_ENTRY_FREE)
+        if (pHash->dwBlockIndex == HASH_ENTRY_FREE)
         {
             pFreeEntry = pHash;
             break;
@@ -774,7 +733,7 @@ TMPQHash * FindFreeHashEntry(TMPQArchive * ha, DWORD dwStartIndex, DWORD dwName1
         // Move to the next hash entry.
         // If we reached the starting entry, it's failure.
         dwIndex = (dwIndex + 1) & dwHashIndexMask;
-        if(dwIndex == dwStartIndex)
+        if (dwIndex == dwStartIndex)
             break;
     }
 
@@ -784,7 +743,7 @@ TMPQHash * FindFreeHashEntry(TMPQArchive * ha, DWORD dwStartIndex, DWORD dwName1
 
 // Retrieves the first hash entry for the given file.
 // Every locale version of a file has its own hash entry
-TMPQHash * GetFirstHashEntry(TMPQArchive * ha, const char * szFileName)
+TMPQHash* GetFirstHashEntry(TMPQArchive* ha, const char* szFileName)
 {
     DWORD dwHashIndexMask = HASH_INDEX_MASK(ha);
     DWORD dwStartIndex = ha->pfnHashString(szFileName, MPQ_HASH_TABLE_INDEX);
@@ -796,27 +755,27 @@ TMPQHash * GetFirstHashEntry(TMPQArchive * ha, const char * szFileName)
     dwStartIndex = dwIndex = (dwStartIndex & dwHashIndexMask);
 
     // Search the hash table
-    for(;;)
+    for (;;)
     {
-        TMPQHash * pHash = ha->pHashTable + dwIndex;
+        TMPQHash* pHash = ha->pHashTable + dwIndex;
 
         // If the entry matches, we found it.
-        if(pHash->dwName1 == dwName1 && pHash->dwName2 == dwName2 && MPQ_BLOCK_INDEX(pHash) < ha->dwFileTableSize)
+        if (pHash->dwName1 == dwName1 && pHash->dwName2 == dwName2 && MPQ_BLOCK_INDEX(pHash) < ha->dwFileTableSize)
             return pHash;
 
         // If that hash entry is a free entry, it means we haven't found the file
-        if(pHash->dwBlockIndex == HASH_ENTRY_FREE)
+        if (pHash->dwBlockIndex == HASH_ENTRY_FREE)
             return NULL;
 
         // Move to the next hash entry. Stop searching
         // if we got reached the original hash entry
         dwIndex = (dwIndex + 1) & dwHashIndexMask;
-        if(dwIndex == dwStartIndex)
+        if (dwIndex == dwStartIndex)
             return NULL;
     }
 }
 
-TMPQHash * GetNextHashEntry(TMPQArchive * ha, TMPQHash * pFirstHash, TMPQHash * pHash)
+TMPQHash* GetNextHashEntry(TMPQArchive* ha, TMPQHash* pFirstHash, TMPQHash* pHash)
 {
     DWORD dwHashIndexMask = HASH_INDEX_MASK(ha);
     DWORD dwStartIndex = (DWORD)(pFirstHash - ha->pHashTable);
@@ -826,46 +785,43 @@ TMPQHash * GetNextHashEntry(TMPQArchive * ha, TMPQHash * pFirstHash, TMPQHash * 
 
     // Now go for any next entry that follows the pHash,
     // until either free hash entry was found, or the start entry was reached
-    for(;;)
+    for (;;)
     {
         // Move to the next hash entry. Stop searching
         // if we got reached the original hash entry
         dwIndex = (dwIndex + 1) & dwHashIndexMask;
-        if(dwIndex == dwStartIndex)
+        if (dwIndex == dwStartIndex)
             return NULL;
         pHash = ha->pHashTable + dwIndex;
 
         // If the entry matches, we found it.
-        if(pHash->dwName1 == dwName1 && pHash->dwName2 == dwName2 && MPQ_BLOCK_INDEX(pHash) < ha->dwFileTableSize)
+        if (pHash->dwName1 == dwName1 && pHash->dwName2 == dwName2 && MPQ_BLOCK_INDEX(pHash) < ha->dwFileTableSize)
             return pHash;
 
         // If that hash entry is a free entry, it means we haven't found the file
-        if(pHash->dwBlockIndex == HASH_ENTRY_FREE)
+        if (pHash->dwBlockIndex == HASH_ENTRY_FREE)
             return NULL;
     }
 }
 
 // Allocates an entry in the hash table
-TMPQHash * AllocateHashEntry(
-    TMPQArchive * ha,
-    TFileEntry * pFileEntry,
-    LCID lcFileLocale)
+TMPQHash* AllocateHashEntry(TMPQArchive* ha, TFileEntry* pFileEntry, LCID lcFileLocale)
 {
-    TMPQHash * pHash;
+    TMPQHash* pHash;
     DWORD dwStartIndex = ha->pfnHashString(pFileEntry->szFileName, MPQ_HASH_TABLE_INDEX);
     DWORD dwName1 = ha->pfnHashString(pFileEntry->szFileName, MPQ_HASH_NAME_A);
     DWORD dwName2 = ha->pfnHashString(pFileEntry->szFileName, MPQ_HASH_NAME_B);
 
     // Attempt to find a free hash entry
     pHash = FindFreeHashEntry(ha, dwStartIndex, dwName1, dwName2, lcFileLocale);
-    if(pHash != NULL)
+    if (pHash != NULL)
     {
         // Fill the free hash entry
-        pHash->dwName1      = dwName1;
-        pHash->dwName2      = dwName2;
-        pHash->Locale       = SFILE_LOCALE(lcFileLocale);
-        pHash->Platform     = SFILE_PLATFORM(lcFileLocale);
-        pHash->Reserved     = 0;
+        pHash->dwName1 = dwName1;
+        pHash->dwName2 = dwName2;
+        pHash->Locale = SFILE_LOCALE(lcFileLocale);
+        pHash->Platform = SFILE_PLATFORM(lcFileLocale);
+        pHash->Reserved = 0;
         pHash->dwBlockIndex = (DWORD)(pFileEntry - ha->pFileTable);
     }
 
@@ -876,32 +832,32 @@ TMPQHash * AllocateHashEntry(
 // The free space begins beyond the file that is stored at the fuhrtest
 // position in the MPQ. (listfile), (attributes) and (signature) are ignored,
 // unless the MPQ is being flushed.
-ULONGLONG FindFreeMpqSpace(TMPQArchive * ha)
+ULONGLONG FindFreeMpqSpace(TMPQArchive* ha)
 {
-    TMPQHeader * pHeader = ha->pHeader;
-    TFileEntry * pFileTableEnd = ha->pFileTable + ha->dwFileTableSize;
-    TFileEntry * pFileEntry;
+    TMPQHeader* pHeader = ha->pHeader;
+    TFileEntry* pFileTableEnd = ha->pFileTable + ha->dwFileTableSize;
+    TFileEntry* pFileEntry;
     ULONGLONG FreeSpacePos = ha->pHeader->dwHeaderSize;
     DWORD dwChunkCount;
 
     // Parse the entire block table
-    for(pFileEntry = ha->pFileTable; pFileEntry < pFileTableEnd; pFileEntry++)
+    for (pFileEntry = ha->pFileTable; pFileEntry < pFileTableEnd; pFileEntry++)
     {
         // Only take existing files with nonzero size
-        if((pFileEntry->dwFlags & MPQ_FILE_EXISTS) && (pFileEntry->dwCmpSize != 0))
+        if ((pFileEntry->dwFlags & MPQ_FILE_EXISTS) && (pFileEntry->dwCmpSize != 0))
         {
             // If we are not saving MPQ tables, ignore internal MPQ files
-            if((ha->dwFlags & MPQ_FLAG_SAVING_TABLES) == 0 && IsInternalMpqFileName(pFileEntry->szFileName))
+            if ((ha->dwFlags & MPQ_FLAG_SAVING_TABLES) == 0 && IsInternalMpqFileName(pFileEntry->szFileName))
                 continue;
 
             // If the end of the file is bigger than current MPQ table pos, update it
-            if((pFileEntry->ByteOffset + pFileEntry->dwCmpSize) > FreeSpacePos)
+            if ((pFileEntry->ByteOffset + pFileEntry->dwCmpSize) > FreeSpacePos)
             {
                 // Get the end of the file data
                 FreeSpacePos = pFileEntry->ByteOffset + pFileEntry->dwCmpSize;
 
                 // Add the MD5 chunks, if present
-                if(pHeader->dwRawChunkSize != 0 && pFileEntry->dwCmpSize != 0)
+                if (pHeader->dwRawChunkSize != 0 && pFileEntry->dwCmpSize != 0)
                 {
                     dwChunkCount = ((pFileEntry->dwCmpSize - 1) / pHeader->dwRawChunkSize) + 1;
                     FreeSpacePos += dwChunkCount * MD5_DIGEST_SIZE;
@@ -917,13 +873,13 @@ ULONGLONG FindFreeMpqSpace(TMPQArchive * ha)
 //-----------------------------------------------------------------------------
 // Common functions - MPQ File
 
-TMPQFile * CreateFileHandle(TMPQArchive * ha, TFileEntry * pFileEntry)
+TMPQFile* CreateFileHandle(TMPQArchive* ha, TFileEntry* pFileEntry)
 {
-    TMPQFile * hf;
+    TMPQFile* hf;
 
     // Allocate space for TMPQFile
     hf = STORM_ALLOC(TMPQFile, 1);
-    if(hf != NULL)
+    if (hf != NULL)
     {
         // Fill the file structure
         memset(hf, 0, sizeof(TMPQFile));
@@ -932,7 +888,7 @@ TMPQFile * CreateFileHandle(TMPQArchive * ha, TFileEntry * pFileEntry)
         hf->ha = ha;
 
         // If the called entered a file entry, we also copy informations from the file entry
-        if(ha != NULL && pFileEntry != NULL)
+        if (ha != NULL && pFileEntry != NULL)
         {
             // Set the raw position and MPQ position
             hf->RawFilePos = FileOffsetFromMpqOffset(ha, pFileEntry->ByteOffset);
@@ -947,23 +903,20 @@ TMPQFile * CreateFileHandle(TMPQArchive * ha, TFileEntry * pFileEntry)
     return hf;
 }
 
-TMPQFile * CreateWritableHandle(TMPQArchive * ha, DWORD dwFileSize)
+TMPQFile* CreateWritableHandle(TMPQArchive* ha, DWORD dwFileSize)
 {
     ULONGLONG FreeMpqSpace;
     ULONGLONG TempPos;
-    TMPQFile * hf;
+    TMPQFile* hf;
 
     // We need to find the position in the MPQ where we save the file data
     FreeMpqSpace = FindFreeMpqSpace(ha);
 
     // When format V1, the size of the archive cannot exceed 4 GB
-    if(ha->pHeader->wFormatVersion == MPQ_FORMAT_VERSION_1)
+    if (ha->pHeader->wFormatVersion == MPQ_FORMAT_VERSION_1)
     {
-        TempPos  = FreeMpqSpace +
-                   dwFileSize +
-                  (ha->pHeader->dwHashTableSize * sizeof(TMPQHash)) +
-                  (ha->dwFileTableSize * sizeof(TMPQBlock));
-        if((TempPos >> 32) != 0)
+        TempPos = FreeMpqSpace + dwFileSize + (ha->pHeader->dwHashTableSize * sizeof(TMPQHash)) + (ha->dwFileTableSize * sizeof(TMPQBlock));
+        if ((TempPos >> 32) != 0)
         {
             SetLastError(ERROR_DISK_FULL);
             return NULL;
@@ -972,7 +925,7 @@ TMPQFile * CreateWritableHandle(TMPQArchive * ha, DWORD dwFileSize)
 
     // Allocate the file handle
     hf = CreateFileHandle(ha, NULL);
-    if(hf == NULL)
+    if (hf == NULL)
     {
         SetLastError(ERROR_NOT_ENOUGH_MEMORY);
         return NULL;
@@ -986,14 +939,7 @@ TMPQFile * CreateWritableHandle(TMPQArchive * ha, DWORD dwFileSize)
 
 // Loads a table from MPQ.
 // Can be used for hash table, block table, sector offset table or sector checksum table
-void * LoadMpqTable(
-    TMPQArchive * ha,
-    ULONGLONG ByteOffset,
-    LPBYTE pbTableHash,
-    DWORD dwCompressedSize,
-    DWORD dwTableSize,
-    DWORD dwKey,
-    DWORD * PtrRealTableSize)
+void* LoadMpqTable(TMPQArchive* ha, ULONGLONG ByteOffset, LPBYTE pbTableHash, DWORD dwCompressedSize, DWORD dwTableSize, DWORD dwKey, DWORD* PtrRealTableSize)
 {
     ULONGLONG FileSize = 0;
     LPBYTE pbCompressed = NULL;
@@ -1004,14 +950,14 @@ void * LoadMpqTable(
 
     // Allocate the MPQ table
     pbMpqTable = pbToRead = STORM_ALLOC(BYTE, dwTableSize);
-    if(pbMpqTable != NULL)
+    if (pbMpqTable != NULL)
     {
         // Check if the MPQ table is encrypted
-        if(dwCompressedSize < dwTableSize)
+        if (dwCompressedSize < dwTableSize)
         {
             // Allocate temporary buffer for holding compressed data
             pbCompressed = pbToRead = STORM_ALLOC(BYTE, dwCompressedSize);
-            if(pbCompressed == NULL)
+            if (pbCompressed == NULL)
             {
                 STORM_FREE(pbMpqTable);
                 return NULL;
@@ -1022,18 +968,18 @@ void * LoadMpqTable(
         // Note: According to Storm.dll from Warcraft III (version 2002),
         // if the hash table position is 0xFFFFFFFF, no SetFilePointer call is done
         // and the table is loaded from the current file offset
-        if(ByteOffset == SFILE_INVALID_POS)
+        if (ByteOffset == SFILE_INVALID_POS)
             FileStream_GetPos(ha->pStream, &ByteOffset);
 
         // On archives v 1.0, hash table and block table can go beyond EOF.
         // Storm.dll reads as much as possible, then fills the missing part with zeros.
         // Abused by Spazzler map protector which sets hash table size to 0x00100000
         // Abused by NP_Protect in MPQs v4 as well
-        if(ha->pHeader->wFormatVersion == MPQ_FORMAT_VERSION_1)
+        if (ha->pHeader->wFormatVersion == MPQ_FORMAT_VERSION_1)
         {
             // Cut the table size
             FileStream_GetSize(ha->pStream, &FileSize);
-            if((ByteOffset + dwBytesToRead) > FileSize)
+            if ((ByteOffset + dwBytesToRead) > FileSize)
             {
                 // Fill the extra data with zeros
                 dwBytesToRead = (DWORD)(FileSize - ByteOffset);
@@ -1042,16 +988,16 @@ void * LoadMpqTable(
         }
 
         // Give the caller information that the table was cut
-        if(PtrRealTableSize != NULL)
+        if (PtrRealTableSize != NULL)
         {
             PtrRealTableSize[0] = dwBytesToRead;
         }
 
         // If everything succeeded, read the raw table from the MPQ
-        if(FileStream_Read(ha->pStream, &ByteOffset, pbToRead, dwBytesToRead))
+        if (FileStream_Read(ha->pStream, &ByteOffset, pbToRead, dwBytesToRead))
         {
             // Verify the MD5 of the table, if present
-            if(!VerifyDataBlockHash(pbToRead, dwBytesToRead, pbTableHash))
+            if (!VerifyDataBlockHash(pbToRead, dwBytesToRead, pbTableHash))
             {
                 dwErrCode = ERROR_FILE_CORRUPT;
             }
@@ -1061,10 +1007,10 @@ void * LoadMpqTable(
             dwErrCode = GetLastError();
         }
 
-        if(dwErrCode == ERROR_SUCCESS)
+        if (dwErrCode == ERROR_SUCCESS)
         {
             // First of all, decrypt the table
-            if(dwKey != 0)
+            if (dwKey != 0)
             {
                 BSWAP_ARRAY32_UNSIGNED(pbToRead, dwCompressedSize);
                 DecryptMpqBlock(pbToRead, dwCompressedSize, dwKey);
@@ -1072,12 +1018,12 @@ void * LoadMpqTable(
             }
 
             // If the table is compressed, decompress it
-            if(dwCompressedSize < dwTableSize)
+            if (dwCompressedSize < dwTableSize)
             {
                 int cbOutBuffer = (int)dwTableSize;
                 int cbInBuffer = (int)dwCompressedSize;
 
-                if(!SCompDecompress2(pbMpqTable, &cbOutBuffer, pbCompressed, cbInBuffer))
+                if (!SCompDecompress2(pbMpqTable, &cbOutBuffer, pbCompressed, cbInBuffer))
                     dwErrCode = GetLastError();
             }
 
@@ -1086,14 +1032,14 @@ void * LoadMpqTable(
         }
 
         // If read failed, free the table and return
-        if(dwErrCode != ERROR_SUCCESS)
+        if (dwErrCode != ERROR_SUCCESS)
         {
             STORM_FREE(pbMpqTable);
             pbMpqTable = NULL;
         }
 
         // Free the compression buffer, if any
-        if(pbCompressed != NULL)
+        if (pbCompressed != NULL)
             STORM_FREE(pbCompressed);
     }
 
@@ -1101,12 +1047,9 @@ void * LoadMpqTable(
     return pbMpqTable;
 }
 
-unsigned char * AllocateMd5Buffer(
-    DWORD dwRawDataSize,
-    DWORD dwChunkSize,
-    LPDWORD pcbMd5Size)
+unsigned char* AllocateMd5Buffer(DWORD dwRawDataSize, DWORD dwChunkSize, LPDWORD pcbMd5Size)
 {
-    unsigned char * md5_array;
+    unsigned char* md5_array;
     DWORD cbMd5Size;
 
     // Sanity check
@@ -1120,15 +1063,15 @@ unsigned char * AllocateMd5Buffer(
     md5_array = STORM_ALLOC(BYTE, cbMd5Size);
 
     // Give the size of the MD5 array
-    if(pcbMd5Size != NULL)
+    if (pcbMd5Size != NULL)
         *pcbMd5Size = cbMd5Size;
     return md5_array;
 }
 
 // Allocates sector buffer and sector offset table
-DWORD AllocateSectorBuffer(TMPQFile * hf)
+DWORD AllocateSectorBuffer(TMPQFile* hf)
 {
-    TMPQArchive * ha = hf->ha;
+    TMPQArchive* ha = hf->ha;
 
     // Caller of AllocateSectorBuffer must ensure these
     assert(hf->pbFileSector == NULL);
@@ -1136,7 +1079,7 @@ DWORD AllocateSectorBuffer(TMPQFile * hf)
     assert(hf->ha != NULL);
 
     // Don't allocate anything if the file has zero size
-    if(hf->pFileEntry->dwFileSize == 0 || hf->dwDataSize == 0)
+    if (hf->pFileEntry->dwFileSize == 0 || hf->dwDataSize == 0)
         return ERROR_SUCCESS;
 
     // Determine the file sector size and allocate buffer for it
@@ -1149,9 +1092,9 @@ DWORD AllocateSectorBuffer(TMPQFile * hf)
 }
 
 // Allocates sector offset table
-DWORD AllocatePatchInfo(TMPQFile * hf, bool bLoadFromFile)
+DWORD AllocatePatchInfo(TMPQFile* hf, bool bLoadFromFile)
 {
-    TMPQArchive * ha = hf->ha;
+    TMPQArchive* ha = hf->ha;
     DWORD dwLength = sizeof(TPatchInfo);
 
     // The following conditions must be true
@@ -1163,14 +1106,14 @@ __AllocateAndLoadPatchInfo:
     // Allocate space for patch header. Start with default size,
     // and if its size if bigger, then we reload them
     hf->pPatchInfo = STORM_ALLOC(TPatchInfo, 1);
-    if(hf->pPatchInfo == NULL)
+    if (hf->pPatchInfo == NULL)
         return ERROR_NOT_ENOUGH_MEMORY;
 
     // Do we have to load the patch header from the file ?
-    if(bLoadFromFile)
+    if (bLoadFromFile)
     {
         // Load the patch header
-        if(!FileStream_Read(ha->pStream, &hf->RawFilePos, hf->pPatchInfo, dwLength))
+        if (!FileStream_Read(ha->pStream, &hf->RawFilePos, hf->pPatchInfo, dwLength))
         {
             // Free the patch info
             STORM_FREE(hf->pPatchInfo);
@@ -1185,7 +1128,7 @@ __AllocateAndLoadPatchInfo:
 
         // Verify the size of the patch header
         // If it's not default size, we have to reload them
-        if(hf->pPatchInfo->dwLength > dwLength)
+        if (hf->pPatchInfo->dwLength > dwLength)
         {
             // Free the patch info
             dwLength = hf->pPatchInfo->dwLength;
@@ -1193,7 +1136,7 @@ __AllocateAndLoadPatchInfo:
             hf->pPatchInfo = NULL;
 
             // If the length is out of all possible ranges, fail the operation
-            if(dwLength > 0x400)
+            if (dwLength > 0x400)
                 return ERROR_FILE_CORRUPT;
             goto __AllocateAndLoadPatchInfo;
         }
@@ -1208,15 +1151,15 @@ __AllocateAndLoadPatchInfo:
 
     // Save the final length to the patch header
     hf->pPatchInfo->dwLength = dwLength;
-    hf->pPatchInfo->dwFlags  = 0x80000000;
+    hf->pPatchInfo->dwFlags = 0x80000000;
     return ERROR_SUCCESS;
 }
 
 // Allocates sector offset table
-DWORD AllocateSectorOffsets(TMPQFile * hf, bool bLoadFromFile)
+DWORD AllocateSectorOffsets(TMPQFile* hf, bool bLoadFromFile)
 {
-    TMPQArchive * ha = hf->ha;
-    TFileEntry * pFileEntry = hf->pFileEntry;
+    TMPQArchive* ha = hf->ha;
+    TFileEntry* pFileEntry = hf->pFileEntry;
     DWORD dwSectorOffsLen;
     bool bSectorOffsetTableCorrupt = false;
 
@@ -1227,7 +1170,7 @@ DWORD AllocateSectorOffsets(TMPQFile * hf, bool bLoadFromFile)
     assert(hf->ha != NULL);
 
     // If the file is stored as single unit, just set number of sectors to 1
-    if(pFileEntry->dwFlags & MPQ_FILE_SINGLE_UNIT)
+    if (pFileEntry->dwFlags & MPQ_FILE_SINGLE_UNIT)
     {
         hf->dwSectorCount = 1;
         return ERROR_SUCCESS;
@@ -1243,34 +1186,34 @@ DWORD AllocateSectorOffsets(TMPQFile * hf, bool bLoadFromFile)
     // If MPQ_FILE_SECTOR_CRC flag is set, there will either be extra DWORD
     // or an array of MD5's. Either way, we read at least 4 bytes more
     // in order to save additional read from the file.
-    if(pFileEntry->dwFlags & MPQ_FILE_SECTOR_CRC)
+    if (pFileEntry->dwFlags & MPQ_FILE_SECTOR_CRC)
         dwSectorOffsLen += sizeof(DWORD);
 
     // Only allocate and load the table if the file is compressed
-    if(pFileEntry->dwFlags & MPQ_FILE_COMPRESS_MASK)
+    if (pFileEntry->dwFlags & MPQ_FILE_COMPRESS_MASK)
     {
-        __LoadSectorOffsets:
+    __LoadSectorOffsets:
 
         // Allocate the sector offset table
         hf->SectorOffsets = STORM_ALLOC(DWORD, (dwSectorOffsLen / sizeof(DWORD)));
-        if(hf->SectorOffsets == NULL)
+        if (hf->SectorOffsets == NULL)
             return ERROR_NOT_ENOUGH_MEMORY;
 
         // Only read from the file if we are supposed to do so
-        if(bLoadFromFile)
+        if (bLoadFromFile)
         {
             ULONGLONG RawFilePos = hf->RawFilePos;
 
             // Append the length of the patch info, if any
-            if(hf->pPatchInfo != NULL)
+            if (hf->pPatchInfo != NULL)
             {
-                if((RawFilePos + hf->pPatchInfo->dwLength) < RawFilePos)
+                if ((RawFilePos + hf->pPatchInfo->dwLength) < RawFilePos)
                     return ERROR_FILE_CORRUPT;
                 RawFilePos += hf->pPatchInfo->dwLength;
             }
 
             // Load the sector offsets from the file
-            if(!FileStream_Read(ha->pStream, &RawFilePos, hf->SectorOffsets, dwSectorOffsLen))
+            if (!FileStream_Read(ha->pStream, &RawFilePos, hf->SectorOffsets, dwSectorOffsLen))
             {
                 // Free the sector offsets
                 STORM_FREE(hf->SectorOffsets);
@@ -1282,13 +1225,13 @@ DWORD AllocateSectorOffsets(TMPQFile * hf, bool bLoadFromFile)
             BSWAP_ARRAY32_UNSIGNED(hf->SectorOffsets, dwSectorOffsLen);
 
             // Decrypt loaded sector positions if necessary
-            if(pFileEntry->dwFlags & MPQ_FILE_ENCRYPTED)
+            if (pFileEntry->dwFlags & MPQ_FILE_ENCRYPTED)
             {
                 // If we don't know the file key, try to find it.
-                if(hf->dwFileKey == 0)
+                if (hf->dwFileKey == 0)
                 {
                     hf->dwFileKey = DetectFileKeyBySectorSize(hf->SectorOffsets, ha->dwSectorSize, dwSectorOffsLen);
-                    if(hf->dwFileKey == 0)
+                    if (hf->dwFileKey == 0)
                     {
                         STORM_FREE(hf->SectorOffsets);
                         hf->SectorOffsets = NULL;
@@ -1307,13 +1250,13 @@ DWORD AllocateSectorOffsets(TMPQFile * hf, bool bLoadFromFile)
             // In this case, the sector offsets are negative (> 0x80000000).
             //
 
-            for(DWORD i = 0; i < hf->dwSectorCount; i++)
+            for (DWORD i = 0; i < hf->dwSectorCount; i++)
             {
-                DWORD dwSectorOffset1 = hf->SectorOffsets[i+1];
+                DWORD dwSectorOffset1 = hf->SectorOffsets[i + 1];
                 DWORD dwSectorOffset0 = hf->SectorOffsets[i];
 
                 // Every following sector offset must be bigger than the previous one
-                if(dwSectorOffset1 < dwSectorOffset0)
+                if (dwSectorOffset1 < dwSectorOffset0)
                 {
                     bSectorOffsetTableCorrupt = true;
                     break;
@@ -1323,7 +1266,7 @@ DWORD AllocateSectorOffsets(TMPQFile * hf, bool bLoadFromFile)
                 // Edit: Yes, but apparently, in original Storm.dll, the compressed
                 // size is not checked anywhere. However, we need to do this check
                 // in order to sector offset table malformed by MPQ protectors
-                if((dwSectorOffset1 - dwSectorOffset0) > ha->dwSectorSize)
+                if ((dwSectorOffset1 - dwSectorOffset0) > ha->dwSectorSize)
                 {
                     bSectorOffsetTableCorrupt = true;
                     break;
@@ -1331,7 +1274,7 @@ DWORD AllocateSectorOffsets(TMPQFile * hf, bool bLoadFromFile)
             }
 
             // If data corruption detected, free the sector offset table
-            if(bSectorOffsetTableCorrupt)
+            if (bSectorOffsetTableCorrupt)
             {
                 STORM_FREE(hf->SectorOffsets);
                 hf->SectorOffsets = NULL;
@@ -1348,10 +1291,10 @@ DWORD AllocateSectorOffsets(TMPQFile * hf, bool bLoadFromFile)
             //
 
             // Clear the lower 2 bits in order to make sure that the value is aligned to 4 bytes
-            if((hf->SectorOffsets[0] & 0xFFFFFFFC) > dwSectorOffsLen)
+            if ((hf->SectorOffsets[0] & 0xFFFFFFFC) > dwSectorOffsLen)
             {
                 // MPQ protectors put some ridiculous values there. We must limit the extra bytes
-                if(hf->SectorOffsets[0] > (dwSectorOffsLen + 0x400))
+                if (hf->SectorOffsets[0] > (dwSectorOffsLen + 0x400))
                     return ERROR_FILE_CORRUPT;
 
                 // Free the old sector offset table
@@ -1370,14 +1313,14 @@ DWORD AllocateSectorOffsets(TMPQFile * hf, bool bLoadFromFile)
     return ERROR_SUCCESS;
 }
 
-DWORD AllocateSectorChecksums(TMPQFile * hf, bool bLoadFromFile)
+DWORD AllocateSectorChecksums(TMPQFile* hf, bool bLoadFromFile)
 {
-    TMPQArchive * ha = hf->ha;
-    TFileEntry * pFileEntry = hf->pFileEntry;
+    TMPQArchive* ha = hf->ha;
+    TFileEntry* pFileEntry = hf->pFileEntry;
     ULONGLONG RawFilePos;
     DWORD dwCompressedSize = 0;
     DWORD dwExpectedSize;
-    DWORD dwCrcOffset;                      // Offset of the CRC table, relative to file offset in the MPQ
+    DWORD dwCrcOffset; // Offset of the CRC table, relative to file offset in the MPQ
     DWORD dwCrcSize;
 
     // Caller of AllocateSectorChecksums must ensure these
@@ -1387,7 +1330,7 @@ DWORD AllocateSectorChecksums(TMPQFile * hf, bool bLoadFromFile)
     assert(hf->ha != NULL);
 
     // Single unit files don't have sector checksums
-    if(pFileEntry->dwFlags & MPQ_FILE_SINGLE_UNIT)
+    if (pFileEntry->dwFlags & MPQ_FILE_SINGLE_UNIT)
         return ERROR_SUCCESS;
 
     // Caller must ensure that we are only called when we have sector checksums
@@ -1406,14 +1349,14 @@ DWORD AllocateSectorChecksums(TMPQFile * hf, bool bLoadFromFile)
 
     // Does the size of the file table match with the CRC32-based checksums?
     dwExpectedSize = (hf->dwSectorCount + 2) * sizeof(DWORD);
-    if(hf->SectorOffsets[0] != 0 && hf->SectorOffsets[0] == dwExpectedSize)
+    if (hf->SectorOffsets[0] != 0 && hf->SectorOffsets[0] == dwExpectedSize)
     {
         // If we are not loading from the MPQ file, we just allocate the sector table
         // In that case, do not check any sizes
-        if(bLoadFromFile == false)
+        if (bLoadFromFile == false)
         {
             hf->SectorChksums = STORM_ALLOC(DWORD, hf->dwSectorCount);
-            if(hf->SectorChksums == NULL)
+            if (hf->SectorChksums == NULL)
                 return ERROR_NOT_ENOUGH_MEMORY;
 
             // Fill the checksum table with zeros
@@ -1423,11 +1366,11 @@ DWORD AllocateSectorChecksums(TMPQFile * hf, bool bLoadFromFile)
         else
         {
             // Is there valid size of the sector checksums?
-            if(hf->SectorOffsets[hf->dwSectorCount + 1] >= hf->SectorOffsets[hf->dwSectorCount])
+            if (hf->SectorOffsets[hf->dwSectorCount + 1] >= hf->SectorOffsets[hf->dwSectorCount])
                 dwCompressedSize = hf->SectorOffsets[hf->dwSectorCount + 1] - hf->SectorOffsets[hf->dwSectorCount];
 
             // Ignore cases when the length is too small or too big.
-            if(dwCompressedSize < sizeof(DWORD) || dwCompressedSize > hf->dwSectorSize)
+            if (dwCompressedSize < sizeof(DWORD) || dwCompressedSize > hf->dwSectorSize)
                 return ERROR_SUCCESS;
 
             // Calculate offset of the CRC table
@@ -1436,21 +1379,21 @@ DWORD AllocateSectorChecksums(TMPQFile * hf, bool bLoadFromFile)
             RawFilePos = CalculateRawSectorOffset(hf, dwCrcOffset);
 
             // Now read the table from the MPQ
-            hf->SectorChksums = (DWORD *)LoadMpqTable(ha, RawFilePos, NULL, dwCompressedSize, dwCrcSize, 0, NULL);
-            if(hf->SectorChksums == NULL)
+            hf->SectorChksums = (DWORD*)LoadMpqTable(ha, RawFilePos, NULL, dwCompressedSize, dwCrcSize, 0, NULL);
+            if (hf->SectorChksums == NULL)
                 return ERROR_NOT_ENOUGH_MEMORY;
         }
     }
 
     // If the size doesn't match, we ignore sector checksums
-//  assert(false);
+    //  assert(false);
     return ERROR_SUCCESS;
 }
 
-DWORD WritePatchInfo(TMPQFile * hf)
+DWORD WritePatchInfo(TMPQFile* hf)
 {
-    TMPQArchive * ha = hf->ha;
-    TPatchInfo * pPatchInfo = hf->pPatchInfo;
+    TMPQArchive* ha = hf->ha;
+    TPatchInfo* pPatchInfo = hf->pPatchInfo;
 
     // The caller must make sure that this function is only called
     // when the following is true.
@@ -1458,16 +1401,16 @@ DWORD WritePatchInfo(TMPQFile * hf)
     assert(pPatchInfo != NULL);
 
     BSWAP_ARRAY32_UNSIGNED(pPatchInfo, 3 * sizeof(DWORD));
-    if(!FileStream_Write(ha->pStream, &hf->RawFilePos, pPatchInfo, sizeof(TPatchInfo)))
+    if (!FileStream_Write(ha->pStream, &hf->RawFilePos, pPatchInfo, sizeof(TPatchInfo)))
         return GetLastError();
 
     return ERROR_SUCCESS;
 }
 
-DWORD WriteSectorOffsets(TMPQFile * hf)
+DWORD WriteSectorOffsets(TMPQFile* hf)
 {
-    TMPQArchive * ha = hf->ha;
-    TFileEntry * pFileEntry = hf->pFileEntry;
+    TMPQArchive* ha = hf->ha;
+    TFileEntry* pFileEntry = hf->pFileEntry;
     ULONGLONG RawFilePos = hf->RawFilePos;
     DWORD dwSectorOffsLen;
 
@@ -1478,29 +1421,29 @@ DWORD WriteSectorOffsets(TMPQFile * hf)
     dwSectorOffsLen = hf->SectorOffsets[0];
 
     // If file is encrypted, sector positions are also encrypted
-    if(pFileEntry->dwFlags & MPQ_FILE_ENCRYPTED)
+    if (pFileEntry->dwFlags & MPQ_FILE_ENCRYPTED)
         EncryptMpqBlock(hf->SectorOffsets, dwSectorOffsLen, hf->dwFileKey - 1);
     BSWAP_ARRAY32_UNSIGNED(hf->SectorOffsets, dwSectorOffsLen);
 
     // Adjust sector offset table position, if we also have patch info
-    if(hf->pPatchInfo != NULL)
+    if (hf->pPatchInfo != NULL)
         RawFilePos += hf->pPatchInfo->dwLength;
 
     // Write sector offsets to the archive
-    if(!FileStream_Write(ha->pStream, &RawFilePos, hf->SectorOffsets, dwSectorOffsLen))
+    if (!FileStream_Write(ha->pStream, &RawFilePos, hf->SectorOffsets, dwSectorOffsLen))
         return GetLastError();
 
     // Not necessary, as the sector checksums
     // are going to be freed when this is done.
-//  BSWAP_ARRAY32_UNSIGNED(hf->SectorOffsets, dwSectorOffsLen);
+    //  BSWAP_ARRAY32_UNSIGNED(hf->SectorOffsets, dwSectorOffsLen);
     return ERROR_SUCCESS;
 }
 
-DWORD WriteSectorChecksums(TMPQFile * hf)
+DWORD WriteSectorChecksums(TMPQFile* hf)
 {
-    TMPQArchive * ha = hf->ha;
+    TMPQArchive* ha = hf->ha;
     ULONGLONG RawFilePos;
-    TFileEntry * pFileEntry = hf->pFileEntry;
+    TFileEntry* pFileEntry = hf->pFileEntry;
     LPBYTE pbCompressed;
     DWORD dwCompressedSize = 0;
     DWORD dwErrCode = ERROR_SUCCESS;
@@ -1515,7 +1458,7 @@ DWORD WriteSectorChecksums(TMPQFile * hf)
 
     // If the MPQ has MD5 of each raw data chunk,
     // we leave sector offsets empty
-    if(ha->pHeader->dwRawChunkSize != 0)
+    if (ha->pHeader->dwRawChunkSize != 0)
     {
         hf->SectorOffsets[hf->dwSectorCount + 1] = hf->SectorOffsets[hf->dwSectorCount];
         return ERROR_SUCCESS;
@@ -1526,7 +1469,7 @@ DWORD WriteSectorChecksums(TMPQFile * hf)
 
     // Allocate buffer for compressed sector CRCs.
     pbCompressed = STORM_ALLOC(BYTE, dwCrcSize);
-    if(pbCompressed == NULL)
+    if (pbCompressed == NULL)
         return ERROR_NOT_ENOUGH_MEMORY;
 
     // Perform the compression
@@ -1538,14 +1481,14 @@ DWORD WriteSectorChecksums(TMPQFile * hf)
 
     // Write the sector CRCs to the archive
     RawFilePos = hf->RawFilePos + hf->SectorOffsets[hf->dwSectorCount];
-    if(hf->pPatchInfo != NULL)
+    if (hf->pPatchInfo != NULL)
         RawFilePos += hf->pPatchInfo->dwLength;
-    if(!FileStream_Write(ha->pStream, &RawFilePos, pbCompressed, dwCompressedSize))
+    if (!FileStream_Write(ha->pStream, &RawFilePos, pbCompressed, dwCompressedSize))
         dwErrCode = GetLastError();
 
     // Not necessary, as the sector checksums
     // are going to be freed when this is done.
-//  BSWAP_ARRAY32_UNSIGNED(hf->SectorChksums, dwCrcSize);
+    //  BSWAP_ARRAY32_UNSIGNED(hf->SectorChksums, dwCrcSize);
 
     // Store the sector CRCs
     hf->SectorOffsets[hf->dwSectorCount + 1] = hf->SectorOffsets[hf->dwSectorCount] + dwCompressedSize;
@@ -1554,16 +1497,10 @@ DWORD WriteSectorChecksums(TMPQFile * hf)
     return dwErrCode;
 }
 
-DWORD WriteMemDataMD5(
-    TFileStream * pStream,
-    ULONGLONG RawDataOffs,
-    void * pvRawData,
-    DWORD dwRawDataSize,
-    DWORD dwChunkSize,
-    LPDWORD pcbTotalSize)
+DWORD WriteMemDataMD5(TFileStream* pStream, ULONGLONG RawDataOffs, void* pvRawData, DWORD dwRawDataSize, DWORD dwChunkSize, LPDWORD pcbTotalSize)
 {
-    unsigned char * md5_array;
-    unsigned char * md5;
+    unsigned char* md5_array;
+    unsigned char* md5;
     LPBYTE pbRawData = (LPBYTE)pvRawData;
     DWORD dwBytesRemaining = dwRawDataSize;
     DWORD dwMd5ArraySize = 0;
@@ -1571,11 +1508,11 @@ DWORD WriteMemDataMD5(
 
     // Allocate buffer for array of MD5
     md5_array = md5 = AllocateMd5Buffer(dwRawDataSize, dwChunkSize, &dwMd5ArraySize);
-    if(md5_array == NULL)
+    if (md5_array == NULL)
         return ERROR_NOT_ENOUGH_MEMORY;
 
     // For every file chunk, calculate MD5
-    while(dwBytesRemaining != 0)
+    while (dwBytesRemaining != 0)
     {
         // Get the remaining number of bytes to read
         dwChunkSize = STORMLIB_MIN(dwBytesRemaining, dwChunkSize);
@@ -1591,11 +1528,11 @@ DWORD WriteMemDataMD5(
 
     // Write the array od MD5's to the file
     RawDataOffs += dwRawDataSize;
-    if(!FileStream_Write(pStream, &RawDataOffs, md5_array, dwMd5ArraySize))
+    if (!FileStream_Write(pStream, &RawDataOffs, md5_array, dwMd5ArraySize))
         dwErrCode = GetLastError();
 
     // Give the caller the size of the MD5 array
-    if(pcbTotalSize != NULL)
+    if (pcbTotalSize != NULL)
         *pcbTotalSize = dwRawDataSize + dwMd5ArraySize;
 
     // Free buffers and exit
@@ -1603,16 +1540,11 @@ DWORD WriteMemDataMD5(
     return dwErrCode;
 }
 
-
 // Writes the MD5 for each chunk of the raw file data
-DWORD WriteMpqDataMD5(
-    TFileStream * pStream,
-    ULONGLONG RawDataOffs,
-    DWORD dwRawDataSize,
-    DWORD dwChunkSize)
+DWORD WriteMpqDataMD5(TFileStream* pStream, ULONGLONG RawDataOffs, DWORD dwRawDataSize, DWORD dwChunkSize)
 {
-    unsigned char * md5_array;
-    unsigned char * md5;
+    unsigned char* md5_array;
+    unsigned char* md5;
     LPBYTE pbFileChunk;
     DWORD dwMd5ArraySize = 0;
     DWORD dwToRead = dwRawDataSize;
@@ -1620,25 +1552,25 @@ DWORD WriteMpqDataMD5(
 
     // Allocate buffer for array of MD5
     md5_array = md5 = AllocateMd5Buffer(dwRawDataSize, dwChunkSize, &dwMd5ArraySize);
-    if(md5_array == NULL)
+    if (md5_array == NULL)
         return ERROR_NOT_ENOUGH_MEMORY;
 
     // Allocate space for file chunk
     pbFileChunk = STORM_ALLOC(BYTE, dwChunkSize);
-    if(pbFileChunk == NULL)
+    if (pbFileChunk == NULL)
     {
         STORM_FREE(md5_array);
         return ERROR_NOT_ENOUGH_MEMORY;
     }
 
     // For every file chunk, calculate MD5
-    while(dwRawDataSize != 0)
+    while (dwRawDataSize != 0)
     {
         // Get the remaining number of bytes to read
         dwToRead = STORMLIB_MIN(dwRawDataSize, dwChunkSize);
 
         // Read the chunk
-        if(!FileStream_Read(pStream, &RawDataOffs, pbFileChunk, dwToRead))
+        if (!FileStream_Read(pStream, &RawDataOffs, pbFileChunk, dwToRead))
         {
             dwErrCode = GetLastError();
             break;
@@ -1654,9 +1586,9 @@ DWORD WriteMpqDataMD5(
     }
 
     // Write the array od MD5's to the file
-    if(dwErrCode == ERROR_SUCCESS)
+    if (dwErrCode == ERROR_SUCCESS)
     {
-        if(!FileStream_Write(pStream, NULL, md5_array, dwMd5ArraySize))
+        if (!FileStream_Write(pStream, NULL, md5_array, dwMd5ArraySize))
             dwErrCode = GetLastError();
     }
 
@@ -1667,28 +1599,28 @@ DWORD WriteMpqDataMD5(
 }
 
 // Frees the structure for MPQ file
-void FreeFileHandle(TMPQFile *& hf)
+void FreeFileHandle(TMPQFile*& hf)
 {
-    if(hf != NULL)
+    if (hf != NULL)
     {
         // If we have patch file attached to this one, free it first
-        if(hf->hfPatch != NULL)
+        if (hf->hfPatch != NULL)
             FreeFileHandle(hf->hfPatch);
 
         // Then free all buffers allocated in the file structure
-        if(hf->pbFileData != NULL)
+        if (hf->pbFileData != NULL)
             STORM_FREE(hf->pbFileData);
-        if(hf->pPatchInfo != NULL)
+        if (hf->pPatchInfo != NULL)
             STORM_FREE(hf->pPatchInfo);
-        if(hf->SectorOffsets != NULL)
+        if (hf->SectorOffsets != NULL)
             STORM_FREE(hf->SectorOffsets);
-        if(hf->SectorChksums != NULL)
+        if (hf->SectorChksums != NULL)
             STORM_FREE(hf->SectorChksums);
-        if(hf->hctx != NULL)
+        if (hf->hctx != NULL)
             STORM_FREE(hf->hctx);
-        if(hf->pbFileSector != NULL)
+        if (hf->pbFileSector != NULL)
             STORM_FREE(hf->pbFileSector);
-        if(hf->pStream != NULL)
+        if (hf->pStream != NULL)
             FileStream_Close(hf->pStream);
         STORM_FREE(hf);
         hf = NULL;
@@ -1696,16 +1628,16 @@ void FreeFileHandle(TMPQFile *& hf)
 }
 
 // Frees the MPQ archive
-void FreeArchiveHandle(TMPQArchive *& ha)
+void FreeArchiveHandle(TMPQArchive*& ha)
 {
-    if(ha != NULL)
+    if (ha != NULL)
     {
         // First of all, free the patch archive, if any
-        if(ha->haPatch != NULL)
+        if (ha->haPatch != NULL)
             FreeArchiveHandle(ha->haPatch);
 
         // Free the patch prefix, if any
-        if(ha->pPatchPrefix != NULL)
+        if (ha->pPatchPrefix != NULL)
             STORM_FREE(ha->pPatchPrefix);
 
         // Close the file stream
@@ -1713,11 +1645,11 @@ void FreeArchiveHandle(TMPQArchive *& ha)
         ha->pStream = NULL;
 
         // Free the file names from the file table
-        if(ha->pFileTable != NULL)
+        if (ha->pFileTable != NULL)
         {
-            for(DWORD i = 0; i < ha->dwFileTableSize; i++)
+            for (DWORD i = 0; i < ha->dwFileTableSize; i++)
             {
-                if(ha->pFileTable[i].szFileName != NULL)
+                if (ha->pFileTable[i].szFileName != NULL)
                     STORM_FREE(ha->pFileTable[i].szFileName);
                 ha->pFileTable[i].szFileName = NULL;
             }
@@ -1726,22 +1658,20 @@ void FreeArchiveHandle(TMPQArchive *& ha)
             STORM_FREE(ha->pFileTable);
         }
 
-        if(ha->pHashTable != NULL)
+        if (ha->pHashTable != NULL)
             STORM_FREE(ha->pHashTable);
-        if(ha->pHetTable != NULL)
+        if (ha->pHetTable != NULL)
             FreeHetTable(ha->pHetTable);
         STORM_FREE(ha);
         ha = NULL;
     }
 }
 
-bool IsInternalMpqFileName(const char * szFileName)
+bool IsInternalMpqFileName(const char* szFileName)
 {
-    if(szFileName != NULL && szFileName[0] == '(')
+    if (szFileName != NULL && szFileName[0] == '(')
     {
-        if(!_stricmp(szFileName, LISTFILE_NAME) ||
-           !_stricmp(szFileName, ATTRIBUTES_NAME) ||
-           !_stricmp(szFileName, SIGNATURE_NAME))
+        if (!_stricmp(szFileName, LISTFILE_NAME) || !_stricmp(szFileName, ATTRIBUTES_NAME) || !_stricmp(szFileName, SIGNATURE_NAME))
         {
             return true;
         }
@@ -1751,27 +1681,27 @@ bool IsInternalMpqFileName(const char * szFileName)
 }
 
 // Verifies if the file name is a pseudo-name
-bool IsPseudoFileName(const char * szFileName, DWORD * pdwFileIndex)
+bool IsPseudoFileName(const char* szFileName, DWORD* pdwFileIndex)
 {
     DWORD dwFileIndex = 0;
 
-    if(szFileName != NULL)
+    if (szFileName != NULL)
     {
         // Must be "File########.ext"
-        if(!_strnicmp(szFileName, "File", 4))
+        if (!_strnicmp(szFileName, "File", 4))
         {
             // Check 8 digits
-            for(int i = 4; i < 4+8; i++)
+            for (int i = 4; i < 4 + 8; i++)
             {
-                if(szFileName[i] < '0' || szFileName[i] > '9')
+                if (szFileName[i] < '0' || szFileName[i] > '9')
                     return false;
                 dwFileIndex = (dwFileIndex * 10) + (szFileName[i] - '0');
             }
 
             // An extension must follow
-            if(szFileName[12] == '.')
+            if (szFileName[12] == '.')
             {
-                if(pdwFileIndex != NULL)
+                if (pdwFileIndex != NULL)
                     *pdwFileIndex = dwFileIndex;
                 return true;
             }
@@ -1797,25 +1727,24 @@ bool IsValidSignature(LPBYTE pbSignature)
     LPDWORD Signature = (LPDWORD)pbSignature;
     DWORD SigValid = 0;
 
-    for(int i = 0; i < MPQ_WEAK_SIGNATURE_SIZE / sizeof(DWORD); i++)
+    for (int i = 0; i < MPQ_WEAK_SIGNATURE_SIZE / sizeof(DWORD); i++)
         SigValid |= Signature[i];
 
     return (SigValid != 0) ? true : false;
 }
 
-
-bool VerifyDataBlockHash(void * pvDataBlock, DWORD cbDataBlock, LPBYTE expected_md5)
+bool VerifyDataBlockHash(void* pvDataBlock, DWORD cbDataBlock, LPBYTE expected_md5)
 {
     hash_state md5_state;
     BYTE md5_digest[MD5_DIGEST_SIZE];
     bool bResult = true;
 
     // Don't verify the block if the MD5 is not valid.
-    if(IsValidMD5(expected_md5))
+    if (IsValidMD5(expected_md5))
     {
         // Calculate the MD5 of the data block
         md5_init(&md5_state);
-        md5_process(&md5_state, (unsigned char *)pvDataBlock, cbDataBlock);
+        md5_process(&md5_state, (unsigned char*)pvDataBlock, cbDataBlock);
         md5_done(&md5_state, md5_digest);
 
         // Does the MD5's match?
@@ -1825,12 +1754,12 @@ bool VerifyDataBlockHash(void * pvDataBlock, DWORD cbDataBlock, LPBYTE expected_
     return bResult;
 }
 
-void CalculateDataBlockHash(void * pvDataBlock, DWORD cbDataBlock, LPBYTE md5_hash)
+void CalculateDataBlockHash(void* pvDataBlock, DWORD cbDataBlock, LPBYTE md5_hash)
 {
     hash_state md5_state;
 
     md5_init(&md5_state);
-    md5_process(&md5_state, (unsigned char *)pvDataBlock, cbDataBlock);
+    md5_process(&md5_state, (unsigned char*)pvDataBlock, cbDataBlock);
     md5_done(&md5_state, md5_hash);
 }
 
@@ -1840,127 +1769,121 @@ void CalculateDataBlockHash(void * pvDataBlock, DWORD cbDataBlock, LPBYTE md5_ha
 #ifndef STORMLIB_LITTLE_ENDIAN
 
 // Swaps a signed 16-bit integer
-int16_t SwapInt16(uint16_t val)
-{
-    return (val << 8) | ((val >> 8) & 0xFF);
-}
+int16_t SwapInt16(uint16_t val) { return (val << 8) | ((val >> 8) & 0xFF); }
 
 // Swaps an unsigned 16-bit integer
-uint16_t SwapUInt16(uint16_t val)
-{
-    return (val << 8) | (val >> 8 );
-}
+uint16_t SwapUInt16(uint16_t val) { return (val << 8) | (val >> 8); }
 
 // Swaps a signed 32-bit integer
 int32_t SwapInt32(uint32_t val)
 {
-    val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF );
+    val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF);
     return (val << 16) | ((val >> 16) & 0xFFFF);
 }
 
 // Swaps an unsigned 32-bit integer
 uint32_t SwapUInt32(uint32_t val)
 {
-    val = ((val << 8) & 0xFF00FF00 ) | ((val >> 8) & 0xFF00FF );
+    val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF);
     return (val << 16) | (val >> 16);
 }
 
 // Swaps a signed 64-bit integer
 int64_t SwapInt64(uint64_t val)
 {
-    val = ((val << 8) & 0xFF00FF00FF00FF00ULL ) | ((val >> 8) & 0x00FF00FF00FF00FFULL );
-    val = ((val << 16) & 0xFFFF0000FFFF0000ULL ) | ((val >> 16) & 0x0000FFFF0000FFFFULL );
+    val = ((val << 8) & 0xFF00FF00FF00FF00ULL) | ((val >> 8) & 0x00FF00FF00FF00FFULL);
+    val = ((val << 16) & 0xFFFF0000FFFF0000ULL) | ((val >> 16) & 0x0000FFFF0000FFFFULL);
     return (val << 32) | ((val >> 32) & 0xFFFFFFFFULL);
 }
 
 // Swaps an unsigned 64-bit integer
 uint64_t SwapUInt64(uint64_t val)
 {
-    val = ((val << 8) & 0xFF00FF00FF00FF00ULL ) | ((val >> 8) & 0x00FF00FF00FF00FFULL );
-    val = ((val << 16) & 0xFFFF0000FFFF0000ULL ) | ((val >> 16) & 0x0000FFFF0000FFFFULL );
+    val = ((val << 8) & 0xFF00FF00FF00FF00ULL) | ((val >> 8) & 0x00FF00FF00FF00FFULL);
+    val = ((val << 16) & 0xFFFF0000FFFF0000ULL) | ((val >> 16) & 0x0000FFFF0000FFFFULL);
     return (val << 32) | (val >> 32);
 }
 
 // Swaps array of unsigned 16-bit integers
-void ConvertUInt16Buffer(void * ptr, size_t length)
+void ConvertUInt16Buffer(void* ptr, size_t length)
 {
-    uint16_t * buffer = (uint16_t *)ptr;
+    uint16_t* buffer = (uint16_t*)ptr;
     uint32_t nElements = (uint32_t)(length / sizeof(uint16_t));
 
-    while(nElements-- > 0)
-	{
-		*buffer = SwapUInt16(*buffer);
-		buffer++;
-	}
+    while (nElements-- > 0)
+    {
+        *buffer = SwapUInt16(*buffer);
+        buffer++;
+    }
 }
 
 // Swaps array of unsigned 32-bit integers
-void ConvertUInt32Buffer(void * ptr, size_t length)
+void ConvertUInt32Buffer(void* ptr, size_t length)
 {
-    uint32_t * buffer = (uint32_t *)ptr;
+    uint32_t* buffer = (uint32_t*)ptr;
     uint32_t nElements = (uint32_t)(length / sizeof(uint32_t));
 
-	while(nElements-- > 0)
-	{
-		*buffer = SwapUInt32(*buffer);
-		buffer++;
-	}
+    while (nElements-- > 0)
+    {
+        *buffer = SwapUInt32(*buffer);
+        buffer++;
+    }
 }
 
 // Swaps array of unsigned 64-bit integers
-void ConvertUInt64Buffer(void * ptr, size_t length)
+void ConvertUInt64Buffer(void* ptr, size_t length)
 {
-    uint64_t * buffer = (uint64_t *)ptr;
+    uint64_t* buffer = (uint64_t*)ptr;
     uint32_t nElements = (uint32_t)(length / sizeof(uint64_t));
 
-	while(nElements-- > 0)
-	{
-		*buffer = SwapUInt64(*buffer);
-		buffer++;
-	}
+    while (nElements-- > 0)
+    {
+        *buffer = SwapUInt64(*buffer);
+        buffer++;
+    }
 }
 
 // Swaps the TMPQHeader structure
-void ConvertTMPQHeader(void *header, uint16_t version)
+void ConvertTMPQHeader(void* header, uint16_t version)
 {
-	TMPQHeader * theHeader = (TMPQHeader *)header;
+    TMPQHeader* theHeader = (TMPQHeader*)header;
 
     // Swap header part version 1
-    if(version >= MPQ_FORMAT_VERSION_1)
+    if (version >= MPQ_FORMAT_VERSION_1)
     {
-	    theHeader->dwID = SwapUInt32(theHeader->dwID);
-	    theHeader->dwHeaderSize = SwapUInt32(theHeader->dwHeaderSize);
-	    theHeader->dwArchiveSize = SwapUInt32(theHeader->dwArchiveSize);
-	    theHeader->wFormatVersion = SwapUInt16(theHeader->wFormatVersion);
-	    theHeader->wSectorSize = SwapUInt16(theHeader->wSectorSize);
-	    theHeader->dwHashTablePos = SwapUInt32(theHeader->dwHashTablePos);
-	    theHeader->dwBlockTablePos = SwapUInt32(theHeader->dwBlockTablePos);
-	    theHeader->dwHashTableSize = SwapUInt32(theHeader->dwHashTableSize);
-	    theHeader->dwBlockTableSize = SwapUInt32(theHeader->dwBlockTableSize);
+        theHeader->dwID = SwapUInt32(theHeader->dwID);
+        theHeader->dwHeaderSize = SwapUInt32(theHeader->dwHeaderSize);
+        theHeader->dwArchiveSize = SwapUInt32(theHeader->dwArchiveSize);
+        theHeader->wFormatVersion = SwapUInt16(theHeader->wFormatVersion);
+        theHeader->wSectorSize = SwapUInt16(theHeader->wSectorSize);
+        theHeader->dwHashTablePos = SwapUInt32(theHeader->dwHashTablePos);
+        theHeader->dwBlockTablePos = SwapUInt32(theHeader->dwBlockTablePos);
+        theHeader->dwHashTableSize = SwapUInt32(theHeader->dwHashTableSize);
+        theHeader->dwBlockTableSize = SwapUInt32(theHeader->dwBlockTableSize);
     }
 
-	if(version >= MPQ_FORMAT_VERSION_2)
-	{
-		theHeader->HiBlockTablePos64 = SwapUInt64(theHeader->HiBlockTablePos64);
+    if (version >= MPQ_FORMAT_VERSION_2)
+    {
+        theHeader->HiBlockTablePos64 = SwapUInt64(theHeader->HiBlockTablePos64);
         theHeader->wHashTablePosHi = SwapUInt16(theHeader->wHashTablePosHi);
-		theHeader->wBlockTablePosHi = SwapUInt16(theHeader->wBlockTablePosHi);
+        theHeader->wBlockTablePosHi = SwapUInt16(theHeader->wBlockTablePosHi);
     }
 
-    if(version >= MPQ_FORMAT_VERSION_3)
+    if (version >= MPQ_FORMAT_VERSION_3)
     {
         theHeader->ArchiveSize64 = SwapUInt64(theHeader->ArchiveSize64);
         theHeader->BetTablePos64 = SwapUInt64(theHeader->BetTablePos64);
         theHeader->HetTablePos64 = SwapUInt64(theHeader->HetTablePos64);
     }
 
-    if(version >= MPQ_FORMAT_VERSION_4)
-	{
-        theHeader->HashTableSize64    = SwapUInt64(theHeader->HashTableSize64);
-        theHeader->BlockTableSize64   = SwapUInt64(theHeader->BlockTableSize64);
+    if (version >= MPQ_FORMAT_VERSION_4)
+    {
+        theHeader->HashTableSize64 = SwapUInt64(theHeader->HashTableSize64);
+        theHeader->BlockTableSize64 = SwapUInt64(theHeader->BlockTableSize64);
         theHeader->HiBlockTableSize64 = SwapUInt64(theHeader->HiBlockTableSize64);
-        theHeader->HetTableSize64     = SwapUInt64(theHeader->HetTableSize64);
-        theHeader->BetTableSize64     = SwapUInt64(theHeader->BetTableSize64);
+        theHeader->HetTableSize64 = SwapUInt64(theHeader->HetTableSize64);
+        theHeader->BetTableSize64 = SwapUInt64(theHeader->BetTableSize64);
     }
 }
 
-#endif  // STORMLIB_LITTLE_ENDIAN
+#endif // STORMLIB_LITTLE_ENDIAN

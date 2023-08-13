@@ -3,7 +3,7 @@
 
  \author Morgan McGuire
  \author Shawn Yarbrough
-  
+
  \created 2006-06-11
  \edited  2013-03-29
 
@@ -162,10 +162,10 @@ void Any::beforeRead() const {
         e.message   = "Key \"" + m_placeholderName + "\" not found in operator[] lookup.";
 
         throw e;
-    } 
+    }
 }
 
-   
+
 Any::Data* Any::Data::create(const Data* d) {
     Data* p = create(d->type);
 
@@ -484,7 +484,7 @@ Any& Any::operator=(const Any& x) {
 
 Any& Any::operator=(Type t) {
     switch (t) {
-    case NIL:  
+    case NIL:
         *this = Any();
         break;
 
@@ -819,7 +819,7 @@ bool Any::operator==(const Any& x) const {
             } else if (*p2 != it->value) {
                 // Different value
                 return false;
-            }                
+            }
         }
         return true;
     }
@@ -843,7 +843,7 @@ bool Any::operator==(const Any& x) const {
         }
         return true;
     }
-    
+
     case EMPTY_CONTAINER:
         return true;
     default:
@@ -889,7 +889,7 @@ std::string Any::unparse(const TextOutput::Settings& settings) const {
 Any Any::parse(const std::string& src) {
     Any a;
     a._parse(src);
-    return a;    
+    return a;
 }
 
 
@@ -931,13 +931,13 @@ static bool needsQuotes(const std::string& s) {
 
     for (int i = 0; i < (int)s.length(); ++i) {
         char c = s[i];
-        
+
         // peek character
         char p = (i == (int)s.length() - 1) ? '_' : s[i + 1];
 
         // Identify separators
         if ((c == '-' && p == '>') ||
-            (c == ':' && p == ':')) {            
+            (c == ':' && p == ':')) {
             // Skip over this symbol
             ++i;
             continue;
@@ -996,7 +996,7 @@ void Any::serialize(TextOutput& to, bool json, bool coerce) const {
 
     case NUMBER:
         if (json) {
-            // Specials have no legal syntax in JSON, so insert values that will parse 
+            // Specials have no legal syntax in JSON, so insert values that will parse
             // to something close to what we want (there is no good solution for NaN, unfortunately)
             if (m_simpleValue.n == inf()) {
                 to.writeSymbol("1e10000");
@@ -1138,7 +1138,7 @@ void Any::serialize(TextOutput& to, bool json, bool coerce) const {
                     }
                 }
             }
-            
+
             // Put the close paren on an array right behind the last element
         }
         to.popIndent();
@@ -1171,7 +1171,7 @@ void Any::serialize(TextOutput& to, bool json, bool coerce) const {
         break;
     }
     }
-    
+
 }
 
 
@@ -1213,7 +1213,7 @@ void Any::deserializeName(TextInput& ti, Token& token, std::string& name) {
         token = ti.readSignificant();
 
         if (token.type() != Token::SYMBOL) {
-            throw ParseError(ti.filename(), token.line(), token.character(), 
+            throw ParseError(ti.filename(), token.line(), token.character(),
                 "Expected symbol while parsing Any");
         }
         s = token.string();
@@ -1239,7 +1239,7 @@ void Any::deserialize(TextInput& ti, Token& token) {
     // Skip leading newlines
     while (token.type() == Token::NEWLINE) {
         token = ti.read();
-    } 
+    }
 
     std::string comment;
     if (token.type() == Token::COMMENT) {
@@ -1249,13 +1249,13 @@ void Any::deserialize(TextInput& ti, Token& token) {
     if (token.type() == Token::END) {
         // There should never be a comment without an Any following it; even
         // if the file ends with some commented out stuff,
-        // that should not happen after a comma, so we'd never read that 
+        // that should not happen after a comma, so we'd never read that
         // far in a proper file.
-        throw ParseError(ti.filename(), token.line(), token.character(), 
+        throw ParseError(ti.filename(), token.line(), token.character(),
             "File ended without a properly formed Any");
     }
 
-    // Do we need to read one more token after the end? 
+    // Do we need to read one more token after the end?
     bool needRead = true;
 
     switch (token.type()) {
@@ -1284,7 +1284,7 @@ void Any::deserialize(TextInput& ti, Token& token) {
         // Pragma, Named Array, Named Table, Array, Table, or NIL
         if (token.string() == "#") {
             // Pragma
-            
+
             // Currently, "include" is the only pragma allowed
             token = ti.read();
             if (! ((token.type() == Token::SYMBOL) &&
@@ -1292,7 +1292,7 @@ void Any::deserialize(TextInput& ti, Token& token) {
                 throw ParseError(ti.filename(), token.line(), token.character(),
                                  "Expected 'include' pragma after '#'");
             }
-            
+
             ti.readSymbol("(");
             // The string typed into the file, which may be relative
             const std::string& includeName = ti.readString();
@@ -1318,7 +1318,7 @@ void Any::deserialize(TextInput& ti, Token& token) {
             m_data->includeLine += format("#include(\"%s\")", includeName.c_str());
             m_data->source.filename +=
                 format(" [included from %s:%d(%d)]", ti.filename().c_str(), token.line(), token.character());
-            
+
             ti.readSymbol(")");
 
         } else if (toUpper(token.string()) == "NIL" || token.string() == "None") {
@@ -1340,7 +1340,7 @@ void Any::deserialize(TextInput& ti, Token& token) {
             std::string name;
             deserializeName(ti, token, name);
             if (token.type() != Token::SYMBOL) {
-                throw ParseError(ti.filename(), token.line(), token.character(), 
+                throw ParseError(ti.filename(), token.line(), token.character(),
                     "Malformed Any TABLE or ARRAY; must start with [, (, or {");
             }
 
@@ -1348,7 +1348,7 @@ void Any::deserialize(TextInput& ti, Token& token) {
                 // Array or table
                 deserializeBody(ti, token);
             } else {
-                throw ParseError(ti.filename(), token.line(), token.character(), 
+                throw ParseError(ti.filename(), token.line(), token.character(),
                     "Malformed Any TABLE or ARRAY; must start with [, (, or {");
             }
 
@@ -1361,7 +1361,7 @@ void Any::deserialize(TextInput& ti, Token& token) {
         break;
 
     default:
-        throw ParseError(ti.filename(), token.line(), token.character(), 
+        throw ParseError(ti.filename(), token.line(), token.character(),
             "Unexpected token");
 
     } // switch
@@ -1403,7 +1403,7 @@ void Any::readUntilSeparatorOrClose(TextInput& ti, Token& token) {
             break;
 
         default:
-            throw ParseError(ti.filename(), token.line(), token.character(), 
+            throw ParseError(ti.filename(), token.line(), token.character(),
                 "Expected a comma or close paren");
         }
 
@@ -1415,7 +1415,7 @@ void Any::readUntilSeparatorOrClose(TextInput& ti, Token& token) {
 
 /**
   Determines the type [TABLE, ARRAY, or EMPTY_CONTAINER] from the given TextInput
-  TextInput is the same at the end as it was beofr  
+  TextInput is the same at the end as it was beofr
 */
 static Any::Type findType(TextInput& ti, const char closeSymbol) {
     Any::Type type = Any::NIL;
@@ -1459,7 +1459,7 @@ static Any::Type findType(TextInput& ti, const char closeSymbol) {
 void Any::deserializeBody(TextInput& ti, Token& token) {
     char closeSymbol = '\0';
     m_type = TABLE;
-    
+
     const char c = token.string()[0];
 
     // Chose the appropriate close symbol based on the open symbol
@@ -1505,13 +1505,13 @@ void Any::deserializeBody(TextInput& ti, Token& token) {
         // Pointer the value being read
         Any a;
         std::string key;
-        
+
         if (m_type == TABLE) {
             // Read the key
             if (token.type() != Token::SYMBOL && token.type() != Token::STRING) {
                 throw ParseError(ti.filename(), token.line(), token.character(), "Expected a name");
-            } 
-            
+            }
+
             key = token.string();
             // Consume everything up to the = sign, returning the "=" sign.
             token = ti.readSignificant();
@@ -1530,7 +1530,7 @@ void Any::deserializeBody(TextInput& ti, Token& token) {
             a.ensureData();
             a.m_data->comment = trimWhitespace(comment + "\n" + a.m_data->comment);
         }
-        
+
         if (m_type == TABLE) {
             set(key, a);
         } else {

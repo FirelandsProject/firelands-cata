@@ -1,8 +1,8 @@
 /**
  @file Vector3int32.cpp
- 
+
  @author Morgan McGuire, http://graphics.cs.williams.edu
-  
+
  @created 2008-07-01
  @edited  2010-10-20
  */
@@ -27,13 +27,13 @@ Vector3int32 iFloor(const Vector3& v) {
 Vector3int32::Vector3int32(const Any& any) {
     *this = Vector3int32();
     any.verifyNameBeginsWith("Vector3int32", "Point3int32");
-    
+
     switch (any.type()) {
     case Any::TABLE:
-        
+
         for (Any::AnyTable::Iterator it = any.table().begin(); it.isValid(); ++it) {
             const std::string& key = toLower(it->key);
-            
+
             if (key == "x") {
                 x = it->value;
             } else if (key == "y") {
@@ -45,9 +45,9 @@ Vector3int32::Vector3int32(const Any& any) {
             }
         }
         break;
-            
+
     case Any::ARRAY:
-        
+
         (void)any.name();
         if (any.size() == 1) {
             x = y = z = any[0];
@@ -58,7 +58,7 @@ Vector3int32::Vector3int32(const Any& any) {
             z = any[2];
         }
         break;
-        
+
     default:
         any.verify(false, "Bad Vector3int32 constructor");
     }

@@ -1,8 +1,8 @@
 /**
  \file G3D/Vector2int16.cpp
- 
+
  \author Morgan McGuire, http://graphics.cs.williams.edu
-  
+
  \created 2003-08-09
  \edited  2011-01-06
  */
