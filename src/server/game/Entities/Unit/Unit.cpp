@@ -4145,7 +4145,7 @@ void Unit::RemoveAllAuras()
         for (aurIter = m_ownedAuras.begin(); aurIter != m_ownedAuras.end();)
             RemoveOwnedAura(aurIter);
 
-        
+
         const int maxIteration = 50;
         // give this loop a few tries, if there are still auras then log as much information as possible
         if (counter >= maxIteration)
