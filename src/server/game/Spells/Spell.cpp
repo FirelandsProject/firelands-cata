@@ -5071,10 +5071,7 @@ void Spell::TakePower()
         return;
     }
 
-    if (hit)
-        m_caster->ModifyPower(powerType, -m_powerCost);
-    else
-        m_caster->ModifyPower(powerType, -irand(0, m_powerCost / 4));
+    m_caster->ModifyPower(powerType, -m_powerCost);
 }
 
 void Spell::TakeAmmo()
@@ -6474,6 +6471,8 @@ SpellCastResult Spell::CheckCasterAuras(uint32* param1) const
                 result = mechanicResult;
         }
         else if (!CheckSpellCancelsStun(param1))
+            result = SPELL_FAILED_STUNNED;
+        else if ((m_spellInfo->Mechanic & MECHANIC_IMMUNE_SHIELD) && m_caster->ToUnit() && m_caster->ToUnit()->HasAuraWithMechanic(1 << MECHANIC_BANISH))
             result = SPELL_FAILED_STUNNED;
     }
     else if (unitflag & UNIT_FLAG_SILENCED && m_spellInfo->PreventionType == SPELL_PREVENTION_TYPE_SILENCE && !CheckSpellCancelsSilence(param1))
