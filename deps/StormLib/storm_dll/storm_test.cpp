@@ -28,7 +28,7 @@
 
 const char * IntToHexChar = "0123456789ABCDEF";
 
-LPCSTR DefFilesToOpen[] = 
+LPCSTR DefFilesToOpen[] =
 {
     "music\\tdefeat.wav",
     "setupdat\\inst.vis",

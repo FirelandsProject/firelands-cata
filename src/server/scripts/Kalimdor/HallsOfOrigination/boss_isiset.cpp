@@ -410,7 +410,7 @@ public:
             {
                 case ACTION_IMAGES_SET_AGGRESSIVE:
                     me->SetReactState(REACT_AGGRESSIVE);
-                    DoZoneInCombat();   
+                    DoZoneInCombat();
                     if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM))
                         AttackStart(target);
                     break;

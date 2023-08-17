@@ -727,7 +727,7 @@ static PFILE_DATA LoadLocalFile(TLogHelper * pLogger, LPCTSTR szFileName, bool b
         if(pLogger != NULL && bMustSucceed == true)
             pLogger->PrintError(_T("Open failed: %s"), szFileName);
     }
-    
+
     // Return the loaded file data or NULL
     return pFileData;
 }
@@ -2989,7 +2989,7 @@ static DWORD TestOpenArchive_AddFile(LPCTSTR szMpqName, DWORD dwFlags)
             {
                 Logger.PrintError("Failed to open the file previously added");
             }
-        
+
             SFileCloseArchive(hMpq);
         }
     }
