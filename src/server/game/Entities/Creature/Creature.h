@@ -283,8 +283,6 @@ class FC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
 
         void SetCombatDistance(float dist) { m_CombatDistance = dist < 5.0f ? 5.0f : dist; }
 
-        void SetInCombatWithZone();
-
         bool hasQuest(uint32 quest_id) const override;
         bool hasInvolvedQuest(uint32 quest_id)  const override;
 

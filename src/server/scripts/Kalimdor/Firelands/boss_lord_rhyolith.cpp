@@ -342,7 +342,7 @@ struct boss_lord_rhyolith : public BossAI
                 [summon]()
                 {
                     summon->SetReactState(REACT_AGGRESSIVE);
-                    summon->SetInCombatWithZone();
+                    summon->AI()->DoZoneInCombat();
 
                     if (summon->GetEntry() == NPC_SPARK_OF_RHYOLITH)
                         summon->CastSpell(nullptr, SPELL_IMMOLATION_2);

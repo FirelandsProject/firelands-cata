@@ -197,7 +197,7 @@ struct dummy_dragonAI : public ScriptedAI
         if (pointId == POINT_ID_LAND)
         {
             me->GetMotionMaster()->Clear();
-            me->SetInCombatWithZone();
+            DoZoneInCombat();
             if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 0, true))
             {
                 AddThreat(target, 1.0f);
@@ -817,7 +817,7 @@ class npc_twilight_eggs : public CreatureScript
 
         void JustSummoned(Creature* who) override
         {
-            who->SetInCombatWithZone();
+            DoZoneInCombat(who);
         }
 
         void UpdateAI(uint32 diff) override
@@ -989,7 +989,7 @@ class npc_twilight_whelp : public CreatureScript
         void Reset() override
         {
             me->RemoveAllAuras();
-            me->SetInCombatWithZone();
+            DoZoneInCombat();
             events.ScheduleEvent(EVENT_FADE_ARMOR, 1000);
         }
 
