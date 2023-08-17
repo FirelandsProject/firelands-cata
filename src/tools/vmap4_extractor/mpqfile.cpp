@@ -1,9 +1,13 @@
 #include "mpqfile.h"
-#include "StormLib.h"
-#include <cstdio>
 #include <deque>
+#include <cstdio>
+#include "StormLib.h"
 
-MPQFile::MPQFile(HANDLE mpq, char const* filename, bool warnNoExist /*= true*/) : eof(false), buffer(0), pointer(0), size(0)
+MPQFile::MPQFile(HANDLE mpq, char const* filename, bool warnNoExist /*= true*/) :
+    eof(false),
+    buffer(0),
+    pointer(0),
+    size(0)
 {
     HANDLE file;
     if (!SFileOpenFileEx(mpq, filename, SFILE_OPEN_BASE_FILE, &file))
@@ -48,12 +52,10 @@ MPQFile::MPQFile(HANDLE mpq, char const* filename, bool warnNoExist /*= true*/) 
 
 size_t MPQFile::read(void* dest, size_t bytes)
 {
-    if (eof)
-        return 0;
+    if (eof) return 0;
 
     size_t rpos = pointer + bytes;
-    if (rpos > size)
-    {
+    if (rpos > size) {
         bytes = size - pointer;
         eof = true;
     }
@@ -79,8 +81,7 @@ void MPQFile::seekRelative(int offset)
 
 void MPQFile::close()
 {
-    if (buffer)
-        delete[] buffer;
+    if (buffer) delete[] buffer;
     buffer = 0;
     eof = true;
 }
