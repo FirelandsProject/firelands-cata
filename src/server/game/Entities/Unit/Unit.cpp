@@ -4135,7 +4135,7 @@ void Unit::RemoveAllAuras()
 {
     // this may be a dead loop if some events on aura remove will continiously apply aura on remove
     // we want to have all auras removed, so use your brain when linking events
-    for (uint32 counter; !m_appliedAuras.empty() || !m_ownedAuras.empty(); counter++)
+    for (uint32 counter = 0; !m_appliedAuras.empty() || !m_ownedAuras.empty(); counter++)
     {
         AuraApplicationMap::iterator aurAppIter;
         for (aurAppIter = m_appliedAuras.begin(); aurAppIter != m_appliedAuras.end();)
@@ -7046,14 +7046,14 @@ int32 Unit::SpellBaseDamageBonusTaken(SpellInfo const* spellInfo) const
     return TakenAdvertisedBenefit;
 }
 
-float Unit::SpellCritChanceDone(SpellInfo const* spellInfo, SpellSchoolMask schoolMask, WeaponAttackType attackType /*= BASE_ATTACK*/) const
+float Unit::SpellCritChanceDone(SpellInfo const* spellInfo, SpellSchoolMask schoolMask, WeaponAttackType attackType /*= BASE_ATTACK*/, bool isPeriodic /*false*/) const
 {
     //! Mobs can't crit with spells. (Except player controlled)
     if (GetTypeId() == TYPEID_UNIT && !GetSpellModOwner())
         return 0.0f;
 
     // not critting spell
-    if (spellInfo->HasAttribute(SPELL_ATTR2_CANT_CRIT))
+    if (!isPeriodic && !spellInfo->HasAttribute(SPELL_ATTR2_CANT_CRIT))
         return 0.0f;
 
     float crit_chance = 0.0f;
@@ -7092,7 +7092,7 @@ float Unit::SpellCritChanceDone(SpellInfo const* spellInfo, SpellSchoolMask scho
     return std::max(crit_chance, 0.0f);
 }
 
-float Unit::SpellCritChanceTaken(Unit const* caster, SpellInfo const* spellInfo, SpellSchoolMask schoolMask, float doneChance, WeaponAttackType attackType /*= BASE_ATTACK*/) const
+float Unit::SpellCritChanceTaken(Unit const* caster, SpellInfo const* spellInfo, SpellSchoolMask schoolMask, float doneChance, WeaponAttackType attackType /*= BASE_ATTACK*/, bool isPeriodic /*false*/) const
 {
     // not critting spell
     if (spellInfo->HasAttribute(SPELL_ATTR2_CANT_CRIT))
@@ -7104,6 +7104,7 @@ float Unit::SpellCritChanceTaken(Unit const* caster, SpellInfo const* spellInfo,
     case SPELL_DAMAGE_CLASS_MAGIC:
     {
         // taken
+
         if (!spellInfo->IsPositive())
         {
             // Modify critical chance by victim SPELL_AURA_MOD_ATTACKER_SPELL_CRIT_CHANCE
@@ -7538,7 +7539,7 @@ float Unit::SpellHealingPctDone(Unit* victim, SpellInfo const* spellProto) const
     return DoneTotalMod;
 }
 
-uint32 Unit::SpellHealingBonusTaken(Unit* caster, SpellInfo const* spellProto, uint32 healamount, DamageEffectType damagetype, uint32 stack) const
+uint32 Unit::SpellHealingBonusTaken(Unit* caster, SpellInfo const* spellProto, uint32 healamount, DamageEffectType damagetype) const
 {
     float TakenTotalMod = 1.0f;
 
@@ -7593,7 +7594,7 @@ uint32 Unit::SpellHealingBonusTaken(Unit* caster, SpellInfo const* spellProto, u
     if (TakenAdvertisedBenefit)
     {
         if (coeff < 0)
-            coeff = CalculateDefaultCoefficient(spellProto, damagetype) * int32(stack) * 1.88f; // As wowwiki says: C = (Cast Time / 3.5) * 1.88 (for healing spells)
+            coeff = CalculateDefaultCoefficient(spellProto, damagetype)  * 1.88f; // As wowwiki says: C = (Cast Time / 3.5) * 1.88 (for healing spells)
 
         if (Player* modOwner = GetSpellModOwner())
         {
@@ -7602,7 +7603,20 @@ uint32 Unit::SpellHealingBonusTaken(Unit* caster, SpellInfo const* spellProto, u
             coeff /= 100.0f;
         }
 
-        TakenTotal += int32(TakenAdvertisedBenefit * coeff * stack);
+        TakenTotal += int32(TakenAdvertisedBenefit * coeff);
+    }
+
+        // Unused in Cataclysm (15595)
+    if (damagetype == DOT)
+    {
+        // Healing over time taken percent
+        float minval_hot = float(GetMaxNegativeAuraModifier(SPELL_AURA_259));
+        if (minval_hot)
+            AddPct(TakenTotalMod, minval_hot);
+
+        float maxval_hot = float(GetMaxPositiveAuraModifier(SPELL_AURA_259));
+        if (maxval_hot)
+            AddPct(TakenTotalMod, maxval_hot);
     }
 
     if (caster)

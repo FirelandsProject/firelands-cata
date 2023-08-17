@@ -404,6 +404,12 @@ void WorldSession::HandleCancelChanneling(WorldPacket& recvData)
     uint32 spellId = 0;
     recvData >> spellId; // Spell Id
 
+     Unit* mover = GetGameClient()->GetActivelyMovedUnit();
+
+    // ignore for remote control state (for player case)
+    if (!mover)
+        return;
+
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
     if (!spellInfo)
         return;
@@ -412,11 +418,10 @@ void WorldSession::HandleCancelChanneling(WorldPacket& recvData)
     if (spellInfo->HasAttribute(SPELL_ATTR0_NO_AURA_CANCEL))
         return;
 
-    Unit* mover = GetGameClient()->GetActivelyMovedUnit();
+    Spell* spell = mover->GetCurrentSpell(CURRENT_CHANNELED_SPELL);
+    if (!spell || spell->GetSpellInfo()->Id != spellInfo->Id)
 
-    // ignore for remote control state (for player case)
-    if (!mover)
-        return;
+    return;
 
     mover->InterruptSpell(CURRENT_CHANNELED_SPELL);
 }

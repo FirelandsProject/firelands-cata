@@ -154,7 +154,7 @@ class boss_drakkari_colossus : public CreatureScript
                 me->SetReactState(REACT_AGGRESSIVE);
                 me->RemoveAura(SPELL_FREEZE_ANIM);
 
-                me->SetInCombatWithZone();
+                DoZoneInCombat();
 
                 break;
             }
@@ -223,7 +223,7 @@ class boss_drakkari_colossus : public CreatureScript
 
         void JustSummoned(Creature* summon) override
         {
-            summon->SetInCombatWithZone();
+            DoZoneInCombat(summon);
 
             if (phase == COLOSSUS_PHASE_SECOND_ELEMENTAL_SUMMON)
                 summon->SetHealth(summon->GetMaxHealth() / 2);
@@ -424,7 +424,7 @@ class npc_living_mojo : public CreatureScript
                     colossus->AI()->DoAction(ACTION_UNFREEZE_COLOSSUS);
                     if (!colossus->AI()->GetData(DATA_INTRO_DONE))
                         colossus->AI()->SetData(DATA_INTRO_DONE, true);
-                    colossus->SetInCombatWithZone();
+                    DoZoneInCombat(colossus);
                     me->DespawnOrUnsummon();
                 }
             }

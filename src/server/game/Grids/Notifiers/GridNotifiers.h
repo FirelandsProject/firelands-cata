@@ -1106,10 +1106,6 @@ namespace Firelands
                 if (owner)
                     check = owner;
                 i_targetForPlayer = (check->GetTypeId() == TYPEID_PLAYER);
-
-                if (!_spellInfo)
-                    if (DynamicObject const* dynObj = i_obj->ToDynObject())
-                        _spellInfo = dynObj->GetSpellInfo();
             }
             bool operator()(Unit* u)
             {

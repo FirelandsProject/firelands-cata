@@ -403,6 +403,9 @@ bool Aura::CanPeriodicTickCrit(Unit const* caster) const
     if (m_spellInfo->HasAttribute(SPELL_ATTR8_PERIODIC_CAN_CRIT))
         return true;
 
+    if (m_spellInfo->HasAttribute(SPELL_ATTR2_CANT_CRIT))
+        return false;
+
     return caster->HasAuraTypeWithAffectMask(SPELL_AURA_ABILITY_PERIODIC_CRIT, GetSpellInfo());
 }
 
@@ -2465,20 +2468,17 @@ void DynObjAura::FillTargetMap(std::unordered_map<Unit*, uint8>& targets, Unit* 
         if (!HasEffect(effIndex))
             continue;
 
-        std::deque<Unit*> units;
-        if (GetSpellInfo()->Effects[effIndex].TargetB.GetTarget() == TARGET_DEST_DYNOBJ_ALLY || GetSpellInfo()->Effects[effIndex].TargetB.GetTarget() == TARGET_UNIT_DEST_AREA_ALLY)
-        {
-            Firelands::AnyFriendlyUnitInObjectRangeCheck u_check(
-                GetDynobjOwner(), dynObjOwnerCaster, radius, m_spellInfo->HasAttribute(SPELL_ATTR3_ONLY_TARGET_PLAYERS), m_spellInfo->HasAttribute(SPELL_ATTR5_DONT_TARGET_PLAYERS));
-            Firelands::UnitListSearcher<Firelands::AnyFriendlyUnitInObjectRangeCheck> searcher(GetDynobjOwner(), units, u_check);
-            Cell::VisitAllObjects(GetDynobjOwner(), searcher, radius);
-        }
-        else
-        {
-            Firelands::AnyAoETargetUnitInObjectRangeCheck u_check(GetDynobjOwner(), dynObjOwnerCaster, radius);
-            Firelands::UnitListSearcher<Firelands::AnyAoETargetUnitInObjectRangeCheck> searcher(GetDynobjOwner(), units, u_check);
-            Cell::VisitAllObjects(GetDynobjOwner(), searcher, radius);
-        }
+               // we can't use effect type like area auras to determine check type, check targets
+        SpellTargetCheckTypes selectionType = m_spellInfo->Effects[effIndex].TargetA.GetCheckType();
+        if (m_spellInfo->Effects[effIndex].TargetB.GetReferenceType() == TARGET_REFERENCE_TYPE_DEST)
+            selectionType = m_spellInfo->Effects[effIndex].TargetB.GetCheckType();
+
+        std::vector<Unit*> units;
+        ConditionContainer* condList = m_spellInfo->Effects[effIndex].ImplicitTargetConditions;
+
+        Firelands::WorldObjectSpellAreaTargetCheck check(radius, GetDynobjOwner(), dynObjOwnerCaster, dynObjOwnerCaster, m_spellInfo, selectionType, condList);
+        Firelands::UnitListSearcher<Firelands::WorldObjectSpellAreaTargetCheck> searcher(GetDynobjOwner(), units, check);
+        Cell::VisitAllObjects(GetDynobjOwner(), searcher, radius);
 
         for (Unit* unit : units)
         {

@@ -171,7 +171,7 @@ class boss_onyxia : public CreatureScript
 
         void JustSummoned(Creature* summoned) override
         {
-            summoned->SetInCombatWithZone();
+            DoZoneInCombat(summoned);
             if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
                 summoned->AI()->AttackStart(target);
 

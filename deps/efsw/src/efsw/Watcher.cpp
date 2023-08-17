@@ -18,4 +18,4 @@ Watcher::Watcher( WatchID id, std::string directory, FileWatchListener * listene
 {
 }
 
-} 
+}
