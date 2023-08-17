@@ -99,7 +99,6 @@ public:
 
     bool contains(const T& value) const { return memberTable.count(&value) > 0; }
     bool empty() const { return memberTable.empty(); }
-
     struct Cell
     {
         int x, y;
@@ -116,7 +115,8 @@ public:
 
     Node& getGrid(int x, int y)
     {
-        ASSERT(x < CELL_NUMBER && y < CELL_NUMBER);
+        ASSERT(x < CELL_NUMBER && y < CELL_NUMBER && nodes != nullptr);
+
         if (!nodes[x][y])
             nodes[x][y] = NodeCreatorFunc::makeNode(x, y);
         return *nodes[x][y];

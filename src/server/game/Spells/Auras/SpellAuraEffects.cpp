@@ -1,3 +1,4 @@
+
 /*
  * This file is part of the FirelandsCore Project. See AUTHORS file for Copyright information
  *
@@ -992,8 +993,7 @@ void AuraEffect::UpdatePeriodic(Unit* caster)
 
 float AuraEffect::GetCritChanceFor(Unit const* caster, Unit const* target) const
 {
-    float crit = caster->SpellCritChanceDone(GetSpellInfo(), GetSpellInfo()->GetSchoolMask(), GetSpellInfo()->GetAttackType());
-    return target->SpellCritChanceTaken(caster, GetSpellInfo(), GetSpellInfo()->GetSchoolMask(), crit, GetSpellInfo()->GetAttackType());
+    return target->SpellCritChanceTaken(caster, GetSpellInfo(), GetSpellInfo()->GetSchoolMask(), GetBase()->GetCritChance(), GetSpellInfo()->GetAttackType(), true);
 }
 
 bool AuraEffect::IsAffectingSpell(SpellInfo const* spell) const
@@ -1133,6 +1133,11 @@ bool AuraEffect::CheckEffectProc(AuraApplication* aurApp, ProcEventInfo& eventIn
                 return false;
         break;
     }
+    case SPELL_AURA_MOD_SPELL_CRIT_CHANCE:
+        // skip spells that can't crit
+        if (!spellInfo || !spellInfo->HasAttribute(SPELL_ATTR0_CU_CAN_CRIT))
+            return false;
+        break;
     default:
         break;
     }
@@ -6011,7 +6016,7 @@ void AuraEffect::HandlePeriodicHealthLeechAuraTick(Unit* target, Unit* caster) c
         float gainMultiplier = GetSpellInfo()->Effects[GetEffIndex()].CalcValueMultiplier(caster);
 
         uint32 heal = uint32(caster->SpellHealingBonusDone(caster, GetSpellInfo(), uint32(new_damage * gainMultiplier), DOT, GetEffIndex(), GetBase()->GetStackAmount()));
-        heal = uint32(caster->SpellHealingBonusTaken(caster, GetSpellInfo(), heal, DOT, GetBase()->GetStackAmount()));
+        heal = uint32(caster->SpellHealingBonusTaken(caster, GetSpellInfo(), heal, DOT));
 
         HealInfo healInfo(caster, caster, heal, GetSpellInfo(), GetSpellInfo()->GetSchoolMask());
         caster->HealBySpell(healInfo);
@@ -6090,7 +6095,7 @@ void AuraEffect::HandlePeriodicHealAurasTick(Unit* target, Unit* caster) const
             damage = caster->SpellHealingBonusDone(target, GetSpellInfo(), damage, DOT, GetEffIndex(), GetBase()->GetStackAmount()) * caster->SpellHealingPctDone(target, m_spellInfo);
     }
 
-    damage = target->SpellHealingBonusTaken(caster, GetSpellInfo(), damage, DOT, GetBase()->GetStackAmount());
+    damage = target->SpellHealingBonusTaken(caster, GetSpellInfo(), damage, DOT);
 
     bool crit = false;
 
