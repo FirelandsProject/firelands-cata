@@ -1,0 +1,48 @@
+name: Linux Build
+on:
+  push:
+      paths-ignore:
+        - 'README.md'
+        - 'data/sql/**'
+        - 'src/server/authserver/authserver.conf.dist'
+        - 'src/server/worldserver/worldserver.conf.dist'
+      branches: [ master ]
+  pull_request:
+      paths-ignore:
+        - 'README.md'
+        - 'data/sql/**'
+        - 'src/server/authserver/authserver.conf.dist'
+        - 'src/server/worldserver/worldserver.conf.dist'
+      branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: shogo82148/actions-setup-mysql@v1
+        with:
+          distribution: 'mariadb'
+          mysql-version: '10.6'
+
+      - name: Check for Updates
+        run: sudo apt-get update -y
+       
+      - name: Install Required Packages
+        run: sudo apt-get install -y git clang cmake make libssl-dev libbz2-dev libreadline-dev libncurses-dev libboost-all-dev
+
+      - name: Update Compilers
+        run: |
+            sudo update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100
+            sudo update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang 100
+        
+      - name: Build Project
+        run: |
+            mkdir bin
+            cd bin
+            cmake ../ -DWITH_WARNINGS=1 -DWITHCOREDEBUG=0 -DUSE_COREPCH=1 -DUSE_SCRIPTPCH=1 -DTOOLS=1 -DSERVERS=1 -DNOJEM=1 -DCMAKE_BUILD_TYPE=Debug
+            make -j 8 -k
