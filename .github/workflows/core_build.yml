@@ -42,7 +42,7 @@ jobs:
         
       - name: Build Project
         run: |
-            mkdir bin
-            cd bin
+            mkdir build_bin
+            cd build_bin
             cmake ../ -DWITH_WARNINGS=1 -DWITHCOREDEBUG=0 -DUSE_COREPCH=1 -DUSE_SCRIPTPCH=1 -DTOOLS=1 -DSERVERS=1 -DNOJEM=1 -DCMAKE_BUILD_TYPE=Debug
             make -j 8 -k
