@@ -186,11 +186,16 @@ static TFileEntry * FindPatchEntry(TMPQArchive * ha, TFileEntry * pFileEntry)
             // Move to the patch archive
             ha = ha->haPatch;
             szFileName[0] = 0;
-
+            
             // Prepare the prefix for the file name
             if(ha->pPatchPrefix && ha->pPatchPrefix->nLength)
                 StringCopy(szFileName, _countof(szFileName), ha->pPatchPrefix->szPatchPrefix);
-            StringCat(szFileName, _countof(szFileName), pFileEntry->szFileName);
+
+            char* fileName = pFileEntry->szFileName;
+            if (fileName == NULL)
+                continue;
+
+            StringCat(szFileName, _countof(szFileName), fileName);
 
             // Try to find the file there
             pTempEntry = GetFileEntryExact(ha, szFileName, 0, NULL);
@@ -414,7 +419,7 @@ HANDLE WINAPI SFileFindFirstFile(HANDLE hMpq, const char * szMask, SFILE_FIND_DA
     if(dwErrCode == ERROR_SUCCESS)
     {
         memset(hs, 0, sizeof(TMPQSearch));
-        strcpy(hs->szSearchMask, szMask);
+        strcpy(&hs->szSearchMask[0], szMask);
         hs->dwFlagMask = MPQ_FILE_EXISTS;
         hs->ha = ha;
 
