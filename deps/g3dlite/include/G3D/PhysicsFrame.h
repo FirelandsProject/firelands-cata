@@ -2,7 +2,7 @@
  \file PhysicsFrame.h
 
  \maintainer Morgan McGuire, http://graphics.cs.williams.edu
- 
+
  \created 2002-07-08
  \edited  2011-05-10
 */
@@ -86,7 +86,7 @@ public:
 
     operator CFrame() const;
 
-    /** Multiplies both pieces by \a f; note that this will result in a non-unit 
+    /** Multiplies both pieces by \a f; note that this will result in a non-unit
     quaternion that needs to be normalized */
     PhysicsFrame& operator*=(float f) {
         rotation *= f;
@@ -94,7 +94,7 @@ public:
         return *this;
     }
 
-    /** Multiplies both pieces by \a f; note that this will result in a non-unit 
+    /** Multiplies both pieces by \a f; note that this will result in a non-unit
     quaternion that needs to be normalized */
     PhysicsFrame operator*(float f) const {
         return PhysicsFrame(rotation * f, translation * f);
@@ -111,7 +111,7 @@ public:
     }
 
     bool operator==(const PhysicsFrame& other) const {
-        return (translation == other.translation) && 
+        return (translation == other.translation) &&
             ((rotation == other.rotation) || (rotation == -other.rotation));
     }
 

@@ -186,7 +186,7 @@ static TFileEntry * FindPatchEntry(TMPQArchive * ha, TFileEntry * pFileEntry)
             // Move to the patch archive
             ha = ha->haPatch;
             szFileName[0] = 0;
-            
+
             // Prepare the prefix for the file name
             if(ha->pPatchPrefix && ha->pPatchPrefix->nLength)
                 StringCopy(szFileName, _countof(szFileName), ha->pPatchPrefix->szPatchPrefix);

@@ -1,8 +1,8 @@
 /**
  @file LineSegment.h
-  
+
  @maintainer Morgan McGuire, http://graphics.cs.williams.edu
- 
+
  @created 2003-02-08
  @edited  2008-02-02
  */
@@ -34,13 +34,13 @@ public:
     LineSegment() : _point(Point3::zero()), direction(Vector3::zero()) {}
 
     LineSegment(class BinaryInput& b);
-    
+
     void serialize(class BinaryOutput& b) const;
-    
+
     void deserialize(class BinaryInput& b);
 
     virtual ~LineSegment() {}
-    
+
     /**
      * Constructs a line from two (not equal) points.
      */
@@ -95,12 +95,12 @@ private:
     float           m_length;
 
 public:
-    
+
     LineSegment2D() {}
 
     static LineSegment2D fromTwoPoints(const Point2& p0, const Vector2& p1);
 
-    /** Returns the intersection of these segements (including 
+    /** Returns the intersection of these segements (including
        testing endpoints), or Point2::inf() if they do not intersect. */
     Point2 intersection(const LineSegment2D& other) const;
 

@@ -50,7 +50,7 @@ namespace G3D {
 
   template<> struct HashTrait<class Foo> {
        static size_t hashCode(const Foo& key) { return HashTrait<std::string>::hashCode(key.name) + key.index; }
-  }; 
+  };
 
 
   // Use Foo::hashCode
@@ -61,15 +61,15 @@ namespace G3D {
   </pre>
 
 
- Key must be a pointer, an int, a std::string or provide overloads for: 
+ Key must be a pointer, an int, a std::string or provide overloads for:
 
   <PRE>
     template<> struct HashTrait<class Key> {
         static size_t hashCode(const Key& key) { return reinterpret_cast<size_t>( ... ); }
-    }; 
+    };
   </PRE>
 
-  and one of 
+  and one of
 
   <PRE>
     template<> struct EqualsTrait<class Key>{
@@ -97,7 +97,7 @@ namespace G3D {
   1.0 your hash function is badly designed and maps too many inputs to
   the same output.
  */
-template<class Key, class Value, class HashFunc = HashTrait<Key>, class EqualsFunc = EqualsTrait<Key> > 
+template<class Key, class Value, class HashFunc = HashTrait<Key>, class EqualsFunc = EqualsTrait<Key> >
 class Table {
 public:
 
@@ -131,12 +131,12 @@ private:
     private:
 
         // Private to require use of the allocator
-        Node(const Key& k, const Value& v, size_t h, Node* n) 
+        Node(const Key& k, const Value& v, size_t h, Node* n)
             : entry(k, v), hashCode(h), next(n) {
                 debugAssert((next == NULL) || isValidHeapPointer(next));
         }
 
-        Node(const Key& k, size_t h, Node* n) 
+        Node(const Key& k, size_t h, Node* n)
             : entry(k), hashCode(h), next(n) {
                 debugAssert((next == NULL) || isValidHeapPointer(next));
         }
@@ -184,13 +184,13 @@ private:
     size_t              m_size;
 
     /**
-     Array of Node*. 
+     Array of Node*.
 
      We don't use Array<Node*> because Table is lower-level than Array.
      Some elements may be NULL.
      */
     Node**              m_bucket;
-    
+
     /**
      Length of the m_bucket array.
      */
@@ -222,12 +222,12 @@ private:
         // Move each node to its new hash location
         for (size_t b = 0; b < m_numBuckets; ++b) {
             Node* node = oldBucket[b];
-         
+
             // There is a linked list of nodes at this m_bucket
             while (node != NULL) {
                 // Hang onto the old next pointer
                 Node* nextNode = node->next;
-        
+
                 // Insert at the head of the list for m_bucket[i]
                 size_t i = node->hashCode % newSize;
                 node->next = m_bucket[i];
@@ -312,7 +312,7 @@ public:
         m_memoryManager = m;
     }
 
-    /** 
+    /**
         Recommends that the table resize to anticipate at least this number of elements.
      */
     void setSizeHint(size_t n) {
@@ -321,7 +321,7 @@ public:
             resize(s);
         }
     }
-    
+
     /**
        Destroys all of the memory allocated by the table, but does <B>not</B>
        call delete on keys or values if they are pointers.  If you want to
@@ -394,7 +394,7 @@ public:
 
     /**
      A small load (close to zero) means the hash table is acting very
-     efficiently most of the time.  A large load (close to 1) means 
+     efficiently most of the time.  A large load (close to 1) means
      the hash table is acting poorly-- all operations will be very slow.
      A large load will result from a bad hash function that maps too
      many keys to the same code.
@@ -439,11 +439,11 @@ public:
         }
 
         Iterator(size_t numBuckets, Node** m_bucket) :
-            index(0), 
+            index(0),
             node(NULL),
             m_numBuckets(numBuckets),
             m_bucket(m_bucket) {
-            
+
             if (m_numBuckets == 0) {
                 // Empty table
                 isDone = true;
@@ -555,7 +555,7 @@ public:
 
 
     /**
-     C++ STL style iterator method.  Returns the first Entry, which 
+     C++ STL style iterator method.  Returns the first Entry, which
      contains a key and value.  Use preincrement (++entry) to get to
      the next element.  Do not modify the table while iterating.
      */
@@ -582,7 +582,7 @@ public:
         m_bucket = NULL;
     }
 
-   
+
     /**
      Returns the number of keys.
      */
@@ -593,7 +593,7 @@ public:
 
     /**
      If you insert a pointer into the key or value of a table, you are
-     responsible for deallocating the object eventually.  Inserting 
+     responsible for deallocating the object eventually.  Inserting
      key into a table is O(1), but may cause a potentially slow rehashing.
      */
     void set(const Key& key, const Value& value) {
@@ -607,7 +607,7 @@ private:
         if (m_numBuckets == 0) {
             return false;
         }
-       
+
         const size_t code = HashFunc::hashCode(key);
         const size_t b = code % m_numBuckets;
 
@@ -619,7 +619,7 @@ private:
         }
 
         Node* previous = NULL;
-      
+
         // Try to find the node
         do {
           if ((code == n->hashCode) && EqualsFunc::equals(n->entry.key, key)) {
@@ -662,7 +662,7 @@ public:
     }
 
     /**
-    Removes an element from the table if it is present.  
+    Removes an element from the table if it is present.
     @return true if the element was found and removed, otherwise  false
     */
    bool remove(const Key& key) {
@@ -694,8 +694,8 @@ private:
    }
 
 public:
-   
-    /** If a value that is EqualsFunc to @a member is present, returns a pointer to the 
+
+    /** If a value that is EqualsFunc to @a member is present, returns a pointer to the
         version stored in the data structure, otherwise returns NULL.
      */
    const Key* getKeyPointer(const Key& key) const {
@@ -709,7 +709,7 @@ public:
 
    /**
     Returns the value associated with key.
-    @deprecated Use get(key, val) or getPointer(key) 
+    @deprecated Use get(key, val) or getPointer(key)
     */
    Value& get(const Key& key) const {
        Entry* e = getEntryPointer(key);
@@ -719,13 +719,13 @@ public:
 
 
    /** Returns a pointer to the element if it exists, or NULL if it does not.
-       Note that if your value type <i>is</i> a pointer, the return value is 
-       a pointer to a pointer.  Do not remove the element while holding this 
+       Note that if your value type <i>is</i> a pointer, the return value is
+       a pointer to a pointer.  Do not remove the element while holding this
        pointer.
 
-       It is easy to accidentally mis-use this method.  Consider making 
+       It is easy to accidentally mis-use this method.  Consider making
        a Table<Value*> and using get(key, val) instead, which makes you manage
-       the memory for the values yourself and is less likely to result in 
+       the memory for the values yourself and is less likely to result in
        pointer errors.
      */
    Value* getPointer(const Key& key) const {
@@ -765,10 +765,10 @@ public:
    }
 
 
-    /** Called by getCreate() and set() 
-        
+    /** Called by getCreate() and set()
+
         \param created Set to true if the entry was created by this method.
-    */  
+    */
     Entry& getCreateEntry(const Key& key, bool& created) {
         created = false;
 
@@ -778,7 +778,7 @@ public:
 
         size_t code = HashFunc::hashCode(key);
         size_t b = code % m_numBuckets;
-        
+
         // Go to the m_bucket
         Node* n = m_bucket[b];
 
@@ -794,7 +794,7 @@ public:
         size_t bucketLength = 1;
 
         // Sometimes a bad hash code will cause all elements
-        // to collide.  Detect this case and don't rehash when 
+        // to collide.  Detect this case and don't rehash when
         // it occurs; nothing good will come from the rehashing.
         bool allSameCode = true;
 
@@ -813,7 +813,7 @@ public:
         } while (n != NULL);
 
         // Allow the load factor to rise as the table gets huge
-        const int bucketsPerElement = 
+        const int bucketsPerElement =
             (m_size > 50000) ? 3 :
                 ((m_size > 10000) ? 5 :
                  ((m_size > 5000) ? 10 : 15));
@@ -821,15 +821,15 @@ public:
         const size_t maxBucketLength = 3;
         // (Don't bother changing the size of the table if all entries
         // have the same hashcode--they'll still collide)
-        if ((bucketLength > maxBucketLength) && 
-            ! allSameCode && 
+        if ((bucketLength > maxBucketLength) &&
+            ! allSameCode &&
             (m_numBuckets < m_size * bucketsPerElement)) {
 
             // This m_bucket was really large; rehash if all elements
             // don't have the same hashcode the number of buckets is
             // reasonable.
 
-            // Back off the scale factor as the number of buckets gets 
+            // Back off the scale factor as the number of buckets gets
             // large
             float f = 3.0f;
             if (m_numBuckets > 1000000) {
@@ -855,7 +855,7 @@ public:
         bool ignore;
         return getCreateEntry(key, ignore);
     }
-    
+
 
     /** Returns the current value that key maps to, creating it if necessary.*/
     Value& getCreate(const Key& key) {

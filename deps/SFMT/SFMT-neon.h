@@ -1,8 +1,8 @@
 /**
  * @file  SFMT-neon.h
- * @brief SIMD oriented Fast Mersenne Twister(SFMT) for ARM with 128b NEON 
+ * @brief SIMD oriented Fast Mersenne Twister(SFMT) for ARM with 128b NEON
  *
- * @author Masaki Ota 
+ * @author Masaki Ota
  *
  * @note We assume LITTLE ENDIAN in this file
  */

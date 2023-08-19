@@ -485,7 +485,7 @@ int DecompressADPCM_SC1B(void * pvOutBuffer, int cbOutBuffer, void * pvInBuffer,
     {
         if(!is.ReadWordSample(InputValue16))
             return os.LengthProcessed(pvOutBuffer);
-        
+
         PredictedSamples[i] = InputValue16;
         os.WriteWordSample(InputValue16);
     }
@@ -501,7 +501,7 @@ int DecompressADPCM_SC1B(void * pvOutBuffer, int cbOutBuffer, void * pvInBuffer,
         PredictedSamples[ChannelIndex] = ((reg_eax * 10) + 0x80) >> 8;
 
         Difference = (((EncodedSample >> 1) + 1) * BitMasks[ChannelIndex] + AdpcmData.field_10) >> AdpcmData.BitCount;
-        
+
         PredictedSamples[ChannelIndex] = UpdatePredictedSample(PredictedSamples[ChannelIndex], EncodedSample, Difference, 0x01);
 
         BitMasks[ChannelIndex] = (AdpcmData.pValues[EncodedSample >> 1] * BitMasks[ChannelIndex] + 0x80) >> 6;

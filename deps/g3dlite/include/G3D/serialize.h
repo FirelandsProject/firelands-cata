@@ -7,7 +7,7 @@
 #include <string>
 
 namespace G3D {
-    
+
 
 inline void serialize(const std::string& s, BinaryOutput& b) {
     b.writeString32(s);
@@ -58,20 +58,20 @@ inline void deserialize(float64& f, BinaryInput& b) {
 }
 
 /** serialize(const T&, BinaryOutput&) must have been overridden as well */
-template<typename T> 
-void serialize(const Array<T>& array, BinaryOutput& b) { 
-    b.writeInt32(array.size()); 
-    for (int i = 0; i < array.size(); ++i) { 
-        serialize(array[i], b); 
-    } 
+template<typename T>
+void serialize(const Array<T>& array, BinaryOutput& b) {
+    b.writeInt32(array.size());
+    for (int i = 0; i < array.size(); ++i) {
+        serialize(array[i], b);
+    }
 }
 
-template<typename T> 
-void deserialize(Array<T>& array, BinaryInput& b) { 
+template<typename T>
+void deserialize(Array<T>& array, BinaryInput& b) {
     int N = b.readInt32();
     array.resize(N);
-    for (int i = 0; i < array.size(); ++i) { 
-        deserialize(array[i], b); 
+    for (int i = 0; i < array.size(); ++i) {
+        deserialize(array[i], b);
     }
 }
 

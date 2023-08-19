@@ -31,12 +31,12 @@ public:
         /** The plane containing the face. */
         Plane           plane;
     };
-        
+
     /** The vertices, in homogeneous space.  The order is that of
         the near face, starting from the (object space) +x,+y corner
         and proceeding CCW from the camera's point of view; followed
         by the far face also in CCW order.
-    
+
         If w == 0,
         a vertex is at infinity. */
     SmallArray<Vector4, 8>      vertexPos;

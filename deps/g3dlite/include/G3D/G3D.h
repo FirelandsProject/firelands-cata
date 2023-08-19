@@ -172,16 +172,16 @@ template<class T> struct HashTrait< shared_ptr<T> > {
 
 namespace G3D {
 
-    /** 
+    /**
       Call from main() to initialize the G3D library state and register
-      shutdown memory managers.  This does not initialize OpenGL. 
+      shutdown memory managers.  This does not initialize OpenGL.
 
       If you invoke initGLG3D, then it will automatically call initG3D.
       It is safe to call this function more than once--it simply ignores
       multiple calls.
 
       \see System, GLCaps, OSWindow, RenderDevice, initGLG3D.
-        
+
     */
     void initG3D(const G3DSpecification& spec = G3DSpecification());
 }

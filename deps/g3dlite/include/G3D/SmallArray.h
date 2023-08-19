@@ -1,6 +1,6 @@
-/** 
+/**
   \file G3D/SmallArray.h
-  
+
   \created 2009-04-26
   \edited  2012-07-23
 
@@ -16,7 +16,7 @@
 
 namespace G3D {
 
-/** Embeds \a N elements to reduce allocation time and increase 
+/** Embeds \a N elements to reduce allocation time and increase
     memory coherence when working with arrays of arrays.
     Offers a limited subset of the functionality of G3D::Array.*/
 template<class T, int N>

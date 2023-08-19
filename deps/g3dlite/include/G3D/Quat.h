@@ -1,10 +1,10 @@
 /**
   \file G3D/Quat.h
- 
+
   Quaternion
-  
+
   \maintainer Morgan McGuire, http://graphics.cs.williams.edu
-  
+
   \created 2002-01-23
   \edited  2011-05-10
  */
@@ -29,11 +29,11 @@ namespace G3D {
 
   A quaternion represents the sum of a real scalar and
   an imaginary vector: ix + jy + kz + w.  A unit quaternion
-  representing a rotation by A about axis v has the form 
+  representing a rotation by A about axis v has the form
   [sin(A/2)*v, cos(A/2)].  For a unit quaternion, q.conj() == q.inverse()
   is a rotation by -A about v.  -q is the same rotation as q
-  (negate both the axis and angle).  
-  
+  (negate both the axis and angle).
+
   A non-unit quaterion q represents the same rotation as
   q.unitize() (Dam98 pg 28).
 
@@ -58,9 +58,9 @@ public:
 
     /**
      q = [sin(angle / 2) * axis, cos(angle / 2)]
-    
+
      In Watt & Watt's notation, s = w, v = (x, y, z)
-     In the Real-Time Rendering notation, u = (x, y, z), w = w 
+     In the Real-Time Rendering notation, u = (x, y, z), w = w
      */
     float x, y, z, w;
 
@@ -88,7 +88,7 @@ public:
     bool operator==(const Quat& q) const {
         return x == q.x && y == q.y && z == q.z && w == q.w;
     }
-    
+
     /**
      The real part of the quaternion.
      */
@@ -119,7 +119,7 @@ public:
     Quat operator+(const Quat& q) const {
         return Quat(x + q.x, y + q.y, z + q.z, w + q.w);
     }
-    
+
     Quat& operator+=(const Quat& q) {
         x += q.x;
         y += q.y;
@@ -171,8 +171,8 @@ public:
     bool fuzzyEq(const Quat& q) {
       return G3D::fuzzyEq(x, q.x) && G3D::fuzzyEq(y, q.y) && G3D::fuzzyEq(z, q.z) && G3D::fuzzyEq(w, q.w);
     }
-    
-    /** True if these quaternions represent the same rotation (note that every rotation is 
+
+    /** True if these quaternions represent the same rotation (note that every rotation is
         represented by two values; q and -q).
       */
     bool sameRotation(const Quat& q) {
@@ -213,7 +213,7 @@ public:
 
     void toRotationMatrix(
         Matrix3&            rot) const;
-    
+
 private:
     /**  \param maxAngle Maximum angle of rotation allowed.  If a larger rotation is required, the angle of rotation applied is clamped to maxAngle */
     Quat slerp
@@ -224,7 +224,7 @@ private:
 public:
 
     /**
-     Spherical linear interpolation: linear interpolation along the 
+     Spherical linear interpolation: linear interpolation along the
      shortest (3D) great-circle route between two quaternions.
 
      Assumes that both arguments are unit quaternions.
@@ -232,7 +232,7 @@ public:
      Note: Correct rotations are expected between 0 and PI in the right order.
 
      \cite Based on Game Physics -- David Eberly pg 538-540
-     
+
      \param threshold Critical angle between between rotations (in radians) at which
             the algorithm switches to normalized lerp, which is more
             numerically stable in those situations. 0.0 will always slerp.
@@ -251,7 +251,7 @@ public:
         float               maxAngle) const {
         return slerp(other, 1.0f, 0.05f, maxAngle);
     }
-    
+
     /** Rotates towards \a other by at most \a maxAngle. */
     void moveTowards
        (const Quat&         other,
@@ -259,16 +259,16 @@ public:
         *this = movedTowards(other, maxAngle);
     }
 
-    /** Returns the angle in radians between this and other, assuming both are unit quaternions. 
-    
+    /** Returns the angle in radians between this and other, assuming both are unit quaternions.
+
       \returns On the range [0, pif()]*/
     float angleBetween(const Quat& other) const;
 
     /** Normalized linear interpolation of quaternion components. */
     Quat nlerp(const Quat& other, float alpha) const;
-    
 
-    /** Note that q<SUP>-1</SUP> = q.conj() for a unit quaternion. 
+
+    /** Note that q<SUP>-1</SUP> = q.conj() for a unit quaternion.
         @cite Dam99 page 13 */
     inline Quat inverse() const {
         return conj() / dot(*this);
@@ -288,7 +288,7 @@ public:
     /** Is the magnitude nearly 1.0? */
     bool isUnit(float tolerance = 1e-5) const {
         return abs(dot(*this) - 1.0f) < tolerance;
-    }    
+    }
 
     float magnitude() const {
         return sqrtf(dot(*this));
@@ -372,7 +372,7 @@ public:
     const float& operator[] (int i) const;
     float& operator[] (int i);
 
-    /** Generate uniform random unit quaternion (i.e. random "direction") 
+    /** Generate uniform random unit quaternion (i.e. random "direction")
     @cite From "Uniform Random Rotations", Ken Shoemake, Graphics Gems III.
    */
     static Quat unitRandom();

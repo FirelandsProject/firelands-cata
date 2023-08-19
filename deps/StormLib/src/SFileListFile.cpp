@@ -705,7 +705,7 @@ DWORD WINAPI SFileAddListFileEntries(HANDLE hMpq, const char ** listFileEntries,
         // Move to the next archive in the chain
         ha = ha->haPatch;
     }
-    
+
     return dwErrCode;
 }
 

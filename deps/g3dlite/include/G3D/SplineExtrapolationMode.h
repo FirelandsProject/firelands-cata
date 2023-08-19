@@ -1,8 +1,8 @@
-/** 
+/**
   \file G3D/SplineExtrapolationMode.h
- 
+
   \maintainer Michael Mara, http://graphics.cs.williams.edu
- 
+
   \created 2013-01-24
   \edited  2013-01-24
 
@@ -19,14 +19,14 @@
 
 namespace G3D {
 
-/** 
+/**
   Describes the behavior of G3D::Spline, etc. when accessing a time outside of the control point range.
 
   Refer to these as scoped enums, e.g., <code>SplineExtrapolationMode m = SplineExtrapolationMode::CLAMP;</code>.
 
-  Uses the "Intelligent Enum" design pattern 
+  Uses the "Intelligent Enum" design pattern
   http://www.codeguru.com/cpp/cpp/cpp_mfc/article.php/c4001/
- */ 
+ */
 class SplineExtrapolationMode {
 public:
     /** Don't use this enum; use SplineExtrapolationMode instances instead. */
@@ -37,9 +37,9 @@ public:
     };
     Value value;
 private:
-    
+
     static const char* toString(int i, Value& v) {
-        static const char* str[] = {"CYCLIC", "LINEAR", "CLAMP", NULL}; 
+        static const char* str[] = {"CYCLIC", "LINEAR", "CLAMP", NULL};
         static const Value val[] = {CYCLIC, LINEAR, CLAMP};
         const char* s = str[i];
         if (s) {
@@ -56,9 +56,9 @@ public:
 
 
 
-/** 
+/**
   Describes the behavior of G3D::Spline
- */ 
+ */
 class SplineInterpolationMode {
 public:
     /** Don't use this enum; use SplineExtrapolationMode instances instead. */
@@ -68,9 +68,9 @@ public:
     };
     Value value;
 private:
-    
+
     static const char* toString(int i, Value& v) {
-        static const char* str[] = {"LINEAR", "CUBIC", NULL}; 
+        static const char* str[] = {"LINEAR", "CUBIC", NULL};
         static const Value val[] = {LINEAR, CUBIC};
         const char* s = str[i];
         if (s) {

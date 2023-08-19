@@ -1,10 +1,10 @@
 /**
  @file Ray.h
- 
+
  Ray class
- 
+
  @maintainer Morgan McGuire, http://graphics.cs.williams.edu
- 
+
  @created 2002-07-12
  @edited  2009-06-29
  */
@@ -33,13 +33,13 @@ private:
     /** 1.0 / direction */
     Vector3 m_invDirection;
 
-    
+
     /** The following are for the "ray slope" optimization from
-      "Fast Ray / Axis-Aligned Bounding Box Overlap Tests using Ray Slopes" 
+      "Fast Ray / Axis-Aligned Bounding Box Overlap Tests using Ray Slopes"
       by Martin Eisemann, Thorsten Grosch, Stefan MÅ¸ller and Marcus Magnor
       Computer Graphics Lab, TU Braunschweig, Germany and
       University of Koblenz-Landau, Germany */
-    enum Classification {MMM, MMP, MPM, MPP, PMM, PMP, PPM, PPP, POO, MOO, OPO, OMO, OOP, OOM, OMM, OMP, OPM, OPP, MOM, MOP, POM, POP, MMO, MPO, PMO, PPO};    
+    enum Classification {MMM, MMP, MPM, MPP, PMM, PMP, PPM, PPP, POO, MOO, OPO, OMO, OOP, OOM, OMM, OMP, OPM, OPP, MOM, MOP, POM, POP, MMO, MPO, PMO, PPO};
 
     Classification classification;
 
@@ -56,7 +56,7 @@ public:
     const Point3& origin() const {
         return m_origin;
     }
-    
+
     /** Unit direction vector. */
     const Vector3& direction() const {
         return m_direction;
@@ -66,7 +66,7 @@ public:
     const Vector3& invDirection() const {
         return m_invDirection;
     }
-    
+
     Ray() {
         set(Point3::zero(), Vector3::unitX());
     }
@@ -77,17 +77,17 @@ public:
     }
 
     Ray(class BinaryInput& b);
-    
+
     void serialize(class BinaryOutput& b) const;
     void deserialize(class BinaryInput& b);
-    
+
     /**
        Creates a Ray from a origin and a (nonzero) unit direction.
     */
     static Ray fromOriginAndDirection(const Point3& point, const Vector3& direction) {
         return Ray(point, direction);
     }
-    
+
     /** Returns a new ray which has the same direction but an origin
         advanced along direction by @a distance */
     Ray bumpedRay(float distance) const {
@@ -194,7 +194,7 @@ public:
     }
 
 
-    /* One-sided triangle 
+    /* One-sided triangle
        */
     float intersectionTime(const Triangle& triangle) const {
         return intersectionTime(
@@ -242,7 +242,7 @@ public:
 #define SUB(dest,v1,v2) \
           dest[0]=v1[0]-v2[0]; \
           dest[1]=v1[1]-v2[1]; \
-          dest[2]=v1[2]-v2[2]; 
+          dest[2]=v1[2]-v2[2];
 
 inline float Ray::intersectionTime(
     const Point3& vert0,
@@ -258,41 +258,41 @@ inline float Ray::intersectionTime(
     float u, v;
 
     float tvec[3], pvec[3], qvec[3];
-    
+
     // begin calculating determinant - also used to calculate U parameter
     CROSS(pvec, m_direction, edge2);
-    
+
     // if determinant is near zero, ray lies in plane of triangle
     const float det = DOT(edge1, pvec);
-    
+
     if (det < EPSILON) {
         return finf();
     }
-    
+
     // calculate distance from vert0 to ray origin
     SUB(tvec, m_origin, vert0);
-    
+
     // calculate U parameter and test bounds
     u = DOT(tvec, pvec);
     if ((u < 0.0f) || (u > det)) {
         // Hit the plane outside the triangle
         return finf();
     }
-    
+
     // prepare to test V parameter
     CROSS(qvec, tvec, edge1);
-    
+
     // calculate V parameter and test bounds
     v = DOT(m_direction, qvec);
     if ((v < 0.0f) || (u + v > det)) {
         // Hit the plane outside the triangle
         return finf();
     }
-    
+
 
     // Case where we don't need correct (u, v):
     const float t = DOT(edge2, qvec);
-    
+
     if (t >= 0.0f) {
         // Note that det must be positive
         return t / det;
@@ -323,36 +323,36 @@ inline float Ray::intersectionTime
 
     // begin calculating determinant - also used to calculate U parameter
     CROSS(pvec, m_direction, edge2);
-    
+
     // if determinant is near zero, ray lies in plane of triangle
     const float det = DOT(edge1, pvec);
-    
+
     if (det < EPSILON) {
         return finf();
     }
-    
+
     // calculate distance from vert0 to ray origin
     SUB(tvec, m_origin, vert0);
-    
+
     // calculate U parameter and test bounds
     u = DOT(tvec, pvec);
     if ((u < 0.0f) || (u > det)) {
         // Hit the plane outside the triangle
         return finf();
     }
-    
+
     // prepare to test V parameter
     CROSS(qvec, tvec, edge1);
-    
+
     // calculate V parameter and test bounds
     v = DOT(m_direction, qvec);
     if ((v < 0.0f) || (u + v > det)) {
         // Hit the plane outside the triangle
         return finf();
     }
-    
+
     float t = DOT(edge2, qvec);
-    
+
     if (t >= 0) {
         const float inv_det = 1.0f / det;
         t *= inv_det;

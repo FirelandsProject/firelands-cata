@@ -32,7 +32,7 @@ namespace G3D {
   class Resource {
   public:
     enum Value {FUEL, FOOD, WATER} value;
-    
+
     // i is the position the enum value in Value (not the enum value itself)
     static const char* toString(int i, Value& v) {
         static const char* str[] = {"FUEL", "FOOD", "WATER", NULL}; // Whatever your enum values are
@@ -49,7 +49,7 @@ namespace G3D {
   G3D_DECLARE_ENUM_CLASS_HASHCODE(Resource);
   \endcode
 
-  Extends the "Intelligent Enum" design pattern 
+  Extends the "Intelligent Enum" design pattern
   http://www.codeguru.com/cpp/cpp/cpp_mfc/article.php/c4001/
 
   Enum classes are initialized to their zero value by default.
@@ -255,7 +255,7 @@ printf("%s = %d\n", d.toString(), d.value);
 
 \code
 G3D_BEGIN_ENUM_CLASS_DECLARATION(Day, SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY);
-   // Put extra methods here, e.g., 
+   // Put extra methods here, e.g.,
    Value nextValue() { ... }
 G3D_END_ENUM_CLASS_DECLARATION();
 }

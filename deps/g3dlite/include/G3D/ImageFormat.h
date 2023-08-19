@@ -19,7 +19,7 @@ namespace G3D {
 
 /** Information about common image formats.  Don't construct these;
     use the methods provided to access the const instances.
-    
+
     For most formats, the number indicates the number of bits per
     channel and a suffix of "F" indicates floating point (following
     OpenGL conventions).  This does not hold for the YUV and DXT
@@ -153,7 +153,7 @@ public:
         CODE_DEPTH24,
         CODE_DEPTH32,
         CODE_DEPTH32F,
-        
+
         CODE_STENCIL1,
         CODE_STENCIL4,
         CODE_STENCIL8,
@@ -181,7 +181,7 @@ public:
     };
 
 
-    enum NumberFormat { 
+    enum NumberFormat {
         FLOATING_POINT_FORMAT,
         INTEGER_FORMAT,
         NORMALIZED_FIXED_POINT_FORMAT,
@@ -210,13 +210,13 @@ public:
 
     /** Number of bits per pixel storage for alpha values; Zero for compressed textures and non-RGB. */
     int                 alphaBits;
-    
+
     /** Number of bits per pixel storage for red values; Zero for compressed textures and non-RGB. */
     int                 redBits;
 
     /** Number of bits per pixel storage for green values; Zero for compressed textures and non-RGB. */
     int                 greenBits;
-    
+
     /** Number of bits per pixel storage for blue values; Zero for compressed textures  and non-RGB. */
     int                 blueBits;
 
@@ -245,7 +245,7 @@ public:
     /** True if there is no alpha channel for this texture. */
     bool                opaque;
 
-    
+
     /** True if the bit depths specified are for float formats. TODO: Remove, replace with function keying off numberFormat */
     bool                floatingPoint;
 
@@ -301,7 +301,7 @@ public:
     static const ImageFormat* L16();
 
     static const ImageFormat* L16F();
-    
+
     static const ImageFormat* L32F();
 
     static const ImageFormat* A8();
@@ -309,7 +309,7 @@ public:
     static const ImageFormat* A16();
 
     static const ImageFormat* A16F();
-    
+
     static const ImageFormat* A32F();
 
     static const ImageFormat* LA4();
@@ -319,7 +319,7 @@ public:
     static const ImageFormat* LA16();
 
     static const ImageFormat* LA16F();
-    
+
     static const ImageFormat* LA32F();
 
     static const ImageFormat* BGR8();
@@ -375,7 +375,7 @@ public:
     static const ImageFormat* RGBA16();
 
     static const ImageFormat* RGBA16F();
-    
+
     static const ImageFormat* RGBA32F();
 
     static const ImageFormat* RGBA16I();
@@ -388,20 +388,20 @@ public:
 
     static const ImageFormat* R11G11B10F();
 
-    static const ImageFormat* RGB9E5F();    
+    static const ImageFormat* RGB9E5F();
 
-    static const ImageFormat* RGB8I();    
+    static const ImageFormat* RGB8I();
 
-    static const ImageFormat* RGB8UI();    
+    static const ImageFormat* RGB8UI();
 
-    static const ImageFormat* RGBA8I();    
+    static const ImageFormat* RGBA8I();
 
-    static const ImageFormat* RGBA8UI();    
+    static const ImageFormat* RGBA8UI();
 
-    static const ImageFormat* RGB8_SNORM();    
-    static const ImageFormat* RGBA8_SNORM();    
-    static const ImageFormat* RGB16_SNORM();    
-    static const ImageFormat* RGBA16_SNORM();    
+    static const ImageFormat* RGB8_SNORM();
+    static const ImageFormat* RGBA8_SNORM();
+    static const ImageFormat* RGB16_SNORM();
+    static const ImageFormat* RGBA16_SNORM();
 
     static const ImageFormat* RGB_DXT1();
 
@@ -459,12 +459,12 @@ public:
     static const ImageFormat* AUTO()  { return NULL; }
 
     /** Returns DEPTH16, DEPTH24, or DEPTH32 according to the bits
-     specified. You can use "glGetInteger(GL_DEPTH_BITS)" to match 
+     specified. You can use "glGetInteger(GL_DEPTH_BITS)" to match
      the screen's format.*/
     static const ImageFormat* depth(int depthBits = 24);
 
     /** Returns STENCIL1, STENCIL4, STENCIL8 or STENCIL16 according to the bits
-      specified. You can use "glGetInteger(GL_STENCIL_BITS)" to match 
+      specified. You can use "glGetInteger(GL_STENCIL_BITS)" to match
      the screen's format.*/
     static const ImageFormat* stencil(int bits = 8);
 
@@ -476,7 +476,7 @@ public:
     /** For use with ImageFormat::convert. */
     class BayerAlgorithm {
     public:
-        enum Value { 
+        enum Value {
             NEAREST,
             BILINEAR,
             MHC,
@@ -484,7 +484,7 @@ public:
         };
     private:
         static const char* toString(int i, Value& v) {
-            static const char* str[] = {"NEAREST", "BILINEAR", "MHC", "BEST", NULL}; 
+            static const char* str[] = {"NEAREST", "BILINEAR", "MHC", "BEST", NULL};
             static const Value val[] = {NEAREST, BILINEAR, MHC, BEST};
             const char* s = str[i];
             if (s) {
@@ -518,7 +518,7 @@ public:
                         bool invertY = false, BayerAlgorithm bayerAlg = BayerAlgorithm::MHC);
 
     /**
-       Checks if a conversion between two formats is available. 
+       Checks if a conversion between two formats is available.
        \deprecated
        \sa G3D::ImageConvert
      */

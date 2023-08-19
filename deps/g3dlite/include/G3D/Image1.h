@@ -55,7 +55,7 @@ public:
     static Ref createEmpty(WrapMode wrap = WrapMode::ERROR);
 
     static Ref fromFile(const std::string& filename, WrapMode wrap = WrapMode::ERROR);
-    
+
     static Ref fromArray(const class Color1unorm8* ptr, int width, int height, WrapMode wrap = WrapMode::ERROR);
     static Ref fromArray(const class Color3unorm8* ptr, int width, int height, WrapMode wrap = WrapMode::ERROR);
     static Ref fromArray(const class Color4unorm8* ptr, int width, int height, WrapMode wrap = WrapMode::ERROR);
@@ -71,7 +71,7 @@ public:
         Values are automatically scaled to the range [0, 1]. */
     void load(const std::string& filename);
 
-    /** Saves in any of the formats supported by G3D::Image. 
+    /** Saves in any of the formats supported by G3D::Image.
 
         The data values are assumed to be on the range [0, 1] and will
         be scaled appropriately for the save format.*/
