@@ -57,27 +57,18 @@ bool DBUpdaterUtil::CheckExecutable()
     return true;
 }
 
-std::string &DBUpdaterUtil::corrected_path()
+std::string& DBUpdaterUtil::corrected_path()
 {
     static std::string path;
     return path;
 }
 
 // Auth Database
-template <> std::string DBUpdater<LoginDatabaseConnection>::GetConfigEntry()
-{
-    return "Updates.Auth";
-}
+template <> std::string DBUpdater<LoginDatabaseConnection>::GetConfigEntry() { return "Updates.Auth"; }
 
-template <> std::string DBUpdater<LoginDatabaseConnection>::GetTableName()
-{
-    return "Auth";
-}
+template <> std::string DBUpdater<LoginDatabaseConnection>::GetTableName() { return "Auth"; }
 
-template <> std::string DBUpdater<LoginDatabaseConnection>::GetBaseDirectory()
-{
-    return BuiltInConfig::GetSourceDirectory() + "/data/sql/base/db_auth/";
-}
+template <> std::string DBUpdater<LoginDatabaseConnection>::GetBaseDirectory() { return BuiltInConfig::GetSourceDirectory() + "/data/sql/base/db_auth/"; }
 
 template <> bool DBUpdater<LoginDatabaseConnection>::IsEnabled(uint32 const updateMask)
 {
@@ -85,26 +76,14 @@ template <> bool DBUpdater<LoginDatabaseConnection>::IsEnabled(uint32 const upda
     return (updateMask & DatabaseLoader::DATABASE_LOGIN) ? true : false;
 }
 
-template <> std::string DBUpdater<LoginDatabaseConnection>::GetDBModuleName()
-{
-    return "db-auth";
-}
+template <> std::string DBUpdater<LoginDatabaseConnection>::GetDBModuleName() { return "db-auth"; }
 
 // World Database
-template <> std::string DBUpdater<WorldDatabaseConnection>::GetConfigEntry()
-{
-    return "Updates.World";
-}
+template <> std::string DBUpdater<WorldDatabaseConnection>::GetConfigEntry() { return "Updates.World"; }
 
-template <> std::string DBUpdater<WorldDatabaseConnection>::GetTableName()
-{
-    return "World";
-}
+template <> std::string DBUpdater<WorldDatabaseConnection>::GetTableName() { return "World"; }
 
-template <> std::string DBUpdater<WorldDatabaseConnection>::GetBaseDirectory()
-{
-    return BuiltInConfig::GetSourceDirectory() + "/data/sql/base/db_world/";
-}
+template <> std::string DBUpdater<WorldDatabaseConnection>::GetBaseDirectory() { return BuiltInConfig::GetSourceDirectory() + "/data/sql/base/db_world/"; }
 
 template <> bool DBUpdater<WorldDatabaseConnection>::IsEnabled(uint32 const updateMask)
 {
@@ -112,31 +91,16 @@ template <> bool DBUpdater<WorldDatabaseConnection>::IsEnabled(uint32 const upda
     return (updateMask & DatabaseLoader::DATABASE_WORLD) ? true : false;
 }
 
-template <> std::string DBUpdater<WorldDatabaseConnection>::GetDBModuleName()
-{
-    return "db-world";
-}
+template <> std::string DBUpdater<WorldDatabaseConnection>::GetDBModuleName() { return "db-world"; }
 
-template <> BaseLocation DBUpdater<WorldDatabaseConnection>::GetBaseLocationType()
-{
-    return LOCATION_REPOSITORY;
-}
+template <> BaseLocation DBUpdater<WorldDatabaseConnection>::GetBaseLocationType() { return LOCATION_REPOSITORY; }
 
 // Character Database
-template <> std::string DBUpdater<CharacterDatabaseConnection>::GetConfigEntry()
-{
-    return "Updates.Character";
-}
+template <> std::string DBUpdater<CharacterDatabaseConnection>::GetConfigEntry() { return "Updates.Character"; }
 
-template <> std::string DBUpdater<CharacterDatabaseConnection>::GetTableName()
-{
-    return "Character";
-}
+template <> std::string DBUpdater<CharacterDatabaseConnection>::GetTableName() { return "Character"; }
 
-template <> std::string DBUpdater<CharacterDatabaseConnection>::GetBaseDirectory()
-{
-    return BuiltInConfig::GetSourceDirectory() + "/data/sql/base/db_characters";
-}
+template <> std::string DBUpdater<CharacterDatabaseConnection>::GetBaseDirectory() { return BuiltInConfig::GetSourceDirectory() + "/data/sql/base/db_characters"; }
 
 template <> bool DBUpdater<CharacterDatabaseConnection>::IsEnabled(uint32 const updateMask)
 {
@@ -144,26 +108,14 @@ template <> bool DBUpdater<CharacterDatabaseConnection>::IsEnabled(uint32 const 
     return (updateMask & DatabaseLoader::DATABASE_CHARACTER) ? true : false;
 }
 
-template <> std::string DBUpdater<CharacterDatabaseConnection>::GetDBModuleName()
-{
-    return "db-characters";
-}
+template <> std::string DBUpdater<CharacterDatabaseConnection>::GetDBModuleName() { return "db-characters"; }
 
 // Hotfix Database
-template <> std::string DBUpdater<HotfixDatabaseConnection>::GetConfigEntry()
-{
-    return "Updates.Hotfix";
-}
+template <> std::string DBUpdater<HotfixDatabaseConnection>::GetConfigEntry() { return "Updates.Hotfix"; }
 
-template <> std::string DBUpdater<HotfixDatabaseConnection>::GetTableName()
-{
-    return "Hotfixes";
-}
+template <> std::string DBUpdater<HotfixDatabaseConnection>::GetTableName() { return "Hotfixes"; }
 
-template <> std::string DBUpdater<HotfixDatabaseConnection>::GetBaseDirectory()
-{
-    return BuiltInConfig::GetSourceDirectory() + "/data/sql/base/db_hotfixes/";
-}
+template <> std::string DBUpdater<HotfixDatabaseConnection>::GetBaseDirectory() { return BuiltInConfig::GetSourceDirectory() + "/data/sql/base/db_hotfixes/"; }
 
 template <> bool DBUpdater<HotfixDatabaseConnection>::IsEnabled(uint32 const updateMask)
 {
@@ -171,23 +123,14 @@ template <> bool DBUpdater<HotfixDatabaseConnection>::IsEnabled(uint32 const upd
     return (updateMask & DatabaseLoader::DATABASE_HOTFIX) ? true : false;
 }
 
-template <> std::string DBUpdater<HotfixDatabaseConnection>::GetDBModuleName()
-{
-    return "db-hotfixes";
-}
+template <> std::string DBUpdater<HotfixDatabaseConnection>::GetDBModuleName() { return "db-hotfixes"; }
 
-template <> BaseLocation DBUpdater<HotfixDatabaseConnection>::GetBaseLocationType()
-{
-    return LOCATION_REPOSITORY;
-}
+template <> BaseLocation DBUpdater<HotfixDatabaseConnection>::GetBaseLocationType() { return LOCATION_REPOSITORY; }
 
 // All
-template <class T> BaseLocation DBUpdater<T>::GetBaseLocationType()
-{
-    return LOCATION_REPOSITORY;
-}
+template <class T> BaseLocation DBUpdater<T>::GetBaseLocationType() { return LOCATION_REPOSITORY; }
 
-template <class T> bool DBUpdater<T>::Create(DatabaseWorkerPool<T> &pool)
+template <class T> bool DBUpdater<T>::Create(DatabaseWorkerPool<T>& pool)
 {
     LOG_INFO("sql.updates", "Database \"%s\" does not exist, do you want to create it? [yes (default) / no]: ", pool.GetConnectionInfo()->database.c_str());
 
@@ -217,7 +160,7 @@ template <class T> bool DBUpdater<T>::Create(DatabaseWorkerPool<T> &pool)
     {
         DBUpdater<T>::ApplyFile(pool, pool.GetConnectionInfo()->host, pool.GetConnectionInfo()->user, pool.GetConnectionInfo()->password, pool.GetConnectionInfo()->port_or_socket, "", temp);
     }
-    catch (UpdateException &)
+    catch (UpdateException&)
     {
         LOG_FATAL("sql.updates", "Failed to create database %s! Does the user (named in *.conf) have `CREATE` privileges on the MySQL server?", pool.GetConnectionInfo()->database.c_str());
         boost::filesystem::remove(temp);
@@ -229,7 +172,7 @@ template <class T> bool DBUpdater<T>::Create(DatabaseWorkerPool<T> &pool)
     return true;
 }
 
-template <class T> bool DBUpdater<T>::Update(DatabaseWorkerPool<T> &pool, std::string_view modulesList /*= {}*/)
+template <class T> bool DBUpdater<T>::Update(DatabaseWorkerPool<T>& pool, std::string_view modulesList /*= {}*/)
 {
     if (!DBUpdaterUtil::CheckExecutable())
         return false;
@@ -246,7 +189,7 @@ template <class T> bool DBUpdater<T>::Update(DatabaseWorkerPool<T> &pool, std::s
         return false;
     }
 
-    auto CheckUpdateTable = [&](std::string const &tableName)
+    auto CheckUpdateTable = [&](std::string const& tableName)
     {
         auto checkTable = DBUpdater<T>::Retrieve(pool, Firelands::StringFormat("SHOW TABLES LIKE '%s'", tableName.c_str()));
         if (!checkTable)
@@ -259,7 +202,7 @@ template <class T> bool DBUpdater<T>::Update(DatabaseWorkerPool<T> &pool, std::s
             {
                 DBUpdater<T>::ApplyFile(pool, temp);
             }
-            catch (UpdateException &)
+            catch (UpdateException&)
             {
                 LOG_FATAL("sql.updates", "Failed apply file to database %s! Does the user (named in *.conf) have `INSERT` and `DELETE` privileges on the MySQL server?",
                     pool.GetConnectionInfo()->database.c_str());
@@ -276,8 +219,8 @@ template <class T> bool DBUpdater<T>::Update(DatabaseWorkerPool<T> &pool, std::s
         return false;
 
     UpdateFetcher updateFetcher(
-        sourceDirectory, [&](std::string const &query) { DBUpdater<T>::Apply(pool, query); }, [&](Path const &file) { DBUpdater<T>::ApplyFile(pool, file); },
-        [&](std::string const &query) -> QueryResult { return DBUpdater<T>::Retrieve(pool, query); }, DBUpdater<T>::GetDBModuleName(), modulesList);
+        sourceDirectory, [&](std::string const& query) { DBUpdater<T>::Apply(pool, query); }, [&](Path const& file) { DBUpdater<T>::ApplyFile(pool, file); },
+        [&](std::string const& query) -> QueryResult { return DBUpdater<T>::Retrieve(pool, query); }, DBUpdater<T>::GetDBModuleName(), modulesList);
 
     UpdateResult result;
     try
@@ -285,7 +228,7 @@ template <class T> bool DBUpdater<T>::Update(DatabaseWorkerPool<T> &pool, std::s
         result = updateFetcher.Update(sConfigMgr->GetBoolDefault("Updates.Redundancy", true), sConfigMgr->GetBoolDefault("Updates.AllowRehash", true),
             sConfigMgr->GetBoolDefault("Updates.ArchivedRedundancy", false), sConfigMgr->GetIntDefault("Updates.CleanDeadRefMaxCount", 3));
     }
-    catch (UpdateException &)
+    catch (UpdateException&)
     {
         return false;
     }
@@ -295,14 +238,14 @@ template <class T> bool DBUpdater<T>::Update(DatabaseWorkerPool<T> &pool, std::s
     if (!result.updated)
         LOG_INFO("sql.updates", ">> %s database is up-to-date! %s", DBUpdater<T>::GetTableName().c_str(), info.c_str());
     else
-        LOG_INFO("sql.updates", ">> Applied " SZFMTD " " SZFMTD ". %s", result.updated, result.updated == 1 ? "query" : "queries", info.c_str());
+        LOG_INFO("sql.updates", ">> Applied " SZFMTD " %s. %s", result.updated, result.updated == 1 ? "query" : "queries", info.c_str());
 
     LOG_INFO("sql.updates", " ");
 
     return true;
 }
 
-template <class T> bool DBUpdater<T>::Update(DatabaseWorkerPool<T> &pool, std::vector<std::string> const *setDirectories)
+template <class T> bool DBUpdater<T>::Update(DatabaseWorkerPool<T>& pool, std::vector<std::string> const* setDirectories)
 {
     if (!DBUpdaterUtil::CheckExecutable())
     {
@@ -315,7 +258,7 @@ template <class T> bool DBUpdater<T>::Update(DatabaseWorkerPool<T> &pool, std::v
         return false;
     }
 
-    auto CheckUpdateTable = [&](std::string const &tableName)
+    auto CheckUpdateTable = [&](std::string const& tableName)
     {
         auto checkTable = DBUpdater<T>::Retrieve(pool, Firelands::StringFormat("SHOW TABLES LIKE '%s'", tableName.c_str()));
         if (!checkTable)
@@ -325,7 +268,7 @@ template <class T> bool DBUpdater<T>::Update(DatabaseWorkerPool<T> &pool, std::v
             {
                 DBUpdater<T>::ApplyFile(pool, temp);
             }
-            catch (UpdateException &)
+            catch (UpdateException&)
             {
                 return false;
             }
@@ -342,8 +285,8 @@ template <class T> bool DBUpdater<T>::Update(DatabaseWorkerPool<T> &pool, std::v
     }
 
     UpdateFetcher updateFetcher(
-        sourceDirectory, [&](std::string const &query) { DBUpdater<T>::Apply(pool, query); }, [&](Path const &file) { DBUpdater<T>::ApplyFile(pool, file); },
-        [&](std::string const &query) -> QueryResult { return DBUpdater<T>::Retrieve(pool, query); }, DBUpdater<T>::GetDBModuleName(), setDirectories);
+        sourceDirectory, [&](std::string const& query) { DBUpdater<T>::Apply(pool, query); }, [&](Path const& file) { DBUpdater<T>::ApplyFile(pool, file); },
+        [&](std::string const& query) -> QueryResult { return DBUpdater<T>::Retrieve(pool, query); }, DBUpdater<T>::GetDBModuleName(), setDirectories);
 
     UpdateResult result;
     try
@@ -351,7 +294,7 @@ template <class T> bool DBUpdater<T>::Update(DatabaseWorkerPool<T> &pool, std::v
         result = updateFetcher.Update(sConfigMgr->GetBoolDefault("Updates.Redundancy", true), sConfigMgr->GetBoolDefault("Updates.AllowRehash", true),
             sConfigMgr->GetBoolDefault("Updates.ArchivedRedundancy", false), sConfigMgr->GetIntDefault("Updates.CleanDeadRefMaxCount", 3));
     }
-    catch (UpdateException &)
+    catch (UpdateException&)
     {
         return false;
     }
@@ -359,7 +302,7 @@ template <class T> bool DBUpdater<T>::Update(DatabaseWorkerPool<T> &pool, std::v
     return true;
 }
 
-template <class T> bool DBUpdater<T>::Populate(DatabaseWorkerPool<T> &pool)
+template <class T> bool DBUpdater<T>::Populate(DatabaseWorkerPool<T>& pool)
 {
     {
         QueryResult const result = Retrieve(pool, "SHOW TABLES");
@@ -433,7 +376,7 @@ template <class T> bool DBUpdater<T>::Populate(DatabaseWorkerPool<T> &pool)
         {
             ApplyFile(pool, it->path());
         }
-        catch (UpdateException &)
+        catch (UpdateException&)
         {
             return false;
         }
@@ -444,17 +387,11 @@ template <class T> bool DBUpdater<T>::Populate(DatabaseWorkerPool<T> &pool)
     return true;
 }
 
-template <class T> QueryResult DBUpdater<T>::Retrieve(DatabaseWorkerPool<T> &pool, std::string const &query)
-{
-    return pool.Query(query.c_str());
-}
+template <class T> QueryResult DBUpdater<T>::Retrieve(DatabaseWorkerPool<T>& pool, std::string const& query) { return pool.Query(query.c_str()); }
 
-template <class T> void DBUpdater<T>::Apply(DatabaseWorkerPool<T> &pool, std::string const &query)
-{
-    pool.DirectExecute(query.c_str());
-}
+template <class T> void DBUpdater<T>::Apply(DatabaseWorkerPool<T>& pool, std::string const& query) { pool.DirectExecute(query.c_str()); }
 
-template <class T> void DBUpdater<T>::ApplyFile(DatabaseWorkerPool<T> &pool, Path const &path)
+template <class T> void DBUpdater<T>::ApplyFile(DatabaseWorkerPool<T>& pool, Path const& path)
 {
     DBUpdater<T>::ApplyFile(
         pool, pool.GetConnectionInfo()->host, pool.GetConnectionInfo()->user, pool.GetConnectionInfo()->password, pool.GetConnectionInfo()->port_or_socket, pool.GetConnectionInfo()->database, path);
@@ -462,7 +399,7 @@ template <class T> void DBUpdater<T>::ApplyFile(DatabaseWorkerPool<T> &pool, Pat
 
 template <class T>
 void DBUpdater<T>::ApplyFile(
-    DatabaseWorkerPool<T> &pool, std::string const &host, std::string const &user, std::string const &password, std::string const &port_or_socket, std::string const &database, Path const &path)
+    DatabaseWorkerPool<T>& pool, std::string const& host, std::string const& user, std::string const& password, std::string const& port_or_socket, std::string const& database, Path const& path)
 {
     std::vector<std::string> args;
     args.reserve(9);
