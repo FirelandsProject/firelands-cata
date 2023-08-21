@@ -21,111 +21,111 @@
 
 /* macros for various libc functions you can change for embedded targets */
 #ifndef XMALLOC
-   #ifdef malloc 
-   #define LTC_NO_PROTOTYPES
-   #endif
-#define XMALLOC  LibTomMalloc
+#ifdef malloc
+#define LTC_NO_PROTOTYPES
+#endif
+#define XMALLOC LibTomMalloc
 #endif
 #ifndef XREALLOC
-   #ifdef realloc 
-   #define LTC_NO_PROTOTYPES
-   #endif
+#ifdef realloc
+#define LTC_NO_PROTOTYPES
+#endif
 #define XREALLOC LibTomRealloc
 #endif
 #ifndef XCALLOC
-   #ifdef calloc 
-   #define LTC_NO_PROTOTYPES
-   #endif
-#define XCALLOC  LibTomCalloc
+#ifdef calloc
+#define LTC_NO_PROTOTYPES
+#endif
+#define XCALLOC LibTomCalloc
 #endif
 #ifndef XFREE
-   #ifdef free
-   #define LTC_NO_PROTOTYPES
-   #endif
-#define XFREE    LibTomFree
+#ifdef free
+#define LTC_NO_PROTOTYPES
+#endif
+#define XFREE LibTomFree
 #endif
 
 #ifndef XMEMSET
-   #ifdef memset
-   #define LTC_NO_PROTOTYPES_MEMSET
-   #endif
-#define XMEMSET  memset
+#ifdef memset
+#define LTC_NO_PROTOTYPES
+#endif
+#define XMEMSET memset
 #endif
 #ifndef XMEMCPY
-   #ifdef memcpy
-   #define LTC_NO_PROTOTYPES_MEMCPY
-   #endif
-#define XMEMCPY  memcpy
+#ifdef memcpy
+#define LTC_NO_PROTOTYPES
+#endif
+#define XMEMCPY memcpy
 #endif
 #ifndef XMEMCMP
-   #ifdef memcmp 
-   #define LTC_NO_PROTOTYPES_MEMCMP
-   #endif
-#define XMEMCMP  memcmp
+#ifdef memcmp
+#define LTC_NO_PROTOTYPES
+#endif
+#define XMEMCMP memcmp
 #endif
 #ifndef XSTRCMP
-   #ifdef strcmp
-   #define LTC_NO_PROTOTYPES_STRCMP
-   #endif
+#ifdef strcmp
+#define LTC_NO_PROTOTYPES
+#endif
 #define XSTRCMP strcmp
 #endif
 
 #ifndef XCLOCK
-#define XCLOCK   LibTomClock
+#define XCLOCK LibTomClock
 #endif
 #ifndef XCLOCKS_PER_SEC
 #define XCLOCKS_PER_SEC CLOCKS_PER_SEC
 #endif
 
 #ifndef XQSORT
-   #ifdef qsort
-   #define LTC_NO_PROTOTYPES
-   #endif
+#ifdef qsort
+#define LTC_NO_PROTOTYPES
+#endif
 #define XQSORT LibTomQsort
 #endif
 
 /* Easy button? */
 #ifdef LTC_EASY
-   #define LTC_NO_CIPHERS
-   #define LTC_RIJNDAEL
-   #define LTC_BLOWFISH
-   #define LTC_DES
-   #define LTC_CAST5
-   
-   #define LTC_NO_MODES
-   #define LTC_ECB_MODE
-   #define LTC_CBC_MODE
-   #define LTC_CTR_MODE
-   
-   #define LTC_NO_HASHES
-   #define LTC_SHA1
-   #define LTC_SHA512
-   #define LTC_SHA384
-   #define LTC_SHA256
-   #define LTC_SHA224
-   
-   #define LTC_NO_MACS
-   #define LTC_HMAC
-   #define LTC_OMAC
-   #define LTC_CCM_MODE
+#define LTC_NO_CIPHERS
+#define LTC_RIJNDAEL
+#define LTC_BLOWFISH
+#define LTC_DES
+#define LTC_CAST5
 
-   #define LTC_NO_PRNGS
-   #define LTC_SPRNG
-   #define LTC_YARROW
-   #define LTC_DEVRANDOM
-   #define TRY_URANDOM_FIRST
-      
-   #define LTC_NO_PK
-   #define LTC_MRSA
-   #define LTC_MECC
-#endif   
+#define LTC_NO_MODES
+#define LTC_ECB_MODE
+#define LTC_CBC_MODE
+#define LTC_CTR_MODE
+
+#define LTC_NO_HASHES
+#define LTC_SHA1
+#define LTC_SHA512
+#define LTC_SHA384
+#define LTC_SHA256
+#define LTC_SHA224
+
+#define LTC_NO_MACS
+#define LTC_HMAC
+#define LTC_OMAC
+#define LTC_CCM_MODE
+
+#define LTC_NO_PRNGS
+#define LTC_SPRNG
+#define LTC_YARROW
+#define LTC_DEVRANDOM
+#define TRY_URANDOM_FIRST
+
+#define LTC_NO_PK
+#define LTC_MRSA
+#define LTC_MECC
+#endif
 
 /* Use small code where possible */
 /* #define LTC_SMALL_CODE */
 
 /* Enable self-test test vector checking */
 #ifndef LTC_NO_TEST
-   #define LTC_TEST
+#define LTC_TEST
 #endif
 
 /* clean the stack of functions which put private information on stack */
@@ -157,10 +157,10 @@
  * (saves 4KB of ram), _ALL_TABLES enables all tables during setup */
 #define LTC_TWOFISH
 #ifndef LTC_NO_TABLES
-   #define LTC_TWOFISH_TABLES
-   /* #define LTC_TWOFISH_ALL_TABLES */
+#define LTC_TWOFISH_TABLES
+/* #define LTC_TWOFISH_ALL_TABLES */
 #else
-   #define LTC_TWOFISH_SMALL
+#define LTC_TWOFISH_SMALL
 #endif
 /* #define LTC_TWOFISH_SMALL */
 /* LTC_DES includes EDE triple-LTC_DES */
@@ -177,7 +177,6 @@
 
 #endif /* LTC_NO_CIPHERS */
 
-
 /* ---> Block Cipher Modes of Operation <--- */
 #ifndef LTC_NO_MODES
 
@@ -193,10 +192,10 @@
 /* LRW mode */
 #define LTC_LRW_MODE
 #ifndef LTC_NO_TABLES
-   /* like GCM mode this will enable 16 8x128 tables [64KB] that make
-    * seeking very fast.  
-    */
-   #define LRW_TABLES
+/* like GCM mode this will enable 16 8x128 tables [64KB] that make
+ * seeking very fast.
+ */
+#define LRW_TABLES
 #endif
 
 /* XTS mode */
@@ -205,7 +204,7 @@
 #endif /* LTC_NO_MODES */
 
 /* ---> One-Way Hash Functions <--- */
-#ifndef LTC_NO_HASHES 
+#ifndef LTC_NO_HASHES
 
 #define LTC_CHC_HASH
 #define LTC_WHIRLPOOL
@@ -236,14 +235,14 @@
 #define LTC_PELICAN
 
 #if defined(LTC_PELICAN) && !defined(LTC_RIJNDAEL)
-   #error Pelican-MAC requires LTC_RIJNDAEL
+#error Pelican-MAC requires LTC_RIJNDAEL
 #endif
 
 /* ---> Encrypt + Authenticate Modes <--- */
 
 #define LTC_EAX_MODE
 #if defined(LTC_EAX_MODE) && !(defined(LTC_CTR_MODE) && defined(LTC_OMAC))
-   #error LTC_EAX_MODE requires CTR and LTC_OMAC mode
+#error LTC_EAX_MODE requires CTR and LTC_OMAC mode
 #endif
 
 #define LTC_OCB_MODE
@@ -252,7 +251,7 @@
 
 /* Use 64KiB tables */
 #ifndef LTC_NO_TABLES
-   #define LTC_GCM_TABLES 
+#define LTC_GCM_TABLES
 #endif
 
 /* USE SSE2? requires GCC works on x86_32 and x86_64*/
@@ -275,7 +274,7 @@
 #define LTC_YARROW_AES 0
 
 #if defined(LTC_YARROW) && !defined(LTC_CTR_MODE)
-   #error LTC_YARROW requires LTC_CTR_MODE chaining mode to be defined!
+#error LTC_YARROW requires LTC_CTR_MODE chaining mode to be defined!
 #endif
 
 /* a PRNG that simply reads from an available system source */
@@ -287,7 +286,7 @@
 /* Fortuna PRNG */
 #define LTC_FORTUNA
 /* reseed every N calls to the read function */
-#define LTC_FORTUNA_WD    10
+#define LTC_FORTUNA_WD 10
 /* number of pools (4..32) can save a bit of ram by lowering the count */
 #define LTC_FORTUNA_POOLS 32
 
@@ -308,7 +307,7 @@
 #define LTM_LTC_DESC
 
 /* TomsFastMath */
-//#define TFM_LTC_DESC
+// #define TFM_LTC_DESC
 
 #endif /* LTC_NO_MATH */
 
@@ -319,7 +318,7 @@
 #define LTC_MRSA
 
 /* Include Katja (a Rabin variant like RSA) */
-/* #define MKAT */ 
+/* #define MKAT */
 
 /* Digital Signature Algorithm */
 #define LTC_MDSA
@@ -331,8 +330,8 @@
 #define LTC_ECC_SHAMIR
 
 #if defined(TFM_LTC_DESC) && defined(LTC_MECC)
-   #define LTC_MECC_ACCEL
-#endif   
+#define LTC_MECC_ACCEL
+#endif
 
 /* do we want fixed point ECC */
 /* #define LTC_MECC_FP */
@@ -358,32 +357,32 @@
 #ifdef LTC_MECC
 /* Supported ECC Key Sizes */
 #ifndef LTC_NO_CURVES
-   #define ECC112
-   #define ECC128
-   #define ECC160
-   #define ECC192
-   #define ECC224
-   #define ECC256
-   #define ECC384
-   #define ECC521
+#define ECC112
+#define ECC128
+#define ECC160
+#define ECC192
+#define ECC224
+#define ECC256
+#define ECC384
+#define ECC521
 #endif
 #endif
 
 #if defined(LTC_MECC) || defined(LTC_MRSA) || defined(LTC_MDSA) || defined(MKATJA)
-   /* Include the MPI functionality?  (required by the PK algorithms) */
-   #define MPI
+/* Include the MPI functionality?  (required by the PK algorithms) */
+#define MPI
 #endif
 
 #ifdef LTC_MRSA
-   #define LTC_PKCS_1
-#endif   
+#define LTC_PKCS_1
+#endif
 
-#if defined(LTC_DER) && !defined(MPI) 
-   #error ASN.1 DER requires MPI functionality
+#if defined(LTC_DER) && !defined(MPI)
+#error ASN.1 DER requires MPI functionality
 #endif
 
 #if (defined(LTC_MDSA) || defined(LTC_MRSA) || defined(LTC_MECC) || defined(MKATJA)) && !defined(LTC_DER)
-   #error PK requires ASN.1 DER functionality, make sure LTC_DER is enabled
+#error PK requires ASN.1 DER functionality, make sure LTC_DER is enabled
 #endif
 
 /* THREAD management */
@@ -391,12 +390,12 @@
 
 #include <pthread.h>
 
-#define LTC_MUTEX_GLOBAL(x)   pthread_mutex_t x = PTHREAD_MUTEX_INITIALIZER;
-#define LTC_MUTEX_PROTO(x)    extern pthread_mutex_t x;
-#define LTC_MUTEX_TYPE(x)     pthread_mutex_t x;
-#define LTC_MUTEX_INIT(x)     pthread_mutex_init(x, NULL);
-#define LTC_MUTEX_LOCK(x)     pthread_mutex_lock(x);
-#define LTC_MUTEX_UNLOCK(x)   pthread_mutex_unlock(x);
+#define LTC_MUTEX_GLOBAL(x) pthread_mutex_t x = PTHREAD_MUTEX_INITIALIZER;
+#define LTC_MUTEX_PROTO(x) extern pthread_mutex_t x;
+#define LTC_MUTEX_TYPE(x) pthread_mutex_t x;
+#define LTC_MUTEX_INIT(x) pthread_mutex_init(x, NULL);
+#define LTC_MUTEX_LOCK(x) pthread_mutex_lock(x);
+#define LTC_MUTEX_UNLOCK(x) pthread_mutex_unlock(x);
 
 #else
 
@@ -416,8 +415,6 @@
 /* #define LTC_VALGRIND */
 
 #endif
-
-
 
 /* $Source: /cvs/libtom/libtomcrypt/src/headers/tomcrypt_custom.h,v $ */
 /* $Revision: 1.73 $ */

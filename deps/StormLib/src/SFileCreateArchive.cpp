@@ -27,13 +27,6 @@ static const DWORD MpqHeaderSizes[] =
 //-----------------------------------------------------------------------------
 // Local functions
 
-static DWORD GetValidFileFlags(DWORD dwMpqVersion)
-{
-    if(dwMpqVersion > MPQ_FORMAT_VERSION_1)
-        return MPQ_FILE_VALID_FLAGS;
-    return MPQ_FILE_VALID_FLAGS_W3X;
-}
-
 static USHORT GetSectorSizeShift(DWORD dwSectorSize)
 {
     USHORT wSectorSizeShift = 0;
@@ -47,12 +40,12 @@ static USHORT GetSectorSizeShift(DWORD dwSectorSize)
     return wSectorSizeShift;
 }
 
-static DWORD WriteNakedMPQHeader(TMPQArchive * ha)
+static int WriteNakedMPQHeader(TMPQArchive * ha)
 {
     TMPQHeader * pHeader = ha->pHeader;
     TMPQHeader Header;
     DWORD dwBytesToWrite = pHeader->dwHeaderSize;
-    DWORD dwErrCode = ERROR_SUCCESS;
+    int nError = ERROR_SUCCESS;
 
     // Prepare the naked MPQ header
     memset(&Header, 0, sizeof(TMPQHeader));
@@ -63,45 +56,29 @@ static DWORD WriteNakedMPQHeader(TMPQArchive * ha)
     Header.wSectorSize    = pHeader->wSectorSize;
 
     // Write it to the file
-    BSWAP_TMPQHEADER(&Header, MPQ_FORMAT_VERSION_1);
-    BSWAP_TMPQHEADER(&Header, MPQ_FORMAT_VERSION_2);
-    BSWAP_TMPQHEADER(&Header, MPQ_FORMAT_VERSION_3);
-    BSWAP_TMPQHEADER(&Header, MPQ_FORMAT_VERSION_4);
+    BSWAP_TMPQHEADER(&Header);
     if(!FileStream_Write(ha->pStream, &ha->MpqPos, &Header, dwBytesToWrite))
-        dwErrCode = GetLastError();
+        nError = GetLastError();
 
-    return dwErrCode;
+    return nError;
 }
 
 //-----------------------------------------------------------------------------
 // Creates a new MPQ archive.
 
-bool WINAPI SFileCreateArchive(const TCHAR * szMpqName, DWORD dwCreateFlags, DWORD dwMaxFileCount, HANDLE * phMpq)
+bool WINAPI SFileCreateArchive(const TCHAR * szMpqName, DWORD dwFlags, DWORD dwMaxFileCount, HANDLE * phMpq)
 {
     SFILE_CREATE_MPQ CreateInfo;
 
     // Fill the create structure
     memset(&CreateInfo, 0, sizeof(SFILE_CREATE_MPQ));
     CreateInfo.cbSize         = sizeof(SFILE_CREATE_MPQ);
-    CreateInfo.dwMpqVersion   = (dwCreateFlags & MPQ_CREATE_ARCHIVE_VMASK) >> FLAGS_TO_FORMAT_SHIFT;
-    CreateInfo.dwStreamFlags  = STREAM_PROVIDER_FLAT | BASE_PROVIDER_FILE;
-    CreateInfo.dwFileFlags1   = (dwCreateFlags & MPQ_CREATE_LISTFILE)   ? MPQ_FILE_DEFAULT_INTERNAL : 0;
-    CreateInfo.dwFileFlags2   = (dwCreateFlags & MPQ_CREATE_ATTRIBUTES) ? MPQ_FILE_DEFAULT_INTERNAL : 0;
-    CreateInfo.dwFileFlags3   = (dwCreateFlags & MPQ_CREATE_SIGNATURE)  ? MPQ_FILE_DEFAULT_INTERNAL : 0;
-    CreateInfo.dwAttrFlags    = (dwCreateFlags & MPQ_CREATE_ATTRIBUTES) ? (MPQ_ATTRIBUTE_CRC32 | MPQ_ATTRIBUTE_FILETIME | MPQ_ATTRIBUTE_MD5) : 0;
+    CreateInfo.dwMpqVersion   = (dwFlags & MPQ_CREATE_ARCHIVE_VMASK) >> FLAGS_TO_FORMAT_SHIFT;
+    CreateInfo.dwStreamFlags  = STREAM_PROVIDER_LINEAR | BASE_PROVIDER_FILE;
+    CreateInfo.dwAttrFlags    = (dwFlags & MPQ_CREATE_ATTRIBUTES) ? MPQ_ATTRIBUTE_ALL : 0;
     CreateInfo.dwSectorSize   = (CreateInfo.dwMpqVersion >= MPQ_FORMAT_VERSION_3) ? 0x4000 : 0x1000;
     CreateInfo.dwRawChunkSize = (CreateInfo.dwMpqVersion >= MPQ_FORMAT_VERSION_4) ? 0x4000 : 0;
     CreateInfo.dwMaxFileCount = dwMaxFileCount;
-
-    // Set the proper attribute parts
-    if((CreateInfo.dwMpqVersion >= MPQ_FORMAT_VERSION_3) && (dwCreateFlags & MPQ_CREATE_ATTRIBUTES))
-        CreateInfo.dwAttrFlags |= MPQ_ATTRIBUTE_PATCH_BIT;
-
-    // Backward compatibility: SFileCreateArchive always used to add (listfile)
-    // We would break loads of applications if we change that
-    CreateInfo.dwFileFlags1 = MPQ_FILE_DEFAULT_INTERNAL;
-
-    // Let the main function create the archive
     return SFileCreateArchive2(szMpqName, &CreateInfo, phMpq);
 }
 
@@ -109,14 +86,12 @@ bool WINAPI SFileCreateArchive2(const TCHAR * szMpqName, PSFILE_CREATE_MPQ pCrea
 {
     TFileStream * pStream = NULL;           // File stream
     TMPQArchive * ha = NULL;                // MPQ archive handle
-    TMPQHeader * pHeader;
     ULONGLONG MpqPos = 0;                   // Position of MPQ header in the file
     HANDLE hMpq = NULL;
     DWORD dwBlockTableSize = 0;             // Initial block table size
     DWORD dwHashTableSize = 0;
-    DWORD dwReservedFiles = 0;              // Number of reserved file entries
-    DWORD dwMpqFlags = 0;
-    DWORD dwErrCode = ERROR_SUCCESS;
+    DWORD dwMaxFileCount;
+    int nError = ERROR_SUCCESS;
 
     // Check the parameters, if they are valid
     if(szMpqName == NULL || *szMpqName == 0 || pCreateInfo == NULL || phMpq == NULL)
@@ -126,12 +101,13 @@ bool WINAPI SFileCreateArchive2(const TCHAR * szMpqName, PSFILE_CREATE_MPQ pCrea
     }
 
     // Verify if all variables in SFILE_CREATE_MPQ are correct
-    if((pCreateInfo->cbSize == 0 || pCreateInfo->cbSize > sizeof(SFILE_CREATE_MPQ))    ||
-       (pCreateInfo->dwMpqVersion > MPQ_FORMAT_VERSION_4)                              ||
-       (pCreateInfo->pvUserData != NULL || pCreateInfo->cbUserData != 0)               ||
-       (pCreateInfo->dwAttrFlags & ~MPQ_ATTRIBUTE_ALL)                                 ||
-       (pCreateInfo->dwSectorSize & (pCreateInfo->dwSectorSize - 1))                   ||
-       (pCreateInfo->dwRawChunkSize & (pCreateInfo->dwRawChunkSize - 1)))
+    if((pCreateInfo->cbSize == 0 || pCreateInfo->cbSize > sizeof(SFILE_CREATE_MPQ)) ||
+       (pCreateInfo->dwMpqVersion > MPQ_FORMAT_VERSION_4)                        ||
+       (pCreateInfo->pvUserData != NULL || pCreateInfo->cbUserData != 0)            ||
+       (pCreateInfo->dwAttrFlags & ~MPQ_ATTRIBUTE_ALL)                              ||
+       (pCreateInfo->dwSectorSize & (pCreateInfo->dwSectorSize - 1))                ||
+       (pCreateInfo->dwRawChunkSize & (pCreateInfo->dwRawChunkSize - 1))            ||
+       (pCreateInfo->dwMaxFileCount < 4))
     {
         SetLastError(ERROR_INVALID_PARAMETER);
         return false;
@@ -142,7 +118,7 @@ bool WINAPI SFileCreateArchive2(const TCHAR * szMpqName, PSFILE_CREATE_MPQ pCrea
 
     // We verify if the file already exists and if it's a MPQ archive.
     // If yes, we won't allow to overwrite it.
-    if(SFileOpenArchive(szMpqName, 0, STREAM_PROVIDER_FLAT | BASE_PROVIDER_FILE | MPQ_OPEN_NO_ATTRIBUTES | MPQ_OPEN_NO_LISTFILE, &hMpq))
+    if(SFileOpenArchive(szMpqName, 0, STREAM_PROVIDER_LINEAR | BASE_PROVIDER_FILE | MPQ_OPEN_NO_ATTRIBUTES | MPQ_OPEN_NO_LISTFILE, &hMpq))
     {
         SFileCloseArchive(hMpq);
         SetLastError(ERROR_ALREADY_EXISTS);
@@ -163,35 +139,21 @@ bool WINAPI SFileCreateArchive2(const TCHAR * szMpqName, PSFILE_CREATE_MPQ pCrea
             return false;
     }
 
-    // Increment the maximum amount of files to have space for (listfile)
-    if(pCreateInfo->dwMaxFileCount && pCreateInfo->dwFileFlags1)
-    {
-        dwMpqFlags |= MPQ_FLAG_LISTFILE_NEW;
-        dwReservedFiles++;
-    }
-
-    // Increment the maximum amount of files to have space for (attributes)
-    if(pCreateInfo->dwMaxFileCount && pCreateInfo->dwFileFlags2 && pCreateInfo->dwAttrFlags)
-    {
-        dwMpqFlags |= MPQ_FLAG_ATTRIBUTES_NEW;
-        dwReservedFiles++;
-    }
-
-    // Increment the maximum amount of files to have space for (signature)
-    if(pCreateInfo->dwMaxFileCount && pCreateInfo->dwFileFlags3)
-    {
-        dwMpqFlags |= MPQ_FLAG_SIGNATURE_NEW;
-        dwReservedFiles++;
-    }
+    // Increment the maximum amount of files to have space
+    // for listfile and attributes file
+    dwMaxFileCount = pCreateInfo->dwMaxFileCount;
+    if(pCreateInfo->dwAttrFlags != 0)
+        dwMaxFileCount++;
+    dwMaxFileCount++;
 
     // If file count is not zero, initialize the hash table size
-    dwHashTableSize = GetNearestPowerOfTwo(pCreateInfo->dwMaxFileCount + dwReservedFiles);
+    dwHashTableSize = GetHashTableSizeForFileCount(dwMaxFileCount);
 
     // Retrieve the file size and round it up to 0x200 bytes
-    FileStream_GetSize(pStream, &MpqPos);
+    FileStream_GetSize(pStream, MpqPos);
     MpqPos = (MpqPos + 0x1FF) & (ULONGLONG)0xFFFFFFFFFFFFFE00ULL;
     if(!FileStream_SetSize(pStream, MpqPos))
-        dwErrCode = GetLastError();
+        nError = GetLastError();
 
 #ifdef _DEBUG
     // Debug code, used for testing StormLib
@@ -199,36 +161,40 @@ bool WINAPI SFileCreateArchive2(const TCHAR * szMpqName, PSFILE_CREATE_MPQ pCrea
 #endif
 
     // Create the archive handle
-    if(dwErrCode == ERROR_SUCCESS)
+    if(nError == ERROR_SUCCESS)
     {
         if((ha = STORM_ALLOC(TMPQArchive, 1)) == NULL)
-            dwErrCode = ERROR_NOT_ENOUGH_MEMORY;
+            nError = ERROR_NOT_ENOUGH_MEMORY;
     }
 
     // Fill the MPQ archive handle structure
-    if(dwErrCode == ERROR_SUCCESS)
+    if(nError == ERROR_SUCCESS)
     {
         memset(ha, 0, sizeof(TMPQArchive));
-        ha->pfnHashString    = HashStringSlash;
-        ha->pStream          = pStream;
-        ha->dwSectorSize     = pCreateInfo->dwSectorSize;
-        ha->UserDataPos      = MpqPos;
-        ha->MpqPos           = MpqPos;
-        ha->pHeader          = pHeader = (TMPQHeader *)ha->HeaderData;
-        ha->dwMaxFileCount   = dwHashTableSize;
-        ha->dwFileTableSize  = 0;
-        ha->dwReservedFiles  = dwReservedFiles;
-        ha->dwValidFileFlags = GetValidFileFlags(pCreateInfo->dwMpqVersion);
-        ha->dwFileFlags1     = pCreateInfo->dwFileFlags1;
-        ha->dwFileFlags2     = pCreateInfo->dwFileFlags2;
-        ha->dwFileFlags3     = pCreateInfo->dwFileFlags3 ? MPQ_FILE_EXISTS : 0;
-        ha->dwAttrFlags      = pCreateInfo->dwAttrFlags;
-        ha->dwFlags          = dwMpqFlags | MPQ_FLAG_CHANGED;
+        ha->pStream         = pStream;
+        ha->dwSectorSize    = pCreateInfo->dwSectorSize;
+        ha->UserDataPos     = MpqPos;
+        ha->MpqPos          = MpqPos;
+        ha->pHeader         = (TMPQHeader *)ha->HeaderData;
+        ha->dwMaxFileCount  = dwMaxFileCount;
+        ha->dwFileTableSize = 0;
+        ha->dwFileFlags1    = pCreateInfo->dwFileFlags1;
+        ha->dwFileFlags2    = pCreateInfo->dwFileFlags2;
+        ha->dwFlags         = 0;
+
+        // Setup the attributes
+        ha->dwAttrFlags     = pCreateInfo->dwAttrFlags;
         pStream = NULL;
+    }
+
+    // Fill the MPQ header
+    if(nError == ERROR_SUCCESS)
+    {
+        TMPQHeader * pHeader = ha->pHeader;
 
         // Fill the MPQ header
         memset(pHeader, 0, sizeof(ha->HeaderData));
-        pHeader->dwID             = g_dwMpqSignature;
+        pHeader->dwID             = ID_MPQ;
         pHeader->dwHeaderSize     = MpqHeaderSizes[pCreateInfo->dwMpqVersion];
         pHeader->dwArchiveSize    = pHeader->dwHeaderSize + dwHashTableSize * sizeof(TMPQHash);
         pHeader->wFormatVersion   = (USHORT)pCreateInfo->dwMpqVersion;
@@ -244,39 +210,46 @@ bool WINAPI SFileCreateArchive2(const TCHAR * szMpqName, PSFILE_CREATE_MPQ pCrea
             pHeader->dwRawChunkSize = pCreateInfo->dwRawChunkSize;
 
         // Write the naked MPQ header
-        dwErrCode = WriteNakedMPQHeader(ha);
+        nError = WriteNakedMPQHeader(ha);
+
+        // Remember that the (listfile) and (attributes) need to be saved
+        ha->dwFlags |= MPQ_FLAG_CHANGED | MPQ_FLAG_INV_LISTFILE | MPQ_FLAG_INV_ATTRIBUTES;
     }
 
     // Create initial HET table, if the caller required an MPQ format 3.0 or newer
-    if(dwErrCode == ERROR_SUCCESS && pCreateInfo->dwMpqVersion >= MPQ_FORMAT_VERSION_3 && pCreateInfo->dwMaxFileCount != 0)
+    if(nError == ERROR_SUCCESS && pCreateInfo->dwMpqVersion >= MPQ_FORMAT_VERSION_3)
     {
-        ha->pHetTable = CreateHetTable(ha->dwFileTableSize, 0, 0x40, NULL);
+        ha->pHetTable = CreateHetTable(ha->dwMaxFileCount, 0x40, true);
         if(ha->pHetTable == NULL)
-            dwErrCode = ERROR_NOT_ENOUGH_MEMORY;
+            nError = ERROR_NOT_ENOUGH_MEMORY;
     }
 
     // Create initial hash table
-    if(dwErrCode == ERROR_SUCCESS && dwHashTableSize != 0)
+    if(nError == ERROR_SUCCESS)
     {
-        dwErrCode = CreateHashTable(ha, dwHashTableSize);
+        nError = CreateHashTable(ha, dwHashTableSize);
     }
 
     // Create initial file table
-    if(dwErrCode == ERROR_SUCCESS && ha->dwMaxFileCount != 0)
+    if(nError == ERROR_SUCCESS)
     {
-        dwErrCode = CreateFileTable(ha, ha->dwMaxFileCount);
+        ha->pFileTable = STORM_ALLOC(TFileEntry, ha->dwMaxFileCount);
+        if(ha->pFileTable != NULL)
+            memset(ha->pFileTable, 0x00, sizeof(TFileEntry) * ha->dwMaxFileCount);
+        else
+            nError = ERROR_NOT_ENOUGH_MEMORY;
     }
 
     // Cleanup : If an error, delete all buffers and return
-    if(dwErrCode != ERROR_SUCCESS)
+    if(nError != ERROR_SUCCESS)
     {
         FileStream_Close(pStream);
-        FreeArchiveHandle(ha);
-        SetLastError(dwErrCode);
+        FreeMPQArchive(ha);
+        SetLastError(nError);
         ha = NULL;
     }
 
     // Return the values
     *phMpq = (HANDLE)ha;
-    return (dwErrCode == ERROR_SUCCESS);
+    return (nError == ERROR_SUCCESS);
 }

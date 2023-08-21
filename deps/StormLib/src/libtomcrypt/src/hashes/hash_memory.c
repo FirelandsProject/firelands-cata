@@ -24,34 +24,39 @@
   @param outlen [in/out] Max size and resulting size of the digest
   @return CRYPT_OK if successful
 */
-int hash_memory(int hash, const unsigned char *in, unsigned long inlen, unsigned char *out, unsigned long *outlen)
+int hash_memory(int hash, const unsigned char* in, unsigned long inlen, unsigned char* out, unsigned long* outlen)
 {
-    hash_state *md;
+    hash_state* md;
     int err;
 
-    LTC_ARGCHK(in     != NULL);
-    LTC_ARGCHK(out    != NULL);
+    LTC_ARGCHK(in != NULL);
+    LTC_ARGCHK(out != NULL);
     LTC_ARGCHK(outlen != NULL);
 
-    if ((err = hash_is_valid(hash)) != CRYPT_OK) {
+    if ((err = hash_is_valid(hash)) != CRYPT_OK)
+    {
         return err;
     }
 
-    if (*outlen < hash_descriptor[hash].hashsize) {
-       *outlen = hash_descriptor[hash].hashsize;
-       return CRYPT_BUFFER_OVERFLOW;
+    if (*outlen < hash_descriptor[hash].hashsize)
+    {
+        *outlen = hash_descriptor[hash].hashsize;
+        return CRYPT_BUFFER_OVERFLOW;
     }
 
     md = XMALLOC(sizeof(hash_state));
-    if (md == NULL) {
-       return CRYPT_MEM;
+    if (md == NULL)
+    {
+        return CRYPT_MEM;
     }
 
-    if ((err = hash_descriptor[hash].init(md)) != CRYPT_OK) {
-       goto LBL_ERR;
+    if ((err = hash_descriptor[hash].init(md)) != CRYPT_OK)
+    {
+        goto LBL_ERR;
     }
-    if ((err = hash_descriptor[hash].process(md, in, inlen)) != CRYPT_OK) {
-       goto LBL_ERR;
+    if ((err = hash_descriptor[hash].process(md, in, inlen)) != CRYPT_OK)
+    {
+        goto LBL_ERR;
     }
     err = hash_descriptor[hash].done(md, out);
     *outlen = hash_descriptor[hash].hashsize;
