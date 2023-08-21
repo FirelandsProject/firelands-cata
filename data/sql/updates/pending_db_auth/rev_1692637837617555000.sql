@@ -1,0 +1,2 @@
+ALTER TABLE `updates` MODIFY COLUMN `state` enum('RELEASED','ARCHIVED', "MOD") CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'RELEASED' COMMENT 'defines if an update is released or archived.';
+ALTER TABLE `updates_include` MODIFY COLUMN `state` enum('RELEASED','ARCHIVED', "MOD") CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'RELEASED' COMMENT 'defines if the directory contains released or archived updates.';
