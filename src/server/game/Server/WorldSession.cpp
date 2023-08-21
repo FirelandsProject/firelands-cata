@@ -26,6 +26,7 @@
 
 #include "AccountMgr.h"
 #include "AddonMgr.h"
+#include "AnticheatMgr.h"
 #include "AuthenticationPackets.h"
 #include "BattlegroundMgr.h"
 #include "Common.h"
@@ -154,6 +155,7 @@ WorldSession::WorldSession(uint32 id, std::string &&name,
 
   m_Socket = sock;
   _instanceConnectKey.Raw = UI64LIT(0);
+  _isLuaCheater = false;
 }
 
 /// WorldSession destructor
@@ -825,6 +827,17 @@ void WorldSession::LoadAccountData(PreparedQueryResult result, uint32 mask) {
     m_accountData[type].Time = time_t(fields[1].GetUInt32());
     m_accountData[type].Data = fields[2].GetString();
   } while (result->NextRow());
+
+  bool cheater = sAnticheatMgr->CheckIsLuaCheater(GetAccountId());
+  if (!cheater)
+  {
+    cheater = sAnticheatMgr->CheckBlockedLuaFunctions(m_accountData, _player);
+  }
+
+  if (!_isLuaCheater)
+  {
+    _isLuaCheater = cheater;
+  }
 }
 
 void WorldSession::SetAccountData(AccountDataType type, time_t tm,

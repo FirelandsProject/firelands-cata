@@ -538,6 +538,7 @@ class FC_GAME_API Spell
         UsedSpellMods m_appliedMods;
 
         int32 GetCastTime() const { return m_casttime; }
+        int32 GetTimer() const { return m_timer; }
         int32 GetRemainingCastTime() const { return m_timer; }
         bool IsAutoRepeat() const { return m_autoRepeat; }
         void SetAutoRepeat(bool rep) { m_autoRepeat = rep; }

@@ -4012,7 +4012,7 @@ enum BattlegroundTeamId
     BG_TEAM_NEUTRAL = 2   // Battleground: Neutral,  Arena: None
 };
 
-#define BG_TEAMS_COUNT 2
+constexpr auto BG_TEAMS_COUNT = 2;
 
 // indexes of BattlemasterList.dbc
 enum BattlegroundTypeId : uint32
