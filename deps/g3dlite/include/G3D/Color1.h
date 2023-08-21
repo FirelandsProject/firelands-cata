@@ -1,8 +1,8 @@
 /**
  \file G3D/Color1.h
- 
+
  Monochrome Color class
- 
+
  \maintainer Morgan McGuire, http://graphics.cs.williams.edu
  \created 2007-01-31
  \edited  2011-08-20
@@ -23,7 +23,7 @@
 namespace G3D {
 
 /**
- Monochrome color. 
+ Monochrome color.
  */
 class Color1 {
 private:
@@ -45,7 +45,7 @@ public:
 
     inline explicit Color1(float v) : value(v) {
     }
-    
+
     inline explicit Color1(unorm8 v) : value(v) {
     }
 
@@ -146,7 +146,7 @@ public:
     }
 
     inline Color1 lerp(const Color1& other, float a) const {
-        return Color1(value + (other.value - value) * a); 
+        return Color1(value + (other.value - value) * a);
 
     }
 

@@ -109,7 +109,7 @@ EFSW_API const char* efsw_getlasterror();
 /// Add a directory watch. Same as the other addWatch, but doesn't have recursive option.
 /// For backwards compatibility.
 /// On error returns WatchID with Error type.
-efsw_watchid EFSW_API efsw_addwatch(efsw_watcher watcher, const char* directory, 
+efsw_watchid EFSW_API efsw_addwatch(efsw_watcher watcher, const char* directory,
 	efsw_pfn_fileaction_callback callback_fn, int recursive, void* param);
 
 /// Remove a directory watch. This is a brute force search O(nlogn).

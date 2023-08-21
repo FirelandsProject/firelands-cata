@@ -883,7 +883,7 @@ bool Unit::HasBreakableByDamageCrowdControlAura(Unit* excludeCasterChannel) cons
         if (!victim->ToCreature()->hasLootRecipient())
             victim->ToCreature()->SetLootRecipient(attacker);
 
-        if (attacker->IsControlledByPlayer() || (attacker->ToTempSummon() && attacker->ToTempSummon()->GetSummoner() && attacker->ToTempSummon()->GetSummoner()->GetTypeId() == TYPEID_PLAYER))
+        if (attacker && (attacker->IsControlledByPlayer() || (attacker->ToTempSummon() && attacker->ToTempSummon()->GetSummoner() && attacker->ToTempSummon()->GetSummoner()->GetTypeId() == TYPEID_PLAYER)))
             victim->ToCreature()->LowerPlayerDamageReq(health < damage ? health : damage);
     }
 
@@ -5409,7 +5409,7 @@ void Unit::UpdateDisplayPower()
             }
             else if (Pet* pet = ToPet())
             {
-                if (pet->getPetType() == HUNTER_PET) // Hunter pets have focus
+                if (pet->getPetType() & HUNTER_PET) // Hunter pets have focus
                     displayPower = POWER_FOCUS;
                 else if (pet->IsPetGhoul() || pet->IsRisenAlly()) // DK pets have energy
                     displayPower = POWER_ENERGY;
@@ -6337,7 +6337,7 @@ Unit* Unit::GetMagicHitRedirectTarget(Unit* victim, SpellInfo const* spellInfo)
     for (Unit::AuraEffectList::const_iterator itr = magnetAuras.begin(); itr != magnetAuras.end(); ++itr)
     {
         if (Unit* magnet = (*itr)->GetBase()->GetCaster())
-            if (spellInfo->CheckExplicitTarget(this, magnet) == SPELL_CAST_OK && _IsValidAttackTarget(magnet, spellInfo))
+            if (spellInfo->CheckExplicitTarget(this, magnet) == SPELL_CAST_OK && IsValidAttackTarget(magnet, spellInfo))
             {
                 /// @todo handle this charge drop by proc in cast phase on explicit target
                 if (spellInfo->Speed > 0.0f)
@@ -6362,7 +6362,7 @@ Unit* Unit::GetMeleeHitRedirectTarget(Unit* victim, SpellInfo const* spellInfo)
     for (AuraEffectList::const_iterator i = hitTriggerAuras.begin(); i != hitTriggerAuras.end(); ++i)
     {
         if (Unit* magnet = (*i)->GetBase()->GetCaster())
-            if (_IsValidAttackTarget(magnet, spellInfo) && magnet->IsWithinLOSInMap(this) &&
+            if (IsValidAttackTarget(magnet, spellInfo) && magnet->IsWithinLOSInMap(this) &&
                 (!spellInfo || (spellInfo->CheckExplicitTarget(this, magnet) == SPELL_CAST_OK && spellInfo->CheckTarget(this, magnet, false) == SPELL_CAST_OK)))
                 if (roll_chance_i((*i)->GetAmount()))
                 {
@@ -6626,7 +6626,16 @@ uint32 Unit::SpellDamageBonusDone(Unit* victim, SpellInfo const* spellProto, uin
     // Done fixed damage bonus auras
     int32 DoneAdvertisedBenefit = SpellBaseDamageBonusDone(spellProto->GetSchoolMask(), true);
     // modify spell power by victim's SPELL_AURA_MOD_DAMAGE_TAKEN auras (eg Amplify/Dampen Magic)
-    DoneAdvertisedBenefit += victim->SpellBaseDamageBonusTaken(spellProto);
+    DoneAdvertisedBenefit += GetTotalAuraModifier(SPELL_AURA_MOD_DAMAGE_TAKEN, [spellProto](AuraEffect const* aurEff)
+    {
+        if (spellProto->HasAttribute(SPELL_ATTR10_IGNORE_POSITIVE_DAMAGE_TAKEN_MODS) && aurEff->GetAmount() > 0)
+            return false;
+
+        if ((aurEff->GetMiscValue() & spellProto->GetSchoolMask()) != 0)
+            return true;
+
+        return false;
+    });
 
     // Custom scripted damage
     switch (spellProto->SpellFamilyName)
@@ -7027,25 +7036,6 @@ int32 Unit::SpellBaseDamageBonusDone(SpellSchoolMask schoolMask, bool withSpellP
     return DoneAdvertisedBenefit;
 }
 
-int32 Unit::SpellBaseDamageBonusTaken(SpellInfo const* spellInfo) const
-{
-    int32 TakenAdvertisedBenefit = 0;
-
-    TakenAdvertisedBenefit += GetTotalAuraModifier(SPELL_AURA_MOD_DAMAGE_TAKEN,
-        [spellInfo](AuraEffect const* aurEff)
-        {
-            if (spellInfo->HasAttribute(SPELL_ATTR10_IGNORE_POSITIVE_DAMAGE_TAKEN_MODS) && aurEff->GetAmount() > 0)
-                return false;
-
-            if ((aurEff->GetMiscValue() & spellInfo->GetSchoolMask()) != 0)
-                return true;
-
-            return false;
-        });
-
-    return TakenAdvertisedBenefit;
-}
-
 float Unit::SpellCritChanceDone(SpellInfo const* spellInfo, SpellSchoolMask schoolMask, WeaponAttackType attackType /*= BASE_ATTACK*/, bool isPeriodic /*false*/) const
 {
     //! Mobs can't crit with spells. (Except player controlled)
@@ -7388,10 +7378,21 @@ uint32 Unit::SpellHealingBonusDone(Unit* victim, SpellInfo const* spellProto, ui
     // Done fixed damage bonus auras
     int32 DoneAdvertisedBenefit = SpellBaseHealingBonusDone(spellProto->GetSchoolMask(), true);
 
+     // modify spell power by victim's SPELL_AURA_MOD_HEALING auras (eg Amplify/Dampen Magic)
+    DoneAdvertisedBenefit += victim->GetTotalAuraModifierByMiscMask(SPELL_AURA_MOD_HEALING, spellProto->GetSchoolMask());
+
+    // Pets just add their bonus damage to their spell damage
+    // note that their spell damage is just gain of their own auras
+    if (HasUnitTypeMask(UNIT_MASK_GUARDIAN))
+        DoneAdvertisedBenefit += static_cast<Guardian const*>(this)->GetBonusDamage();
+
     // Check for table values
     float coeff = spellProto->Effects[effIndex].BonusMultiplier;
     if (SpellBonusEntry const* bonus = sSpellMgr->GetSpellBonusData(spellProto->Id))
     {
+        WeaponAttackType const attType = (spellProto->IsRangedWeaponSpell() && spellProto->DmgClass != SPELL_DAMAGE_CLASS_MELEE) ? RANGED_ATTACK : BASE_ATTACK;
+        float APbonus = float(victim->GetTotalAuraModifier(attType == BASE_ATTACK ? SPELL_AURA_MELEE_ATTACK_POWER_ATTACKER_BONUS : SPELL_AURA_RANGED_ATTACK_POWER_ATTACKER_BONUS));
+        APbonus += GetTotalAttackPowerValue(attType);
         if (damagetype == DOT)
         {
             coeff = bonus->dot_damage;
@@ -7561,12 +7562,6 @@ uint32 Unit::SpellHealingBonusTaken(Unit* caster, SpellInfo const* spellProto, u
     if (AuraEffect const* Tenacity = GetAuraEffect(58549, 0))
         AddPct(TakenTotalMod, Tenacity->GetAmount());
 
-    // Healing Done
-    int32 TakenTotal = 0;
-
-    // Taken fixed damage bonus auras
-    int32 TakenAdvertisedBenefit = SpellBaseHealingBonusTaken(spellProto->GetSchoolMask());
-
     // Nourish cast
     if (spellProto->SpellFamilyName == SPELLFAMILY_DRUID && spellProto->SpellFamilyFlags[1] & 0x2000000)
     {
@@ -7588,22 +7583,6 @@ uint32 Unit::SpellHealingBonusTaken(Unit* caster, SpellInfo const* spellProto, u
             healamount = uint32(std::max((float(healamount) * TakenTotalMod), 0.0f));
             return healamount;
         }
-    }
-
-    // Default calculation
-    if (TakenAdvertisedBenefit)
-    {
-        if (coeff < 0)
-            coeff = CalculateDefaultCoefficient(spellProto, damagetype)  * 1.88f; // As wowwiki says: C = (Cast Time / 3.5) * 1.88 (for healing spells)
-
-        if (Player* modOwner = GetSpellModOwner())
-        {
-            coeff *= 100.0f;
-            modOwner->ApplySpellMod(spellProto->Id, SPELLMOD_BONUS_MULTIPLIER, coeff);
-            coeff /= 100.0f;
-        }
-
-        TakenTotal += int32(TakenAdvertisedBenefit * coeff);
     }
 
         // Unused in Cataclysm (15595)
@@ -7630,21 +7609,7 @@ uint32 Unit::SpellHealingBonusTaken(Unit* caster, SpellInfo const* spellProto, u
             });
     }
 
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-    {
-        switch (spellProto->Effects[i].ApplyAuraName)
-        {
-        // Bonus healing does not apply to these spells
-        case SPELL_AURA_PERIODIC_LEECH:
-        case SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
-            TakenTotal = 0;
-            break;
-        }
-        if (spellProto->Effects[i].Effect == SPELL_EFFECT_HEALTH_LEECH)
-            TakenTotal = 0;
-    }
-
-    float heal = float(int32(healamount) + TakenTotal) * TakenTotalMod;
+    float heal = healamount * TakenTotalMod;
 
     return uint32(std::max(heal, 0.0f));
 }
@@ -7692,18 +7657,6 @@ int32 Unit::SpellBaseHealingBonusDone(SpellSchoolMask schoolMask, bool withSpell
         // ... and attack power
         advertisedBenefit += CalculatePct(GetTotalAttackPowerValue(BASE_ATTACK), GetTotalAuraModifierByMiscMask(SPELL_AURA_MOD_SPELL_HEALING_OF_ATTACK_POWER, schoolMask));
     }
-    return advertisedBenefit;
-}
-
-int32 Unit::SpellBaseHealingBonusTaken(SpellSchoolMask schoolMask) const
-{
-    int32 advertisedBenefit = 0;
-
-    AuraEffectList const& mDamageTaken = GetAuraEffectsByType(SPELL_AURA_MOD_HEALING);
-    for (AuraEffectList::const_iterator i = mDamageTaken.begin(); i != mDamageTaken.end(); ++i)
-        if (((*i)->GetMiscValue() & schoolMask) != 0)
-            advertisedBenefit += (*i)->GetAmount();
-
     return advertisedBenefit;
 }
 
@@ -7967,7 +7920,7 @@ uint32 Unit::MeleeDamageBonusDone(Unit* victim, uint32 pdamage, WeaponAttackType
         if (!spellProto || !spellProto->HasAttribute(SPELL_ATTR6_LIMIT_PCT_DAMAGE_MODS))
         {
         // mods for SPELL_SCHOOL_MASK_NORMAL are already factored in base melee damage calculation
-            if (!(spellProto->GetSchoolMask() & SPELL_SCHOOL_MASK_NORMAL))
+            if (spellProto && !(spellProto->GetSchoolMask() & SPELL_SCHOOL_MASK_NORMAL))
             {
                 float maxModDamagePercentSchool = 0.0f;
                 if (GetTypeId() == TYPEID_PLAYER)
@@ -8480,10 +8433,8 @@ bool Unit::isTargetableForAttack(bool checkFakeDeath) const
     return !HasUnitState(UNIT_STATE_UNATTACKABLE) && (!checkFakeDeath || !HasUnitState(UNIT_STATE_DIED));
 }
 
-bool Unit::IsValidAttackTarget(Unit const* target) const { return _IsValidAttackTarget(target, nullptr); }
-
 // function based on function Unit::CanAttack from 13850 client
-bool Unit::_IsValidAttackTarget(Unit const* target, SpellInfo const* bySpell, WorldObject const* obj) const
+bool Unit::IsValidAttackTarget(Unit const* target, SpellInfo const* bySpell /*= nullptr*/, WorldObject const* obj /*= nullptr*/, bool spellCheck /*= true*/) const
 {
     ASSERT(target);
 
@@ -8491,10 +8442,57 @@ bool Unit::_IsValidAttackTarget(Unit const* target, SpellInfo const* bySpell, Wo
     if (this == target)
         return false;
 
-    // can't attack unattackable units or GMs
-    if (target->HasUnitState(UNIT_STATE_UNATTACKABLE) || (target->GetTypeId() == TYPEID_PLAYER && target->ToPlayer()->IsGameMaster()))
+    // can't attack GMs
+    if (target->GetTypeId() == TYPEID_PLAYER && target->ToPlayer()->IsGameMaster())
         return false;
 
+
+    // CvC case - can attack each other only when one of them is hostile
+    if (!HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED) && !target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
+        return IsHostileTo(target) || target->IsHostileTo(this);
+
+    // PvP, PvC, CvP case
+    // can't attack friendly targets
+    if (IsFriendlyTo(target) || target->IsFriendlyTo(this))
+        return false;
+
+    Player const* playerAffectingAttacker = HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED) ? GetAffectingPlayer() : nullptr;
+    Player const* playerAffectingTarget = target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED) ? target->GetAffectingPlayer() : nullptr;
+
+    // Not all neutral creatures can be attacked (even some unfriendly faction does not react aggresive to you, like Sporaggar)
+    if ((playerAffectingAttacker && !playerAffectingTarget) || (!playerAffectingAttacker && playerAffectingTarget))
+    {
+        Player const* player = playerAffectingAttacker ? playerAffectingAttacker : playerAffectingTarget;
+        Unit const* creature = playerAffectingAttacker ? target : this;
+
+        if (creature->IsContestedGuard() && player->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_CONTESTED_PVP))
+            return true;
+
+        if (FactionTemplateEntry const* factionTemplate = creature->GetFactionTemplateEntry())
+        {
+            if (!(player->GetReputationMgr().GetForcedRankIfAny(factionTemplate)))
+                if (FactionEntry const* factionEntry = sFactionStore.LookupEntry(factionTemplate->Faction))
+                    if (FactionState const* repState = player->GetReputationMgr().GetState(factionEntry))
+                        if (!(repState->Flags & FACTION_FLAG_AT_WAR))
+                            return false;
+        }
+    }
+
+    Creature const* creatureAttacker = ToCreature();
+    if (creatureAttacker && (creatureAttacker->GetCreatureTemplate()->type_flags & CREATURE_TYPE_FLAG_TREAT_AS_RAID_UNIT))
+        return false;
+
+    if (spellCheck && !IsValidSpellAttackTarget(target, bySpell, obj))
+        return false;
+
+    return true;
+}
+
+bool Unit::IsValidSpellAttackTarget(Unit const* target, SpellInfo const* bySpell, WorldObject const* obj /*= nullptr*/) const
+{
+    // can't attack unattackable units
+    if (target->HasUnitState(UNIT_STATE_UNATTACKABLE))
+        return false;
     // visibility checks
     // skip visibility check for GO casts, needs removal when go cast is implemented. Also ignore for gameobject and dynauras
     if (GetEntry() != WORLD_TRIGGER && (!obj || !obj->isType(TYPEMASK_GAMEOBJECT | TYPEMASK_DYNAMICOBJECT)))
@@ -8602,10 +8600,8 @@ bool Unit::_IsValidAttackTarget(Unit const* target, SpellInfo const* bySpell, Wo
     return true;
 }
 
-bool Unit::IsValidAssistTarget(Unit const* target) const { return _IsValidAssistTarget(target, nullptr); }
-
 // function based on function Unit::CanAssist from 13850 client
-bool Unit::_IsValidAssistTarget(Unit const* target, SpellInfo const* bySpell) const
+bool Unit::IsValidAssistTarget(Unit const* target, SpellInfo const* bySpell /*= nullptr*/, bool spellCheck /*= true*/) const
 {
     ASSERT(target);
 
@@ -8613,14 +8609,36 @@ bool Unit::_IsValidAssistTarget(Unit const* target, SpellInfo const* bySpell) co
     if (this == target)
         return true;
 
-    // can't assist unattackable units or GMs
-    if (target->HasUnitState(UNIT_STATE_UNATTACKABLE) || (target->GetTypeId() == TYPEID_PLAYER && target->ToPlayer()->IsGameMaster()))
+    // can't assist GMs
+    if (target->GetTypeId() == TYPEID_PLAYER && target->ToPlayer()->IsGameMaster())
+        return false;
+
+     // can't assist non-friendly targets
+    if (GetReactionTo(target) < REP_NEUTRAL && target->GetReactionTo(this) < REP_NEUTRAL &&
+        (!ToCreature() || !(ToCreature()->GetCreatureTemplate()->type_flags & CREATURE_TYPE_FLAG_TREAT_AS_RAID_UNIT)))
+        return false;
+
+    if (spellCheck && !IsValidSpellAssistTarget(target, bySpell))
+        return false;
+
+    return true;
+}
+
+bool Unit::IsValidSpellAssistTarget(Unit const* target, SpellInfo const* bySpell) const
+{
+    // can't assist unattackable units
+    if (target->HasUnitState(UNIT_STATE_UNATTACKABLE))
         return false;
 
     // can't assist own vehicle or passenger
     if (m_vehicle)
-        if (IsOnVehicle(target) || m_vehicle->GetBase()->IsOnVehicle(target))
+    {
+        if (IsOnVehicle(target))
             return false;
+
+        if (IsOnVehicle(target) || m_vehicle->GetBase()->IsOnVehicle(target))
+             return false;
+    }
 
     // can't assist invisible
     if ((!bySpell || !bySpell->HasAttribute(SPELL_ATTR6_CAN_TARGET_INVISIBLE)) && !CanSeeOrDetect(target, bySpell && bySpell->IsAffectingArea()))
@@ -8648,17 +8666,8 @@ bool Unit::_IsValidAssistTarget(Unit const* target, SpellInfo const* bySpell) co
         }
     }
 
-    // can't assist non-friendly targets
-    if (GetReactionTo(target) < REP_NEUTRAL && target->GetReactionTo(this) < REP_NEUTRAL &&
-        (!ToCreature() || !(ToCreature()->GetCreatureTemplate()->type_flags & CREATURE_TYPE_FLAG_TREAT_AS_RAID_UNIT)))
-        return false;
-
-    // Controlled player case, we can assist creatures (reaction already checked above, our faction == charmer faction)
-    if (GetTypeId() == TYPEID_PLAYER && IsCharmed() && GetCharmerGUID().IsCreature())
-        return true;
-
     // PvP case
-    else if (target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
+    if (target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
     {
         Player const* targetPlayerOwner = target->GetAffectingPlayer();
         if (HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
@@ -8671,22 +8680,20 @@ bool Unit::_IsValidAssistTarget(Unit const* target, SpellInfo const* bySpell) co
                     return false;
             }
             // can't assist player in ffa_pvp zone from outside
-            if ((target->GetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PVP_FLAG) & UNIT_BYTE2_FLAG_FFA_PVP) &&
-                !(GetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PVP_FLAG) & UNIT_BYTE2_FLAG_FFA_PVP))
-                return false;
-            // can't assist player out of sanctuary from sanctuary if has pvp enabled
-            if (target->GetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PVP_FLAG) & UNIT_BYTE2_FLAG_PVP)
-                if ((GetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PVP_FLAG) & UNIT_BYTE2_FLAG_SANCTUARY) && !(target->GetByteValue(UNIT_FIELD_BYTES_2, 1) & UNIT_BYTE2_FLAG_SANCTUARY))
+            if (target->IsPvP())
+                if (IsInSanctuary() && !target->IsInSanctuary())
                     return false;
         }
     }
     // PvC case - player can assist creature only if has specific type flags
     // !target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE) &&
-    else if (HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED) && (!bySpell || !bySpell->HasAttribute(SPELL_ATTR6_ASSIST_IGNORE_IMMUNE_FLAG)) &&
-             !((target->GetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PVP_FLAG) & UNIT_BYTE2_FLAG_PVP)))
+    else if (HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
     {
-        if (Creature const* creatureTarget = target->ToCreature())
-            return creatureTarget->GetCreatureTemplate()->type_flags & CREATURE_TYPE_FLAG_TREAT_AS_RAID_UNIT || creatureTarget->GetCreatureTemplate()->type_flags & CREATURE_TYPE_FLAG_CAN_ASSIST;
+        if (!bySpell || !bySpell->HasAttribute(SPELL_ATTR6_ASSIST_IGNORE_IMMUNE_FLAG))
+            if (!target->IsPvP())
+                if (Creature const* creatureTarget = target->ToCreature())
+                    return creatureTarget->GetCreatureTemplate()->type_flags & CREATURE_TYPE_FLAG_TREAT_AS_RAID_UNIT ||
+                           creatureTarget->GetCreatureTemplate()->type_flags & CREATURE_TYPE_FLAG_CAN_ASSIST;
     }
     return true;
 }
@@ -11829,7 +11836,7 @@ void Unit::PlayOneShotAnimKitId(uint16 animKitId)
 
     // Do KILL and KILLED procs. KILL proc is called only for the unit who landed the killing blow (and its owner - for pets and
     // totems) regardless of who tapped the victim
-    if (attacker && attacker->IsPet() || attacker->IsTotem())
+    if (attacker &&( attacker->IsPet() || attacker->IsTotem()))
     {
         // proc only once for victim
         if (Unit* owner = attacker->GetOwner())
@@ -11910,40 +11917,47 @@ void Unit::PlayOneShotAnimKitId(uint16 animKitId)
         }
 
         // Call KilledUnit for creatures, this needs to be called after the lootable flag is set
-        if (attacker->IsCreature() && attacker->IsAIEnabled())
+        if (attacker && attacker->IsCreature() && attacker->IsAIEnabled())
             attacker->ToCreature()->AI()->KilledUnit(victim);
 
         // Call creature just died function
-        if (CreatureAI* ai = creature->AI())
-            ai->JustDied(attacker);
-
-        if (TempSummon* summon = creature->ToTempSummon())
-            if (Unit* summoner = summon->GetSummoner())
-                if (summoner->ToCreature() && summoner->IsAIEnabled())
-                    summoner->ToCreature()->AI()->SummonedCreatureDies(creature, attacker);
-
-        // Dungeon specific stuff, only applies to players killing creatures
-        if (creature->GetInstanceId())
+        if (creature)
         {
-            Map* instanceMap = creature->GetMap();
-            Player* creditedPlayer = attacker->GetCharmerOrOwnerPlayerOrPlayerItself();
-            /// @todo do instance binding anyway if the charmer/owner is offline
+            if (CreatureAI* ai = creature->AI())
+                ai->JustDied(attacker);
 
-            if (instanceMap->IsDungeon() && ((attacker && attacker->GetCharmerOrOwnerPlayerOrPlayerItself()) || attacker == victim))
+            if (TempSummon* summon = creature->ToTempSummon())
+                if (Unit* summoner = summon->GetSummoner())
+                    if (summoner->ToCreature() && summoner->IsAIEnabled())
+                        summoner->ToCreature()->AI()->SummonedCreatureDies(creature, attacker);
+
+                    // Dungeon specific stuff, only applies to players killing creatures
+            if (creature->GetInstanceId())
             {
-                if (instanceMap->IsRaidOrHeroicDungeon())
+                Map* instanceMap = creature->GetMap();
+
+                if (attacker)
                 {
-                    if (creature->GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_INSTANCE_BIND)
-                        instanceMap->ToInstanceMap()->PermBindAllPlayers();
+                Player* creditedPlayer = attacker->GetCharmerOrOwnerPlayerOrPlayerItself();
+                /// @todo do instance binding anyway if the charmer/owner is offline
+
+                if (instanceMap->IsDungeon() && ((attacker && attacker->GetCharmerOrOwnerPlayerOrPlayerItself()) || attacker == victim))
+                {
+                    if (instanceMap->IsRaidOrHeroicDungeon())
+                    {
+                        if (creature->GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_INSTANCE_BIND)
+                            instanceMap->ToInstanceMap()->PermBindAllPlayers();
+                    }
+                    else
+                    {
+                        // the reset time is set but not added to the scheduler
+                        // until the players leave the instance
+                        time_t resettime = GameTime::GetGameTime() + 2 * HOUR;
+                        if (InstanceSave* save = sInstanceSaveMgr->GetInstanceSave(creature->GetInstanceId()))
+                            if (save->GetResetTime() < resettime)
+                                save->SetResetTime(resettime);
+                    }
                 }
-                else
-                {
-                    // the reset time is set but not added to the scheduler
-                    // until the players leave the instance
-                    time_t resettime = GameTime::GetGameTime() + 2 * HOUR;
-                    if (InstanceSave* save = sInstanceSaveMgr->GetInstanceSave(creature->GetInstanceId()))
-                        if (save->GetResetTime() < resettime)
-                            save->SetResetTime(resettime);
                 }
             }
         }

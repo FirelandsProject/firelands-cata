@@ -1,6 +1,6 @@
 /**
   @file Vector2int16.h
-  
+
   @maintainer Morgan McGuire, matrix@brown.edu
 
   @created 2003-08-09
@@ -21,7 +21,7 @@ namespace G3D {
 
 class Any;
 /**
- \class Vector2int16 
+ \class Vector2int16
  A Vector2 that packs its fields into G3D::int16 s.
  */
 G3D_BEGIN_PACKED_CLASS(2)
@@ -45,7 +45,7 @@ public:
     explicit Vector2int16(const class Vector2int32& v);
 
     Any toAny() const;
-    
+
     Vector2int16& operator=(const Any& a);
 
     inline G3D::int16& operator[] (int i) {
@@ -133,7 +133,7 @@ public:
 }
 G3D_END_PACKED_CLASS(2)
 
-typedef Vector2int16 Point2int16;    
+typedef Vector2int16 Point2int16;
 
 }
 

@@ -1,10 +1,10 @@
 /**
   @file Matrix4.h
- 
+
   4x4 matrix class
- 
+
   @maintainer Morgan McGuire, http://graphics.cs.williams.edu
- 
+
   \created 2003-10-02
   \edited  2012-12-25
  */
@@ -40,7 +40,7 @@ private:
 
     /**
       Computes the determinant of the 3x3 matrix that lacks excludeRow
-      and excludeCol. 
+      and excludeCol.
     */
     float subDeterminant(int excludeRow, int excludeCol) const;
 
@@ -76,7 +76,7 @@ public:
      init should be <B>row major</B>.
      */
     Matrix4(const float* init);
-    
+
     /**
         a is the upper left 3x3 submatrix and b is the upper right 3x1 submatrix. The last row of the created matrix is (0,0,0,1).
     */
@@ -108,7 +108,7 @@ public:
 
     /** If this is a perspective projection matrix created by
         Matrix4::perspectiveProjection, extract its parameters.
-        
+
         Uses double precision because the operations involved in
         projection involve divisions that can significantly impact
         precision.
@@ -116,12 +116,12 @@ public:
     void getPerspectiveProjectionParameters
     (double& left,
      double& right,
-     double& bottom,  
+     double& bottom,
      double& top,
-     double& nearval, 
+     double& nearval,
      double& farval,
      float updirection = -1.0f) const;
-        
+
     inline float* operator[](int r) {
         debugAssert(r >= 0);
         debugAssert(r < 4);
@@ -132,7 +132,7 @@ public:
         debugAssert(r >= 0);
         debugAssert(r < 4);
         return (const float*)&elt[r];
-    } 
+    }
 
     /** Returns a row-major pointer. */
     inline operator float* () {
@@ -166,7 +166,7 @@ public:
      Near and far are the <b>NEGATIVE</b> of the near and far plane Z values
      (to follow OpenGL conventions).
 
-    \param upDirection Use -1.0 for 2D Y increasing downwards (the G3D 8.x default convention), 
+    \param upDirection Use -1.0 for 2D Y increasing downwards (the G3D 8.x default convention),
     1.0 for 2D Y increasing upwards (the G3D 7.x default and OpenGL convention)
      */
     static Matrix4 orthogonalProjection(
@@ -178,7 +178,7 @@ public:
         float            farval,
         float            upDirection = -1.0f);
 
-    /** \param upDirection Use -1.0 for 2D Y increasing downwards (the G3D 8.x default convention), 
+    /** \param upDirection Use -1.0 for 2D Y increasing downwards (the G3D 8.x default convention),
     1.0 for 2D Y increasing upwards (the G3D 7.x default and OpenGL convention)
       */
     static Matrix4 orthogonalProjection(
@@ -187,7 +187,7 @@ public:
         float            farval,
         float            upDirection = -1.0f);
 
-    /** \param upDirection Use -1.0 for 2D Y increasing downwards (the G3D 8.x default convention), 
+    /** \param upDirection Use -1.0 for 2D Y increasing downwards (the G3D 8.x default convention),
     1.0 for 2D Y increasing upwards (the G3D 7.x default and OpenGL convention)
 
         Uses double precision because the operations involved in
@@ -219,10 +219,10 @@ public:
     float determinant() const;
     Matrix4 inverse() const;
 
-    /** 
+    /**
      Transpose of the cofactor matrix (used in computing the inverse).
      Note: This is in fact only one type of adjoint. More generally,
-     an adjoint of a matrix is any mapping of a matrix which possesses 
+     an adjoint of a matrix is any mapping of a matrix which possesses
      certain properties.  This returns the so-called adjugate
      or classical adjoint.
     */
@@ -242,7 +242,7 @@ public:
                        0, 0, v.z, 0,
                        0, 0, 0, 1);
     }
-    
+
     /** 3D scale matrix */
     inline static Matrix4 scale(float x, float y, float z) {
         return scale(Vector3(x, y, z));
@@ -262,7 +262,7 @@ public:
         return Matrix4(Matrix3::identity(), Vector3(x, y, z));
     }
 
-    /** Create a rotation matrix that rotates \a deg degrees around the Y axis */ 
+    /** Create a rotation matrix that rotates \a deg degrees around the Y axis */
     inline static Matrix4 yawDegrees(float deg) {
         return Matrix4(Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(deg)));
     }
@@ -295,15 +295,15 @@ public:
         double r2c1, double r2c2, double r2c3, double r2c4,
         double r3c1, double r3c2, double r3c3, double r3c4,
         double r4c1, double r4c2, double r4c3, double r4c4);
-        
+
     // Special values.
     // Intentionally not inlined: see Matrix3::identity() for details.
     static const Matrix4float64& identity();
-    
+
     static const Matrix4float64& zero();
 
     bool operator!=(const Matrix4float64& other) const;
-    
+
     bool operator==(const Matrix4float64& other) const;
 
     Vector4 operator*(const Vector4& vector) const;
@@ -327,7 +327,7 @@ public:
         debugAssert(r >= 0);
         debugAssert(r < 4);
         return (const double*)&elt[r];
-    } 
+    }
 
     inline operator double* () {
         return (double*)&elt[0][0];

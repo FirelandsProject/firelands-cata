@@ -1,6 +1,6 @@
 /**
   @file G3D/Vector2int32.h
-  
+
   @maintainer Morgan McGuire, matrix@brown.edu
 
   @created 2003-08-09
@@ -20,7 +20,7 @@
 namespace G3D {
 
 /**
- \class Vector2int32 
+ \class Vector2int32
  A Vector2 that packs its fields into int32s.
  */
 G3D_BEGIN_PACKED_CLASS(2)

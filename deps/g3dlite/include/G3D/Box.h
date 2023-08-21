@@ -1,10 +1,10 @@
 /**
   \file G3D/Box.h
- 
+
   Box class
- 
+
   \maintainer Morgan McGuire, http://graphics.cs.williams.edu
- 
+
   \cite Portions based on Dave Eberly's Magic Software Library at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
   \created 2001-06-02
   \edited  2013-04-13
@@ -27,7 +27,7 @@ class CoordinateFrame;
 class Any;
 
 /**
- \brief An arbitrary (oriented) 3D box, useful as a bounding box. 
+ \brief An arbitrary (oriented) 3D box, useful as a bounding box.
 
  To construct a box from a coordinate frame, center and extent, use the idiom:
  <CODE>Box box = cframe.toObjectSpace(Box(center - extent/2, center + extent/2));</CODE>
@@ -43,7 +43,7 @@ private:
      Axes with length equal to the 4 edges that run along each of them
      */
     Vector3 _edgeVector[3];
-   
+
     Point3  _center;
 
     float  _area;
@@ -82,9 +82,9 @@ public:
 
     void serialize(class BinaryOutput& b) const;
     void deserialize(class BinaryInput& b);
-    
+
     /**
-     Returns the object to world transformation for 
+     Returns the object to world transformation for
      this box, where the origin is the center of the box.  localFrame().worldToObject(...) takes
      objects into the space where the box axes are
      (1,0,0), (0,1,0), (0,0,1).  Note that there
@@ -107,7 +107,7 @@ public:
     /**
        \htmlonly
       <PRE>
-		
+
 
       2--------3
      / :      /|
@@ -119,12 +119,12 @@ public:
    |/       |/
    4--------5
 
-    y  
-    ^ 
+    y
+    ^
     |
     |-->x
   z/
-  
+
 
       </PRE>
       \endhtmlonly
@@ -155,9 +155,9 @@ public:
     /**
      Returns the four corners of a face (0 <= f < 6).
      The corners are returned to form a clockwise quad facing outwards.
-     
-	 
-	 
+
+
+
 	  +--------+
      / :      /|
     /  :     / |
@@ -167,12 +167,12 @@ public:
    | /      | /
    |/       |/
    +--------+
-	
-  y  
-  ^ 
+
+  y
+  ^
   |
   |-->x
-z/	
+z/
 	Faces are in the following order:
 	0: -Z
 	1: X

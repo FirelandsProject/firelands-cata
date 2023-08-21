@@ -1,6 +1,6 @@
-/** 
+/**
   \file G3D/GMutex.h
-   
+
   \created 2005-09-22
   \edited  2013-04-03
  */
@@ -44,8 +44,8 @@ public:
 
     /** Busy waits until the lock is unlocked, then locks it
         exclusively.  Returns true if the lock succeeded on the first
-        try (indicating no contention). 
-        
+        try (indicating no contention).
+
         Unlike a G3D::GMutex, a single thread cannot re-enter
         Spinlock::lock() that it already locked.
      */

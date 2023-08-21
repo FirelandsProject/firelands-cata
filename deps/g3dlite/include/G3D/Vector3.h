@@ -1,8 +1,8 @@
 /**
   \file Vector3.h
- 
+
   3D vector class
- 
+
   \maintainer Morgan McGuire, http://graphics.cs.williams.edu
 
   \created 2001-06-02
@@ -37,7 +37,7 @@ class Any;
 /**
   <B>Swizzles</B>
  Vector classes have swizzle operators, e.g. <CODE>v.xy()</CODE>, that
- allow selection of arbitrary sub-fields.  These cannot be used as write 
+ allow selection of arbitrary sub-fields.  These cannot be used as write
  masks.  Examples
 
   <PRE>
@@ -73,14 +73,14 @@ public:
     /** Initializes to zero */
     Vector3();
 
-    /** 
+    /**
         \param any  Must either Vector3(#, #, #) or Vector3 {x = #, y = #, z = #}.
         Because Point3 is a typedef for Vector3 in the current implementation,
         this constructor accepts Point3(#, #, #), etc. as well.
-        
+
      */
     explicit Vector3(const Any& any);
-    
+
     /** Converts the Vector3 to an Any, using the specified \a name instead of "Vector3" */
     Any toAny(const std::string& name) const;
 
@@ -116,7 +116,7 @@ public:
     float& operator[] (int i);
 
     bool nonZero() const {
-        return (x != 0) || (y != 0) || (z != 0);    
+        return (x != 0) || (y != 0) || (z != 0);
     }
 
     enum Axis {X_AXIS=0, Y_AXIS=1, Z_AXIS=2, DETECT_AXIS=-1};
@@ -150,7 +150,7 @@ public:
     /** Returns a vector that is \a this translated towards \a goal with a maximum translation of \a maxTranslation. */
     Vector3 movedTowards(const Vector3& goal, float maxTranslation) const;
     void moveTowards(const Vector3& goal, float maxTranslation);
-    
+
     // arithmetic operations
     Vector3 __fastcall operator+ (const Vector3& v) const;
     Vector3 __fastcall operator- (const Vector3& v) const;
@@ -181,7 +181,7 @@ public:
     Vector3 pow(float p) const {
         return Vector3(powf(x, p), powf(y, p), powf(z, p));
     }
-    
+
     /**
      Returns a unit-length version of this vector.
      Returns nan if length is almost zero.
@@ -205,7 +205,7 @@ public:
 
      <PRE>
        V'    N      V
-                 
+
          r   ^   -,
           \  |  /
             \|/
@@ -217,17 +217,17 @@ public:
 
     /**
       See also G3D::Ray::reflect.
-      The length is 1. 
+      The length is 1.
      <PRE>
        V'    N       V
-                 
+
          r   ^    /
           \  |  /
             \|'-
      </PRE>
      */
     Vector3 reflectionDirection(const Vector3& normal) const;
-    
+
 
     /**
      Returns Vector3::zero() if the length is nearly zero, otherwise
@@ -249,7 +249,7 @@ public:
      where iExit is the index of refraction for the
      previous material and iEnter is the index of refraction
      for the new material.  Like Vector3::reflectionDirection,
-     the result has length 1 and is 
+     the result has length 1 and is
      pointed <I>away</I> from the intersection.
 
      Returns Vector3::zero() in the case of total internal refraction.
@@ -263,7 +263,7 @@ public:
      See also G3D::Ray::refract.
      <PRE>
               N      V
-                  
+
               ^    /
               |  /
               |'-
@@ -291,9 +291,9 @@ public:
     float squaredLength() const;
 
     float squaredMagnitude () const;
-    
+
     float __fastcall dot(const Vector3& rkVector) const;
-    
+
     /** Cross product.  Note that two cross products in a row
         can be computed more cheaply: v1 x (v2 x v3) = (v1 dot v3) v2  - (v1 dot v2) v3.
       */
@@ -354,14 +354,14 @@ public:
      Linear interpolation
      */
     inline Vector3 lerp(const Vector3& v, float alpha) const {
-        return (*this) + (v - *this) * alpha; 
+        return (*this) + (v - *this) * alpha;
     }
 
     /** Gram-Schmidt orthonormalization. */
     static void orthonormalize (Vector3 akVector[3]);
 
-    /** \brief Random unit vector, uniformly distributed on the sphere. 
-    
+    /** \brief Random unit vector, uniformly distributed on the sphere.
+
        Distribution rendered by G3D::DirectionHistogram:
        \image html vector3-random.png
       */
@@ -369,8 +369,8 @@ public:
 
     /** \brief Random unit vector, distributed according to \f$\max(\cos \theta,0)\f$.
 
-        That is, so that the probability of \f$\vec{V}\f$ is proportional 
-        to \f$\max(\vec{v} \cdot \vec{n}, 0)\f$.  Useful in photon mapping for 
+        That is, so that the probability of \f$\vec{V}\f$ is proportional
+        to \f$\max(\vec{v} \cdot \vec{n}, 0)\f$.  Useful in photon mapping for
         Lambertian scattering.
 
         Distribution rendered by G3D::DirectionHistogram:
@@ -423,7 +423,7 @@ public:
     static const Vector3& unitZ();
     static const Vector3& inf();
     static const Vector3& nan();
-    
+
     /** Smallest (most negative) representable vector */
     static const Vector3& minFinite();
 
@@ -434,16 +434,16 @@ public:
     /** Creates two orthonormal tangent vectors X and Y such that
         if Z = this, X x Y = Z.*/
     inline void getTangents(Vector3& X, Vector3& Y) const {
-        debugAssertM(G3D::fuzzyEq(length(), 1.0f), 
+        debugAssertM(G3D::fuzzyEq(length(), 1.0f),
                      "makeAxes requires Z to have unit length");
-        
+
         // Choose another vector not perpendicular
         X = (abs(x) < 0.9f) ? Vector3::unitX() : Vector3::unitY();
-        
+
         // Remove the part that is parallel to Z
         X -= *this * this->dot(X);
         X /= X.length();
-    
+
         Y = this->cross(X);
     }
 
@@ -797,12 +797,12 @@ inline bool Vector3::isUnit() const {
     return G3D::fuzzyEq(squaredMagnitude(), 1.0f);
 }
 
-/** 
+/**
  Points are technically distinct mathematical entities from vectors.
  Actually distinguishing them at the class level tends to add lots of
  boilerplate (e.g., (P - Point3::zero()).direction()
  vs. P.direction()), so many programmers prefer use a single class,
- as GLSL does.  
+ as GLSL does.
 
  G3D provides this typedef as a way of documenting arguments that are
  locations in space and not directions.  Beware that points and

@@ -107,7 +107,7 @@ SOPHIST_compiletime_assert(uint32, sizeof(SOPHIST_uint32) == 4);
 
   #define SOPHIST_pointer64 1
 
-  SOPHIST_compiletime_assert(pointer64, sizeof(void*) == 8);  
+  SOPHIST_compiletime_assert(pointer64, sizeof(void*) == 8);
 
   typedef SOPHIST_int64  SOPHIST_intptr;
   typedef SOPHIST_uint64 SOPHIST_uintptr;
@@ -115,13 +115,13 @@ SOPHIST_compiletime_assert(uint32, sizeof(SOPHIST_uint32) == 4);
 
   #define SOPHIST_pointer64 0
 
-  SOPHIST_compiletime_assert(pointer64, sizeof(void*) <= 4);  
-  
+  SOPHIST_compiletime_assert(pointer64, sizeof(void*) <= 4);
+
   /* do we care about pointers that are only 16-bit? */
   typedef SOPHIST_int32  SOPHIST_intptr;
   typedef SOPHIST_uint32 SOPHIST_uintptr;
 
-#endif 
+#endif
 
 SOPHIST_compiletime_assert(intptr, sizeof(SOPHIST_intptr) == sizeof(char *));
 

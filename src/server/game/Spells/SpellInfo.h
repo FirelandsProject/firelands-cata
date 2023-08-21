@@ -279,7 +279,7 @@ class FC_GAME_API SpellEffectInfo
     } Scaling;
 
     SpellEffectInfo()
-        : _spellInfo(nullptr), _effIndex(0), Effect(0), ApplyAuraName(0), AuraPeriod(0), DieSides(0), RealPointsPerLevel(0.f),
+        : Scaling(), _spellInfo(nullptr), _effIndex(0), Effect(0), ApplyAuraName(0), AuraPeriod(0), DieSides(0), RealPointsPerLevel(0.f),
           BasePoints(0), PointsPerComboPoint(0), Amplitude(0.f), DamageMultiplier(0.f), BonusMultiplier(0.f), MiscValue(0),
           MiscValueB(0), Mechanic(MECHANIC_NONE), RadiusEntry(nullptr), MaxRadiusEntry(nullptr), ChainTarget(0), ItemType(0),
           TriggerSpell(0), ImplicitTargetConditions(nullptr)
@@ -634,9 +634,7 @@ class FC_GAME_API SpellInfo
   private:
     // loading helpers
     void _InitializeExplicitTargetMask();
-    bool _IsPositiveEffect(uint8 effIndex, bool deep) const;
-    bool _IsPositiveSpell() const;
-    static bool _IsPositiveTarget(uint32 targetA, uint32 targetB);
+    void _InitializeSpellPositivity();
     void _LoadSpellSpecific();
     void _LoadAuraState();
     void _LoadSpellDiminishInfo();

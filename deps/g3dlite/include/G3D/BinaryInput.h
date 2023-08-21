@@ -1,8 +1,8 @@
 /**
  \file G3D/BinaryInput.h
- 
+
  \maintainer Morgan McGuire, http://graphics.cs.williams.edu
- 
+
  \created 2001-08-09
  \edited  2013-01-03
 
@@ -59,17 +59,17 @@ namespace G3D {
  a memory block at least large enough to hold <I>n</I> elements.
 
  Most classes define serialize/deserialize methods that use BinaryInput,
- BinaryOutput, TextInput, and TextOutput.  There are text serializer 
- functions for primitive types (e.g. int, std::string, float, double) but not 
+ BinaryOutput, TextInput, and TextOutput.  There are text serializer
+ functions for primitive types (e.g. int, std::string, float, double) but not
  binary serializers-- you <B>must</b> call the BinaryInput::readInt32 or
- other appropriate function.  This is because it would be very hard to 
+ other appropriate function.  This is because it would be very hard to
  debug the error sequence: <CODE>serialize(1.0, bo); ... float f; deserialize(f, bi);</CODE>
- in which a double is serialized and then deserialized as a float. 
+ in which a double is serialized and then deserialized as a float.
  */
 class BinaryInput {
 private:
 
-    // The initial buffer will be no larger than this, but 
+    // The initial buffer will be no larger than this, but
     // may grow if a large memory read occurs.  750 MB
     static const int64
         INITIAL_BUFFER_LENGTH =
@@ -91,7 +91,7 @@ private:
     /** Next position to read from in bitString during readBits. */
     int             m_bitPos;
 
-    /** Bits currently being read by readBits.  
+    /** Bits currently being read by readBits.
         Contains at most 8 (low) bits.  Note that
         beginBits/readBits actually consumes one extra byte, which
         will be restored by writeBits.*/
@@ -107,7 +107,7 @@ private:
     int64           m_alreadyRead;
 
     /**
-     Length of the entire file, in bytes.  
+     Length of the entire file, in bytes.
      For the length of the buffer, see bufferLength
      */
     int64           m_length;
@@ -174,7 +174,7 @@ public:
 
         // read from master to point where compressed data exists.
 
-        BinaryInput subset(master.getCArray() + master.getPosition(), 
+        BinaryInput subset(master.getCArray() + master.getPosition(),
                            master.length() - master.getPosition(),
                            master.endian(), true, true);
 
@@ -207,7 +207,7 @@ public:
     /**
      Performs bounds checks in debug mode.  [] are relative to
      the start of the file, not the current position.
-     Seeks to the new position before reading (and leaves 
+     Seeks to the new position before reading (and leaves
      that as the current position)
      */
    uint8 operator[](int64 n) {
@@ -270,16 +270,16 @@ public:
         prepareToRead(1);
         return m_buffer[m_pos++];
     }
-    
+
     bool readBool8() {
         return (readInt8() != 0);
     }
-    
+
     uint8 readUInt8() {
         prepareToRead(1);
         return ((uint8*)m_buffer)[m_pos++];
     }
-    
+
     unorm8 readUNorm8() {
         return unorm8::fromBits(readUInt8());
     }
@@ -356,7 +356,7 @@ public:
         };
         a = readUInt32();
         return b;
-    }    
+    }
 
    float64 readFloat64() {
         union {
@@ -378,17 +378,17 @@ public:
     std::string readString();
 
     /** Read a string (which may contain NULLs) of exactly numBytes bytes, including the final terminator if there is one.  If there is a NULL in the string before
-        the end, then only the part up to the first NULL is returned although all bytes are read.*/      
+        the end, then only the part up to the first NULL is returned although all bytes are read.*/
     std::string readFixedLengthString(int numBytes);
 
-    /** 
+    /**
      Reads a string until NULL, newline ("&#92;r", "&#92;n", "&#92;r&#92;n", "&#92;n&#92;r") or the end of the file is encountered. Consumes the newline.
      */
     std::string readStringNewline();
 
     /**
      Reads until NULL or the end of the file is encountered.
-     If the string has odd length (including NULL), reads 
+     If the string has odd length (including NULL), reads
      another byte.  This is a common format for 16-bit alignment
      in files.
      */
@@ -444,7 +444,7 @@ public:
     DECLARE_READER(UInt64,  uint64)
     DECLARE_READER(Int64,   int64)
     DECLARE_READER(Float32, float32)
-    DECLARE_READER(Float64, float64)    
+    DECLARE_READER(Float64, float64)
 #   undef DECLARE_READER
 };
 

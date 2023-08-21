@@ -43,7 +43,7 @@ struct malloc_mutex_s {
 #else
 			pthread_mutex_t		lock;
 #endif
-			/* 
+			/*
 			 * Hint flag to avoid exclusive cache line contention
 			 * during spin waiting
 			 */

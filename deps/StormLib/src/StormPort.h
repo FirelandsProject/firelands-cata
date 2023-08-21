@@ -60,7 +60,7 @@
 
 #endif
 
-// Defines for Mac 
+// Defines for Mac
 #if !defined(PLATFORM_DEFINED) && defined(__APPLE__)  // Mac BSD API
 
   // Macintosh
@@ -71,7 +71,7 @@
   #include <fcntl.h>
   #include <stdlib.h>
   #include <errno.h>
-  
+
   #define    PKEXPORT
   #define    __SYS_ZLIB
   #define    __SYS_BZLIB
@@ -143,7 +143,7 @@
     #define MAX_PATH 1024
   #endif
 
-  #define WINAPI 
+  #define WINAPI
 
   #define FILE_BEGIN    SEEK_SET
   #define FILE_CURRENT  SEEK_CUR

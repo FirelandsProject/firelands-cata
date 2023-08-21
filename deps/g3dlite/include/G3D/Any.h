@@ -1,9 +1,9 @@
 /**
  \file Any.h
-  
+
  \author Morgan McGuire, Shawn Yarbrough, and Corey Taylor
  \maintainer Morgan McGuire
-  
+
  \created 2006-06-11
  \edited  2013-03-29
 
@@ -33,7 +33,7 @@ namespace G3D {
 
 class TextOutput;
 
-/** 
+/**
 \brief Easy loading and saving of human-readable configuration files.
 
 Any encodes typed, structured data and can serialize it to a human
@@ -83,7 +83,7 @@ Buffers, although there is no reason you could not write readers and
 writers for G3D::Any that support those. Any also currently supports
 the JSON format.
 
-G3D::Any assumes that structures do not contain cycles; it is an 
+G3D::Any assumes that structures do not contain cycles; it is an
 error to create a structure like:
 
 <pre>
@@ -95,7 +95,7 @@ although no exception will be thrown at runtime during that append.
 
 \section includes
 
-When parsing an Any from a file, the syntax 
+When parsing an Any from a file, the syntax
 <code>\#include(<i>filename</i>)</code> allows subsitution of the contents of
 <i>filename</i> for any single expression in an Any.  The filename is interpreted
 relative to the file being parsed, and inside of the included file, relative filenames
@@ -108,7 +108,7 @@ so they may contain environment variables.
 \section Parsing
 
 The primary use of Any is to create your own text file formats.
-The Vector3 constructor is a good example of how to use the Any::verify 
+The Vector3 constructor is a good example of how to use the Any::verify
 methods to provide good error checking while parsing such formats:
 
 <pre>
@@ -160,7 +160,7 @@ value       ::= [comment] (nil | number | boolean | string | array | table | nam
 </pre>
 \endhtmlonly
 
-Except for single-line comments, whitespace is not significant.  
+Except for single-line comments, whitespace is not significant.
 All parsing is case-insensitive.
 
 The include expression pastes the contents of the named file in as if
@@ -171,12 +171,12 @@ as the pair in a table.
 
 The deserializer allows the substitution of [] or {} for () when writing
 tuples and ";" for ",".  These are convenient when mimicing a
-programming language, e.g., <code>"[ printf("hello world."); clearScreen();]"</code> 
-parses as an array containing two named arrays within it. The 
+programming language, e.g., <code>"[ printf("hello world."); clearScreen();]"</code>
+parses as an array containing two named arrays within it. The
 deserializer also allows a trailing comma inside any array or table,
 which also convenient when commenting out the last element.
 
-The serializer indents four spaces for each level of nesting. 
+The serializer indents four spaces for each level of nesting.
 Tables are written with the keys in alphabetic order.
 
 \sa G3D::AnyTableReader
@@ -221,7 +221,7 @@ private:
         inline SimpleValue(bool x) : b(x) {}
         inline SimpleValue(double x) : n(x) {}
     };
- 
+
     /** The three options for Data::bracket */
     static const char* PAREN;
     static const char* BRACKET;
@@ -238,24 +238,24 @@ private:
         };
 
         // Needed so that the destructor knows what is in Value
-        // and can call its destructor. 
+        // and can call its destructor.
         Type                         type;
-        
+
         /** Always points to memory that is allocated with the Data, so
            the destructor does not delete this. */
         Value                        value;
-        
+
         std::string                  comment;
 
         std::string                  name;
 
         /** If this Any was created by parsing an #include expression and
             has not been modified since, this is the original comment and
-            include statement, as 
-            it originally appeared in the file (e.g., it may contain a relative 
+            include statement, as
+            it originally appeared in the file (e.g., it may contain a relative
             filename).  If this is non-empty, then when serialized, this
             Any will turn into an #include expression instead of unparsing
-            its contents of the any.         
+            its contents of the any.
           */
         std::string                  includeLine;
 
@@ -326,7 +326,7 @@ private:
     /** If m_data is not NULL, ensure that it has a unique reference
         and contains a valid m_data.  This has a race condition if two
         threads are both trying to modify the same Any
-        simultaneously.*/    
+        simultaneously.*/
     void ensureMutable();
 
     /** Read an unnamed a TABLE or ARRAY.  Token should be the open
@@ -338,7 +338,7 @@ private:
 
     /** Read the name of a named Array or Table. */
     static void deserializeName(TextInput& ti, Token& token, std::string& name);
-    
+
     /** Read until a separator is consumed or a close paren is hit, and
      return that token.  Considers the passed in token to be the first
      value read. */
@@ -351,7 +351,7 @@ private:
     bool isPlaceholder() const {
         return ! m_placeholderName.empty();
     }
-    
+
     void _append(const Any& v0);
     void _append(const Any& v0, const Any& v1);
     void _append(const Any& v0, const Any& v1, const Any& v2);
@@ -435,7 +435,7 @@ public:
     /** \a t must be ARRAY or TABLE
         \param brackets must be "" (defaults to {} for table, () for array), "[]", "()", or "{}"
         \param separator must be ';', ',', or '\0' (defaults to ',' for array and ';' for table)
-    */  
+    */
     explicit Any(Type t, const std::string& name = "", const std::string& brackets = "", const char separator = '\0');
 
     /** Extensible constructor: call the toAny() method of any class. */
@@ -484,7 +484,7 @@ public:
     /** \param allowCoercion If false, throws an error if the Any uses features that are not
        supported by JSON such as named arrays.  Otherwise, silently coerces to JSON. */
     std::string unparseJSON(const TextOutput::Settings& s = TextOutput::Settings(), bool allowCoercion = true) const;
-    
+
     /** Comments appear before values when they are in serialized form.*/
     const std::string& comment() const;
     void setComment(const std::string& c);
@@ -503,7 +503,7 @@ public:
         qualified filename.
 
         The file is searched for the following ways:
-        
+
         - In the directory from which the Any was loaded.
         - By calling System::findDataFile as you would with other data files.
 
@@ -532,7 +532,7 @@ public:
     bool nameEquals(const char* s) const;
 
     /** \brief Set the name used when serializing an ARRAY or TABLE.
-    
+
        Only legal for ARRAY or TABLE.  The \a name must begin with a letter
        and contain only letters, numbers, underscores and scope operators.
 
@@ -544,8 +544,8 @@ public:
         this->that
         __x
         </pre>
-        
-                
+
+
         The scope operators "::", "->", and
         ".", may have spaces around them.  The name may not
         contain parentheses.
@@ -597,7 +597,7 @@ public:
 
     /** For a table, returns the element for \a key. Throws KeyNotFound
         exception if the element does not exist.
-       */ 
+       */
     const Any& operator[](const std::string& key) const;
 
     // Needed to prevent the operator[](int) overload from catching
@@ -606,13 +606,13 @@ public:
         return operator[](std::string(key));
     }
 
-    /** 
+    /**
         Fetch an element from a table.  This can be used as:
 
         <pre>
         a["key"] = value;  (create the key if it did not exist)
         </pre>
-        
+
         or
 
         <pre>
@@ -635,7 +635,7 @@ public:
     inline Any& operator[](const char* key) {
         return operator[](std::string(key));
     }
-    
+
     /** For a table, returns the element for key \a x and \a
         defaultVal if it does not exist. */
     template<class T>
@@ -645,7 +645,7 @@ public:
 
     /** Returns true if this key is in the TABLE.  Illegal to call on an object that is not a TABLE. */
     bool containsKey(const std::string& key) const;
-    
+
     /** For a table, assigns the element for key k. */
     template<class T>
     void set(const std::string& key, const T& val) {
@@ -655,7 +655,7 @@ public:
     /** for an ARRAY, resizes and returns the last element */
     Any& next();
 
-    /** The parent directory of the location from which this Any was loaded.  This is useful for 
+    /** The parent directory of the location from which this Any was loaded.  This is useful for
        interpreting filenames relative to the Any's source location,
        which may not match the current directory if the Any was from an included file. */
     std::string sourceDirectory() const;
@@ -720,11 +720,11 @@ public:
         return uint16(int(*this));
     }
 
-    /** Resize to \a n elements, where new elements are NIL 
+    /** Resize to \a n elements, where new elements are NIL
        It is an error to call this method if this is not an Any::ARRAY */
     void resize(int n);
 
-    /** 
+    /**
        Clears all entries.
        This must be a TABLE or ARRAY */
     void clear();
@@ -761,54 +761,54 @@ public:
     /** Removes this key from the Any, which must be an array, and
         shifts other elements down to maintain order. */
     void remove(int index);
-   
+
     /** Throws a ParseError if \a value is false.  Useful for quickly
         creating parse rules in classes that deserialize from Any.
     */
     void verify(bool value, const std::string& message = "") const;
 
 
-    /** Verifies that the name is identifier \a n (case sensitive). 
+    /** Verifies that the name is identifier \a n (case sensitive).
         It may contain identifier operators after this */
     void verifyName(const std::string& n) const;
 
-    /** Verifies that the name is identifier \a n or \a m (case sensitive). 
+    /** Verifies that the name is identifier \a n or \a m (case sensitive).
         It may contain identifier operators after this */
     void verifyName(const std::string& n, const std::string& m) const;
 
-    /** Verifies that the name is identifier \a n or \a m or \a p (case sensitive). 
+    /** Verifies that the name is identifier \a n or \a m or \a p (case sensitive).
         It may contain identifier operators after this */
     void verifyName(const std::string& n, const std::string& m, const std::string& p) const;
 
-    /** Verifies that the name is identifier \a n or \a m or \a p or \a q (case sensitive). 
+    /** Verifies that the name is identifier \a n or \a m or \a p or \a q (case sensitive).
         It may contain identifier operators after this */
     void verifyName(const std::string& n, const std::string& m, const std::string& p, const std::string& q) const;
 
-    /** Verifies that the name <i>begins with</i> identifier \a n (case sensitive). 
+    /** Verifies that the name <i>begins with</i> identifier \a n (case sensitive).
         It may contain identifier operators after this */
     void verifyNameBeginsWith(const std::string& n) const;
 
-    /** Verifies that the name <i>begins with</i> identifier \a n or \a m (case sensitive). 
+    /** Verifies that the name <i>begins with</i> identifier \a n or \a m (case sensitive).
         It may contain identifier operators after this */
     void verifyNameBeginsWith(const std::string& n, const std::string& m) const;
 
-    /** Verifies that the name <i>begins with</i> identifier \a n or \a m or \a p (case sensitive). 
+    /** Verifies that the name <i>begins with</i> identifier \a n or \a m or \a p (case sensitive).
         It may contain identifier operators after this */
     void verifyNameBeginsWith(const std::string& n, const std::string& m, const std::string& p) const;
 
-    /** Verifies that the name <i>begins with</i> identifier \a n or \a m or \a p or \a q (case sensitive). 
+    /** Verifies that the name <i>begins with</i> identifier \a n or \a m or \a p or \a q (case sensitive).
         It may contain identifier operators after this */
     void verifyNameBeginsWith(const std::string& n, const std::string& m, const std::string& p, const std::string& q) const;
 
-    /** Verifies that the name <i>begins with</i> identifier \a n or \a m or \a p or \a q or \a r (case sensitive). 
+    /** Verifies that the name <i>begins with</i> identifier \a n or \a m or \a p or \a q or \a r (case sensitive).
         It may contain identifier operators after this */
     void verifyNameBeginsWith(const std::string& n, const std::string& m, const std::string& p, const std::string& q, const std::string& r) const;
 
-    /** Verifies that the name <i>begins with</i> identifier \a n or \a m or \a p or \a q or \a r or \a s (case sensitive). 
+    /** Verifies that the name <i>begins with</i> identifier \a n or \a m or \a p or \a q or \a r or \a s (case sensitive).
         It may contain identifier operators after this */
     void verifyNameBeginsWith(const std::string& n, const std::string& m, const std::string& p, const std::string& q, const std::string& r, const std::string& s) const;
 
-    /** Verifies that the name <i>begins with</i> identifier \a n or \a m or \a p or \a q or \a r or \a s or \a t(case sensitive). 
+    /** Verifies that the name <i>begins with</i> identifier \a n or \a m or \a p or \a q or \a r or \a s or \a t(case sensitive).
         It may contain identifier operators after this */
     void verifyNameBeginsWith(const std::string& n, const std::string& m, const std::string& p, const std::string& q, const std::string& r, const std::string& s, const std::string& t) const;
 
@@ -892,7 +892,7 @@ private:
    Any              m_any;
    Set<std::string> m_alreadyRead;
 public:
-    
+
     /** Verifies that \a is a TABLE with the given \a name. */
     AnyTableReader(const std::string& name, const Any& a);
 
@@ -919,7 +919,7 @@ public:
     const Any& value() const;
 
     AnyKeyIterator& operator++();
-#endif   
+#endif
 
     /** \copydoc get(const std::string& s, ValueType& v) */
     void get(const std::string& s, std::string& v) {
@@ -945,14 +945,14 @@ public:
         m_any[s].getArray(v);
         m_alreadyRead.insert(s);
     }
-    
+
     template<class T>
     void get(const std::string& s, Table<std::string, T>& v) {
         m_any[s].getTable(v);
         m_alreadyRead.insert(s);
     }
 
-    /** If key \a s appears in the any, reads its value into \a v and 
+    /** If key \a s appears in the any, reads its value into \a v and
         removes that key from the ones available to iterate over.
 
         If key \a s does not appear in the any, throws a G3D::ParseError.
@@ -974,8 +974,8 @@ public:
     }
 
     /** Get the value associated with a key only if the key is actually present.
-    
-        If key \a s appears in the any, reads its value into \a v and 
+
+        If key \a s appears in the any, reads its value into \a v and
         removes that key from the ones available to iterate over.
 
         If key \a s does not appear in the any, does nothing.
@@ -1010,7 +1010,7 @@ public:
 
 /**
   \def PARSE_ANY(expression)
-  
+
   \brief Create an G3D::Any from an unquoted string.
 
   e.g.,

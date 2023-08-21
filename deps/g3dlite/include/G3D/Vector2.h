@@ -1,10 +1,10 @@
 /**
   \file G3D/Vector2.h
- 
+
   2D vector class
- 
+
   \maintainer Morgan McGuire, http://graphics.cs.williams.edu
-  
+
   \created 2001-06-02
   \edited  2011-11-30
 
@@ -27,7 +27,7 @@
 
 namespace G3D {
 
-class Vector2;    
+class Vector2;
 class Vector3;
 class Vector4;
 class Vector2int32;
@@ -51,7 +51,7 @@ public:
 
     /** \param any Must either Vector2(#, #) or Vector2 {x = #, y = #}*/
     Vector2(const Any& any);
-    
+
     /** Converts the Vector2 to an Any. */
     Any toAny() const;
 
@@ -63,7 +63,7 @@ public:
     Vector2(float coordinate[2]);
     Vector2(double coordinate[2]);
     Vector2(const Vector2& other);
-    Vector2(const Vector2int16& other); 
+    Vector2(const Vector2int16& other);
     Vector2(const Vector2unorm16& other);
 
     // explicit because of precision loss
@@ -131,7 +131,7 @@ public:
      Linear interpolation
      */
     inline Vector2 lerp(const Vector2& v, float alpha) const {
-        return (*this) + (v - *this) * alpha; 
+        return (*this) + (v - *this) * alpha;
     }
 
     inline Vector2 clamp(const Vector2& low, const Vector2& high) const {
@@ -158,7 +158,7 @@ public:
 
     /** Magnitude of the vector */
     float length() const;
-    
+
     /**
      Returns a unit-length version of this vector.
      Returns nan if length is almost zero.
@@ -218,10 +218,10 @@ public:
     static const Vector2& one();
     static const Vector2& unitX();
     static const Vector2& unitY();
-    static const Vector2& inf(); 
+    static const Vector2& inf();
     static const Vector2& nan();
     /** smallest (most negative) representable vector */
-    static const Vector2& minFinite(); 
+    static const Vector2& minFinite();
     /** Largest representable vector */
     static const Vector2& maxFinite();
 

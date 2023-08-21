@@ -1,6 +1,6 @@
-/** 
+/**
   @file GThread.h
- 
+
   @created 2005-09-22
   @edited  2010-09-10
 
@@ -23,18 +23,18 @@
 
 
 namespace G3D {
-        
+
 typedef shared_ptr<class GThread> GThreadRef;
 
 
 
 /**
- Platform independent thread implementation.  You can either subclass and 
+ Platform independent thread implementation.  You can either subclass and
  override GThread::threadMain or call the create method with a method.
 
  Beware of reference counting and threads.  If circular references exist between
- GThread subclasses then neither class will ever be deallocated.  Also, 
- dropping all pointers (and causing deallocation) of a GThread does NOT 
+ GThread subclasses then neither class will ever be deallocated.  Also,
+ dropping all pointers (and causing deallocation) of a GThread does NOT
  stop the underlying process.
 
  \sa G3D::GMutex, G3D::Spinlock, G3D::AtomicInt32, G3D::ThreadSet
@@ -91,7 +91,7 @@ public:
     /** Starts the thread and executes threadMain().  Returns false if
        the thread failed to start (either because it was already started
        or because the OS refused).
-       
+
        @param behavior If USE_CURRENT_THREAD, rather than spawning a new thread, this routine
        runs threadMain on the current thread.
        */
@@ -132,14 +132,14 @@ public:
             use System::numCores() threads.*/
         NUM_CORES = -100
     };
-    
-    /** 
+
+    /**
         \brief Iterates over a 2D region using multiple threads and
         blocks until all threads have completed. <p> Evaluates \a
         object->\a method(\a x, \a y) for every <code>start.x <= x <
         upTo.x</code> and <code>start.y <= y < upTo.y</code>.
         Iteration is row major, so each thread can expect to see
-        successive x values.  </p> 
+        successive x values.  </p>
         \param maxThreads
         Maximum number of threads to use.  By default at most one
         thread per processor core will be used.
@@ -161,8 +161,8 @@ public:
     */
     template<class Class>
     static void runConcurrently2D
-    (const Vector2int32& start, 
-     const Vector2int32& upTo, 
+    (const Vector2int32& start,
+     const Vector2int32& upTo,
      Class*              object,
      void (Class::*method)(int x, int y),
      int                 maxThreads = NUM_CORES) {
@@ -175,8 +175,8 @@ public:
     */
     template<class Class>
     static void runConcurrently2D
-    (const Vector2int32& start, 
-     const Vector2int32& upTo, 
+    (const Vector2int32& start,
+     const Vector2int32& upTo,
      Class*              object,
      void (Class::*method)(int x, int y, int threadID),
      int                 maxThreads = NUM_CORES) {
@@ -202,23 +202,23 @@ public:
         Class*                    object;
         void             (Class::*method1)(int x, int y);
         void             (Class::*method2)(int x, int y, int threadID);
-        
+
         _internalGThreadWorker(int                 threadID,
-               const Vector2int32& start, 
-               const Vector2int32& upTo, 
+               const Vector2int32& start,
+               const Vector2int32& upTo,
                Class*              object,
                void (Class::*method1)(int x, int y),
                void (Class::*method2)(int x, int y, int threadID),
-               const Vector2int32& stride) : 
+               const Vector2int32& stride) :
             GThread("runConcurrently2D worker"),
             threadID(threadID),
             start(start),
-            upTo(upTo), 
+            upTo(upTo),
             stride(stride),
-            object(object), 
+            object(object),
             method1(method1),
             method2(method2) {}
-        
+
         virtual void threadMain() {
             for (int y = start.y; y < upTo.y; y += stride.y) {
                 // Run whichever method was provided
@@ -238,13 +238,13 @@ public:
 
     template<class Class>
     void _internal_runConcurrently2DHelper
-    (const Vector2int32& start, 
-     const Vector2int32& upTo, 
+    (const Vector2int32& start,
+     const Vector2int32& upTo,
      Class*              object,
      void (Class::*method1)(int x, int y),
      void (Class::*method2)(int x, int y, int threadID),
      int                 maxThreads) {
-        
+
         // Create a group of threads
         if (maxThreads == GThread::NUM_CORES) {
             maxThreads = GThread::numCores();
