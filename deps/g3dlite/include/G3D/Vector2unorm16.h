@@ -74,7 +74,11 @@ public:
     void serialize(class BinaryOutput& bo) const;
     void deserialize(class BinaryInput& bi);
     size_t hashCode() const {
-        return static_cast<size_t>(x.bits() + ((int)y.bits() << 16));
+
+        size_t x_value = static_cast<size_t>(x.bits());
+        size_t y_value = static_cast<size_t>(y.bits());
+
+        return x_value + (y_value << 16);
     }
 
 }
