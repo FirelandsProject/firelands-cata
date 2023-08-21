@@ -105,7 +105,9 @@ enum Extract
 {
     EXTRACT_MAP = 1,
     EXTRACT_DBC = 2,
-    EXTRACT_CAMERA = 4
+    EXTRACT_CAMERA = 4,
+
+    EXTRACT_ALL = EXTRACT_MAP | EXTRACT_DBC | EXTRACT_CAMERA
 };
 
 // Select data for extract
@@ -247,15 +249,9 @@ void HandleArgs(int argc, char* arg[])
             if (c + 1 < argc) // all ok
             {
                 CONF_extract = atoi(arg[c++ + 1]);
-                if (!(CONF_extract > 0 && CONF_extract < 8))
+                if (!(CONF_extract > 0 && CONF_extract <= EXTRACT_ALL))
                     Usage(arg[0]);
             }
-            else
-                Usage(arg[0]);
-            break;
-        case 'b':
-            if (c + 1 < argc) // all ok
-                CONF_TargetBuild = atoi(arg[c++ + 1]);
             else
                 Usage(arg[0]);
             break;
@@ -272,7 +268,7 @@ uint32 ReadBuild(int locale)
     // printf("Read %s file... ", filename.c_str());
 
     HANDLE dbcFile;
-    if (!SFileOpenFileEx(LocaleMpq, filename.c_str(), SFILE_OPEN_BASE_FILE, &dbcFile))
+    if (!SFileOpenFileEx(LocaleMpq, filename.c_str(), SFILE_OPEN_PATCHED_FILE, &dbcFile))
     {
         printf("Fatal error: Not found %s file!\n", filename.c_str());
         exit(1);
@@ -316,7 +312,7 @@ uint32 ReadMapDBC()
     printf("Read Map.dbc file... ");
 
     HANDLE dbcFile;
-    if (!SFileOpenFileEx(LocaleMpq, "DBFilesClient\\Map.dbc", SFILE_OPEN_BASE_FILE, &dbcFile))
+    if (!SFileOpenFileEx(LocaleMpq, "DBFilesClient\\Map.dbc", SFILE_OPEN_PATCHED_FILE, &dbcFile))
     {
         printf("Fatal error: Cannot find Map.dbc in archive!\n");
         exit(1);
@@ -347,7 +343,7 @@ void ReadLiquidMaterialTable()
     printf("Read LiquidMaterial.dbc file...\n");
 
     HANDLE dbcFile;
-    if (!SFileOpenFileEx(LocaleMpq, "DBFilesClient\\LiquidMaterial.dbc", SFILE_OPEN_BASE_FILE, &dbcFile))
+    if (!SFileOpenFileEx(LocaleMpq, "DBFilesClient\\LiquidMaterial.dbc", SFILE_OPEN_PATCHED_FILE, &dbcFile))
     {
         printf("Fatal error: Cannot find LiquidMaterial.dbc in archive!\n");
         exit(1);
@@ -374,7 +370,7 @@ void ReadLiquidObjectTable()
     printf("Read LiquidObject.dbc file...\n");
 
     HANDLE dbcFile;
-    if (!SFileOpenFileEx(LocaleMpq, "DBFilesClient\\LiquidObject.dbc", SFILE_OPEN_BASE_FILE, &dbcFile))
+    if (!SFileOpenFileEx(LocaleMpq, "DBFilesClient\\LiquidObject.dbc", SFILE_OPEN_PATCHED_FILE, &dbcFile))
     {
         printf("Fatal error: Cannot find LiquidObject.dbc in archive!\n");
         exit(1);
@@ -400,7 +396,7 @@ void ReadLiquidTypeTable()
 {
     printf("Read LiquidType.dbc file...");
     HANDLE dbcFile;
-    if (!SFileOpenFileEx(LocaleMpq, "DBFilesClient\\LiquidType.dbc", SFILE_OPEN_BASE_FILE, &dbcFile))
+    if (!SFileOpenFileEx(LocaleMpq, "DBFilesClient\\LiquidType.dbc", SFILE_OPEN_PATCHED_FILE, &dbcFile))
     {
         printf("Fatal error: Cannot find LiquidType.dbc in archive!\n");
         exit(1);
@@ -1232,7 +1228,7 @@ void ExtractDBCFiles(int l)
 
         do
         {
-            if (!SFileOpenFileEx(LocaleMpq, foundFile.cFileName, SFILE_OPEN_BASE_FILE, &dbcFile))
+            if (!SFileOpenFileEx(LocaleMpq, foundFile.cFileName, SFILE_OPEN_PATCHED_FILE, &dbcFile))
             {
                 printf("Unable to open file %s in the archive\n", foundFile.cFileName);
                 continue;
@@ -1276,7 +1272,7 @@ void ExtractDB2Files(int l)
 
         do
         {
-            if (!SFileOpenFileEx(LocaleMpq, foundFile.cFileName, SFILE_OPEN_BASE_FILE, &dbcFile))
+            if (!SFileOpenFileEx(LocaleMpq, foundFile.cFileName, SFILE_OPEN_PATCHED_FILE, &dbcFile))
             {
                 printf("Unable to open file %s in the archive\n", foundFile.cFileName);
                 continue;
@@ -1300,7 +1296,7 @@ void ExtractCameraFiles()
 {
     printf("Extracting camera files...\n");
     HANDLE dbcFile;
-    if (!SFileOpenFileEx(LocaleMpq, "DBFilesClient\\CinematicCamera.dbc", SFILE_OPEN_BASE_FILE, &dbcFile))
+    if (!SFileOpenFileEx(LocaleMpq, "DBFilesClient\\CinematicCamera.dbc", SFILE_OPEN_PATCHED_FILE, &dbcFile))
     {
         printf("Fatal error: Cannot find Map.dbc in archive!\n");
         exit(1);
@@ -1343,7 +1339,7 @@ void ExtractCameraFiles()
         if (FileExists(filename.c_str()))
             continue;
 
-        if (!SFileOpenFileEx(WorldMpq, thisFile.c_str(), SFILE_OPEN_BASE_FILE, &dbcFile))
+        if (!SFileOpenFileEx(WorldMpq, thisFile.c_str(), SFILE_OPEN_PATCHED_FILE, &dbcFile))
         {
             printf("Unable to open file %s in the archive\n", thisFile.c_str());
             continue;

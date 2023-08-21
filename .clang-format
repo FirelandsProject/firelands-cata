@@ -9,3 +9,4 @@ SpaceInEmptyBlock: false
 BreakBeforeBraces: Allman
 ColumnLimit: 200
 NamespaceIndentation: All
+SortIncludes: false
