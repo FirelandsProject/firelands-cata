@@ -1,8 +1,8 @@
 /**
  \file G3D/BinaryOutput.h
- 
+
  \maintainer Morgan McGuire, http://graphics.cs.williams.edu
- 
+
  \created 2001-08-09
  \edited  2011-08-24
 
@@ -42,11 +42,11 @@ namespace G3D {
 
  The compress() call can be used to compress with zlib.
 
- Any method call can trigger an out of memory error (thrown as char*) 
+ Any method call can trigger an out of memory error (thrown as char*)
  when writing to "<memory>" instead of a file.
 
  Compressed writing and seeking backwards is not supported for huge files
- (i.e., BinaryOutput may have to dump the contents to disk if they 
+ (i.e., BinaryOutput may have to dump the contents to disk if they
  exceed available RAM).
  */
 class BinaryOutput {
@@ -72,7 +72,7 @@ private:
     G3DEndian       m_fileEndian;
 
     uint8*          m_buffer;
-    
+
     /** Size of the elements used */
     size_t          m_bufferLen;
 
@@ -86,7 +86,7 @@ private:
     bool            m_init;
 
     /** Number of bytes already written to the file.  Even on 32-bit OS, this can be 64-bits*/
-    int64           m_alreadyWritten;             
+    int64           m_alreadyWritten;
 
     bool            m_ok;
 
@@ -130,9 +130,9 @@ public:
         G3DEndian           fileEndian);
 
     ~BinaryOutput();
-    
-    /** Compresses the data in the buffer in place, 
-        preceeding it with a little-endian uint32 indicating 
+
+    /** Compresses the data in the buffer in place,
+        preceeding it with a little-endian uint32 indicating
         the uncompressed size.
 
         Call immediately before commit().
@@ -165,7 +165,7 @@ public:
     }
 
     /**
-     Write the bytes to disk.  It is ok to call this 
+     Write the bytes to disk.  It is ok to call this
      multiple times; it will just overwrite the previous file.
 
      Parent directories are created as needed if they do
@@ -174,7 +174,7 @@ public:
      <B>Not</B> called from the destructor; you must call
      it yourself.
 
-     @param flush If true (default) the file is ready for reading when the method returns, otherwise 
+     @param flush If true (default) the file is ready for reading when the method returns, otherwise
       the method returns immediately and writes the file in the background.
     */
     void commit(bool flush = true);
@@ -391,17 +391,17 @@ public:
         m_pos += n;
     }
 
-    /** Call before a series of BinaryOutput::writeBits calls. Only writeBits 
+    /** Call before a series of BinaryOutput::writeBits calls. Only writeBits
         can be called between beginBits and endBits without corrupting the stream.*/
     void beginBits();
 
     /** Write numBits from bitString to the output stream.  Bits are numbered from
         low to high.
-    
-        Can only be 
+
+        Can only be
         called between beginBits and endBits.  Bits written are semantically
         little-endian, regardless of the actual endian-ness of the system.  That is,
-        <CODE>writeBits(0xABCD, 16)</CODE> writes 0xCD to the first byte and 
+        <CODE>writeBits(0xABCD, 16)</CODE> writes 0xCD to the first byte and
         0xAB to the second byte.  However, if used with BinaryInput::readBits, the ordering
         is transparent to the caller.
       */
@@ -427,7 +427,7 @@ public:
     DECLARE_WRITER(UInt64,  uint64)
     DECLARE_WRITER(Int64,   int64)
     DECLARE_WRITER(Float32, float32)
-    DECLARE_WRITER(Float64, float64)    
+    DECLARE_WRITER(Float64, float64)
 #   undef DECLARE_WRITER
 
 };

@@ -1,7 +1,10 @@
-# Required files
-find -name '*.cpp' -print0 | xargs -r0 sed -e 's/[[:blank:]]\+$//' -i
-find -name '*.h' -print0 | xargs -r0 sed -e 's/[[:blank:]]\+$//' -i
+#!/bin/bash
 
-# Optional files - uncomment lines below to add them.
-#find -name '*.txt' -print0 | xargs -r0 sed -e 's/[[:blank:]]\+$//' -i
-#find -name '*.cmake' -print0 | xargs -r0 sed -e 's/[[:blank:]]\+$//' -i
+# Definir la ruta de búsqueda (dos carpetas atrás desde la ubicación actual)
+search_path="../../src"
+
+# Buscar archivos .cpp y .h en la ruta especificada
+find "$search_path" -type f \( -name '*.cpp' -o -name '*.h' \) | while read -r file; do
+  # Eliminar los espacios en blanco al final de las líneas usando sed
+  sed -i 's/[[:blank:]]\+$//' "$file"
+done

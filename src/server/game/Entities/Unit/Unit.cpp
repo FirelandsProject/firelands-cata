@@ -8429,7 +8429,7 @@ bool Unit::isTargetableForAttack(bool checkFakeDeath) const
 
     if (GetTypeId() == TYPEID_PLAYER && ToPlayer()->IsGameMaster())
         return false;
-     
+
     return !HasUnitState(UNIT_STATE_UNATTACKABLE) && (!checkFakeDeath || !HasUnitState(UNIT_STATE_DIED));
 }
 
@@ -8446,7 +8446,7 @@ bool Unit::IsValidAttackTarget(Unit const* target, SpellInfo const* bySpell /*= 
     if (target->GetTypeId() == TYPEID_PLAYER && target->ToPlayer()->IsGameMaster())
         return false;
 
-    
+
     // CvC case - can attack each other only when one of them is hostile
     if (!HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED) && !target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
         return IsHostileTo(target) || target->IsHostileTo(this);
@@ -8639,7 +8639,7 @@ bool Unit::IsValidSpellAssistTarget(Unit const* target, SpellInfo const* bySpell
         if (IsOnVehicle(target) || m_vehicle->GetBase()->IsOnVehicle(target))
              return false;
     }
- 
+
     // can't assist invisible
     if ((!bySpell || !bySpell->HasAttribute(SPELL_ATTR6_CAN_TARGET_INVISIBLE)) && !CanSeeOrDetect(target, bySpell && bySpell->IsAffectingArea()))
         return false;
@@ -11937,7 +11937,7 @@ void Unit::PlayOneShotAnimKitId(uint16 animKitId)
                 Map* instanceMap = creature->GetMap();
 
                 if (attacker)
-                {         
+                {
                 Player* creditedPlayer = attacker->GetCharmerOrOwnerPlayerOrPlayerItself();
                 /// @todo do instance binding anyway if the charmer/owner is offline
 

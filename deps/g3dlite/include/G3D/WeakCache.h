@@ -1,8 +1,8 @@
-/** 
+/**
   \file G3D/WeakCache.h
- 
+
   \maintainer Morgan McGuire, graphics3d.com
- 
+
   \created 2007-05-16
   \edited  2012-01-02
 
@@ -43,8 +43,8 @@ namespace G3D {
 
           return t;
       }
-      
-      
+
+
     </pre>
  */
 template<class Key, class ValueRef>

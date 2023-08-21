@@ -83,8 +83,8 @@ inline uint32_t superFastHash (const void* _data, size_t numBytes) {
 
 
 /**
- Thomas Wang's 64-to-32-bit mix hash based on Robert Jenkin's hash http://www.concentric.net/~ttwang/tech/inthash.htm  
- 
+ Thomas Wang's 64-to-32-bit mix hash based on Robert Jenkin's hash http://www.concentric.net/~ttwang/tech/inthash.htm
+
  Found by Morgan to produce the best net performance for building tables from Vector4int16
 */
 inline uint32_t wangHash6432Shift(int64 key) {
@@ -110,9 +110,9 @@ template <typename T> struct HashTrait<T*> {
 
 /** For use with \code Table<std::type_info* const, ValueType> \endcode. */
 template <> struct HashTrait <std::type_info* const> {
-    static size_t hashCode(const std::type_info* const t) { 
+    static size_t hashCode(const std::type_info* const t) {
 #       ifdef _MSC_VER
-            return t->hash_code(); 
+            return t->hash_code();
 #       else
             return reinterpret_cast<size_t>(t) >> 1;
 #       endif
@@ -152,9 +152,9 @@ template <> struct HashTrait <G3D::int64> {
 
 
 template <> struct HashTrait <std::string> {
-    static size_t hashCode(const std::string& k) { 
+    static size_t hashCode(const std::string& k) {
         return G3D::superFastHash(k.c_str(), k.size());
-        //return static_cast<size_t>(G3D::Crypto::crc32(k.c_str(), k.size())); 
+        //return static_cast<size_t>(G3D::Crypto::crc32(k.c_str(), k.size()));
     }
 };
 
@@ -175,7 +175,7 @@ template <> struct HashTrait<G3D::uint128> {
             hash ^= (mask & key);
             key >>= 8;
         }
-    
+
         G3D::uint64 foldedHash = hash.hi ^ hash.lo;
         return static_cast<size_t>((foldedHash >> 32) ^ (foldedHash & 0xFFFFFFFF));
 #endif

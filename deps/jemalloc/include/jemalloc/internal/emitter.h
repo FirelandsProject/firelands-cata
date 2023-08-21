@@ -135,7 +135,7 @@ emitter_print_value(emitter_t *emitter, emitter_justify_t justify, int width,
 
 	switch (value_type) {
 	case emitter_type_bool:
-		emitter_printf(emitter, 
+		emitter_printf(emitter,
 		    emitter_gen_fmt(fmt, FMT_SIZE, "%s", justify, width),
 		    *(const bool *)value ?  "true" : "false");
 		break;
@@ -159,7 +159,7 @@ emitter_print_value(emitter_t *emitter, emitter_justify_t justify, int width,
 		 * anywhere near the fmt size.
 		 */
 		assert(str_written < BUF_SIZE);
-		emitter_printf(emitter, 
+		emitter_printf(emitter,
 		    emitter_gen_fmt(fmt, FMT_SIZE, "%s", justify, width), buf);
 		break;
 	case emitter_type_uint32:
@@ -227,14 +227,14 @@ emitter_init(emitter_t *emitter, emitter_output_t emitter_output,
 	emitter->write_cb = write_cb;
 	emitter->cbopaque = cbopaque;
 	emitter->item_at_depth = false;
-	emitter->emitted_key = false; 
+	emitter->emitted_key = false;
 	emitter->nesting_depth = 0;
 }
 
 /******************************************************************************/
 /* JSON public API. */
 
-/* 
+/*
  * Emits a key (e.g. as appears in an object). The next json entity emitted will
  * be the corresponding value.
  */

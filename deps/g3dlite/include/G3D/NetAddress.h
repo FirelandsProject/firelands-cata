@@ -3,7 +3,7 @@
 
  \created 2010-01-03
  \edited  2013-03-17
- */   
+ */
 #ifndef G3D_NetAddress_h
 #define G3D_NetAddress_h
 
@@ -31,8 +31,8 @@ private:
 
 public:
 
-    enum { 
-        /** 
+    enum {
+        /**
          Use the host portion of the IP address of the default adapter on this machine.
         */
         // Must match ENET_HOST_ANY
@@ -95,7 +95,7 @@ public:
     std::string ipString() const;
     std::string toString() const;
 
-    /** Name of this address, without the domain.  Performs reverse DNS lookup on this address.  This may make a network 
+    /** Name of this address, without the domain.  Performs reverse DNS lookup on this address.  This may make a network
     connection to a DNS server and block until that communication completes
     if the address is one that has not been recently checked.*/
     std::string hostname() const;
@@ -109,7 +109,7 @@ std::ostream& operator<<(std::ostream& os, const NetAddress&);
 } // namespace G3D
 
 template <> struct HashTrait<G3D::NetAddress> {
-    static size_t hashCode(const G3D::NetAddress& key) { 
+    static size_t hashCode(const G3D::NetAddress& key) {
         return static_cast<size_t>(key.ip() + (static_cast<G3D::uint32>(key.port()) << 16));
     }
 };

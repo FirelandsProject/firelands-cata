@@ -1,8 +1,8 @@
 /**
   \file G3D/unorm16.h
- 
+
   \maintainer Morgan McGuire, http://graphics.cs.williams.edu
- 
+
   \created 2012-03-02 by Zina Cigolle
   \edited  2012-03-02
 
@@ -19,12 +19,12 @@ namespace G3D {
 
 
 /** Represents numbers on [0, 1] in 16 bits as an unsigned normalized
- 0.8 fixed-point value using the same encoding scheme as OpenGL.  
+ 0.8 fixed-point value using the same encoding scheme as OpenGL.
 
  Note that arithmetic operations may over and under-flow, just like
  uint16 arithmetic.
 
- OpenGL specifications can be found here: 
+ OpenGL specifications can be found here:
  http://www.opengl.org/registry/specs/ARB/shading_language_packing.txt
 
 */
@@ -50,7 +50,7 @@ public:
     }
 
     unorm16() : m_bits(0) {}
-    
+
     unorm16(const unorm16& other) : m_bits(other.m_bits) {}
 
     explicit unorm16(const class Any& a);
@@ -83,7 +83,7 @@ public:
         return fromBits(0);
     }
 
-    /**\brief Returns the underlying bits in this representation. 
+    /**\brief Returns the underlying bits in this representation.
      Equivalent to:
     \code uint16 i = reinterpret_cast<const uint16&>(u); \endcode */
     uint16 bits() const {

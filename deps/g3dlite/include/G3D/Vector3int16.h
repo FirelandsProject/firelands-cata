@@ -1,6 +1,6 @@
 /**
   \file G3D/Vector3int16.h
-  
+
   \maintainer Morgan McGuire, matrix@brown.edu
 
   \created 2003-04-07

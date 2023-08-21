@@ -4231,7 +4231,7 @@ void SpellInfo::_InitializeSpellPositivity()
             if (!_isPositiveEffectImpl(this, i, visited))
             AttributesCu |= (SPELL_ATTR0_CU_NEGATIVE_EFF0 << i);
 
-    
+
     // additional checks after effects marked
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {

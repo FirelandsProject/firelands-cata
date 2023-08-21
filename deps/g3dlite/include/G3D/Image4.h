@@ -58,7 +58,7 @@ public:
     static Ref createEmpty(WrapMode wrap = WrapMode::ERROR);
 
     static Ref fromFile(const std::string& filename, WrapMode wrap = WrapMode::ERROR);
-    
+
     static Ref fromArray(const class Color1unorm8* ptr, int width, int height, WrapMode wrap = WrapMode::ERROR);
     static Ref fromArray(const class Color3unorm8* ptr, int width, int height, WrapMode wrap = WrapMode::ERROR);
     static Ref fromArray(const class Color4unorm8* ptr, int width, int height, WrapMode wrap = WrapMode::ERROR);

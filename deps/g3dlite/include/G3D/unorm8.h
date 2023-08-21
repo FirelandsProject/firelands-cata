@@ -1,8 +1,8 @@
 /**
   \file G3D/unorm8.h
- 
+
   \maintainer Morgan McGuire, http://graphics.cs.williams.edu
- 
+
   \created 2011-08-11
   \edited  2011-08-11
 
@@ -19,9 +19,9 @@ namespace G3D {
 
 
 /** Represents numbers on [0, 1] in 8 bits as an unsigned normalized
- 0.8 fixed-point value using the same encoding scheme as OpenGL.  
+ 0.8 fixed-point value using the same encoding scheme as OpenGL.
 
- OpenGL specifications can be found here: 
+ OpenGL specifications can be found here:
  <www.opengl.org/registry/specs/ARB/shading_language_packing.txt>
 
  Note that arithmetic operations may over and under-flow, just like
@@ -51,7 +51,7 @@ public:
     }
 
     unorm8() : m_bits(0) {}
-    
+
     unorm8(const unorm8& other) : m_bits(other.m_bits) {}
 
     /** Maps f to round(f * 255).*/
@@ -80,7 +80,7 @@ public:
         return fromBits(0);
     }
 
-    /**\brief Returns the underlying bits in this representation. 
+    /**\brief Returns the underlying bits in this representation.
      Equivalent to:
     \code uint8 i = reinterpret_cast<const uint8&>(u); \endcode */
     uint8 bits() const {

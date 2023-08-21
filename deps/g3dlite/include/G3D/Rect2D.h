@@ -1,8 +1,8 @@
 /**
   \file Rect2D.h
- 
+
   \maintainer Morgan McGuire, http://graphics.cs.williams.edu
- 
+
   \created 2003-11-13
   \created 2011-06-16
 
@@ -51,7 +51,7 @@ private:
      */
     template<class T>
     static bool clipSide2D(
-        const float p, bool clipGreater, int axis, 
+        const float p, bool clipGreater, int axis,
         const Array<T>& inPoly, Array<T>& outPoly) {
 
         outPoly.clear();
@@ -64,7 +64,7 @@ private:
 
         // Find a point that is not clipped
         for (i0 = 0; (i0 < inPoly.length()) && c1; ++i0) {
-            pt1 = inPoly[i0];       
+            pt1 = inPoly[i0];
             c1  = (negate * pt1[axis]) < (negate * p);
         }
 
@@ -82,7 +82,7 @@ private:
         //     if the point is outside the side and the previous one was also outside, continue
         //     if the point is outside the side and the previous one was inside, cut the line
         //     if the point is inside the side and the previous one was also inside, append the points
-        //     if the point is inside the side and the previous one was outside, cut the line    
+        //     if the point is inside the side and the previous one was outside, cut the line
         for (int i = 1; i <= inPoly.length(); ++i) {
             T pt2 = inPoly[(i + i0) % inPoly.length()];
             bool    c2  = (negate * pt2[axis]) < (negate * p);
@@ -105,11 +105,11 @@ private:
                 }
                 outPoly.append(pt1.lerp(pt2, alpha));
             } else if (! (c1 || c2) && (i != 1)) {
-                // neither point is clipped (don't do this the first time 
+                // neither point is clipped (don't do this the first time
                 // because we appended the first pt before the loop)
                 outPoly.append(pt1);
             }
-        
+
             pt1 = pt2;
             c1 = c2;
         }
@@ -123,7 +123,7 @@ public:
 
     /** \param any Must either Rect2D::xywh(#, #, #, #) or Rect2D::xyxy(#, #, #, #)*/
     Rect2D(const Any& any);
-    
+
     /** Converts the Rect2D to an Any. */
     Any toAny() const;
 
@@ -230,7 +230,7 @@ public:
 
     Rect2D lerp(const Rect2D& other, float alpha) const {
         Rect2D out(false);
-        
+
         out.min = min.lerp(other.min, alpha);
         out.max = max.lerp(other.max, alpha);
 
@@ -239,7 +239,7 @@ public:
 
     static Rect2D xyxy(float x0, float y0, float x1, float y1) {
         Rect2D r(false);
-        
+
         r.min.x = G3D::min(x0, x1);
         r.min.y = G3D::min(y0, y1);
         r.max.x = G3D::max(x0, x1);
@@ -354,16 +354,16 @@ public:
     }
 
 
-    /** @deprecated  
+    /** @deprecated
      @sa expand() */
     Rect2D border(float delta) const {
-        return Rect2D::xywh(x0() + delta, 
-                     y0() + delta, 
-                     width() - 2.0f * delta, 
+        return Rect2D::xywh(x0() + delta,
+                     y0() + delta,
+                     width() - 2.0f * delta,
                      height() - 2.0f * delta);
     }
 
-    /** Returns a new Rect2D that is bigger/smaller by the specified amount 
+    /** Returns a new Rect2D that is bigger/smaller by the specified amount
         (negative is shrink.) */
     Rect2D expand(float delta) const {
         float newX = x0() - delta;
@@ -392,14 +392,14 @@ public:
         }
     }
 
-    /** Computes a rectangle that contains both @a a and @a b.  
+    /** Computes a rectangle that contains both @a a and @a b.
         Note that even if @a or @b has zero area, its origin will be included.*/
     Rect2D(const Rect2D& a, const Rect2D& b) {
         *this = a;
         merge(b);
     }
 
-    /** 
+    /**
      Clips so that the rightmost point of the outPoly is at rect.x1 (e.g. a 800x600 window produces
      rightmost point 799, not 800).  The results are suitable for pixel rendering if iRounded.
      Templated so that it will work for Vector2,3,4 (the z and w components are interpolated linearly).
@@ -421,7 +421,7 @@ public:
         bool entirelyClipped =
           clipSide2D(x0(), lessThan,    X,    inPoly,  temp)    ||
           clipSide2D(x1(), greaterThan, X,    temp,    outPoly) ||
-          clipSide2D(y0(), lessThan,    Y,    outPoly, temp)    || 
+          clipSide2D(y0(), lessThan,    Y,    outPoly, temp)    ||
           clipSide2D(y1(), greaterThan, Y,    temp,    outPoly);
 
         if (entirelyClipped) {

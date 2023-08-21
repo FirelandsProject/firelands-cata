@@ -30,15 +30,15 @@ public:
 
         float      normalWeldRadius;
 
-        inline Settings(float normalSmoothAngle = toRadians(70.0f)) : 
+        inline Settings(float normalSmoothAngle = toRadians(70.0f)) :
             normalSmoothingAngle(normalSmoothAngle),
-            vertexWeldRadius(0.001f), 
-            textureWeldRadius(0.0001f), 
+            vertexWeldRadius(0.001f),
+            textureWeldRadius(0.0001f),
             normalWeldRadius(0.01f) {}
 
 
         Settings(const Any& any);
-        
+
         Any toAny() const;
 
         void serialize(class BinaryOutput& b) const;
@@ -53,11 +53,11 @@ public:
      @param vertices Input and output
      @param textureCoords Input and output
      @param normals Output only
-     @param indices Input and output. This is an array of trilist indices. 
+     @param indices Input and output. This is an array of trilist indices.
      */
     static void weld(
         Array<Vector3>&     vertices,
-        Array<Vector2>&     textureCoords, 
+        Array<Vector2>&     textureCoords,
         Array<Vector3>&     normals,
         Array<Array<int>*>& indices,
         const Settings&     settings);
@@ -68,13 +68,13 @@ public:
      @param vertices Input and output
      @param textureCoords Input and output
      @param normals Output only
-     @param indices Input and output. This is an array of trilist indices. 
+     @param indices Input and output. This is an array of trilist indices.
      */
     inline static void weld(
         Array<Vector3>&     vertices,
-        Array<Vector2>&     textureCoords, 
+        Array<Vector2>&     textureCoords,
         Array<Vector3>&     normals,
-        Array<int>&         indices,        
+        Array<int>&         indices,
         const Settings&     settings) {
 
         Array<Array<int>*> meta;

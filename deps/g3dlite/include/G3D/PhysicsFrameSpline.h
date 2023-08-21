@@ -27,7 +27,7 @@ public:
     PhysicsFrameSpline(const Any& any);
 
     bool operator==(const PhysicsFrameSpline& a) const;
- 
+
     bool operator!=(const PhysicsFrameSpline& a) const {
         return ! ((*this) == a);
     }

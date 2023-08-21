@@ -1,6 +1,6 @@
 /**
   \file G3D/Vector2unorm16.h
-  
+
   \maintainer Morgan McGuire, morgan@cs.williams.edu
 
   \created 2003-03-13
@@ -22,7 +22,7 @@ namespace G3D {
 
 class Any;
 /**
- \class Vector2unorm16 
+ \class Vector2unorm16
 
  A Vector2 that packs its fields into G3D::unorm16%s. This is mostly
  useful for texture coordinates that are on the range [0, 1].
@@ -50,7 +50,7 @@ public:
     explicit Vector2unorm16(const class Any& a);
 
     Any toAny() const;
-    
+
     Vector2unorm16& operator=(const Any& a);
 
     inline G3D::unorm16& operator[] (int i) {
@@ -84,7 +84,7 @@ public:
 }
 G3D_END_PACKED_CLASS(2)
 
-typedef Vector2unorm16 Point2unorm16;    
+typedef Vector2unorm16 Point2unorm16;
 
 }
 

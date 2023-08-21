@@ -1,9 +1,9 @@
 /**
  @file uint128.h
- 
+
  @maintainer Morgan McGuire, http://graphics.cs.williams.edu
  @author Kyle Whitson
- 
+
  @created 2008-07-17
  @edited  2008-07-17
  */
@@ -26,23 +26,23 @@ public:
     uint128(const uint64& lo);
 
     uint128(const uint64& hi, const uint64& lo);
-    
+
     uint128& operator+=(const uint128& x);
-    
+
     uint128& operator*=(const uint128& x);
-    
+
     uint128& operator^=(const uint128& x);
-    
+
     uint128& operator&=(const uint128& x);
-    
+
     uint128& operator|=(const uint128& x);
-    
+
     bool operator==(const uint128& x);
-    
+
     uint128& operator>>=(const int x);
 
     uint128& operator<<=(const int x);
-    
+
     uint128 operator&(const uint128& x);
 };
 }
