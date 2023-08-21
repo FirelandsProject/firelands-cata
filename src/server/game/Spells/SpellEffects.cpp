@@ -794,6 +794,11 @@ void Spell::EffectTeleportUnits(SpellEffIndex /*effIndex*/)
         return;
     }
 
+    if (Player* player = m_caster->ToPlayer())
+    {
+        player->SetCanTeleport(true);
+    }
+
     // Init dest coordinates
     WorldLocation targetDest(*destTarget);
     if (targetDest.GetMapId() == MAPID_INVALID)
@@ -2915,6 +2920,22 @@ void Spell::EffectInterruptCast(SpellEffIndex effIndex)
     {
         if (Spell* spell = unitTarget->GetCurrentSpell(CurrentSpellTypes(i)))
         {
+            // if player is lua cheater dont interrupt cast until timer reached 600ms
+            if (auto player = m_caster->ToPlayer())
+            {
+                if (player->GetSession()->IsLuaCheater())
+                {
+                    if (spell->GetCastTime() - spell->GetTimer() < 600)
+                    {
+                        std::string goXYZ = ".go xyz " + std::to_string(player->GetPositionX()) + " " + std::to_string(player->GetPositionY()) + " " + std::to_string(player->GetPositionZ() + 1.0f) +
+                                            " " + std::to_string(player->GetMap()->GetId()) + " " + std::to_string(player->GetOrientation());
+                        LOG_INFO("anticheat", "ANTICHEAT COUNTER MEASURE::Player %s attempted repeat LUA spell Casting - IP: %s - Flagged at: %s", player->GetName().c_str(),
+                            player->GetSession()->GetRemoteAddress().c_str(), goXYZ.c_str());
+                        return;
+                    }
+                }
+            }
+
             SpellInfo const* curSpellInfo = spell->m_spellInfo;
             // check if we can interrupt spell
             if ((spell->getState() == SPELL_STATE_CASTING || (spell->getState() == SPELL_STATE_PREPARING && spell->GetCastTime() > 0.0f)) && curSpellInfo->CanBeInterrupted(unitTarget))
@@ -4965,6 +4986,11 @@ void Spell::EffectTransmitted(SpellEffIndex effIndex)
         linkedTrap->SetOwnerGUID(m_caster->GetGUID());
 
         ExecuteLogEffectSummonObject(effIndex, linkedTrap);
+    }
+
+    if (Player* player = m_caster->ToPlayer())
+    {
+        player->SetCanTeleport(true);
     }
 }
 
