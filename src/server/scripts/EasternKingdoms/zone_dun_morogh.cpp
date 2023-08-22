@@ -185,10 +185,15 @@ class npc_sanitron500 : public CreatureScript
 
         Unit* unit(uint32 entry, uint32 range, bool alive)
         {
-            if (Unit* unit =
-                    me->FindNearestCreature(entry, float(range), alive))
+            if (Unit* unit = me->FindNearestCreature(entry, float(range), alive))
+            {
                 if (Unit* unit2 = ObjectAccessor::GetCreature(*me, unit->GetGUID()))
+                {
                     return unit2;
+                }
+            }
+            else
+                return;
         }
 
         void GetTargets()
@@ -329,15 +334,14 @@ class npc_sanitron500 : public CreatureScript
                             break;
                         case 5:
                             if (vehicle->GetPassenger(0))
-                                if (Player* player =
-                                        vehicle->GetPassenger(0)->ToPlayer())
-                                    player->CompleteQuest(
-                                        QUEST_DECONTAMINATION);
-                            me->Say(SAY_SANITRON_03);
-                            me->GetMotionMaster()->MovePoint(5,
-                                eQuestPosition[13].GetPositionX(),
-                                eQuestPosition[13].GetPositionY(),
-                                eQuestPosition[13].GetPositionZ());
+                            {
+                                if (Player* player = vehicle->GetPassenger(0)->ToPlayer())
+                                {
+                                    player->CompleteQuest(QUEST_DECONTAMINATION);
+                                }
+                                me->Say(SAY_SANITRON_03);
+                                me->GetMotionMaster()->MovePoint(5, eQuestPosition[13].GetPositionX(), eQuestPosition[13].GetPositionY(), eQuestPosition[13].GetPositionZ());
+                            }
                             ++uiPhase;
                             uiTimer = 3000;
                             break;
@@ -360,6 +364,9 @@ class npc_sanitron500 : public CreatureScript
                 }
                 else
                     uiTimer -= diff;
+
+                if (vehicle->HasEmptySeat(0))
+                    return;
         }
     };
 
