@@ -3827,7 +3827,7 @@ bool _isPositiveEffectImpl(SpellInfo const* spellInfo, uint8 effIndex, std::unor
     if (spellInfo->HasAttribute(SPELL_ATTR0_AURA_IS_DEBUFF))
         return false;
 
-        if (spellInfo->HasAttribute(SPELL_ATTR4_AURA_IS_BUFF))
+    if (spellInfo->HasAttribute(SPELL_ATTR4_AURA_IS_BUFF))
         return true;
 
     visited.insert({spellInfo->Id, effIndex});
@@ -3876,6 +3876,7 @@ bool _isPositiveEffectImpl(SpellInfo const* spellInfo, uint8 effIndex, std::unor
         // Slam, Execute
         if ((spellInfo->SpellFamilyFlags[0] & 0x20200000) != 0)
             return false;
+        break;
     default:
         break;
     }
