@@ -22,12 +22,13 @@
 #include "SpellAuraDefines.h"
 #include "SpellInfo.h"
 #include "Unit.h"
+#include <typeinfo>
+#include "EventProcessor.h"
 
 class SpellInfo;
 struct SpellModifier;
 struct ProcTriggerSpell;
 struct SpellProcEntry;
-
 namespace WorldPackets
 {
 namespace Spells
@@ -40,21 +41,22 @@ struct AuraInfo;
 class AuraEffect;
 class Aura;
 class DynamicObject;
+class DamageInfo;
+class DispelInfo;
+class DynObjAura;
 class AuraScript;
 class ProcInfo;
 class ChargeDropEvent;
+class ProcEventInfo;
+class Unit;
+class UnitAura;
 
 // update aura target map every 500 ms instead of every update - reduce amount of grid searcher calls
 #define UPDATE_TARGET_MAP_INTERVAL 500
 
 class FC_GAME_API AuraApplication
 {
-    friend void Unit::_ApplyAura(AuraApplication* aurApp, uint8 effMask);
-    friend void Unit::_UnapplyAura(AuraApplicationMap::iterator& i, AuraRemoveFlags removeMode);
-    friend void Unit::_ApplyAuraEffect(Aura* aura, uint8 effIndex);
-    friend void Unit::RemoveAura(AuraApplication* aurApp, AuraRemoveFlags mode);
-    friend AuraApplication* Unit::_CreateAuraApplication(Aura* aura, uint8 effMask);
-
+    friend class Unit;
   private:
     Unit* const _target;
     Aura* const _base;
@@ -111,6 +113,8 @@ class FC_GAME_API AuraApplication
         return _effectsToApply;
     }
 
+    void UpdateApplyEffectMask(uint8 newEffMask);
+
     void SetRemoveMode(AuraRemoveFlags mode)
     {
         _removeMode = mode;
@@ -143,19 +147,17 @@ struct CasterInfo
 
 class FC_GAME_API Aura
 {
-    friend Aura* Unit::_TryStackingOrRefreshingExistingAura(SpellInfo const* newAura, uint8 effMask, Unit* caster, int32* baseAmount, Item* castItem, ObjectGuid casterGUID);
-
+    friend class Unit;
   public:
-    typedef std::map<ObjectGuid, AuraApplication*> ApplicationMap;
+    typedef std::unordered_map<ObjectGuid, AuraApplication*> ApplicationMap;
 
     static uint8 BuildEffectMaskForOwner(SpellInfo const* spellProto, uint8 availableEffectMask, WorldObject* owner);
-    static Aura* TryRefreshStackOrCreate(SpellInfo const* spellproto, uint8 tryEffMask, WorldObject* owner, Unit* caster, int32* baseAmount = nullptr, Item* castItem = nullptr,
-        ObjectGuid casterGUID = ObjectGuid::Empty, bool* refresh = nullptr);
-    static Aura* TryCreate(
-        SpellInfo const* spellproto, uint8 effMask, WorldObject* owner, Unit* caster, int32* baseAmount = nullptr, Item* castItem = nullptr, ObjectGuid casterGUID = ObjectGuid::Empty);
-    static Aura* Create(SpellInfo const* spellproto, uint8 effMask, WorldObject* owner, Unit* caster, int32* baseAmount, Item* castItem, ObjectGuid casterGUID);
-    explicit Aura(SpellInfo const* spellproto, WorldObject* owner, Unit* caster, Item* castItem, ObjectGuid casterGUID);
-    void _InitEffects(uint8 effMask, Unit* caster, int32* baseAmount);
+    static Aura* TryRefreshStackOrCreate(AuraCreateInfo& createInfo);
+    static Aura* TryCreate(AuraCreateInfo& createInfo);
+    static Aura* Create(AuraCreateInfo& createInfo);
+    explicit Aura(AuraCreateInfo const& createInfo);
+    void _InitEffects(uint8 effMask, Unit* caster, int32 const* baseAmount);
+
     void SaveCasterInfo(Unit* caster);
     virtual ~Aura();
 
@@ -184,12 +186,12 @@ class FC_GAME_API Aura
     Unit* GetUnitOwner() const
     {
         ASSERT(GetType() == UNIT_AURA_TYPE);
-        return (Unit*)m_owner;
+        return m_owner->ToUnit();
     }
     DynamicObject* GetDynobjOwner() const
     {
         ASSERT(GetType() == DYNOBJ_AURA_TYPE);
-        return (DynamicObject*)m_owner;
+        return m_owner->ToDynObject();
     }
 
     AuraObjectType GetType() const;
@@ -313,10 +315,7 @@ class FC_GAME_API Aura
     bool IsPassive() const;
     bool IsDeathPersistent() const;
 
-    bool IsRemovedOnShapeLost(Unit* target) const
-    {
-        return GetCasterGUID() == target->GetGUID() && m_spellInfo->Stances && !m_spellInfo->HasAttribute(SPELL_ATTR2_NOT_NEED_SHAPESHIFT) && !m_spellInfo->HasAttribute(SPELL_ATTR0_NOT_SHAPESHIFTED);
-    }
+    bool IsRemovedOnShapeLost(Unit* target) const;
 
     bool CanBeSaved() const;
     bool IsRemoved() const
@@ -369,7 +368,7 @@ class FC_GAME_API Aura
     {
         return m_applications;
     }
-    void GetApplicationList(Unit::AuraApplicationList& applicationList) const;
+    void GetApplicationVector(std::vector<AuraApplication*>& applicationVector) const;
     const AuraApplication* GetApplicationOfTarget(ObjectGuid guid) const
     {
         ApplicationMap::const_iterator itr = m_applications.find(guid);
@@ -439,6 +438,36 @@ class FC_GAME_API Aura
     bool CallScriptEffectProcHandlers(AuraEffect const* aurEff, AuraApplication const* aurApp, ProcEventInfo& eventInfo);
     void CallScriptAfterEffectProcHandlers(AuraEffect const* aurEff, AuraApplication const* aurApp, ProcEventInfo& eventInfo);
 
+            UnitAura* ToUnitAura()
+    {
+        if (GetType() == UNIT_AURA_TYPE)
+            return reinterpret_cast<UnitAura*>(this);
+        else
+            return nullptr;
+    }
+    UnitAura const* ToUnitAura() const
+    {
+        if (GetType() == UNIT_AURA_TYPE)
+            return reinterpret_cast<UnitAura const*>(this);
+        else
+            return nullptr;
+    }
+
+    DynObjAura* ToDynObjAura()
+    {
+        if (GetType() == DYNOBJ_AURA_TYPE)
+            return reinterpret_cast<DynObjAura*>(this);
+        else
+            return nullptr;
+    }
+    DynObjAura const* ToDynObjAura() const
+    {
+        if (GetType() == DYNOBJ_AURA_TYPE)
+            return reinterpret_cast<DynObjAura const*>(this);
+        else
+            return nullptr;
+    }
+
     template <class Script> Script* GetScript(std::string const& scriptName) const
     {
         return dynamic_cast<Script*>(GetScriptByName(scriptName));
@@ -468,7 +497,7 @@ class FC_GAME_API Aura
     uint8 m_procCharges; // Aura charges (0 for infinite)
     uint8 m_stackAmount; // Aura stack amount
 
-    AuraEffect* m_effects[3];
+    AuraEffect* m_effects[MAX_SPELL_EFFECTS];
     ApplicationMap m_applications;
 
     bool m_isRemoved : 1;
@@ -480,15 +509,14 @@ class FC_GAME_API Aura
     std::chrono::steady_clock::time_point m_procCooldown;
 
   private:
-    Unit::AuraApplicationList m_removedApplications;
+    std::vector<AuraApplication*> _removedApplications;
 };
 
 class FC_GAME_API UnitAura : public Aura
 {
-    friend Aura* Aura::Create(SpellInfo const* spellproto, uint8 effMask, WorldObject* owner, Unit* caster, int32* baseAmount, Item* castItem, ObjectGuid casterGUID);
-
+    friend Aura* Aura::Create(AuraCreateInfo& createInfo);
   protected:
-    explicit UnitAura(SpellInfo const* spellproto, uint8 effMask, WorldObject* owner, Unit* caster, int32* baseAmount, Item* castItem, ObjectGuid casterGUID);
+    explicit UnitAura(AuraCreateInfo const& createInfo);
 
   public:
     void _ApplyForTarget(Unit* target, Unit* caster, AuraApplication* aurApp) override;
@@ -508,16 +536,19 @@ class FC_GAME_API UnitAura : public Aura
         return m_AuraDRGroup;
     }
 
+    void AddStaticApplication(Unit* target, uint8 effMask);
+
   private:
     DiminishingGroup m_AuraDRGroup; // Diminishing
+    std::unordered_map<ObjectGuid, uint8> _staticApplications; // non-area auras
 };
 
 class FC_GAME_API DynObjAura : public Aura
 {
-    friend Aura* Aura::Create(SpellInfo const* spellproto, uint8 effMask, WorldObject* owner, Unit* caster, int32* baseAmount, Item* castItem, ObjectGuid casterGUID);
+    friend Aura* Aura::Create(AuraCreateInfo& createInfo);
 
   protected:
-    explicit DynObjAura(SpellInfo const* spellproto, uint8 effMask, WorldObject* owner, Unit* caster, int32* baseAmount, Item* castItem, ObjectGuid casterGUID);
+    explicit DynObjAura(AuraCreateInfo const& createInfo);
 
   public:
     void Remove(AuraRemoveFlags removeMode = AuraRemoveFlags::ByDefault) override;

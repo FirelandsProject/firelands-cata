@@ -16,6 +16,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "EventProcessor.h"
 #include "SpellAuraEffects.h"
 #include "Battlefield.h"
 #include "BattlefieldMgr.h"
@@ -438,7 +439,7 @@ pAuraEffectHandler AuraEffectHandler[TOTAL_AURAS] = {
     &AuraEffect::HandleNULL,                            // 370 SPELL_AURA_SET_FAIR_FAR_CLIP
 };
 
-AuraEffect::AuraEffect(Aura* base, uint8 effIndex, int32* baseAmount, Unit* caster)
+AuraEffect::AuraEffect(Aura* base, uint8 effIndex, int32 const* baseAmount, Unit* caster)
     : m_base(base), m_spellInfo(base->GetSpellInfo()), m_baseAmount(baseAmount ? *baseAmount : m_spellInfo->Effects[effIndex].BasePoints), m_spellmod(nullptr), m_periodicTimer(0), m_tickNumber(0),
       m_effIndex(effIndex), m_canBeRecalculated(true), m_isPeriodic(false)
 {
@@ -1202,7 +1203,7 @@ void AuraEffect::HandleShapeshiftBoosts(Unit* target, bool apply) const
         spellId = 3025;
         break;
     case FORM_TREE:
-        spellId = 34123;
+        spellId = 33891;
         break;
     case FORM_TRAVEL:
         spellId = 5419;

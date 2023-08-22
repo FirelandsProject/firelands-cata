@@ -25,7 +25,9 @@
 #include "InstanceScript.h"
 #include "Pet.h"
 #include "Player.h"
-
+#include "EventProcessor.h"
+#include "SpellAuras.h"
+#include "Unit.h"
  // == KillRewarder ====================================================
  // KillRewarder encapsulates logic of rewarding player upon kill with:
  // * XP;
