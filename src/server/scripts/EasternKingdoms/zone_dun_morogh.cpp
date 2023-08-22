@@ -154,7 +154,6 @@ class npc_sanitron500 : public CreatureScript
         QuestStatus status = pPlayer->GetQuestStatus(QUEST_DECONTAMINATION);
         if (status == QUEST_STATUS_INCOMPLETE)
         {
-            Vehicle* vehicle = pCreature->GetVehicleKit();
             pPlayer->HandleEmoteCommand(HANDLE_EMOTE_SANNITRON_01);
             pPlayer->EnterVehicle(pCreature->ToUnit(), 0);
             pCreature->Say(SAY_SANITRON_01);
