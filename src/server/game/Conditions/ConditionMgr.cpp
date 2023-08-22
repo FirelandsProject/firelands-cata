@@ -617,9 +617,9 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo) const
         {
             if (Unit* unit = object->ToUnit())
             {
-                condMeets = unit->GetPower(Powers(ConditionValue1)) >= ConditionValue2;
+                condMeets = unit->GetPower(Powers(ConditionValue1)) >= unit->GetPower(Powers(ConditionValue2));
                 if (ConditionValue3)
-                    condMeets = unit->GetPower(Powers(ConditionValue1)) <= ConditionValue3;
+                    condMeets = unit->GetPower(Powers(ConditionValue1)) <= unit->GetPower(Powers(ConditionValue3));
             }
             break;
         }
