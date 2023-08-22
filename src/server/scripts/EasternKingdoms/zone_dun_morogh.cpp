@@ -193,7 +193,7 @@ class npc_sanitron500 : public CreatureScript
                 }
             }
             else
-                return;
+                return false;
         }
 
         void GetTargets()
