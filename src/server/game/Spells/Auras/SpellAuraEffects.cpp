@@ -5989,6 +5989,8 @@ void AuraEffect::HandlePeriodicHealthLeechAuraTick(Unit* target, Unit* caster) c
         absorb);
 
     // SendSpellNonMeleeDamageLog expects non-absorbed/non-resisted damage
+    if (caster)
+
     caster->SendSpellNonMeleeDamageLog(target, GetId(), damage, GetSpellInfo()->GetSchoolMask(), absorb, resist, false, 0, crit);
     damage = damageInfo.GetDamage();
 
