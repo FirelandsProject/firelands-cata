@@ -185,8 +185,7 @@ class FC_COMMON_API TaskScheduler
     }
 
 public:
-    TaskScheduler()
-        : _schedulerUnit(), _schedulerGob(), self_reference(this, [](TaskScheduler const*) {}), _now(clock_t::now()), _predicate(EmptyValidator) {}
+    TaskScheduler() : self_reference(this, [](TaskScheduler const*) {}), _now(clock_t::now()), _predicate(EmptyValidator), _schedulerUnit(), _schedulerGob() {}
 
     template<typename P>
     TaskScheduler(P&& predicate)
