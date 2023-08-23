@@ -43,6 +43,7 @@ class AuraEffect;
 class BasicEvent;
 class ByteBuffer;
 class Corpse;
+class DynObjAura;
 class DynamicObject;
 class GameObject;
 class Item;
@@ -52,6 +53,7 @@ class Player;
 class SpellEvent;
 class SpellImplicitTargetInfo;
 class SpellInfo;
+class UnitAura;
 class SpellScript;
 class Unit;
 class WorldObject;
@@ -638,8 +640,8 @@ class FC_GAME_API Spell
         SpellMissInfo targetMissInfo;
         SpellEffectHandleMode effectHandleMode;
         // used in effects handlers
-        Aura* m_spellAura;
-
+        UnitAura* _spellAura;
+        DynObjAura* _dynObjAura;
         // -------------------------------------------
         GameObject* focusObject;
 
