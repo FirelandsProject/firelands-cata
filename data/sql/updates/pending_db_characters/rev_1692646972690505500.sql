@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS `daily_players_reports`; 
- CREATE TABLE IF NOT EXISTS `daily_players_reports` ( 
+CREATE TABLE IF NOT EXISTS `daily_players_reports` ( 
    `guid` int(10) unsigned NOT NULL DEFAULT '0', 
    `creation_time` int(10) unsigned NOT NULL DEFAULT '0', 
    `average` float NOT NULL DEFAULT '0', 
@@ -22,8 +22,8 @@ DROP TABLE IF EXISTS `daily_players_reports`;
    PRIMARY KEY (`guid`) 
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; 
   
- DROP TABLE IF EXISTS `players_reports_status`; 
- CREATE TABLE IF NOT EXISTS `players_reports_status` ( 
+DROP TABLE IF EXISTS `players_reports_status`; 
+CREATE TABLE IF NOT EXISTS `players_reports_status` ( 
    `guid` int(10) unsigned NOT NULL DEFAULT '0', 
    `creation_time` int(10) unsigned NOT NULL DEFAULT '0', 
    `average` float NOT NULL DEFAULT '0', 
