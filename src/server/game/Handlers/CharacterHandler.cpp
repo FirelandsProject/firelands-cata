@@ -2027,7 +2027,8 @@ void WorldSession::HandleCharFactionOrRaceChangeCallback(
   {
     stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_CHAR_RACE);
     stmt->setUInt8(0, factionChangeInfo->Race);
-    stmt->setUInt32(1, lowGuid);
+    stmt->setUInt16(1, PLAYER_EXTRA_HAS_RACE_CHANGED);
+    stmt->setUInt32(2, lowGuid);
     trans->Append(stmt);
   }
 
