@@ -18,23 +18,23 @@
 #ifndef FIRELANDS_SPELLAURAEFFECTS_H
 #define FIRELANDS_SPELLAURAEFFECTS_H
 
-class Unit;
+#include "SpellAuras.h"
+
 class AuraEffect;
 class Aura;
-
-#include "SpellAuras.h"
+class ProcEventInfo;
+class Unit;
 
 typedef void (AuraEffect::*pAuraEffectHandler)(AuraApplication const* aurApp, uint8 mode, bool apply) const;
 
 class FC_GAME_API AuraEffect
 {
-    friend void Aura::_InitEffects(uint8 effMask, Unit* caster, int32* baseAmount);
-    friend Aura* Unit::_TryStackingOrRefreshingExistingAura(SpellInfo const* newAura, uint8 effMask, Unit* caster, int32* baseAmount, Item* castItem, ObjectGuid casterGUID);
+    friend void Aura::_InitEffects(uint8 effMask, Unit* caster, int32 const* baseAmount);
     friend Aura::~Aura();
-
+    friend class Unit;
   private:
     ~AuraEffect();
-    explicit AuraEffect(Aura* base, uint8 effIndex, int32* baseAmount, Unit* caster);
+    explicit AuraEffect(Aura* base, uint8 effIndex, int32 const* baseAmount, Unit* caster);
 
   public:
     Unit* GetCaster() const
