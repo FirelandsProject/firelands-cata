@@ -1,12 +1,12 @@
-DROP TABLE IF EXISTS `lua_private_functions`;
-CREATE TABLE `lua_private_functions` (
+DROP TABLE IF EXISTS `lua_private_unlock_macros`;
+CREATE TABLE `lua_private_unlock_macros` (
   `function_name` varchar(255) NOT NULL DEFAULT '',
   `enabled` tinyint(3) NOT NULL DEFAULT '1',
   PRIMARY KEY (`function_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DELETE FROM `lua_private_functions` WHERE `function_name` IN ('CastSpellByName', 'RunMacroText');
-INSERT INTO `lua_private_functions` VALUES 
+DELETE FROM `lua_private_unlock_macros` WHERE `function_name` IN ('CastSpellByName', 'RunMacroText');
+INSERT INTO `lua_private_unlock_macros` VALUES 
 ('CastSpellByName', '1'),
 ('RunMacroText', '1');
 
