@@ -920,8 +920,7 @@ class FC_GAME_API SpellScript : public _SpellScript
     void PreventHitHeal() { SetHitHeal(0); }
     Spell* GetSpell() const { return m_spell; }
     // returns current spell hit target aura
-    Aura* GetHitAura() const;
-    // prevents applying aura on current spell hit target
+    Aura* GetHitAura(bool dynObjAura = false) const; // prevents applying aura on current spell hit target
     void PreventHitAura();
 
     // prevents effect execution on current spell hit target

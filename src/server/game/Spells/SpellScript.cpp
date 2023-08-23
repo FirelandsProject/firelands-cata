@@ -15,6 +15,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "EventProcessor.h"
 #include "SpellScript.h"
 #include "Log.h"
 #include "ScriptMgr.h"
@@ -23,6 +24,7 @@
 #include "SpellMgr.h"
 #include <sstream>
 #include <string>
+#include "Unit.h"
 
 bool _SpellScript::_Validate(SpellInfo const* entry)
 {
@@ -345,18 +347,22 @@ void SpellScript::SetHitHeal(int32 heal)
     m_spell->m_healing = heal;
 }
 
-Aura* SpellScript::GetHitAura() const
+Aura* SpellScript::GetHitAura(bool dynObjAura /*= false*/) const
 {
     if (!IsInTargetHook())
     {
         LOG_ERROR("scripts", "Script: `%s` Spell: `%u`: function SpellScript::GetHitAura was called, but function has no effect in current hook!", m_scriptName->c_str(), m_scriptSpellId);
         return nullptr;
     }
-    if (!m_spell->m_spellAura)
+
+    Aura* aura = m_spell->_spellAura;
+    if (dynObjAura)
+        aura = m_spell->_dynObjAura;
+
+    if (!aura || aura->IsRemoved())
         return nullptr;
-    if (m_spell->m_spellAura->IsRemoved())
-        return nullptr;
-    return m_spell->m_spellAura;
+
+    return aura;
 }
 
 void SpellScript::PreventHitAura()
@@ -366,8 +372,10 @@ void SpellScript::PreventHitAura()
         LOG_ERROR("scripts", "Script: `%s` Spell: `%u`: function SpellScript::PreventHitAura was called, but function has no effect in current hook!", m_scriptName->c_str(), m_scriptSpellId);
         return;
     }
-    if (m_spell->m_spellAura)
-        m_spell->m_spellAura->Remove();
+    if (UnitAura* aura = m_spell->_spellAura)
+        aura->Remove();
+    if (DynObjAura* aura = m_spell->_dynObjAura)
+        aura->Remove();
 }
 
 void SpellScript::PreventHitEffect(SpellEffIndex effIndex)
