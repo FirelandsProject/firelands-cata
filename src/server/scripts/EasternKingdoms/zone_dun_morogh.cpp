@@ -185,10 +185,13 @@ class npc_sanitron500 : public CreatureScript
 
         Unit* unit(uint32 entry, uint32 range, bool alive)
         {
-            if (Unit* unit =
-                    me->FindNearestCreature(entry, float(range), alive))
+            if (Unit* unit = me->FindNearestCreature(entry, float(range), alive))
+            {
                 if (Unit* unit2 = ObjectAccessor::GetCreature(*me, unit->GetGUID()))
+                {
                     return unit2;
+                }
+            }
         }
 
         void GetTargets()
@@ -355,6 +358,8 @@ class npc_sanitron500 : public CreatureScript
                             me->setDeathState(JUST_DIED);
                             ++uiPhase;
                             uiTimer = 0;
+                            break;
+                        default:
                             break;
                     }
                 }

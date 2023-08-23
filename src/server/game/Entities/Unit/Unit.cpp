@@ -276,7 +276,7 @@ Unit::Unit(bool isWorldObject)
     : WorldObject(isWorldObject), m_lastSanctuaryTime(0), LastCharmerGUID(), m_ControlledByPlayer(false), movespline(new Movement::MoveSpline()), m_AutoRepeatFirstCast(false), m_procDeep(0),
       m_removedAurasCount(0), m_interruptMask(SpellAuraInterruptFlags::None), m_interruptMask2(SpellAuraInterruptFlags2::None), m_charmer(nullptr), m_charmed(nullptr),
       i_motionMaster(new MotionMaster(this)), m_vehicle(nullptr), m_vehicleKit(nullptr), m_unitTypeMask(UNIT_MASK_NONE), m_Diminishing(), m_isEngaged(false), m_combatManager(this),
-      m_threatManager(this), i_AI(nullptr), m_aiLocked(false), m_spellHistory(new SpellHistory(this)), _isIgnoringCombat(false), _scheduler(this)
+      m_threatManager(this), i_AI(nullptr), m_aiLocked(false), m_spellHistory(new SpellHistory(this)), _scheduler(this), _isIgnoringCombat(false)
 {
     m_objectType |= TYPEMASK_UNIT;
     m_objectTypeId = TYPEID_UNIT;
@@ -4155,7 +4155,7 @@ void Unit::RemoveAllAuras()
                  << " m_ownedAuras.\n";
 
             LOG_ERROR("entities.unit", "%s", sstr.str().c_str());
-            ASSERT(false, sstr.str().c_str());
+            ASSERT(false);
 
             break;
         }
@@ -7082,7 +7082,8 @@ float Unit::SpellCritChanceDone(SpellInfo const* spellInfo, SpellSchoolMask scho
     return std::max(crit_chance, 0.0f);
 }
 
-float Unit::SpellCritChanceTaken(Unit const* caster, SpellInfo const* spellInfo, SpellSchoolMask schoolMask, float doneChance, WeaponAttackType attackType /*= BASE_ATTACK*/, bool isPeriodic /*false*/) const
+float Unit::SpellCritChanceTaken(
+    Unit const* caster, SpellInfo const* spellInfo, SpellSchoolMask schoolMask, float doneChance, WeaponAttackType attackType /*= BASE_ATTACK */, bool /* isPeriodic false */) const
 {
     // not critting spell
     if (spellInfo->HasAttribute(SPELL_ATTR2_CANT_CRIT))
@@ -11938,7 +11939,7 @@ void Unit::PlayOneShotAnimKitId(uint16 animKitId)
 
                 if (attacker)
                 {
-                Player* creditedPlayer = attacker->GetCharmerOrOwnerPlayerOrPlayerItself();
+                // Player* creditedPlayer = attacker->GetCharmerOrOwnerPlayerOrPlayerItself();
                 /// @todo do instance binding anyway if the charmer/owner is offline
 
                 if (instanceMap->IsDungeon() && ((attacker && attacker->GetCharmerOrOwnerPlayerOrPlayerItself()) || attacker == victim))
