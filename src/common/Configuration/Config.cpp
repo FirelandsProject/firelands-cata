@@ -33,15 +33,6 @@ std::vector<std::string> _args;
 std::unordered_map<std::string, std::string> _config;
 std::mutex _configLock;
 
-// Validate if Configuration is for worldserver or authserver
-bool IsCoreConfig(std::string_view fileName)
-{
-    size_t foundAuth = fileName.find("authserver.conf");
-    size_t foundWorld = fileName.find("worldserver.conf");
-
-    return foundAuth != std::string_view::npos || foundWorld != std::string_view::npos;
-}
-
 // Check logging system configs like Appender.* and Logger.*
 bool IsLoggingSystemOptions(std::string_view optionName)
 {
@@ -309,7 +300,7 @@ ConfigMgr* ConfigMgr::instance()
     return &instance;
 }
 
-bool ConfigMgr::Reload(std::string& error)
+bool ConfigMgr::Reload(std::string& /* error */)
 {
     if (!LoadConfigsCore(true))
     {
