@@ -191,10 +191,7 @@ class npc_sanitron500 : public CreatureScript
                 {
                     return unit2;
                 }
-            }
-            else
-            {
-                return nullptr;
+                return;
             }
         }
 
@@ -264,116 +261,95 @@ class npc_sanitron500 : public CreatureScript
         void UpdateAI(const uint32 diff)
         {
             if (!vehicle->HasEmptySeat(0))
+            {
                 if (uiTimer <= diff)
                 {
                     switch (uiPhase)
                     {
-                        case 0:
-                            me->GetMotionMaster()->MovePoint(1,
-                                eQuestPosition[9].GetPositionX(),
-                                eQuestPosition[9].GetPositionY(),
-                                eQuestPosition[9].GetPositionZ());
-                            GetTargets();
-                            ++uiPhase;
-                            me->Say(SAY_SANITRON_01);
-                            uiTimer = 6000;
-                            break;
-                        case 1:
-                            if (Bunny[0] && Bunny[1])
-                            {
-                                Bunny[0]->CastSpell(
-                                    me, SPELL_DECONTAMINATE_STAGE_1, true);
-                                Bunny[1]->CastSpell(
-                                    me, SPELL_DECONTAMINATE_STAGE_1, true);
-                            }
-                            ++uiPhase;
-                            uiTimer = 6000;
-                            break;
-                        case 2:
-                            if (Cannon[0] && Cannon[1] && Cannon[2] &&
-                                Cannon[3])
-                            {
-                                me->GetMotionMaster()->MovePoint(2,
-                                    eQuestPosition[10].GetPositionX(),
-                                    eQuestPosition[10].GetPositionY(),
-                                    eQuestPosition[10].GetPositionZ());
-                                Cannon[0]->CastSpell(
-                                    me, SPELL_CANNON_BURST, true);
-                                Cannon[1]->CastSpell(
-                                    me, SPELL_CANNON_BURST, true);
-                                Cannon[2]->CastSpell(
-                                    me, SPELL_CANNON_BURST, true);
-                                Cannon[3]->CastSpell(
-                                    me, SPELL_CANNON_BURST, true);
-                            }
-                            ++uiPhase;
-                            uiTimer = 6000;
-                            break;
-                        case 3:
-                            if (Technician)
-                            {
+                    case 0:
+                        me->GetMotionMaster()->MovePoint(1, eQuestPosition[9].GetPositionX(), eQuestPosition[9].GetPositionY(), eQuestPosition[9].GetPositionZ());
+                        GetTargets();
+                        ++uiPhase;
+                        me->Say(SAY_SANITRON_01);
+                        uiTimer = 6000;
+                        break;
+                    case 1:
+                        if (Bunny[0] && Bunny[1])
+                        {
+                                Bunny[0]->CastSpell(me, SPELL_DECONTAMINATE_STAGE_1, true);
+                                Bunny[1]->CastSpell(me, SPELL_DECONTAMINATE_STAGE_1, true);
+                        }
+                        ++uiPhase;
+                        uiTimer = 6000;
+                        break;
+                    case 2:
+                        if (Cannon[0] && Cannon[1] && Cannon[2] && Cannon[3])
+                        {
+                                me->GetMotionMaster()->MovePoint(2, eQuestPosition[10].GetPositionX(), eQuestPosition[10].GetPositionY(), eQuestPosition[10].GetPositionZ());
+                                Cannon[0]->CastSpell(me, SPELL_CANNON_BURST, true);
+                                Cannon[1]->CastSpell(me, SPELL_CANNON_BURST, true);
+                                Cannon[2]->CastSpell(me, SPELL_CANNON_BURST, true);
+                                Cannon[3]->CastSpell(me, SPELL_CANNON_BURST, true);
+                        }
+                        ++uiPhase;
+                        uiTimer = 6000;
+                        break;
+                    case 3:
+                        if (Technician)
+                        {
                                 me->GetMotionMaster()->MovePoint(3, eQuestPosition[11].GetPositionX(), eQuestPosition[11].GetPositionY(), eQuestPosition[11].GetPositionZ());
-                            }
-                            Technician->Say(SAY_SANITRON_02);
-                            ++uiPhase;
-                            uiTimer = 3000;
-                            break;
-                        case 4:
-                            if (Bunny[2] && Bunny[3])
-                            {
-                                me->GetMotionMaster()->MovePoint(4,
-                                    eQuestPosition[12].GetPositionX(),
-                                    eQuestPosition[12].GetPositionY(),
-                                    eQuestPosition[12].GetPositionZ());
-                                Bunny[2]->CastSpell(
-                                    me, SPELL_DECONTAMINATE_STAGE_2, true);
-                                Bunny[3]->CastSpell(
-                                    me, SPELL_DECONTAMINATE_STAGE_2, true);
-                            }
-                            ++uiPhase;
-                            uiTimer = 6000;
-                            break;
-                        case 5:
-                            if (vehicle->GetPassenger(0))
-                            {
+                        }
+                        Technician->Say(SAY_SANITRON_02);
+                        ++uiPhase;
+                        uiTimer = 3000;
+                        break;
+                    case 4:
+                        if (Bunny[2] && Bunny[3])
+                        {
+                                me->GetMotionMaster()->MovePoint(4, eQuestPosition[12].GetPositionX(), eQuestPosition[12].GetPositionY(), eQuestPosition[12].GetPositionZ());
+                                Bunny[2]->CastSpell(me, SPELL_DECONTAMINATE_STAGE_2, true);
+                                Bunny[3]->CastSpell(me, SPELL_DECONTAMINATE_STAGE_2, true);
+                        }
+                        ++uiPhase;
+                        uiTimer = 6000;
+                        break;
+                    case 5:
+                        if (vehicle->GetPassenger(0))
+                        {
                                 if (Player* player = vehicle->GetPassenger(0)->ToPlayer())
                                 {
                                     player->CompleteQuest(QUEST_DECONTAMINATION);
                                 }
-                            }
-                            me->Say(SAY_SANITRON_03);
-                            me->GetMotionMaster()->MovePoint(5,
-                                eQuestPosition[13].GetPositionX(),
-                                eQuestPosition[13].GetPositionY(),
-                                eQuestPosition[13].GetPositionZ());
-                            ++uiPhase;
-                            uiTimer = 3000;
-                            break;
-                        case 6:
-                            me->Say(SAY_SANITRON_04);
-                            me->CastSpell(me, SPELL_EXPLOSION);
-                            ++uiPhase;
-                            uiTimer = 1000;
-                            break;
-                        case 7:
-                            me->SetCanFly(false);
-                            vehicle->GetPassenger(0)->RemoveAurasDueToSpell(
-                                SPELL_IRRADIATE);
-                            vehicle->RemoveAllPassengers();
-                            me->setDeathState(JUST_DIED);
-                            ++uiPhase;
-                            uiTimer = 0;
-                            break;
-                        default:
-                            break;
+                        }
+                        me->Say(SAY_SANITRON_03);
+                        me->GetMotionMaster()->MovePoint(5, eQuestPosition[13].GetPositionX(), eQuestPosition[13].GetPositionY(), eQuestPosition[13].GetPositionZ());
+                        ++uiPhase;
+                        uiTimer = 3000;
+                        break;
+                    case 6:
+                        me->Say(SAY_SANITRON_04);
+                        me->CastSpell(me, SPELL_EXPLOSION);
+                        ++uiPhase;
+                        uiTimer = 1000;
+                        break;
+                    case 7:
+                        me->SetCanFly(false);
+                        vehicle->GetPassenger(0)->RemoveAurasDueToSpell(SPELL_IRRADIATE);
+                        vehicle->RemoveAllPassengers();
+                        me->setDeathState(JUST_DIED);
+                        ++uiPhase;
+                        uiTimer = 0;
+                        break;
+                    default:
+                        break;
                     }
                 }
                 else
                 {
                     uiTimer -= diff;
-                    return;
                 }
-
+                return;
+            }
         }
     };
 
