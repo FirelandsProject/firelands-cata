@@ -276,7 +276,7 @@ Unit::Unit(bool isWorldObject)
     : WorldObject(isWorldObject), m_lastSanctuaryTime(0), LastCharmerGUID(), m_ControlledByPlayer(false), movespline(new Movement::MoveSpline()), m_AutoRepeatFirstCast(false), m_procDeep(0),
       m_removedAurasCount(0), m_interruptMask(SpellAuraInterruptFlags::None), m_interruptMask2(SpellAuraInterruptFlags2::None), m_charmer(nullptr), m_charmed(nullptr),
       i_motionMaster(new MotionMaster(this)), m_vehicle(nullptr), m_vehicleKit(nullptr), m_unitTypeMask(UNIT_MASK_NONE), m_Diminishing(), m_isEngaged(false), m_combatManager(this),
-      m_threatManager(this), i_AI(nullptr), m_aiLocked(false), m_spellHistory(new SpellHistory(this)), _isIgnoringCombat(false), _scheduler(this)
+      m_threatManager(this), i_AI(nullptr), m_aiLocked(false), m_spellHistory(new SpellHistory(this)), _scheduler(this), _isIgnoringCombat(false)
 {
     m_objectType |= TYPEMASK_UNIT;
     m_objectTypeId = TYPEID_UNIT;
@@ -4154,7 +4154,7 @@ void Unit::RemoveAllAuras()
                  << " m_ownedAuras.\n";
 
             LOG_ERROR("entities.unit", "%s", sstr.str().c_str());
-            ASSERT(false, sstr.str().c_str());
+            ASSERT(false);
 
             break;
         }
@@ -7081,7 +7081,8 @@ float Unit::SpellCritChanceDone(SpellInfo const* spellInfo, SpellSchoolMask scho
     return std::max(crit_chance, 0.0f);
 }
 
-float Unit::SpellCritChanceTaken(Unit const* caster, SpellInfo const* spellInfo, SpellSchoolMask schoolMask, float doneChance, WeaponAttackType attackType /*= BASE_ATTACK*/, bool isPeriodic /*false*/) const
+float Unit::SpellCritChanceTaken(
+    Unit const* caster, SpellInfo const* spellInfo, SpellSchoolMask schoolMask, float doneChance, WeaponAttackType attackType /*= BASE_ATTACK */, bool /* isPeriodic false */) const
 {
     // not critting spell
     if (spellInfo->HasAttribute(SPELL_ATTR2_CANT_CRIT))
@@ -9047,10 +9048,6 @@ void Unit::SetSpeedRate(UnitMoveType mtype, float rate)
     {
         MovementPacketSender::SendSpeedChangeToMover(this, mtype, newSpeedFlat);
         SetSpeedRateReal(mtype, rate);
-
-        // Null Check added and to prevent false positives in the Anticheat system
-        if (GetTypeId() == TYPEID_PLAYER)
-            ToPlayer()->SetCanTeleport(true);
     }
     else if (IsMovedByClient() && !IsInWorld()) // (1)
         SetSpeedRateReal(mtype, rate);
@@ -11943,7 +11940,7 @@ void Unit::PlayOneShotAnimKitId(uint16 animKitId)
 
                 if (attacker)
                 {
-                Player* creditedPlayer = attacker->GetCharmerOrOwnerPlayerOrPlayerItself();
+                // Player* creditedPlayer = attacker->GetCharmerOrOwnerPlayerOrPlayerItself();
                 /// @todo do instance binding anyway if the charmer/owner is offline
 
                 if (instanceMap->IsDungeon() && ((attacker && attacker->GetCharmerOrOwnerPlayerOrPlayerItself()) || attacker == victim))
@@ -13698,7 +13695,10 @@ void Unit::_ExitVehicle(Position const* exitPosition)
     GetMotionMaster()->LaunchMoveSpline(std::move(init), EVENT_VEHICLE_EXIT, MOTION_SLOT_CONTROLLED);
 
     if (player)
+    {
+        player->SetCanTeleport(true);
         player->ResummonPetTemporaryUnSummonedIfAny();
+    }
 
     if (vehicle->GetBase()->HasUnitTypeMask(UNIT_MASK_MINION) && vehicle->GetBase()->GetTypeId() == TYPEID_UNIT)
         if (((Minion*)vehicle->GetBase())->GetOwner() == this)
@@ -13975,6 +13975,10 @@ void Unit::WriteMovementInfo(WorldPacket& data, Movement::ExtraMovementStatusEle
 
 void Unit::SendTeleportPacket(Position const& pos)
 {
+    if (GetTypeId() == TYPEID_PLAYER)
+    {
+        ToPlayer()->SetCanTeleport(true);
+    }
     // SMSG_MOVE_UPDATE_TELEPORT is sent to nearby players to signal the teleport
     // MSG_MOVE_TELEPORT is sent to self in order to trigger MSG_MOVE_TELEPORT_ACK and update the position server side
     if (IsMovedByClient())
