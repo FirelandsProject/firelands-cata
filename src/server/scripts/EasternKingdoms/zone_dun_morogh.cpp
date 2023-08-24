@@ -191,7 +191,7 @@ class npc_sanitron500 : public CreatureScript
                 {
                     return unit2;
                 }
-                return;
+                return unit;
             }
         }
 
