@@ -544,7 +544,7 @@ bool SmartAIMgr::IsTargetValid(SmartScriptHolder const& e)
         {
             if (!sObjectMgr->GetCreatureTemplate(e.target.invokerSummon.entry))
             {
-                LOG_ERROR("sql.sql", "SmartAIMgr: Entry " SI64FMTD " SourceType %u Event %u Action %u uses non-existent Creature entry %u as target_param1, skipped.", e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType(), e.target.invokerSummon.entry);
+                LOG_ERROR("sql.sql", "SmartAIMgr: Entry %d SourceType %u Event %u Action %u uses non-existent Creature entry %u as target_param1, skipped.", e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType(), e.target.invokerSummon.entry);
                 return false;
             }
             break;
@@ -1693,7 +1693,7 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
         {
             if (e.action.setSpeed.type >= MAX_MOVE_TYPE)
             {
-                LOG_ERROR("sql.sql", "SmartScript: SMART_ACTION_SET_SPEED have wrong speed type %u for creature " SI64FMTD ", skipped", e.action.setSpeed.type, e.entryOrGuid);
+                LOG_ERROR("sql.sql", "SmartScript: SMART_ACTION_SET_SPEED have wrong speed type %u for creature %d, skipped", e.action.setSpeed.type, e.entryOrGuid);
                 return false;
             }
 

@@ -279,10 +279,10 @@ class FC_GAME_API SpellEffectInfo
     } Scaling;
 
     SpellEffectInfo()
-        : Scaling(), _spellInfo(nullptr), _effIndex(0), Effect(0), ApplyAuraName(0), AuraPeriod(0), DieSides(0), RealPointsPerLevel(0.f),
+        : _spellInfo(nullptr), _effIndex(0), Effect(0), ApplyAuraName(0), AuraPeriod(0), DieSides(0), RealPointsPerLevel(0.f),
           BasePoints(0), PointsPerComboPoint(0), Amplitude(0.f), DamageMultiplier(0.f), BonusMultiplier(0.f), MiscValue(0),
           MiscValueB(0), Mechanic(MECHANIC_NONE), RadiusEntry(nullptr), MaxRadiusEntry(nullptr), ChainTarget(0), ItemType(0),
-          TriggerSpell(0), ImplicitTargetConditions(nullptr)
+          TriggerSpell(0), ImplicitTargetConditions(nullptr), Scaling()
     {
     }
 

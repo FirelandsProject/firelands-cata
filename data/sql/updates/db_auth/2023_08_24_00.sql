@@ -1,0 +1,3 @@
+ALTER TABLE `account_access`
+	ADD COLUMN `comment` CHAR(255) NULL DEFAULT NULL AFTER `RealmID`;
+	
