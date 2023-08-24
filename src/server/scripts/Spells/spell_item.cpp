@@ -5116,7 +5116,7 @@ Position const Teleport_With_Error_Pos[26] = {
     {-8070.390625f, 1599.441650f, 12.944332f}, {-7368.198242f, -705.160767f, -307.303589f}, {-147.238968f, 506.219818f, -28.548870f} // map 530
 };
 
-class spell_Teleport_With_Error : public SpellScript
+class spell_item_teleport_with_error : public SpellScript
 {
     void HandleCast()
     {
@@ -5133,7 +5133,7 @@ class spell_Teleport_With_Error : public SpellScript
         }
     }
 
-    void Register() override { OnCast.Register(&spell_Teleport_With_Error::HandleCast); }
+    void Register() override { OnCast.Register(&spell_item_teleport_with_error::HandleCast); }
 };
 
 void AddSC_item_spell_scripts()
@@ -5272,5 +5272,5 @@ void AddSC_item_spell_scripts()
     RegisterSpellScript(spell_item_jom_gabbar);
     RegisterSpellScript(spell_item_satisfied);
     RegisterSpellScript(spell_item_blaze_of_life);
-    RegisterSpellScript(spell_Teleport_With_Error);
+    RegisterSpellScript(spell_item_teleport_with_error);
 }
