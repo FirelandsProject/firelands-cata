@@ -185,10 +185,25 @@ class FC_COMMON_API TaskScheduler
     }
 
 public:
-    TaskScheduler() : self_reference(this, [](TaskScheduler const*) {}), _now(clock_t::now()), _predicate(EmptyValidator) {}
+    TaskScheduler() : self_reference(this, [](TaskScheduler const*) {}), _now(clock_t::now()), _predicate(EmptyValidator), _schedulerUnit(), _schedulerGob() {}
 
     template <typename P> TaskScheduler(P&& predicate) : self_reference(this, [](TaskScheduler const*) {}), _now(clock_t::now()), _predicate(std::forward<P>(predicate)) {}
 
+    TaskScheduler(Unit* unit) : self_reference(this, [](TaskScheduler const*) {}), _now(clock_t::now()), _predicate(EmptyValidator), _schedulerUnit(unit), _schedulerGob(nullptr) {}
+
+    TaskScheduler(GameObject* gob) : self_reference(this, [](TaskScheduler const*) {}), _now(clock_t::now()), _predicate(EmptyValidator), _schedulerUnit(nullptr), _schedulerGob(gob) {}
+
+    template <typename P>
+    TaskScheduler(Unit* unit, P&& predicate)
+        : self_reference(this, [](TaskScheduler const*) {}), _now(clock_t::now()), _predicate(std::forward<P>(predicate)), _schedulerUnit(unit), _schedulerGob(nullptr)
+    {
+    }
+
+    template <typename P>
+    TaskScheduler(GameObject* gob, P&& predicate)
+        : self_reference(this, [](TaskScheduler const*) {}), _now(clock_t::now()), _predicate(std::forward<P>(predicate)), _schedulerUnit(nullptr), _schedulerGob(gob)
+    {
+    }
     TaskScheduler(TaskScheduler const&) = delete;
     TaskScheduler(TaskScheduler&&) = delete;
     TaskScheduler& operator= (TaskScheduler const&) = delete;
@@ -409,6 +424,8 @@ private:
     /// Dispatch remaining tasks
     void Dispatch(success_t const& callback);
 
+    Unit* _schedulerUnit;
+    GameObject* _schedulerGob;
 };
 
 class FC_COMMON_API TaskContext
