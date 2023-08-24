@@ -192,6 +192,10 @@ class npc_sanitron500 : public CreatureScript
                     return unit2;
                 }
             }
+            else
+            {
+                return nullptr;
+            }
         }
 
         void GetTargets()
@@ -307,10 +311,9 @@ class npc_sanitron500 : public CreatureScript
                             break;
                         case 3:
                             if (Technician)
-                                me->GetMotionMaster()->MovePoint(3,
-                                    eQuestPosition[11].GetPositionX(),
-                                    eQuestPosition[11].GetPositionY(),
-                                    eQuestPosition[11].GetPositionZ());
+                            {
+                                me->GetMotionMaster()->MovePoint(3, eQuestPosition[11].GetPositionX(), eQuestPosition[11].GetPositionY(), eQuestPosition[11].GetPositionZ());
+                            }
                             Technician->Say(SAY_SANITRON_02);
                             ++uiPhase;
                             uiTimer = 3000;
@@ -332,10 +335,12 @@ class npc_sanitron500 : public CreatureScript
                             break;
                         case 5:
                             if (vehicle->GetPassenger(0))
-                                if (Player* player =
-                                        vehicle->GetPassenger(0)->ToPlayer())
-                                    player->CompleteQuest(
-                                        QUEST_DECONTAMINATION);
+                            {
+                                if (Player* player = vehicle->GetPassenger(0)->ToPlayer())
+                                {
+                                    player->CompleteQuest(QUEST_DECONTAMINATION);
+                                }
+                            }
                             me->Say(SAY_SANITRON_03);
                             me->GetMotionMaster()->MovePoint(5,
                                 eQuestPosition[13].GetPositionX(),
@@ -364,7 +369,11 @@ class npc_sanitron500 : public CreatureScript
                     }
                 }
                 else
+                {
                     uiTimer -= diff;
+                    return;
+                }
+
         }
     };
 
