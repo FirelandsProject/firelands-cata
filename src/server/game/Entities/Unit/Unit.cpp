@@ -9047,10 +9047,6 @@ void Unit::SetSpeedRate(UnitMoveType mtype, float rate)
     {
         MovementPacketSender::SendSpeedChangeToMover(this, mtype, newSpeedFlat);
         SetSpeedRateReal(mtype, rate);
-
-        // Null Check added and to prevent false positives in the Anticheat system
-        if (GetTypeId() == TYPEID_PLAYER)
-            ToPlayer()->SetCanTeleport(true);
     }
     else if (IsMovedByClient() && !IsInWorld()) // (1)
         SetSpeedRateReal(mtype, rate);
@@ -13698,7 +13694,10 @@ void Unit::_ExitVehicle(Position const* exitPosition)
     GetMotionMaster()->LaunchMoveSpline(std::move(init), EVENT_VEHICLE_EXIT, MOTION_SLOT_CONTROLLED);
 
     if (player)
+    {
+        player->SetCanTeleport(true);
         player->ResummonPetTemporaryUnSummonedIfAny();
+    }
 
     if (vehicle->GetBase()->HasUnitTypeMask(UNIT_MASK_MINION) && vehicle->GetBase()->GetTypeId() == TYPEID_UNIT)
         if (((Minion*)vehicle->GetBase())->GetOwner() == this)
@@ -13975,6 +13974,10 @@ void Unit::WriteMovementInfo(WorldPacket& data, Movement::ExtraMovementStatusEle
 
 void Unit::SendTeleportPacket(Position const& pos)
 {
+    if (GetTypeId() == TYPEID_PLAYER)
+    {
+        ToPlayer()->SetCanTeleport(true);
+    }
     // SMSG_MOVE_UPDATE_TELEPORT is sent to nearby players to signal the teleport
     // MSG_MOVE_TELEPORT is sent to self in order to trigger MSG_MOVE_TELEPORT_ACK and update the position server side
     if (IsMovedByClient())
