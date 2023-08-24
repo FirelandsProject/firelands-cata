@@ -5272,4 +5272,5 @@ void AddSC_item_spell_scripts()
     RegisterSpellScript(spell_item_jom_gabbar);
     RegisterSpellScript(spell_item_satisfied);
     RegisterSpellScript(spell_item_blaze_of_life);
+    RegisterSpellScript(spell_Teleport_With_Error);
 }
