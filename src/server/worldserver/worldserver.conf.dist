@@ -39,6 +39,7 @@
 #    PACKET SPOOF PROTECTION SETTINGS
 #    MISC ANTI-CHEAT SETTINGS
 #    METRIC SETTINGS
+#    ANTICHEAT Settings
 #
 ###################################################################################################
 
@@ -4276,6 +4277,9 @@ Metric.OverallStatusInterval = 1
 
 ###################################################################################################
 
+###################################################################################################
+#   ANTICHEAT SETTINGS
+#
 #     Anticheat.Enable
 #       Description: Enables or disables the Anticheat System functionality
 #       Default:     1 - (Enabled)
@@ -4330,6 +4334,7 @@ Anticheat.WriteLog = 0
 #       Default:    0 - (Disabled)
 #                   1 - (Enabled)
 
+Anticheat.LUAblocker = 0
 Anticheat.DetectFlyHack = 0
 Anticheat.DetectWaterWalkHack = 0
 Anticheat.DetectJumpHack = 0
@@ -4420,9 +4425,128 @@ Anticheat.AnnounceKick = 0
 Anticheat.AnnounceBan = 0
 Anticheat.AnnounceJail = 0
 
+
+
+#
+###################################################################################################
+
+###################################################################################################
+#   ANTICHEAT COUNTER MEASURE
+#
+#     Anticheat Counter Measures
+#
+#     Anticheat.CM.TIMEMANIPULATION
+#
+#       Description: Counters Time Manipulation hacks. These hacks can cause server to crash.
+#
+#       Default:    1 - (Enabled)
+#                   0 - (Disabled)
+#
+
+Anticheat.CM.TIMEMANIPULATION = 1
+
+#
+#     Anticheat.CM.Teleport
+#
+#       Description: Sends player back to last gps position if player cheats and teleports.
+#
+#       Default:    0 - (Disabled)
+#                   1 - (Enabled)
+#
+
+Anticheat.CM.Teleport = 0
+
+#
+#     Anticheat.CM.FLYHACK
+#
+#       Description: Sets player back to the ground if fly hack is detected
+#
+#       Default:    0 - (Disabled)
+#                   1 - (Enabled)
+#
+
+Anticheat.CM.FLYHACK = 0
+
+#
+#     Anticheat.CM.JUMPHACK
+#     Anticheat.CM.ADVJUMPHACK
+#       Description: Sets player back to the ground if jump hack is detected
+#
+#       Default:    0 - (Disabled)
+#                   1 - (Enabled)
+#
+
+Anticheat.CM.JUMPHACK = 0
+Anticheat.CM.ADVJUMPHACK = 0
+
+#
+#     Anticheat.CM.IGNOREZ
+#
+#       Description: Sets player back to the ground if ignore-z hack is detected
+#
+#       Default:    0 - (Disabled)
+#                   1 - (Enabled)
+#
+
+Anticheat.CM.IGNOREZ = 0
+
+#
+#     Anticheat.CM.SPEEDHACK
+#
+#       Description: Sets player back to allowed server rate speed when speed hack is detected
+#       Default:    0 - (Disabled)
+#                   1 - (Enabled)
+#
+
+Anticheat.CM.SPEEDHACK = 0
+
+#
+#     Anticheat.CM.WriteLog
+#
+#       Description: Enables Logging
+#       Default:    0 - (Disabled)
+#                   1 - (Enabled)
+#
+
+Anticheat.CM.WriteLog = 0
+
+#
+#     Anticheat.CM.ALERTSCREEN
+#
+#       Description: Alerts online GMs of Counter Measure being deployed via screen alert
+#       Default:    0 - (Disabled)
+#                   1 - (Enabled)
+#
+
+Anticheat.CM.ALERTSCREEN = 0
+
+#
+#     Anticheat.CM.ALERTCHAT
+#
+#       Description: Alerts online GMs of Counter Measure being deployed via chat alert
+#       Default:    0 - (Disabled)
+#                   1 - (Enabled)
+#
+
+Anticheat.CM.ALERTCHAT= 0
+
+#
+#     Anticheat.BG.StartAreaTeleport
+#
+#       Description: Sends player back to start position if player cheats and teleports out of start spot
+#                    before the BG begins.
+#       Default:    0 - (Disabled)
+#                   1 - (Enabled)
+#
+
+Anticheat.BG.StartAreaTeleport = 0
+
 # Anticheat Logging\Appenders
 # Currently spams into its own file
 # If you want world console spam just use Logger.anticheat=3,Console Server Anticheat
 
 Appender.Anticheat=2,3,15,anticheat.log,a
 Logger.anticheat=3,Server Anticheat
+
+#
+###################################################################################################
