@@ -29,7 +29,7 @@
 #include "Log.h"
 #include "Util.h"
 
-#if FC_PLATFORM == FC_PLATFORM_UNIX
+#if FC_PLATFORM == FC_PLATFORM_UNIX || FC_PLATFORM == FC_PLATFORM_APPLE
 #include "Chat.h"
 #include <readline/history.h>
 #include <readline/readline.h>
