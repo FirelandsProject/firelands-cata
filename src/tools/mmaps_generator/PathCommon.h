@@ -24,7 +24,10 @@
 #include <unordered_map>
 
 #if FC_PLATFORM == FC_PLATFORM_UNIX
-    #include <errno.h>
+#include <stddef.h>
+#include <cstring>
+#include <dirent.h>
+#include <errno.h>
 #endif
 
 namespace VMAP
@@ -74,7 +77,7 @@ namespace MMAP
 
     inline ListFilesResult getDirContents(std::vector<std::string> &fileList, std::string dirpath = ".", std::string filter = "*")
     {
-    #if FC_PLATFORM == FC_PLATFORM_WINDOWS
+    #ifdef WIN32
         HANDLE hFind;
         WIN32_FIND_DATA findFileInfo;
         std::string directory;

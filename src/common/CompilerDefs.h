@@ -23,10 +23,8 @@
 #define FC_PLATFORM_APPLE   2
 #define FC_PLATFORM_INTEL   3
 
-// must be first (win 64 also define _WIN32)
+// must be first Win64
 #if defined( _WIN64 )
-#  define FC_PLATFORM FC_PLATFORM_WINDOWS
-#elif defined( __WIN32__ ) || defined( WIN32 ) || defined( _WIN32 )
 #  define FC_PLATFORM FC_PLATFORM_WINDOWS
 #elif defined( __APPLE_CC__ )
 #  define FC_PLATFORM FC_PLATFORM_APPLE
