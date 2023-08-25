@@ -77,7 +77,7 @@ namespace MMAP
 
     inline ListFilesResult getDirContents(std::vector<std::string> &fileList, std::string dirpath = ".", std::string filter = "*")
     {
-    #ifdef WIN32
+    #if FC_PLATFORM == FC_PLATFORM_WINDOWS
         HANDLE hFind;
         WIN32_FIND_DATA findFileInfo;
         std::string directory;
