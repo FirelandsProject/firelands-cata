@@ -53,15 +53,18 @@
 #include "World.h"
 #include "WorldSocket.h"
 #include "WorldSocketMgr.h"
-#include <boost/asio/signal_set.hpp>
-#include <boost/filesystem/operations.hpp>
-#include <boost/program_options.hpp>
-#include <csignal>
-#include <iostream>
+
 #include <openssl/crypto.h>
 #include <openssl/opensslv.h>
 
-#ifdef _WIN32 // ugly as hell
+#include <boost/asio/signal_set.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <boost/program_options.hpp>
+
+#include <csignal>
+#include <iostream>
+
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS // ugly as hell
 #pragma comment(lib, "iphlpapi.lib")
 #endif
 
@@ -72,7 +75,7 @@ namespace fs = boost::filesystem;
 #define _FIRELANDS_CORE_CONFIG "worldserver.conf"
 #endif
 
-#ifdef _WIN32
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
 #include "ServiceWin32.h"
 char serviceName[] = "worldserver";
 char serviceLongName[] = "Firelands world service";
@@ -135,7 +138,7 @@ extern int main(int argc, char **argv)
     if (vm.count("help") || vm.count("version"))
         return 0;
 
-#ifdef _WIN32
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
     if (configService.compare("install") == 0)
         return WinServiceInstall() == true ? 0 : 1;
     else if (configService.compare("uninstall") == 0)
@@ -363,7 +366,7 @@ extern int main(int argc, char **argv)
 
     // Launch CliRunnable thread
     std::shared_ptr<std::thread> cliThread;
-#ifdef _WIN32
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
     if (sConfigMgr->GetBoolDefault("Console.Enable", true) && (m_ServiceStatus == -1) /* need disable console in service mode*/)
 #else
     if (sConfigMgr->GetBoolDefault("Console.Enable", true))
@@ -416,7 +419,7 @@ void ShutdownCLIThread(std::thread *cliThread)
 {
     if (cliThread != nullptr)
     {
-#ifdef _WIN32
+#if FC_PLATFORM_WINDOWS
         // First try to cancel any I/O in the CLI thread
         if (!CancelSynchronousIo(cliThread->native_handle()))
         {
@@ -496,7 +499,7 @@ void WorldUpdateLoop()
         sWorld->Update(diff);
         realPrevTime = realCurrTime;
 
-#ifdef _WIN32
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
         if (m_ServiceStatus == 0)
             World::StopNow(SHUTDOWN_EXIT_CODE);
 
@@ -686,7 +689,7 @@ variables_map GetConsoleArguments(int argc, char **argv, fs::path &configFile, s
     options_description all("Allowed options");
     all.add_options()("help,h", "print usage message")("version,v", "print version build info")(
         "config,c", value<fs::path>(&configFile)->default_value(fs::absolute(_FIRELANDS_CORE_CONFIG)), "use <arg> as configuration file")("update-databases-only,u", "updates databases only");
-#ifdef _WIN32
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
     options_description win("Windows platform specific options");
     win.add_options()("service,s", value<std::string>(&configService)->default_value(""), "Windows service options: [install | uninstall]");
 

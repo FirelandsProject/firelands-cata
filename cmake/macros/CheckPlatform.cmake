@@ -1,10 +1,10 @@
-# check what platform we're on (64-bit or 32-bit), and create a simpler test than CMAKE_SIZEOF_VOID_P
+# check what platform we're on 64-bit, and create a simpler test than CMAKE_SIZEOF_VOID_P
 if(CMAKE_SIZEOF_VOID_P MATCHES 8)
     set(PLATFORM 64)
-    MESSAGE(STATUS "Detected 64-bit platform")
+    message(STATUS "Detected 64-bit platform - ok")
 else()
-    set(PLATFORM 32)
-    MESSAGE(STATUS "Detected 32-bit platform")
+	set(PLATFORM 32)
+	message(FATAL_ERROR "FirelandsCore doesn't support x86, please use x64 architecture.")
 endif()
 
 if(WIN32)

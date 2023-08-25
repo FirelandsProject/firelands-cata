@@ -38,13 +38,16 @@
 #include "ProcessPriority.h"
 #include "RealmList.h"
 #include "Util.h"
+
+#include <openssl/crypto.h>
+#include <openssl/opensslv.h>
+
 #include <boost/asio/signal_set.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/program_options.hpp>
+
 #include <csignal>
 #include <iostream>
-#include <openssl/crypto.h>
-#include <openssl/opensslv.h>
 
 using boost::asio::ip::tcp;
 using namespace boost::program_options;

@@ -144,7 +144,7 @@ class FC_COMMON_API Log
 
 #ifdef PERFORMANCE_PROFILING
 #define LOG_MESSAGE_BODY(filterType__, level__, ...) ((void)0)
-#elif FC_PLATFORM != FC_PLATFORM_WINDOWS
+#elif FC_PLATFORM == FC_PLATFORM_UNIX
 void check_args(char const*, ...) ATTR_PRINTF(1, 2);
 void check_args(std::string const&, ...);
 

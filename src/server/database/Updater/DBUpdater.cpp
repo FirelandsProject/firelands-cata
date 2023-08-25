@@ -412,7 +412,7 @@ void DBUpdater<T>::ApplyFile(
         args.emplace_back("-p" + password);
 
         // Check if we want to connect through ip or socket (Unix only)
-#ifdef _WIN32
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
 
     if (host == ".")
         args.emplace_back("--protocol=PIPE");
