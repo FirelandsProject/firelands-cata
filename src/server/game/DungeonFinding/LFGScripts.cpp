@@ -54,13 +54,6 @@ void LFGPlayerScript::OnLogin(Player* player, bool /*loginFirst*/)
         if (!sLFGMgr->IsSoloLFG())
         {
             sLFGMgr->ToggleSoloLFG();
-            LOG_ERROR("lfg", "Solo Looking for Group Enabled.");
-            return;
-        }
-        else
-        {
-            LOG_ERROR("lfg", "Solo Looking for Group Disabled.");
-            return;
         }
     }
 
