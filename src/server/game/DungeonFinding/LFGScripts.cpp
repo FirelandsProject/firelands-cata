@@ -52,14 +52,6 @@ void LFGPlayerScript::OnLogin(Player* player, bool /*loginFirst*/)
     if (!sLFGMgr->isOptionEnabled(LFG_OPTION_ENABLE_DUNGEON_FINDER | LFG_OPTION_ENABLE_RAID_BROWSER))
         return;
 
-    if (!sWorld->getBoolConfig(CONFIG_LFG_SOLO))
-    {
-        if (!sLFGMgr->IsSoloLFG())
-        {
-            sLFGMgr->ToggleSoloLFG();
-        }
-    }
-
     // Temporal: Trying to determine when group data and LFG data gets desynched
     ObjectGuid guid = player->GetGUID();
     ObjectGuid gguid = sLFGMgr->GetGroup(guid);
@@ -77,6 +69,17 @@ void LFGPlayerScript::OnLogin(Player* player, bool /*loginFirst*/)
 
     sLFGMgr->SetTeam(player->GetGUID(), player->GetTeam());
     /// @todo - Restore LfgPlayerData and send proper status to player if it was in a group
+}
+
+void LFGPlayerScript::OnLogin(Player* /*player*/, bool /*firstLogin*/)
+{
+    if (!sWorld->getBoolConfig(CONFIG_LFG_SOLO))
+    {
+        if (!sLFGMgr->IsSoloLFG())
+        {
+            sLFGMgr->ToggleSoloLFG();
+        }
+    }
 }
 
 void LFGPlayerScript::OnMapChanged(Player* player)
