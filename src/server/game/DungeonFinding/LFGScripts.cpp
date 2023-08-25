@@ -49,11 +49,18 @@ void LFGPlayerScript::OnLogout(Player* player)
 
 void LFGPlayerScript::OnLogin(Player* player, bool /*loginFirst*/)
 {
-    if (!sWorld->getBoolConfig(CONFIG_LFG_SOLO))
+    if (sWorld->getBoolConfig(CONFIG_LFG_SOLO))
     {
         if (!sLFGMgr->IsSoloLFG())
         {
             sLFGMgr->ToggleSoloLFG();
+            LOG_ERROR("lfg", "Solo Looking for Group Enabled.");
+            return;
+        }
+        else
+        {
+            LOG_ERROR("lfg", "Solo Looking for Group Disabled.");
+            return;
         }
     }
 
