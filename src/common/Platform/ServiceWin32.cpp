@@ -15,7 +15,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef _WIN32
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
 
 #include "Common.h"
 #include "Log.h"
@@ -259,4 +259,4 @@ bool WinServiceRun()
     }
     return true;
 }
-#endif
+#endif // FC_PLATFORM_WINDOWS

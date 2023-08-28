@@ -1327,7 +1327,7 @@ private:
 
                 auto current_path = fs::current_path();
 
-            #if FC_PLATFORM != FC_PLATFORM_WINDOWS
+            #if FC_PLATFORM == FC_PLATFORM_UNIX
                 // The worldserver location is ${CMAKE_INSTALL_PREFIX}/bin
                 // on all other platforms then windows
                 current_path = current_path.parent_path();

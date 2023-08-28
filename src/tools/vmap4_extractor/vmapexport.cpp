@@ -24,9 +24,8 @@
 #include "Banner.h"
 #include <sys/stat.h>
 
-#ifdef _WIN32
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
 #include <direct.h>
-#define mkdir _mkdir
 #else
 #include <unistd.h>
 #define ERROR_PATH_NOT_FOUND ERROR_FILE_NOT_FOUND
@@ -444,7 +443,7 @@ void ParsMapFiles()
 
 void getGamePath()
 {
-#ifdef _WIN32
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
     strcpy(input_path,"Data\\");
 #else
     strcpy(input_path,"Data/");

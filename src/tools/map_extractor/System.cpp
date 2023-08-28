@@ -32,7 +32,7 @@
 #undef PLATFORM_WINDOWS
 #endif
 
-#ifdef _WIN32
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
 #include "direct.h"
 #else
 #include <sys/stat.h>
@@ -173,8 +173,8 @@ void CreateDir(std::string const& path)
         return;
     }
 
-#ifdef _WIN32
-    _mkdir(path.c_str());
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
+    mkdir(path.c_str());
 #else
     mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IRWXO); // 0777
 #endif

@@ -18,9 +18,9 @@
 #include "ProcessPriority.h"
 #include "Log.h"
 
-#ifdef _WIN32 // Windows
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS // Windows
 #include <Windows.h>
-#elif defined(__linux__)
+#elif FC_PLATFORM == FC_PLATFORM_UNIX
 #include <sched.h>
 #include <sys/resource.h>
 #define PROCESS_HIGH_PRIORITY -15 // [-20, 19], default is 0
@@ -29,7 +29,7 @@
 void SetProcessPriority(std::string const& logChannel, uint32 affinity, bool highPriority)
 {
     ///- Handle affinity for multiple processors and process priority
-#ifdef _WIN32 // Windows
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS // Windows
 
     HANDLE hProcess = GetCurrentProcess();
     if (affinity > 0)
@@ -59,7 +59,7 @@ void SetProcessPriority(std::string const& logChannel, uint32 affinity, bool hig
             LOG_ERROR(logChannel, "Can't set process priority class.");
     }
 
-#elif defined(__linux__) // Linux
+#elif FC_PLATFORM == FC_PLATFORM_UNIX // Linux
 
     if (affinity > 0)
     {

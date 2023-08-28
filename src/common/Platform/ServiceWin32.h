@@ -15,7 +15,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef _WIN32
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
 #ifndef _WIN32_SERVICE_
 #define _WIN32_SERVICE_
 
@@ -24,4 +24,4 @@ bool WinServiceUninstall();
 bool WinServiceRun();
 
 #endif                                                      // _WIN32_SERVICE_
-#endif                                                      // _WIN32
+#endif                                                      // FC_PLATFORM_WINDOWS
