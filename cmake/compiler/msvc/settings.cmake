@@ -33,19 +33,6 @@ if(PLATFORM EQUAL 64)
     INTERFACE
       -D_WIN64)
   message(STATUS "MSVC: 64-bit platform, enforced -D_WIN64 parameter")
-
-else()
-  # mark 32 bit executables large address aware so they can use > 2GB address space
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
-  message(STATUS "MSVC: Enabled large address awareness")
-
-  target_compile_options(fc-compile-option-interface
-    INTERFACE
-      /arch:SSE2)
-  message(STATUS "MSVC: Enabled SSE2 support")
-
-  set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /SAFESEH:NO")
-  message(STATUS "MSVC: Disabled Safe Exception Handlers for debug builds")
 endif()
 
 # Set build-directive (used in core to tell which buildtype we used)

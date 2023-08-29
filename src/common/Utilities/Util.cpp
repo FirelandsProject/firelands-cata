@@ -102,7 +102,7 @@ void stripLineInvisibleChars(std::string& str)
         str.clear();
 }
 
-#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
 struct tm* localtime_r(time_t const* time, struct tm* result)
 {
     localtime_s(result, time);
@@ -119,7 +119,7 @@ tm TimeBreakdown(time_t time)
 
 time_t LocalTimeToUTCTime(time_t time)
 {
-#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
     return time + _timezone;
 #else
     return time + timezone;
@@ -287,7 +287,7 @@ uint32 CreatePIDFile(std::string const& filename)
 
 uint32 GetPID()
 {
-#ifdef _WIN32
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
     DWORD pid = GetCurrentProcessId();
 #else
     pid_t pid = getpid();

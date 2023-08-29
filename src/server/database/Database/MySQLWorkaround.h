@@ -15,7 +15,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef _WIN32 // hack for broken mysql.h not including the correct winsock header for SOCKET definition, fixed in 5.7
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS // hack for broken mysql.h not including the correct winsock header for SOCKET definition, fixed in 5.7
 #include <winsock2.h>
 #endif
 #include <mysql.h>

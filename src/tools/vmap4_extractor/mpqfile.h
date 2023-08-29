@@ -14,7 +14,7 @@
 #include "StormLib.h"
 #include "Define.h"
 
-#ifdef _WIN32
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
 #include <Windows.h>    // mainly only HANDLE definition is required
 #endif
 

@@ -99,7 +99,7 @@ uint32 MySQLConnection::Open()
 
     mysql_options(mysqlInit, MYSQL_SET_CHARSET_NAME, "utf8");
     //mysql_options(mysqlInit, MYSQL_OPT_READ_TIMEOUT, (char const*)&timeout);
-    #ifdef _WIN32
+    #if FC_PLATFORM == FC_PLATFORM_WINDOWS
     if (m_connectionInfo.host == ".")                                           // named pipe use option (Windows)
     {
         unsigned int opt = MYSQL_PROTOCOL_PIPE;
