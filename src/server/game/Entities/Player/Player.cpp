@@ -8003,7 +8003,7 @@ void Player::CastItemCombatSpell(DamageInfo const& damageInfo, Item* item, ItemT
         if (!(damageInfo.GetHitMask() & (PROC_HIT_NORMAL | PROC_HIT_CRITICAL | PROC_HIT_ABSORB)))
             return false;
 
-        if (damageInfo.GetSpellInfo() && damageInfo.GetSpellInfo()->HasAttribute(SPELL_ATTR3_CANT_TRIGGER_CASTER_PROCS))
+        if (damageInfo.GetSpellInfo() && damageInfo.GetSpellInfo()->HasAttribute(SPELL_ATTR3_SUPPRESS_CASTER_PROCS))
             return false;
 
         return true;
@@ -23429,7 +23429,7 @@ Unit* Player::GetSelectedUnit() const
 Player* Player::GetSelectedPlayer() const
 {
     if (ObjectGuid selectionGUID = GetTarget())
-        return ObjectAccessor::GetPlayer(*this, selectionGUID);
+        return ObjectAccessor::FindConnectedPlayer(selectionGUID);
     return nullptr;
 }
 

@@ -294,8 +294,6 @@ class FC_GAME_API SpellEffectInfo
     bool IsAura(AuraType aura) const;
     bool IsTargetingArea() const;
     bool IsAreaAuraEffect() const;
-    bool IsFarUnitTargetEffect() const;
-    bool IsFarDestTargetEffect() const;
     bool IsUnitOwnedAuraEffect() const;
 
     int32 CalcValue(Unit const* caster = nullptr, int32 const* basePoints = nullptr, Unit const* target = nullptr) const;

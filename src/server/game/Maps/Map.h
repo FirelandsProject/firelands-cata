@@ -23,6 +23,7 @@
 #include "Cell.h"
 #include "DynamicTree.h"
 #include "GridDefines.h"
+#include "MPSCQueue.h"
 #include "GridRefManager.h"
 #include "MapRefManager.h"
 #include "ObjectGuid.h"
@@ -885,6 +886,9 @@ class FC_GAME_API Map : public GridRefManager<NGridType>
 
         // Disable the spawn group, which prevents any creatures in the group from respawning until re-enabled
         // This will not affect any already-present creatures in the group
+        typedef std::function<void(Map*)> FarSpellCallback;
+        void AddFarSpellCallback(FarSpellCallback&& callback);
+
         void SetSpawnGroupInactive(uint32 groupId) { SetSpawnGroupActive(groupId, false); }
 
         // Sets and stores world state values that will be used by the AchievementMgr to check additional criterias that require world state values
@@ -979,6 +983,7 @@ class FC_GAME_API Map : public GridRefManager<NGridType>
         std::unordered_set<Object*> _updateObjects;
 
         std::unordered_map<uint32 /*worldStateId*/, int32 /*value*/> _worldStates;
+        MPSCQueue<FarSpellCallback> _farSpellCallbacks;
 };
 
 enum InstanceResetMethod
