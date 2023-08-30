@@ -870,7 +870,26 @@ struct QuestGreeting
 
 typedef std::unordered_map<uint8, std::unordered_map<uint32, QuestGreeting>> QuestGreetingContainer;
 
-struct GraveyardData
+struct ServerMail
+{
+    ServerMail() = default;
+    uint32 id{};
+    uint8 reqLevel{};
+    uint32 reqPlayTime{};
+    uint32 moneyA{};
+    uint32 moneyH{};
+    uint32 itemA{};
+    uint32 itemCountA{};
+    uint32 itemH{};
+    uint32 itemCountH{};
+    std::string subject;
+    std::string body;
+    uint8 active{};
+};
+
+typedef std::unordered_map<uint32, ServerMail> ServerMailContainer;
+
+    struct GraveyardData
 {
     uint32 safeLocId;
     uint32 team;
@@ -1217,6 +1236,7 @@ class FC_GAME_API ObjectMgr
         void LoadInstanceTemplate();
         void LoadInstanceEncounters();
         void LoadMailLevelRewards();
+        void LoadMailServerTemplates();
         void LoadVehicleTemplateAccessories();
         void LoadVehicleAccessories();
         void LoadVehicleSeatAddon();
@@ -1348,6 +1368,11 @@ class FC_GAME_API ObjectMgr
                 return &itr->second;
 
             return nullptr;
+        }
+
+        ServerMailContainer const& GetAllServerMailStore() const
+        {
+            return _serverMailStore;
         }
 
         BroadcastText const* GetBroadcastText(uint32 id) const
@@ -1603,6 +1628,9 @@ class FC_GAME_API ObjectMgr
 
         bool IsTransportMap(uint32 mapId) const { return _transportMaps.count(mapId) != 0; }
 
+        void SendServerMail(Player* player, uint32 id, uint32 reqLevel, uint32 reqPlayTime, uint32 rewardMoneyA, uint32 rewardMoneyH, uint32 rewardItemA, uint32 rewardItemCountA, uint32 rewardItemH,
+            uint32 rewardItemCountH, std::string subject, std::string body, uint8 active) const;
+
         VehicleSeatAddon const* GetVehicleSeatAddon(uint32 seatId) const
         {
             VehicleSeatAddonContainer::const_iterator itr = _vehicleSeatAddonStore.find(seatId);
@@ -1774,6 +1802,7 @@ class FC_GAME_API ObjectMgr
         FirelandsStringContainer _firelandsStringStore;
 
         CacheVendorItemContainer _cacheVendorItemStore;
+        ServerMailContainer _serverMailStore;
         std::unordered_map<uint32, Trainer::Trainer> _trainers;
         std::map<std::tuple<uint32, uint32, uint32>, uint32> _creatureDefaultTrainers;
 
