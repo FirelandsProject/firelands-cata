@@ -2445,7 +2445,7 @@ void Spell::AddDestTarget(SpellDestination const& dest, uint32 effIndex)
 
 void Spell::TargetInfo::PreprocessTarget(Spell* spell)
 {
-   
+
     Unit* unit = spell->m_caster->GetGUID() == TargetGUID ? spell->m_caster : ObjectAccessor::GetUnit(*spell->m_caster, TargetGUID);
         if (!unit)
             return;
