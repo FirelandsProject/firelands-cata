@@ -2174,7 +2174,7 @@ void WorldSession::HandleCharFactionOrRaceChangeCallback(std::shared_ptr<Charact
             }
             else
             {
-                loc.WorldRelocate(1, 1633.33f, -4439.11f, 15.7588f, 0.0f);
+                loc.WorldRelocate(1, 1565.64f, -4400.45f, 16.3835f, 0.0f);
                 zoneId = 1637;
             }
 
