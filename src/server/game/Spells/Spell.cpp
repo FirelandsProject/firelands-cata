@@ -2759,6 +2759,23 @@ void Spell::TargetInfo::DoDamageAndTriggers(Spell* spell)
         spell->CallScriptAfterHitHandlers();
 }
 
+void Spell::GOTargetInfo::DoTargetSpellHit(Spell* spell, uint8 effIndex)
+{
+        GameObject* go = ObjectAccessor::GetGameObject(*spell->m_caster, TargetGUID);
+        if (!go)
+            return;
+
+        spell->CallScriptBeforeHitHandlers();
+
+        spell->HandleEffects(nullptr, nullptr, go, nullptr, effIndex, SPELL_EFFECT_HANDLE_HIT_TARGET);
+
+        if (go->AI())
+            go->AI()->SpellHit(spell->m_caster, spell->m_spellInfo);
+
+        spell->CallScriptOnHitHandlers();
+        spell->CallScriptAfterHitHandlers();
+}
+
 void Spell::DoTriggersOnSpellHit(Unit* unit, uint8 effMask)
 {
     // handle SPELL_AURA_ADD_TARGET_TRIGGER auras
@@ -2806,6 +2823,202 @@ void Spell::DoTriggersOnSpellHit(Unit* unit, uint8 effMask)
                 unit->CastSpell(unit, *i, m_caster->GetGUID());
         }
     }
+}
+
+void Spell::ItemTargetInfo::DoTargetSpellHit(Spell* spell, uint8 effIndex)
+{
+    spell->CallScriptBeforeHitHandlers();
+
+    spell->HandleEffects(nullptr, TargetItem, nullptr, nullptr, effIndex, SPELL_EFFECT_HANDLE_HIT_TARGET);
+
+    spell->CallScriptOnHitHandlers();
+    spell->CallScriptAfterHitHandlers();
+}
+
+void Spell::CorpseTargetInfo::DoTargetSpellHit(Spell* spell, uint8 effIndex)
+{
+    Corpse* corpse = ObjectAccessor::GetCorpse(*spell->m_caster, TargetGUID);
+    if (!corpse)
+        return;
+
+    spell->CallScriptBeforeHitHandlers();
+
+    spell->HandleEffects(nullptr, nullptr, nullptr, corpse, effIndex, SPELL_EFFECT_HANDLE_HIT_TARGET);
+
+    spell->CallScriptOnHitHandlers();
+    spell->CallScriptAfterHitHandlers();
+}
+
+SpellMissInfo Spell::PreprocessSpellHit(Unit* unit, bool scaleAura, TargetInfo& hitInfo)
+{
+    if (!unit)
+        return SPELL_MISS_EVADE;
+
+    // Target may have begun evading between launch and hit phases - re-check now
+    if (Creature* creatureTarget = unit->ToCreature())
+        if (creatureTarget->IsEvadingAttacks())
+            return SPELL_MISS_EVADE;
+
+    // For delayed spells immunity may be applied between missile launch and hit - check immunity for that case
+    if (m_spellInfo->Speed && unit->IsImmunedToSpell(m_spellInfo, m_caster))
+        return SPELL_MISS_IMMUNE;
+
+    CallScriptBeforeHitHandlers();
+
+    if (Player* player = unit->ToPlayer())
+    {
+        player->StartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_SPELL_TARGET, m_spellInfo->Id);
+        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, m_spellInfo->Id, 0, 0, m_caster);
+        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2, m_spellInfo->Id);
+    }
+    if (Player* player = m_caster->ToPlayer())
+    {
+        player->StartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_SPELL_CASTER, m_spellInfo->Id);
+        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2, m_spellInfo->Id, 0, 0, unit);
+    }
+    if (m_caster != unit)
+    {
+        // Recheck  UNIT_FLAG_NON_ATTACKABLE for delayed spells
+        if (m_spellInfo->Speed > 0.0f && unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) && unit->GetCharmerOrOwnerGUID() != m_caster->GetGUID())
+            return SPELL_MISS_EVADE;
+        if (m_caster->IsValidAttackTarget(unit, m_spellInfo))
+            unit->RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags::HostileActionReceived);
+    }
+
+// check immunity due to diminishing returns
+if (m_originalCaster && Aura::BuildEffectMaskForOwner(m_spellInfo, MAX_EFFECT_MASK, unit))
+{
+    // Select rank for aura with level requirements only in specific cases
+    // Unit has to be target only of aura effect, both caster and target have to be players, target has to be other than unit target
+    hitInfo.AuraSpellInfo = m_spellInfo;
+    if (scaleAura)
+    {
+        if (SpellInfo const* actualSpellInfo = m_spellInfo->GetAuraRankForLevel(unitTarget->getLevel()))
+            hitInfo.AuraSpellInfo = actualSpellInfo;
+
+        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            hitInfo.AuraBasePoints[i] = hitInfo.AuraSpellInfo->Effects[i].BasePoints;
+            if (m_spellInfo->Effects[i].Effect != hitInfo.AuraSpellInfo->Effects[i].Effect)
+            {
+                hitInfo.AuraSpellInfo = m_spellInfo;
+                break;
+            }
+        }
+    }
+
+    // Get Data Needed for Diminishing Returns, some effects may have multiple auras, so this must be done on spell hit, not aura add
+    bool triggered = (m_triggeredByAuraSpell != nullptr);
+    hitInfo.DRGroup = m_spellInfo->GetDiminishingReturnsGroupForSpell(triggered);
+
+    DiminishingLevels diminishLevel = DIMINISHING_LEVEL_1;
+    if (hitInfo.DRGroup)
+    {
+        diminishLevel = unit->GetDiminishing(hitInfo.DRGroup);
+        DiminishingReturnsType type = m_spellInfo->GetDiminishingReturnsGroupType(triggered);
+        // Increase Diminishing on unit, current informations for actually casts will use values above
+        if (type == DRTYPE_ALL || (type == DRTYPE_PLAYER && unit->IsAffectedByDiminishingReturns()))
+            unit->IncrDiminishing(m_spellInfo, triggered);
+    }
+
+    // Now Reduce spell duration using data received at spell hit
+    // check whatever effects we're going to apply, diminishing returns only apply to negative aura effects
+    hitInfo.Positive = true;
+    if (m_originalCaster == unit || !m_originalCaster->IsFriendlyTo(unit))
+    {
+        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            // mod duration only for effects applying aura!
+            if (hitInfo.EffectMask & (1 << i) && hitInfo.AuraSpellInfo->Effects[i].IsUnitOwnedAuraEffect() && !hitInfo.AuraSpellInfo->IsPositiveEffect(i))
+            {
+                hitInfo.Positive = false;
+                break;
+            }
+        }
+    }
+
+    hitInfo.AuraDuration = hitInfo.AuraSpellInfo->GetMaxDuration();
+
+    // unit is immune to aura if it was diminished to 0 duration
+    if (!hitInfo.Positive && !unit->ApplyDiminishingToDuration(hitInfo.AuraSpellInfo, triggered, hitInfo.AuraDuration, m_originalCaster, diminishLevel))
+        if (std::all_of(std::begin(hitInfo.AuraSpellInfo->Effects), std::end(hitInfo.AuraSpellInfo->Effects),
+                [](SpellEffectInfo const& effInfo) { return !effInfo.IsEffect() || effInfo.Effect == SPELL_EFFECT_APPLY_AURA; }))
+            return SPELL_MISS_IMMUNE;
+}
+
+return SPELL_MISS_NONE;
+}
+
+void Spell::DoSpellEffectHit(Unit* unit, uint8 effIndex, TargetInfo& hitInfo)
+{
+    uint8 aura_effmask = Aura::BuildEffectMaskForOwner(m_spellInfo, 1 << effIndex, unit);
+    if (aura_effmask)
+    {
+        if (m_originalCaster)
+        {
+            bool refresh = false;
+
+            if (!_spellAura)
+            {
+                bool const resetPeriodicTimer = false; //!(_triggeredCastFlags & TRIGGERED_DONT_RESET_PERIODIC_TIMER);
+                uint8 const allAuraEffectMask = Aura::BuildEffectMaskForOwner(hitInfo.AuraSpellInfo, MAX_EFFECT_MASK, unit);
+                int32 const* bp = hitInfo.AuraBasePoints;
+                if (hitInfo.AuraSpellInfo == m_spellInfo)
+                    bp = m_spellValue->EffectBasePoints;
+
+                AuraCreateInfo createInfo(hitInfo.AuraSpellInfo, allAuraEffectMask, unit);
+                createInfo.SetCaster(m_originalCaster).SetBaseAmount(bp).SetCastItem(m_CastItem).SetPeriodicReset(resetPeriodicTimer).SetOwnerEffectMask(aura_effmask).IsRefresh = &refresh;
+                if (Aura* aura = Aura::TryRefreshStackOrCreate(createInfo))
+                    _spellAura = aura->ToUnitAura();
+            }
+            else
+                _spellAura->AddStaticApplication(unit, aura_effmask);
+            if (_spellAura)
+            {
+                // Set aura stack amount to desired value
+                if (m_spellValue->AuraStackAmount > 1)
+                {
+                    if (!refresh)
+                        _spellAura->SetStackAmount(m_spellValue->AuraStackAmount);
+                    else
+                        _spellAura->ModStackAmount(m_spellValue->AuraStackAmount);
+                }
+
+                _spellAura->SetDiminishGroup(hitInfo.DRGroup);
+
+                hitInfo.AuraDuration = m_originalCaster->ModSpellDuration(hitInfo.AuraSpellInfo, unit, hitInfo.AuraDuration, hitInfo.Positive, _spellAura->GetEffectMask());
+
+                // Haste modifies duration of channeled spells
+                if (m_spellInfo->IsChanneled())
+                    m_originalCaster->ModSpellDurationTime(hitInfo.AuraSpellInfo, hitInfo.AuraDuration, this);
+                // and duration of auras affected by SPELL_AURA_PERIODIC_HASTE
+                else if (m_originalCaster->HasAuraTypeWithAffectMask(SPELL_AURA_PERIODIC_HASTE, hitInfo.AuraSpellInfo) || m_spellInfo->HasAttribute(SPELL_ATTR8_HASTE_AFFECTS_DURATION))
+                    hitInfo.AuraDuration = int32(hitInfo.AuraDuration * m_originalCaster->GetFloatValue(UNIT_MOD_CAST_SPEED));
+
+                if (hitInfo.AuraDuration != _spellAura->GetMaxDuration())
+                {
+                    _spellAura->SetMaxDuration(hitInfo.AuraDuration);
+                    _spellAura->SetDuration(hitInfo.AuraDuration);
+                }
+
+                if (DynamicObject* dynObj = m_originalCaster->GetDynObject(m_spellInfo->Id))
+                    dynObj->SetDuration(hitInfo.AuraDuration);
+
+                if (m_spellInfo->IsChanneled() && refresh && m_spellInfo->IsRollingDurationOver())
+                {
+                    SendChannelStart(_spellAura->GetMaxDuration() - _spellAura->GetRolledOverDuration());
+                    SendChannelUpdate(_spellAura->GetMaxDuration());
+
+                    // A side-effect of SendChannelStart() is to set the spell's timer to the value passed as parameter.
+                    // However for channeled dot clipping to work properly, we need to roll over the duration.
+                    // So we need to re-update timer with a proper value.
+                    m_timer = _spellAura->GetMaxDuration();
+                }
+            }
+        }
+    }
+
+    HandleEffects(unit, nullptr, nullptr, nullptr, effIndex, SPELL_EFFECT_HANDLE_HIT_TARGET);
 }
 
 bool Spell::UpdateChanneledTargetList()
