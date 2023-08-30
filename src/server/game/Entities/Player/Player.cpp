@@ -322,11 +322,7 @@ Player::Player(WorldSession* session) : Unit(true)
 
     m_seer = this;
 
-    m_homebindMapId = 0;
     m_homebindAreaId = 0;
-    m_homebindX = 0;
-    m_homebindY = 0;
-    m_homebindZ = 0;
 
     m_contestedPvPTimer = 0;
 
@@ -4611,7 +4607,7 @@ void Player::RepopAtGraveyard()
         }
     }
     else if (GetPositionZ() < GetMap()->GetMinHeight(GetPhaseShift(), GetPositionX(), GetPositionY()))
-        TeleportTo(m_homebindMapId, m_homebindX, m_homebindY, m_homebindZ, GetOrientation());
+        TeleportTo(m_homebind);
 
     RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_IS_OUT_OF_BOUNDS);
 }
@@ -17068,26 +17064,26 @@ bool Player::LoadPositionFromDB(uint32& mapid, float& x, float& y, float& z, flo
 
 void Player::SetHomebind(WorldLocation const& loc, uint32 areaId)
 {
-    loc.GetPosition(m_homebindX, m_homebindY, m_homebindZ);
-    m_homebindMapId = loc.GetMapId();
+    m_homebind.WorldRelocate(loc);
     m_homebindAreaId = areaId;
 
     // update sql homebind
     CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_PLAYER_HOMEBIND);
-    stmt->setUInt16(0, m_homebindMapId);
+    stmt->setUInt16(0, m_homebind.GetMapId());
     stmt->setUInt16(1, m_homebindAreaId);
-    stmt->setFloat(2, m_homebindX);
-    stmt->setFloat(3, m_homebindY);
-    stmt->setFloat(4, m_homebindZ);
-    stmt->setUInt32(5, GetGUID().GetCounter());
+    stmt->setFloat(2, m_homebind.GetPositionX());
+    stmt->setFloat(3, m_homebind.GetPositionY());
+    stmt->setFloat(4, m_homebind.GetPositionZ());
+    stmt->setFloat(5, m_homebind.GetOrientation());
+    stmt->setUInt64(6, GetGUID().GetCounter());
     CharacterDatabase.Execute(stmt);
 }
 
 void Player::SendBindPointUpdate() const
 {
     WorldPackets::Misc::BindPointUpdate packet;
-    packet.BindPosition = Position(m_homebindX, m_homebindY, m_homebindZ);
-    packet.BindMapID = m_homebindMapId;
+    packet.BindPosition = Position(m_homebind.GetPositionX(), m_homebind.GetPositionY(), m_homebind.GetPositionZ());
+    packet.BindMapID = m_homebind.GetMapId();
     packet.BindAreaID = m_homebindAreaId;
     SendDirectMessage(packet.Write());
 }
@@ -17293,9 +17289,8 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
 
 #define RelocateToHomebind()                                                                                                                                                                           \
     {                                                                                                                                                                                                  \
-        mapId = m_homebindMapId;                                                                                                                                                                       \
         instanceId = 0;                                                                                                                                                                                \
-        Relocate(m_homebindX, m_homebindY, m_homebindZ);                                                                                                                                               \
+        WorldRelocate(m_homebind);                                                                                                                                                                     \
     }
 
     _LoadGroup(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GROUP));
@@ -19549,21 +19544,19 @@ bool Player::_LoadHomeBind(PreparedQueryResult result)
     }
 
     bool ok = false;
-    // SELECT mapId, zoneId, posX, posY, posZ FROM character_homebind WHERE guid = ?
+    //          0       1     2     3     4         5
+    // SELECT mapId, zoneId, posX, posY, posZ, orientation FROM character_homebind WHERE guid = ?
     if (result)
     {
         Field* fields = result->Fetch();
 
-        m_homebindMapId = fields[0].GetUInt16();
+        m_homebind.WorldRelocate(fields[0].GetUInt16(), fields[2].GetFloat(), fields[3].GetFloat(), fields[4].GetFloat(), fields[5].GetFloat());
         m_homebindAreaId = fields[1].GetUInt16();
-        m_homebindX = fields[2].GetFloat();
-        m_homebindY = fields[3].GetFloat();
-        m_homebindZ = fields[4].GetFloat();
 
-        MapEntry const* bindMapEntry = sMapStore.LookupEntry(m_homebindMapId);
+        MapEntry const* bindMapEntry = sMapStore.LookupEntry(m_homebind.GetMapId());
 
         // accept saved data only for valid position (and non instanceable), and accessable
-        if (MapManager::IsValidMapCoord(m_homebindMapId, m_homebindX, m_homebindY, m_homebindZ) && !bindMapEntry->Instanceable() && GetSession()->GetExpansion() >= bindMapEntry->Expansion())
+        if (MapManager::IsValidMapCoord(m_homebind) && !bindMapEntry->Instanceable() && GetSession()->GetExpansion() >= bindMapEntry->Expansion())
             ok = true;
         else
         {
@@ -19575,24 +19568,21 @@ bool Player::_LoadHomeBind(PreparedQueryResult result)
 
     if (!ok)
     {
-        m_homebindMapId = info->mapId;
+        m_homebind.WorldRelocate(m_homebind);
         m_homebindAreaId = info->areaId;
-        m_homebindX = info->positionX;
-        m_homebindY = info->positionY;
-        m_homebindZ = info->positionZ;
 
         CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_PLAYER_HOMEBIND);
         stmt->setUInt32(0, GetGUID().GetCounter());
-        stmt->setUInt16(1, m_homebindMapId);
+        stmt->setUInt16(1, m_homebind.GetMapId());
         stmt->setUInt16(2, m_homebindAreaId);
-        stmt->setFloat(3, m_homebindX);
-        stmt->setFloat(4, m_homebindY);
-        stmt->setFloat(5, m_homebindZ);
+        stmt->setFloat(3, m_homebind.GetPositionX());
+        stmt->setFloat(4, m_homebind.GetPositionY());
+        stmt->setFloat(5, m_homebind.GetPositionZ());
+        stmt->setFloat(6, m_homebind.GetOrientation());
         CharacterDatabase.Execute(stmt);
     }
 
-    LOG_DEBUG("entities.player", "Player::_LoadHomeBind: Setting home position (MapID: %u, AreaID: %u, X: %f, Y: %f, Z: %f) of player '%s' (%s)", m_homebindMapId, m_homebindAreaId, m_homebindX,
-        m_homebindY, m_homebindZ, GetName().c_str(), GetGUID().ToString().c_str());
+LOG_DEBUG("entities.player", "Player::_LoadHomeBind: Setting home position (MapID: %u, AreaID: %u, X: %f, Y: %f, Z: %f O: %f) of player '%s' (%s)", m_homebind.GetMapId(), m_homebindAreaId, m_homebind.GetPositionX(), m_homebind.GetPositionY(), m_homebind.GetPositionZ(), m_homebind.GetOrientation(), GetName().c_str(), GetGUID().ToString().c_str()); 
 
     return true;
 }
@@ -22994,7 +22984,7 @@ void Player::SetBattlegroundEntryPoint()
     }
 
     if (m_bgData.joinPos.m_mapId == MAPID_INVALID) // In error cases use homebind position
-        m_bgData.joinPos = WorldLocation(m_homebindMapId, m_homebindX, m_homebindY, m_homebindZ, 0.0f);
+        m_bgData.joinPos.WorldRelocate(m_homebind);
 }
 
 void Player::GetLFGLeavePoint(Position* pos)
