@@ -362,8 +362,8 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
             if (m_spellInfo->HasAttribute(SPELL_ATTR0_CU_SHARE_DAMAGE))
             {
                 uint32 count = 0;
-                for (std::list<TargetInfo>::iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
-                    if (ihit->effectMask & (1 << effIndex))
+                for (auto ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
+                    if (ihit->EffectMask & (1 << effIndex))
                         ++count;
 
                 damage /= count; // divide to all targets
@@ -1077,7 +1077,7 @@ void Spell::EffectHeal(SpellEffIndex effIndex)
         if (m_spellInfo->Id == 45064)
         {
             // Amount of heal - depends from stacked Holy Energy
-            int damageAmount = 0;
+            int32 damageAmount = 0;
             if (AuraEffect const* aurEff = m_caster->GetAuraEffect(45062, 0))
             {
                 damageAmount += aurEff->GetAmount();
@@ -1132,7 +1132,7 @@ void Spell::EffectHeal(SpellEffIndex effIndex)
         if (unitTarget->HasAura(48920) && (unitTarget->GetHealth() + addhealth >= unitTarget->GetMaxHealth()))
             unitTarget->RemoveAura(48920);
 
-        m_damage -= addhealth;
+        m_healing += addhealth;
     }
 }
 
