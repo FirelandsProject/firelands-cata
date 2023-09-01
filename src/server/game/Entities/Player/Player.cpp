@@ -17287,11 +17287,11 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
 
     std::string taxi_nodes = fields[43].GetString();
 
-#define RelocateToHomebind()                                                                                                                                                                           \
-    {                                                                                                                                                                                                  \
-        instanceId = 0;                                                                                                                                                                                \
-        WorldRelocate(m_homebind);                                                                                                                                                                     \
-    }
+    auto RelocateToHomebind = [this, &instanceId]()
+    {
+        instanceId = 0;
+        Relocate(m_homebind);
+    };
 
     _LoadGroup(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GROUP));
 
