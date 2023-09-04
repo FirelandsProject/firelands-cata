@@ -32,7 +32,7 @@ void TCSoapThread(const std::string& host, uint16 port)
     soap_set_imode(&soap, SOAP_C_UTFSTRING);
     soap_set_omode(&soap, SOAP_C_UTFSTRING);
 
-#if FC_PLATFORM == FC_PLATFORM_UNIX
+#if FC_PLATFORM == FC_PLATFORM_UNIX || FC_PLATFORM == FC_PLATFORM_APPLE
     soap.bind_flags = SO_REUSEADDR;
 #endif
 

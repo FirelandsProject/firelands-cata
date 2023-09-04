@@ -20,7 +20,7 @@
 
 #if FC_PLATFORM == FC_PLATFORM_WINDOWS // Windows
 #include <Windows.h>
-#elif FC_PLATFORM == FC_PLATFORM_UNIX
+#elif FC_PLATFORM == FC_PLATFORM_UNIX || FC_PLATFORM == FC_PLATFORM_APPLE
 #include <sched.h>
 #include <sys/resource.h>
 #define PROCESS_HIGH_PRIORITY -15 // [-20, 19], default is 0
@@ -59,7 +59,7 @@ void SetProcessPriority(std::string const& logChannel, uint32 affinity, bool hig
             LOG_ERROR(logChannel, "Can't set process priority class.");
     }
 
-#elif FC_PLATFORM == FC_PLATFORM_UNIX // Linux
+#elif FC_PLATFORM == FC_PLATFORM_UNIX
 
     if (affinity > 0)
     {

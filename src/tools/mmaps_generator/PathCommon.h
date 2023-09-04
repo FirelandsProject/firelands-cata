@@ -23,7 +23,7 @@
 #include <vector>
 #include <unordered_map>
 
-#if FC_PLATFORM == FC_PLATFORM_UNIX
+#if FC_PLATFORM == FC_PLATFORM_UNIX || FC_PLATFORM == FC_PLATFORM_APPLE
 #include <stddef.h>
 #include <cstring>
 #include <dirent.h>
@@ -47,7 +47,7 @@ namespace MMAP
         {
             if (*filter == '*')
             {
-                if (*++filter == '\0')   // wildcard at end of filter means all remaing chars match
+                if (*++filter == '\0') // wildcard at end of filter means all remaing chars match
                     return true;
 
                 for (;;)
@@ -55,12 +55,12 @@ namespace MMAP
                     if (*filter == *str)
                         break;
                     if (*str == '\0')
-                        return false;   // reached end of string without matching next filter character
+                        return false; // reached end of string without matching next filter character
                     str++;
                 }
             }
             else if (*filter != *str)
-                return false;           // mismatch
+                return false; // mismatch
 
             filter++;
             str++;
@@ -75,9 +75,9 @@ namespace MMAP
         LISTFILE_OK = 1
     };
 
-    inline ListFilesResult getDirContents(std::vector<std::string> &fileList, std::string dirpath = ".", std::string filter = "*")
+    inline ListFilesResult getDirContents(std::vector<std::string>& fileList, std::string dirpath = ".", std::string filter = "*")
     {
-    #if FC_PLATFORM == FC_PLATFORM_WINDOWS
+#if FC_PLATFORM == FC_PLATFORM_WINDOWS
         HANDLE hFind;
         WIN32_FIND_DATA findFileInfo;
         std::string directory;
@@ -92,15 +92,14 @@ namespace MMAP
         {
             if (strcmp(findFileInfo.cFileName, ".") != 0 && strcmp(findFileInfo.cFileName, "..") != 0)
                 fileList.push_back(std::string(findFileInfo.cFileName));
-        }
-        while (FindNextFile(hFind, &findFileInfo));
+        } while (FindNextFile(hFind, &findFileInfo));
 
         FindClose(hFind);
 
-    #else
-        const char *p = dirpath.c_str();
-        DIR * dirp = opendir(p);
-        struct dirent * dp;
+#else
+        const char* p = dirpath.c_str();
+        DIR* dirp = opendir(p);
+        struct dirent* dp;
 
         while (dirp)
         {
@@ -118,7 +117,7 @@ namespace MMAP
             closedir(dirp);
         else
             return LISTFILE_DIRECTORY_NOT_FOUND;
-    #endif
+#endif
 
         return LISTFILE_OK;
     }
@@ -137,6 +136,6 @@ namespace MMAP
     {
         std::unique_ptr<VMAP::VMapManager2> CreateVMapManager();
     }
-}
+} // namespace MMAP
 
 #endif

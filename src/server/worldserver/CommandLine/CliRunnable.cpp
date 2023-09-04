@@ -113,7 +113,7 @@ void commandFinished(void*, bool /*success*/)
     fflush(stdout);
 }
 
-#if FC_PLATFORM == FC_PLATFORM_UNIX
+#if FC_PLATFORM == FC_PLATFORM_UNIX || FC_PLATFORM == FC_PLATFORM_APPLE
 // Non-blocking keypress detector, when return pressed, return 1, else always
 // return 0
 int kb_hit_return()
@@ -134,7 +134,7 @@ void CliThread()
 {
     ///- Display the list of available CLI functions then beep
     // LOG_INFO("server.worldserver", "");
-#if FC_PLATFORM == FC_PLATFORM_UNIX
+#if FC_PLATFORM == FC_PLATFORM_UNIX || FC_PLATFORM == FC_PLATFORM_APPLE
     ::rl_attempted_completion_function = &Firelands::Impl::Readline::cli_completion;
     ::rl_event_hook = &Firelands::Impl::Readline::cli_hook_func;
 #endif
@@ -195,7 +195,7 @@ void CliThread()
 
             fflush(stdout);
             sWorld->QueueCliCommand(new CliCommandHolder(nullptr, command.c_str(), &utf8print, &commandFinished));
-#if FC_PLATFORM == FC_PLATFORM_UNIX
+#if FC_PLATFORM == FC_PLATFORM_UNIX || FC_PLATFORM == FC_PLATFORM_APPLE
             add_history(command.c_str());
             free(command_str);
 #endif

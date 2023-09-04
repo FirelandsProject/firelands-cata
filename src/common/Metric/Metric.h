@@ -1,19 +1,19 @@
 /*
-* This file is part of the FirelandsCore Project. See AUTHORS file for Copyright information
-*
-* This program is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by the
-* Free Software Foundation; either version 2 of the License, or (at your
-* option) any later version.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-* FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for
-* more details.
-*
-* You should have received a copy of the GNU Affero General Public License along
-* with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * This file is part of the FirelandsCore Project. See AUTHORS file for Copyright information
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by the
+ * Free Software Foundation; either version 2 of the License, or (at your
+ * option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef METRIC_H__
 #define METRIC_H__
@@ -32,8 +32,8 @@ namespace Firelands
     {
         class IoContext;
         class DeadlineTimer;
-    }
-}
+    } // namespace Asio
+} // namespace Firelands
 
 enum MetricDataType
 {
@@ -57,7 +57,7 @@ struct MetricData
 
 class FC_COMMON_API Metric
 {
-private:
+  private:
     std::iostream& GetDataStream() { return *_dataStream; }
     std::unique_ptr<std::iostream> _dataStream;
     MPSCQueue<MetricData> _queuedData;
@@ -79,8 +79,7 @@ private:
     void ScheduleOverallStatusLog();
 
     static std::string FormatInfluxDBValue(bool value);
-    template <class T>
-    static std::string FormatInfluxDBValue(T value);
+    template <class T> static std::string FormatInfluxDBValue(T value);
     static std::string FormatInfluxDBValue(std::string const& value);
     static std::string FormatInfluxDBValue(char const* value);
     static std::string FormatInfluxDBValue(double value);
@@ -90,7 +89,7 @@ private:
 
     // ToDo: should format TagKey and FieldKey too in the same way as TagValue
 
-public:
+  public:
     Metric();
     ~Metric();
     static Metric* instance();
@@ -99,8 +98,7 @@ public:
     void LoadFromConfigs();
     void Update();
 
-    template<class T>
-    void LogValue(std::string const& category, T value)
+    template <class T> void LogValue(std::string const& category, T value)
     {
         using namespace std::chrono;
 
@@ -124,34 +122,36 @@ public:
 #ifdef PERFORMANCE_PROFILING
 #define FC_METRIC_EVENT(category, title, description) ((void)0)
 #define FC_METRIC_VALUE(category, value) ((void)0)
-#elif FC_PLATFORM == FC_PLATFORM_UNIX
-#define FC_METRIC_EVENT(category, title, description)                    \
-        do {                                                            \
-            if (sMetric->IsEnabled())                              \
-                sMetric->LogEvent(category, title, description);   \
-        } while (0)
-#define FC_METRIC_VALUE(category, value)                                 \
-        do {                                                            \
-            if (sMetric->IsEnabled())                              \
-                sMetric->LogValue(category, value);                \
-        } while (0)
+#elif FC_PLATFORM == FC_PLATFORM_UNIX || FC_PLATFORM == FC_PLATFORM_APPLE
+#define FC_METRIC_EVENT(category, title, description)                                                                                                                                                  \
+    do                                                                                                                                                                                                 \
+    {                                                                                                                                                                                                  \
+        if (sMetric->IsEnabled())                                                                                                                                                                      \
+            sMetric->LogEvent(category, title, description);                                                                                                                                           \
+    } while (0)
+#define FC_METRIC_VALUE(category, value)                                                                                                                                                               \
+    do                                                                                                                                                                                                 \
+    {                                                                                                                                                                                                  \
+        if (sMetric->IsEnabled())                                                                                                                                                                      \
+            sMetric->LogValue(category, value);                                                                                                                                                        \
+    } while (0)
 #else
-#define FC_METRIC_EVENT(category, title, description)                    \
-        __pragma(warning(push))                                         \
-        __pragma(warning(disable:4127))                                 \
-        do {                                                            \
-            if (sMetric->IsEnabled())                              \
-                sMetric->LogEvent(category, title, description);   \
-        } while (0)                                                     \
-        __pragma(warning(pop))
-#define FC_METRIC_VALUE(category, value)                                 \
-        __pragma(warning(push))                                         \
-        __pragma(warning(disable:4127))                                 \
-        do {                                                            \
-            if (sMetric->IsEnabled())                              \
-                sMetric->LogValue(category, value);                \
-        } while (0)                                                     \
-        __pragma(warning(pop))
+#define FC_METRIC_EVENT(category, title, description)                                                                                                                                                  \
+    __pragma(warning(push)) __pragma(warning(disable : 4127)) do                                                                                                                                       \
+    {                                                                                                                                                                                                  \
+        if (sMetric->IsEnabled())                                                                                                                                                                      \
+            sMetric->LogEvent(category, title, description);                                                                                                                                           \
+    }                                                                                                                                                                                                  \
+    while (0)                                                                                                                                                                                          \
+    __pragma(warning(pop))
+#define FC_METRIC_VALUE(category, value)                                                                                                                                                               \
+    __pragma(warning(push)) __pragma(warning(disable : 4127)) do                                                                                                                                       \
+    {                                                                                                                                                                                                  \
+        if (sMetric->IsEnabled())                                                                                                                                                                      \
+            sMetric->LogValue(category, value);                                                                                                                                                        \
+    }                                                                                                                                                                                                  \
+    while (0)                                                                                                                                                                                          \
+    __pragma(warning(pop))
 #endif
 
 #endif // METRIC_H__
