@@ -2698,11 +2698,8 @@ class FC_GAME_API Player : public Unit, public GridObject<Player>
     void SendBindPointUpdate() const;
 
     // Homebind coordinates
-    uint32 m_homebindMapId;
+    WorldLocation m_homebind;
     uint16 m_homebindAreaId;
-    float m_homebindX;
-    float m_homebindY;
-    float m_homebindZ;
 
     WorldLocation GetStartPosition() const;
 
