@@ -724,7 +724,7 @@ class spell_ds_target_selection : public SpellScript
     }
 };
 
-class spell_ds_resonating_cristal_periodic : public AuraScript
+class spell_ds_resonating_crystal_periodic : public AuraScript
 {
     bool Validate(SpellInfo const* /*spellInfo*/)
     {
@@ -748,10 +748,10 @@ class spell_ds_resonating_cristal_periodic : public AuraScript
         }
     }
 
-    void Register() { OnEffectPeriodic.Register(spell_ds_resonating_cristal_periodic::HandleTriggerSpell, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL); }
+    void Register() { OnEffectPeriodic.Register(spell_ds_resonating_crystal_periodic::HandleTriggerSpell, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL); }
 };
 
-class spell_ds_resonating_cristal_explosion : public SpellScript
+class spell_ds_resonating_crystal_explosion : public SpellScript
 {
     std::list<WorldObject*> sharedTargets;
 
@@ -826,11 +826,11 @@ class spell_ds_resonating_cristal_explosion : public SpellScript
 
     void Register()
     {
-        OnObjectAreaTargetSelect.Register(spell_ds_resonating_cristal_explosion::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
-        OnObjectAreaTargetSelect.Register(spell_ds_resonating_cristal_explosion::FilterTargetsShared, EFFECT_1, TARGET_UNIT_DEST_AREA_ENEMY);
-        OnObjectAreaTargetSelect.Register(spell_ds_resonating_cristal_explosion::FilterTargetsShared, EFFECT_2, TARGET_UNIT_DEST_AREA_ENEMY);
-        OnEffectLaunch.Register(spell_ds_resonating_cristal_explosion::CountBuffs, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
-        OnEffectHitTarget.Register(spell_ds_resonating_cristal_explosion::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnObjectAreaTargetSelect.Register(spell_ds_resonating_crystal_explosion::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(spell_ds_resonating_crystal_explosion::FilterTargetsShared, EFFECT_1, TARGET_UNIT_DEST_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(spell_ds_resonating_crystal_explosion::FilterTargetsShared, EFFECT_2, TARGET_UNIT_DEST_AREA_ENEMY);
+        OnEffectLaunch.Register(spell_ds_resonating_crystal_explosion::CountBuffs, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(spell_ds_resonating_crystal_explosion::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -1056,8 +1056,8 @@ void AddSC_boss_morchok()
     RegisterDragonSoulCreatureAI(boss_kohcrom);
     RegisterDragonSoulCreatureAI(npc_ds_earthen_vortex_vehicle);
     RegisterSpellScript(spell_ds_target_selection);
-    RegisterSpellScript(spell_ds_resonating_cristal_periodic);
-    RegisterSpellScript(spell_ds_resonating_cristal_explosion);
+    RegisterSpellScript(spell_ds_resonating_crystal_periodic);
+    RegisterSpellScript(spell_ds_resonating_crystal_explosion);
     RegisterSpellScript(spell_ds_falling_fragments_periodic);
     RegisterSpellScript(spell_ds_earthen_vortex_teleport);
     RegisterSpellScript(spell_ds_black_blood_of_the_earth_periodic);
