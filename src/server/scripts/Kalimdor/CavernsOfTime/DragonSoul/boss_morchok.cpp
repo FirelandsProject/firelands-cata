@@ -171,7 +171,7 @@ struct boss_morchok : public BossAI
         BossAI::JustSummoned(summon);
     }
 
-    void SummonedCreatureDespawn(Creature* summon)
+    void SummonedCreatureDespawn(Creature* summon) override
     {
         if (summon->GetEntry() == NPC_KOHCROM)
             instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, summon);
@@ -294,7 +294,7 @@ struct boss_morchok : public BossAI
         }
     }
 
-    uint32 GetData(uint32 data) const
+    uint32 GetData(uint32 data) const override
     {
         if (data == DATA_VEHICLE_TARGET)
             return currentVehicleTarget;
@@ -302,7 +302,7 @@ struct boss_morchok : public BossAI
         return events.GetNextEventTime(data) - events.GetTimer();
     }
 
-    void SetData(uint32 data, uint32 value)
+    void SetData(uint32 data, uint32 value) override
     {
         if (data == DATA_VEHICLE_TARGET)
             currentVehicleTarget = value;
@@ -400,7 +400,6 @@ struct boss_morchok : public BossAI
     }
 
   private:
-    InstanceScript* instance;
     bool _kocromSummoned;
     uint32 currentVehicleTarget;
     bool firstPhase;
@@ -411,9 +410,9 @@ struct boss_morchok : public BossAI
 
 struct boss_kohcrom : public ScriptedAI
 {
-    boss_kohcrom(Creature* creature) : ScriptedAI(creature) { instance = me->GetInstanceScript(); }
+    boss_kohcrom(Creature* creature) : ScriptedAI(creature), summons(me) { instance = me->GetInstanceScript(); }
 
-    void IsSummonedBy(Unit* summoner)
+    void IsSummonedBy(Unit* summoner) override
     {
         firstPhase = true;
         firstCrystal = true;
@@ -496,7 +495,7 @@ struct boss_kohcrom : public ScriptedAI
         }
     }
 
-    void DoAction(int32 const action)
+    void DoAction(int32 const action) override
     {
         if (action == ACTION_STOMP)
             events.ScheduleEvent(EVENT_STOMP, (Is25ManRaid() ? 5000 : 6000), 0, PHASE_ONE);
@@ -718,9 +717,9 @@ class spell_ds_target_selection : public SpellScript
 
     void Register()
     {
-        OnObjectAreaTargetSelect.Register(spell_ds_target_selection::FilterTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ENEMY);
-        OnEffectHitTarget.Register(spell_ds_target_selection::HandleDummy, EFFECT_1, SPELL_EFFECT_DUMMY);
-        OnHit.Register(spell_ds_target_selection::RemoveAuras);
+        OnObjectAreaTargetSelect.Register(&spell_ds_target_selection::FilterTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_ds_target_selection::HandleDummy, EFFECT_1, SPELL_EFFECT_DUMMY);
+        OnHit.Register(&spell_ds_target_selection::RemoveAuras);
     }
 };
 
@@ -748,7 +747,7 @@ class spell_ds_resonating_crystal_periodic : public AuraScript
         }
     }
 
-    void Register() { OnEffectPeriodic.Register(spell_ds_resonating_crystal_periodic::HandleTriggerSpell, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL); }
+    void Register() { OnEffectPeriodic.Register(&spell_ds_resonating_crystal_periodic::HandleTriggerSpell, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL); }
 };
 
 class spell_ds_resonating_crystal_explosion : public SpellScript
@@ -826,11 +825,11 @@ class spell_ds_resonating_crystal_explosion : public SpellScript
 
     void Register()
     {
-        OnObjectAreaTargetSelect.Register(spell_ds_resonating_crystal_explosion::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
-        OnObjectAreaTargetSelect.Register(spell_ds_resonating_crystal_explosion::FilterTargetsShared, EFFECT_1, TARGET_UNIT_DEST_AREA_ENEMY);
-        OnObjectAreaTargetSelect.Register(spell_ds_resonating_crystal_explosion::FilterTargetsShared, EFFECT_2, TARGET_UNIT_DEST_AREA_ENEMY);
-        OnEffectLaunch.Register(spell_ds_resonating_crystal_explosion::CountBuffs, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
-        OnEffectHitTarget.Register(spell_ds_resonating_crystal_explosion::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnObjectAreaTargetSelect.Register(&spell_ds_resonating_crystal_explosion::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_ds_resonating_crystal_explosion::FilterTargetsShared, EFFECT_1, TARGET_UNIT_DEST_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_ds_resonating_crystal_explosion::FilterTargetsShared, EFFECT_2, TARGET_UNIT_DEST_AREA_ENEMY);
+        OnEffectLaunch.Register(&spell_ds_resonating_crystal_explosion::CountBuffs, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(&spell_ds_resonating_crystal_explosion::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -904,7 +903,7 @@ class spell_ds_falling_fragments_periodic : public AuraScript
         }
     }
 
-    void Register() { OnEffectPeriodic.Register(spell_ds_falling_fragments_periodic::HandleTriggerSpell, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL); }
+    void Register() { OnEffectPeriodic.Register(&spell_ds_falling_fragments_periodic::HandleTriggerSpell, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL); }
 };
 
 class spell_ds_earthen_vortex_teleport : public SpellScript
@@ -943,9 +942,9 @@ class spell_ds_earthen_vortex_teleport : public SpellScript
 
     void Register()
     {
-        OnObjectAreaTargetSelect.Register(spell_ds_earthen_vortex_teleport::FilterEffect0, EFFECT_0, TARGET_UNIT_AREA_ENEMY);
-        OnObjectAreaTargetSelect.Register(spell_ds_earthen_vortex_teleport::FilterEffect1, EFFECT_1, TARGET_UNIT_AREA_ENEMY);
-        OnObjectAreaTargetSelect.Register(spell_ds_earthen_vortex_teleport::FilterEffect2, EFFECT_2, TARGET_UNIT_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_ds_earthen_vortex_teleport::FilterEffect0, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_ds_earthen_vortex_teleport::FilterEffect1, EFFECT_1, TARGET_UNIT_DEST_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_ds_earthen_vortex_teleport::FilterEffect2, EFFECT_2, TARGET_UNIT_DEST_AREA_ENEMY);
     }
 };
 
@@ -987,7 +986,7 @@ class spell_ds_black_blood_of_the_earth_periodic : public AuraScript
         }
     }
 
-    void Register() { OnEffectPeriodic.Register(spell_ds_black_blood_of_the_earth_periodic::HandleTriggerSpell, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL); }
+    void Register() { OnEffectPeriodic.Register(&spell_ds_black_blood_of_the_earth_periodic::HandleTriggerSpell, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL); }
 };
 
 class ExtraLOSFilter
@@ -1045,8 +1044,8 @@ class spell_ds_black_blood_of_the_earth_damage : public SpellScript
 
     void Register()
     {
-        OnObjectAreaTargetSelect.Register(spell_ds_black_blood_of_the_earth_damage::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
-        OnObjectAreaTargetSelect.Register(spell_ds_black_blood_of_the_earth_damage::FilterTargetsShared, EFFECT_1, TARGET_UNIT_DEST_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_ds_black_blood_of_the_earth_damage::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_ds_black_blood_of_the_earth_damage::FilterTargetsShared, EFFECT_1, TARGET_UNIT_DEST_AREA_ENEMY);
     }
 };
 
