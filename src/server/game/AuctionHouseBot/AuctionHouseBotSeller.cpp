@@ -44,7 +44,6 @@ bool AuctionBotSeller::Initialize()
     std::unordered_set<uint32> npcItems;
     std::unordered_set<uint32> lootItems;
     std::unordered_set<uint32> includeItems;
-    std::unordered_set<uint32> excludeItems;
 
     LOG_DEBUG("ahbot", "AHBot seller filters:");
 
@@ -55,15 +54,7 @@ bool AuctionBotSeller::Initialize()
             includeItems.insert(atoi(temp.c_str()));
     }
 
-    {
-        std::stringstream excludeStream(sAuctionBotConfig->GetAHBotExcludes());
-        std::string temp;
-        while (std::getline(excludeStream, temp, ','))
-            excludeItems.insert(atoi(temp.c_str()));
-    }
-
     LOG_DEBUG("ahbot", "Forced Inclusion %u items", (uint32)includeItems.size());
-    LOG_DEBUG("ahbot", "Forced Exclusion %u items", (uint32)excludeItems.size());
 
     LOG_DEBUG("ahbot", "Loading npc vendor items for filter..");
     CreatureTemplateContainer const* creatures = sObjectMgr->GetCreatureTemplates();
@@ -106,8 +97,7 @@ bool AuctionBotSeller::Initialize()
         if (prototype->GetQuality() >= MAX_AUCTION_QUALITY)
             continue;
 
-        // forced exclude filter
-        if (excludeItems.count(itemId))
+        if (DisableMgr::IsDisabledFor(DISABLE_TYPE_ITEM, itemId, nullptr, ITEM_DISABLE_AUCTIONHOUSE_BOT))
             continue;
 
         // forced include filter
