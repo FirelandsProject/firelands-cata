@@ -883,7 +883,8 @@ bool Unit::HasBreakableByDamageCrowdControlAura(Unit* excludeCasterChannel) cons
         if (!victim->ToCreature()->hasLootRecipient())
             victim->ToCreature()->SetLootRecipient(attacker);
 
-        if (attacker && (attacker->IsControlledByPlayer() || (attacker->ToTempSummon() && attacker->ToTempSummon()->GetSummoner() && attacker->ToTempSummon()->GetSummoner()->GetTypeId() == TYPEID_PLAYER)))
+        if (attacker &&
+            (attacker->IsControlledByPlayer() || (attacker->ToTempSummon() && attacker->ToTempSummon()->GetSummoner() && attacker->ToTempSummon()->GetSummoner()->GetTypeId() == TYPEID_PLAYER)))
             victim->ToCreature()->LowerPlayerDamageReq(health < damage ? health : damage);
     }
 
@@ -1662,7 +1663,7 @@ static float GetArmorReduction(float armor, uint8 attackerLevel)
         // Spells with melee and magic school mask, decide whether resistance or armor absorb is higher
         if (spellInfo && spellInfo->HasAttribute(SPELL_ATTR0_CU_SCHOOLMASK_NORMAL_WITH_MAGIC))
         {
-            uint32 damageAfterArmor = Unit::CalcArmorReducedDamage(attacker, victim, damage, spellInfo ,spellInfo->GetAttackType());
+            uint32 damageAfterArmor = Unit::CalcArmorReducedDamage(attacker, victim, damage, spellInfo, spellInfo->GetAttackType());
             float armorReduction = damage - damageAfterArmor;
 
             // pick the lower one, the weakest resistance counts
@@ -3214,7 +3215,9 @@ Aura* Unit::_TryStackingOrRefreshingExistingAura(AuraCreateInfo& createInfo)
             castItemGUID = createInfo.CastItem->GetGUID();
 
         // find current aura from spell and change it's stackamount, or refresh it's duration
-if (Aura* foundAura = GetOwnedAura(createInfo.GetSpellInfo()->Id, createInfo.CasterGUID, createInfo.GetSpellInfo()->HasAttribute(SPELL_ATTR0_CU_ENCHANT_PROC) ? castItemGUID : ObjectGuid::Empty))        {
+        if (Aura* foundAura =
+                GetOwnedAura(createInfo.GetSpellInfo()->Id, createInfo.CasterGUID, createInfo.GetSpellInfo()->HasAttribute(SPELL_ATTR0_CU_ENCHANT_PROC) ? castItemGUID : ObjectGuid::Empty))
+        {
             // effect masks do not match
             // extremely rare case
             // let's just recreate aura
@@ -4143,7 +4146,6 @@ void Unit::RemoveAllAuras()
         AuraMap::iterator aurIter;
         for (aurIter = m_ownedAuras.begin(); aurIter != m_ownedAuras.end();)
             RemoveOwnedAura(aurIter);
-
 
         const int maxIteration = 50;
         // give this loop a few tries, if there are still auras then log as much information as possible
@@ -6625,16 +6627,17 @@ uint32 Unit::SpellDamageBonusDone(Unit* victim, SpellInfo const* spellProto, uin
     // Done fixed damage bonus auras
     int32 DoneAdvertisedBenefit = SpellBaseDamageBonusDone(spellProto->GetSchoolMask(), true);
     // modify spell power by victim's SPELL_AURA_MOD_DAMAGE_TAKEN auras (eg Amplify/Dampen Magic)
-    DoneAdvertisedBenefit += GetTotalAuraModifier(SPELL_AURA_MOD_DAMAGE_TAKEN, [spellProto](AuraEffect const* aurEff)
-    {
-        if (spellProto->HasAttribute(SPELL_ATTR10_IGNORE_POSITIVE_DAMAGE_TAKEN_MODS) && aurEff->GetAmount() > 0)
+    DoneAdvertisedBenefit += GetTotalAuraModifier(SPELL_AURA_MOD_DAMAGE_TAKEN,
+        [spellProto](AuraEffect const* aurEff)
+        {
+            if (spellProto->HasAttribute(SPELL_ATTR10_IGNORE_POSITIVE_DAMAGE_TAKEN_MODS) && aurEff->GetAmount() > 0)
+                return false;
+
+            if ((aurEff->GetMiscValue() & spellProto->GetSchoolMask()) != 0)
+                return true;
+
             return false;
-
-        if ((aurEff->GetMiscValue() & spellProto->GetSchoolMask()) != 0)
-            return true;
-
-        return false;
-    });
+        });
 
     // Custom scripted damage
     switch (spellProto->SpellFamilyName)
@@ -7378,7 +7381,7 @@ uint32 Unit::SpellHealingBonusDone(Unit* victim, SpellInfo const* spellProto, ui
     // Done fixed damage bonus auras
     int32 DoneAdvertisedBenefit = SpellBaseHealingBonusDone(spellProto->GetSchoolMask(), true);
 
-     // modify spell power by victim's SPELL_AURA_MOD_HEALING auras (eg Amplify/Dampen Magic)
+    // modify spell power by victim's SPELL_AURA_MOD_HEALING auras (eg Amplify/Dampen Magic)
     DoneAdvertisedBenefit += victim->GetTotalAuraModifierByMiscMask(SPELL_AURA_MOD_HEALING, spellProto->GetSchoolMask());
 
     // Pets just add their bonus damage to their spell damage
@@ -7585,7 +7588,7 @@ uint32 Unit::SpellHealingBonusTaken(Unit* caster, SpellInfo const* spellProto, u
         }
     }
 
-        // Unused in Cataclysm (15595)
+    // Unused in Cataclysm (15595)
     if (damagetype == DOT)
     {
         // Healing over time taken percent
@@ -7857,7 +7860,8 @@ bool Unit::IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index, Unit
     return false;
 }
 
-uint32 Unit::MeleeDamageBonusDone(Unit* victim, uint32 pdamage, WeaponAttackType attType, SpellInfo const* spellProto /*= nullptr*/, bool useSpellBonusData /*= true*/, SpellSchoolMask damageSchoolMask /*= SPELL_SCHOOL_MASK_NORMAL*/)
+uint32 Unit::MeleeDamageBonusDone(Unit* victim, uint32 pdamage, WeaponAttackType attType, SpellInfo const* spellProto /*= nullptr*/, bool useSpellBonusData /*= true*/,
+    SpellSchoolMask damageSchoolMask /*= SPELL_SCHOOL_MASK_NORMAL*/)
 {
     if (!victim || pdamage == 0)
         return 0;
@@ -7914,12 +7918,12 @@ uint32 Unit::MeleeDamageBonusDone(Unit* victim, uint32 pdamage, WeaponAttackType
 
     SpellSchoolMask schoolMask = spellProto ? spellProto->GetSchoolMask() : damageSchoolMask;
 
-     if (!(schoolMask & SPELL_SCHOOL_MASK_NORMAL))
-         {
-    // Some spells don't benefit from pct done mods
+    if (!(schoolMask & SPELL_SCHOOL_MASK_NORMAL))
+    {
+        // Some spells don't benefit from pct done mods
         if (!spellProto || !spellProto->HasAttribute(SPELL_ATTR6_LIMIT_PCT_DAMAGE_MODS))
         {
-        // mods for SPELL_SCHOOL_MASK_NORMAL are already factored in base melee damage calculation
+            // mods for SPELL_SCHOOL_MASK_NORMAL are already factored in base melee damage calculation
             if (spellProto && !(spellProto->GetSchoolMask() & SPELL_SCHOOL_MASK_NORMAL))
             {
                 float maxModDamagePercentSchool = 0.0f;
@@ -7933,9 +7937,9 @@ uint32 Unit::MeleeDamageBonusDone(Unit* victim, uint32 pdamage, WeaponAttackType
                     maxModDamagePercentSchool = GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, spellProto->GetSchoolMask());
 
                 DoneTotalMod *= maxModDamagePercentSchool;
+            }
         }
     }
- }
 
     DoneTotalMod *= GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_DAMAGE_DONE_VERSUS, creatureTypeMask);
 
@@ -8446,7 +8450,6 @@ bool Unit::IsValidAttackTarget(Unit const* target, SpellInfo const* bySpell /*= 
     if (target->GetTypeId() == TYPEID_PLAYER && target->ToPlayer()->IsGameMaster())
         return false;
 
-
     // CvC case - can attack each other only when one of them is hostile
     if (!HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED) && !target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
         return IsHostileTo(target) || target->IsHostileTo(this);
@@ -8613,7 +8616,7 @@ bool Unit::IsValidAssistTarget(Unit const* target, SpellInfo const* bySpell /*= 
     if (target->GetTypeId() == TYPEID_PLAYER && target->ToPlayer()->IsGameMaster())
         return false;
 
-     // can't assist non-friendly targets
+    // can't assist non-friendly targets
     if (GetReactionTo(target) < REP_NEUTRAL && target->GetReactionTo(this) < REP_NEUTRAL &&
         (!ToCreature() || !(ToCreature()->GetCreatureTemplate()->type_flags & CREATURE_TYPE_FLAG_TREAT_AS_RAID_UNIT)))
         return false;
@@ -8637,7 +8640,7 @@ bool Unit::IsValidSpellAssistTarget(Unit const* target, SpellInfo const* bySpell
             return false;
 
         if (IsOnVehicle(target) || m_vehicle->GetBase()->IsOnVehicle(target))
-             return false;
+            return false;
     }
 
     // can't assist invisible
@@ -11838,7 +11841,7 @@ void Unit::PlayOneShotAnimKitId(uint16 animKitId)
 
     // Do KILL and KILLED procs. KILL proc is called only for the unit who landed the killing blow (and its owner - for pets and
     // totems) regardless of who tapped the victim
-    if (attacker &&( attacker->IsPet() || attacker->IsTotem()))
+    if (attacker && (attacker->IsPet() || attacker->IsTotem()))
     {
         // proc only once for victim
         if (Unit* owner = attacker->GetOwner())
@@ -11933,33 +11936,33 @@ void Unit::PlayOneShotAnimKitId(uint16 animKitId)
                     if (summoner->ToCreature() && summoner->IsAIEnabled())
                         summoner->ToCreature()->AI()->SummonedCreatureDies(creature, attacker);
 
-                    // Dungeon specific stuff, only applies to players killing creatures
+            // Dungeon specific stuff, only applies to players killing creatures
             if (creature->GetInstanceId())
             {
                 Map* instanceMap = creature->GetMap();
 
                 if (attacker)
                 {
-                // Player* creditedPlayer = attacker->GetCharmerOrOwnerPlayerOrPlayerItself();
-                /// @todo do instance binding anyway if the charmer/owner is offline
+                    // Player* creditedPlayer = attacker->GetCharmerOrOwnerPlayerOrPlayerItself();
+                    /// @todo do instance binding anyway if the charmer/owner is offline
 
-                if (instanceMap->IsDungeon() && ((attacker && attacker->GetCharmerOrOwnerPlayerOrPlayerItself()) || attacker == victim))
-                {
-                    if (instanceMap->IsRaidOrHeroicDungeon())
+                    if (instanceMap->IsDungeon() && ((attacker && attacker->GetCharmerOrOwnerPlayerOrPlayerItself()) || attacker == victim))
                     {
-                        if (creature->GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_INSTANCE_BIND)
-                            instanceMap->ToInstanceMap()->PermBindAllPlayers();
+                        if (instanceMap->IsRaidOrHeroicDungeon())
+                        {
+                            if (creature->GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_INSTANCE_BIND)
+                                instanceMap->ToInstanceMap()->PermBindAllPlayers();
+                        }
+                        else
+                        {
+                            // the reset time is set but not added to the scheduler
+                            // until the players leave the instance
+                            time_t resettime = GameTime::GetGameTime() + 2 * HOUR;
+                            if (InstanceSave* save = sInstanceSaveMgr->GetInstanceSave(creature->GetInstanceId()))
+                                if (save->GetResetTime() < resettime)
+                                    save->SetResetTime(resettime);
+                        }
                     }
-                    else
-                    {
-                        // the reset time is set but not added to the scheduler
-                        // until the players leave the instance
-                        time_t resettime = GameTime::GetGameTime() + 2 * HOUR;
-                        if (InstanceSave* save = sInstanceSaveMgr->GetInstanceSave(creature->GetInstanceId()))
-                            if (save->GetResetTime() < resettime)
-                                save->SetResetTime(resettime);
-                    }
-                }
                 }
             }
         }
@@ -12717,8 +12720,8 @@ Aura* Unit::AddAura(SpellInfo const* spellInfo, uint8 effMask, Unit* target)
             effMask &= ~(1 << i);
     }
 
-     if (!effMask)
-     return nullptr;
+    if (!effMask)
+        return nullptr;
 
     AuraCreateInfo createInfo(spellInfo, effMask, target);
     createInfo.SetCaster(this);
@@ -15375,5 +15378,61 @@ void Unit::GetAreaTriggerListWithSpellIDInRange(std::list<AreaTrigger*>& list, u
 
                 return false;
             });
+    }
+}
+
+bool Unit::CanHaveThreadList()
+{
+    // only creatures can have threat list
+    if (GetTypeId() != TYPEID_UNIT || IsPlayer())
+        return false;
+
+    // only alive units can have threat list
+    if (!IsAlive() || isDying())
+        return false;
+
+    // totems can not have threat list
+    if (ToCreature()->IsTotem())
+        return false;
+
+    // Dummys don't have threat lists
+    if (ToCreature()->GetScriptName() == "npc_training_dummy")
+        return false;
+
+    // summons can not have a threat list, unless they are controlled by a creature
+    if (HasUnitTypeMask(UNIT_MASK_MINION | UNIT_MASK_GUARDIAN | UNIT_MASK_CONTROLABLE_GUARDIAN))
+        return false;
+
+    return true;
+}
+
+void Unit::SetInCombatWithZone()
+{
+    if (!CanHaveThreadList())
+        return;
+
+    Map* map = GetMap();
+    if (!map->IsDungeon())
+        return;
+
+    auto const& pList = map->GetPlayers();
+
+    if (pList.isEmpty())
+        return;
+
+    for (auto itr = pList.begin(); itr != pList.end(); ++itr)
+    {
+        if (Player* player = itr->GetSource())
+        {
+            if (player->IsGameMaster())
+                continue;
+
+            if (player->IsAlive())
+            {
+                this->SetInCombatWith(player);
+                player->SetInCombatWith(this);
+                this->GetThreatManager().AddThreat(player, 0.0f);
+            }
+        }
     }
 }

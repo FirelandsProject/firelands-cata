@@ -27,17 +27,20 @@
 
 uint32 const EncounterCount = 8;
 
+// clang-format off
 enum DSDataTypes
 {
     // Bosses
-    DATA_MORCHOK                = 0,
-    DATA_WARLORD_ZONOZZ         = 1,
-    DATA_YORSAHJ_THE_UNSLEEPING = 2,
-    DATA_HAGARA_THE_STORMBINDER = 3,
-    DATA_ULTRAXION              = 4,
-    DATA_WARMASTER_BLACKHORN    = 5,
-    DATA_SPINE_OF_DEATHWING     = 6,
-    DATA_MADNESS_OF_DEATHWING   = 7,
+    DATA_MORCHOK                            = 0,
+    DATA_WARLORD_ZONOZZ                     = 1,
+    DATA_YORSAHJ_THE_UNSLEEPING             = 2,
+    DATA_HAGARA_THE_STORMBINDER             = 3,
+    DATA_ULTRAXION                          = 4,
+    DATA_WARMASTER_BLACKHORN                = 5,
+    DATA_SPINE_OF_DEATHWING                 = 6,
+    DATA_MADNESS_OF_DEATHWING               = 7,
+    // Misc
+    DATA_RAID_MODE                          = 8,
 
     // Additional Data
     DATA_DEATHWING_MADNESS_OF_DEATHWING,
@@ -46,7 +49,8 @@ enum DSDataTypes
     DATA_ALEXSTRASZA_MADNESS_OF_DEATHWING,
     DATA_NOZDORMU_MADNESS_OF_DEATHWING,
     DATA_KALECGOS_MADNESS_OF_DEATHWING,
-    DATA_TAIL_TENTACLE_MADNESS_OF_DEATHWING
+    DATA_TAIL_TENTACLE_MADNESS_OF_DEATHWING,
+
 };
 
 enum DSCreatures
@@ -54,6 +58,13 @@ enum DSCreatures
     // Bosses
     BOSS_MADNESS_OF_DEATHWING                   = 56173,
 
+    /* Morchok */
+    NPC_MORCHOK                                 = 55265,
+    NPC_RESONATING_CRYSTAL                      = 55346,
+    NPC_EARTHEN_VORTEX_VEHICLE                  = 109615,
+    NPC_WORLD_TRIGGER_VISUAL                    = 361710,
+    NPC_KOHCROM                                 = 57773,
+    
     /*Madness of Deathwing*/
     NPC_DEATHWING_MADNESS_OF_DEATHWING          = 57962,
     NPC_ARM_TENTACLE_1                          = 56167,
@@ -79,18 +90,33 @@ enum DSCreatures
     NPC_KALECGOS_MADNESS_OF_DEATHWING           = 56101
 };
 
+enum DSGlobalMisc
+{
+    SPELL_PRESENCE_OF_THE_DRAGON_SOUL           = 109247,
+    SPELL_POWER_OF_THE_ASPECTS                  = 109251, // 5 PCT
+    SPELL_GUNSHIP_ENGINE_SOUND                  = 109654, // casted by 22517 at -1699.474 Y: -2388.026 Z: 340.1926
+    LOOT_MODE_LFR                               = 2,
+    RAID_MODE_UNKNOWN                           = 0,
+    RAID_MODE_NORMAL                            = 1,
+    RAID_MODE_LFR                               = 2,
+    RAID_NERF_ACTIVE                            = 0,
+    RAID_NERF_INACTIVE                          = 1
+};
+
 enum DSGameObjectIds
 {
-    GO_ELEMENTIUM_FRAGMENT_10_NORMAL = 210079,
-    GO_ELEMENTIUM_FRAGMENT_25_NORMAL = 210218,
-    GO_ELEMENTIUM_FRAGMENT_25_LFR    = 210220,
-    GO_ELEMENTIUM_FRAGMENT_10_HEROIC = 210219,
-    GO_ELEMENTIUM_FRAGMENT_25_HEROIC = 210217
+     // Morchok
+    GO_FALLING_FRAGMENT                         = 209596,
+    GO_ELEMENTIUM_FRAGMENT_10_NORMAL            = 210079,
+    GO_ELEMENTIUM_FRAGMENT_25_NORMAL            = 210218,
+    GO_ELEMENTIUM_FRAGMENT_25_LFR               = 210220,
+    GO_ELEMENTIUM_FRAGMENT_10_HEROIC            = 210219,
+    GO_ELEMENTIUM_FRAGMENT_25_HEROIC            = 210217
 };
 
 enum DSSpells
 {
-    SPELL_CALM_MAELSTROM_SKYBOX = 109480
+    SPELL_CALM_MAELSTROM_SKYBOX                 = 109480
 };
 
 enum DSMapObjIds
@@ -100,19 +126,16 @@ enum DSMapObjIds
     * 1, 0, 60,  0, 0, 0  -- Talk
     * 1, 0, 213, 0, 0, 0  -- Scream in Agony
     */
-    MAP_OBJ_ID_SPINE_OF_DEATHWING_HEAD  = 6574436,
+    MAP_OBJ_ID_SPINE_OF_DEATHWING_HEAD          = 6574436,
     /*
     * Data Values:
     * 1, 1, [(0 - 100)], 0, 0, 0 -- Skybox cloud speed
     */
-    MAP_OBJ_ID_SKYFIRE_SKYBOX           = 6858573
+    MAP_OBJ_ID_SKYFIRE_SKYBOX                   = 6858573
 };
+// clang-format on
 
-template<class AI>
-AI* GetDragonSoulAI(Creature* creature)
-{
-    return GetInstanceAI<AI>(creature, DSScriptName);
-}
+template <class AI> AI* GetDragonSoulAI(Creature* creature) { return GetInstanceAI<AI>(creature, DSScriptName); }
 
 #define RegisterDragonSoulCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetDragonSoulAI)
 
