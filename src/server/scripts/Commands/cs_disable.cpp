@@ -51,6 +51,7 @@ public:
             { "outdoorpvp",           rbac::RBAC_PERM_COMMAND_DISABLE_REMOVE_OUTDOORPVP,           true, &HandleRemoveDisableOutdoorPvPCommand,          "" },
             { "vmap",                 rbac::RBAC_PERM_COMMAND_DISABLE_REMOVE_VMAP,                 true, &HandleRemoveDisableVmapCommand,                "" },
             { "mmap",                 rbac::RBAC_PERM_COMMAND_DISABLE_REMOVE_MMAP,                 true, &HandleRemoveDisableMMapCommand,                "" },
+            { "item",                 rbac::RBAC_PERM_COMMAND_DISABLE_REMOVE_ITEM,                 true, &HandleRemoveDisableItemCommand,                "" },
         };
         static std::vector<ChatCommand> addDisableCommandTable =
         {
@@ -62,6 +63,7 @@ public:
             { "outdoorpvp",           rbac::RBAC_PERM_COMMAND_DISABLE_ADD_OUTDOORPVP,           true, &HandleAddDisableOutdoorPvPCommand,             "" },
             { "vmap",                 rbac::RBAC_PERM_COMMAND_DISABLE_ADD_VMAP,                 true, &HandleAddDisableVmapCommand,                   "" },
             { "mmap",                 rbac::RBAC_PERM_COMMAND_DISABLE_ADD_MMAP,                 true, &HandleAddDisableMMapCommand,                   "" },
+            { "item",                 rbac::RBAC_PERM_COMMAND_DISABLE_ADD_ITEM,                 true, &HandleAddDisableItemCommand,                   "" },
         };
         static std::vector<ChatCommand> disableCommandTable =
         {
@@ -183,6 +185,17 @@ public:
                 disableTypeStr = "mmap";
                 break;
             }
+            case DISABLE_TYPE_ITEM:
+            {
+                if (!sItemStore.LookupEntry(entry))
+                {
+                    handler->PSendSysMessage(LANG_COMMAND_NOITEMFOUND);
+                    handler->SetSentErrorMessage(true);
+                    return false;
+                }
+                disableTypeStr = "item";
+                break;
+            }
             default:
                 break;
         }
@@ -274,6 +287,14 @@ public:
         return HandleAddDisables(handler, args, DISABLE_TYPE_MMAP);
     }
 
+    static bool HandleAddDisableItemCommand(ChatHandler* handler, char const* args)
+    {
+        if (!*args)
+            return false;
+
+        return HandleAddDisables(handler, args, DISABLE_TYPE_ITEM);
+    }
+
     static bool HandleRemoveDisables(ChatHandler* handler, char const* args, uint8 disableType)
     {
         char* entryStr = strtok((char*)args, " ");
@@ -309,6 +330,9 @@ public:
                 break;
             case DISABLE_TYPE_MMAP:
                 disableTypeStr = "mmap";
+                break;
+            case DISABLE_TYPE_ITEM:
+                disableTypeStr = "item";
                 break;
         }
 
@@ -394,6 +418,14 @@ public:
             return false;
 
         return HandleRemoveDisables(handler, args, DISABLE_TYPE_MMAP);
+    }
+
+    static bool HandleRemoveDisableItemCommand(ChatHandler* handler, char const* args)
+    {
+        if (!*args)
+            return false;
+
+        return HandleRemoveDisables(handler, args, DISABLE_TYPE_ITEM);
     }
 };
 
