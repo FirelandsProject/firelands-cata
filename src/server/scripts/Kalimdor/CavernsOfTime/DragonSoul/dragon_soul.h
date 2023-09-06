@@ -31,16 +31,48 @@ uint32 const EncounterCount = 8;
 enum DSDataTypes
 {
     // Bosses
-    DATA_MORCHOK                            = 0,
-    DATA_WARLORD_ZONOZZ                     = 1,
-    DATA_YORSAHJ_THE_UNSLEEPING             = 2,
-    DATA_HAGARA_THE_STORMBINDER             = 3,
-    DATA_ULTRAXION                          = 4,
-    DATA_WARMASTER_BLACKHORN                = 5,
-    DATA_SPINE_OF_DEATHWING                 = 6,
-    DATA_MADNESS_OF_DEATHWING               = 7,
+    DATA_MORCHOK                             = 0,
+    DATA_WARLORD_ZONOZZ                      = 1,
+    DATA_YORSAHJ_THE_UNSLEEPING              = 2,
+    DATA_HAGARA_THE_STORMBINDER              = 3,
+    DATA_ULTRAXION                           = 4,
+    DATA_WARMASTER_BLACKHORN                 = 5,
+    DATA_SPINE_OF_DEATHWING                  = 6,
+    DATA_MADNESS_OF_DEATHWING                = 7,
     // Misc
-    DATA_RAID_MODE                          = 8,
+    DATA_RAID_MODE                           = 8,
+
+     // Ultraxion
+    DATA_ALEXSTRASZA_ULTRAXION               = 9,
+    DATA_KALECGOS_ULTRAXION                  = 10,
+    DATA_YSERA_ULTRAXION                     = 11,
+    DATA_NOZDORMU_ULTRAXION                  = 12,
+    DATA_THRALL_ULTRAXION                    = 13,
+    DATA_DEATHWING_ULTRAXION                 = 14,
+    DATA_GAUNTLET_TRIGGER                    = 15,
+    DATA_THE_DRAGON_SOUL_ULTRAXION           = 16,
+
+    DATA_RESTORED_MANA                       = 17,
+    DATA_ALLIANCE_SHIP_CINEMATIC             = 18,
+    DATA_HORDE_SHIP_CINEMATIC                = 19,
+    DATA_ALLIANCE_BATTLE_SHIP                = 20,
+    DATA_DW_SPINE_BACKPLATE_1                = 21,
+    DATA_DW_SPINE_BACKPLATE_2                = 22,
+    DATA_DW_SPINE_BACKPLATE_3                = 23,
+    DATA_DW_SPINE_BACKPLATE_CNT              = 24,
+    DATA_DW_SPINE_ROLL_INFO                  = 25,
+
+    DATA_ULTRAXION_CHEST                     = 26,
+    DATA_ULTRAXION_CHEST_LFR                 = 27,
+    DATA_SPINE_CHEST                         = 28,
+    DATA_SPINE_CHEST_LFR                     = 29,
+    DATA_MADNESS_CHEST                       = 30,
+    DATA_MADNESS_CHEST_LFR                   = 31,
+    DATA_ACTIVE_PLATFORM                     = 32,
+    DATA_MAELSTROM_PORTAL                    = 33,
+    DATA_LFR_PART                            = 34,
+    DATA_MADNESS_PLATFORM_COUNT              = 35,
+    DATA_RAID_NERF                           = 36,
 
     // Additional Data
     DATA_DEATHWING_MADNESS_OF_DEATHWING,
@@ -58,12 +90,24 @@ enum DSCreatures
     // Bosses
     BOSS_MADNESS_OF_DEATHWING                   = 56173,
 
-    /* Morchok */
     NPC_MORCHOK                                 = 55265,
+    NPC_YORSAHJ                                 = 55312,
     NPC_RESONATING_CRYSTAL                      = 55346,
     NPC_EARTHEN_VORTEX_VEHICLE                  = 109615,
     NPC_WORLD_TRIGGER_VISUAL                    = 361710,
     NPC_KOHCROM                                 = 57773,
+
+    /* Yorsahj */
+    BLUE_GLOBULE                                = 55866,    // Cobalt Globule      - SPELL_SUMMON_MANAVOID
+    RED_GLOBULE                                 = 55865,     // Crimson Globule     - SPELL_SEARING_BLOOD
+    GREEN_GLOBULE                               = 55862,   // Acidic Globule      - SPELL_DIGESTIVE_ACID
+    YELLOW_GLOBULE                              = 55864,  // Glowing Globule     - SPELL_VOID_BOLT_AOE
+    VIOLETT_GLOBULE                             = 55863, // Shadowed Globule    - SPELL_DEEP_CORRUPTION
+    BLACK_GLOBULE                               = 55867,   // Dark Globule        - SPELL_CORRUPTED_MINIONS
+    NPC_MANA_VOID                               = 56231,
+    NPC_FORGOTTEN_ONE                           = 56265, // Corrupted Minion
+    NPC_TIME_WARDEN                             = 57474,
+    NPC_HALO_JUMP_YORSAHJ                       = 57629,
     
     /*Madness of Deathwing*/
     NPC_DEATHWING_MADNESS_OF_DEATHWING          = 57962,
@@ -87,7 +131,14 @@ enum DSCreatures
     NPC_YSERA_MADNESS_OF_DEATHWING              = 56100,
     NPC_ALEXSTRASZA_MADNESS_OF_DEATHWING        = 56099,
     NPC_NOZDORMU_MADNESS_OF_DEATHWING           = 56102,
-    NPC_KALECGOS_MADNESS_OF_DEATHWING           = 56101
+    NPC_KALECGOS_MADNESS_OF_DEATHWING           = 56101,
+     // Portals
+    NPC_TRAVEL_TO_WYRMREST_TEMPLE               = 57328, // MORCHOK
+    NPC_TRAVEL_TO_WYRMREST_BASE                 = 57882,   // MORCHOK
+    NPC_TRAVEL_TO_WYRMREST_SUMMIT               = 57379, // ZON'OZZ Y YOR'SAHJ
+    NPC_TRAVEL_TO_EYE_OF_ETERNITY               = 57377, // HAGARA
+    NPC_TRAVEL_TO_SKYFIRE_DECK                  = 57378,    // BLACKHORN
+    NPC_TRAVEL_TO_THE_MAELSTORM                 = 57443,   // SPINE
 };
 
 enum DSGlobalMisc
@@ -117,6 +168,14 @@ enum DSGameObjectIds
 enum DSSpells
 {
     SPELL_CALM_MAELSTROM_SKYBOX                 = 109480
+};
+
+enum DSWorldStates
+{
+    WS_BLACK_YELLOW = 6221,
+    WS_RED_GREEN = 6222,
+    WS_BLACK_BLUE = 6223,
+    WS_PURPLE_YELLOW = 6224
 };
 
 enum DSMapObjIds
