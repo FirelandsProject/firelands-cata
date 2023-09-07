@@ -50,6 +50,8 @@ void UnitAI::OnCharmed(bool isNew)
 {
     if (!isNew)
         me->ScheduleAIChange();
+    else
+        me->IsAIEnabledAlt = isNew;
 }
 
 void UnitAI::AttackStartCaster(Unit* victim, float dist)

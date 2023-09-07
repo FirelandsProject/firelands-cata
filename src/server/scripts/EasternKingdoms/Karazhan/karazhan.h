@@ -57,13 +57,15 @@ enum KZDataTypes
     DATA_MASTERS_TERRACE_DOOR_2     = 28,
     DATA_GO_SIDE_ENTRANCE_DOOR      = 29,
     DATA_GO_BLACKENED_URN           = 30,
+    DATA_SPAWN_OPERA_DECORATIONS    = 31,
+    DATA_MIDNIGHT                   = 32,
 
     // Chess Event
-    CHESS_EVENT_TEAM                = 31,
-    DATA_CHESS_REINIT_PIECES        = 32,
-    DATA_CHESS_GAME_PHASE           = 33,
-    DATA_ECHO_OF_MEDIVH             = 34,
-    DATA_DUST_COVERED_CHEST         = 35
+    CHESS_EVENT_TEAM                = 33,
+    DATA_CHESS_REINIT_PIECES        = 34,
+    DATA_CHESS_GAME_PHASE           = 35,
+    DATA_ECHO_OF_MEDIVH             = 36,
+    DATA_DUST_COVERED_CHEST         = 37
 };
 
 enum KZOperaEvents

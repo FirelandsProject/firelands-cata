@@ -16,6 +16,7 @@
  */
 
 #include "Creature.h"
+#include "CreatureAI.h"
 #include "BattlegroundMgr.h"
 #include "CellImpl.h"
 #include "Common.h"
@@ -764,6 +765,17 @@ void Creature::Update(uint32 diff)
             // CORPSE/DEAD state will processed at next tick (in other case death timer will be updated unexpectedly)
             if (!IsAlive())
                 break;
+
+            // if creature is charmed, switch to charmed AI
+            if (NeedChangeAI)
+            {
+                UpdateCharmAI();
+                NeedChangeAI = false;
+                IsAIEnabledAlt = true;
+
+                // update combat state, if npc is not in combat - return to spawn correctly by calling EnterEvadeMode
+                SelectVictim();
+            }
 
             GetThreatManager().Update(diff);
             if (_spellFocusInfo.ReacquiringTargetDelay)

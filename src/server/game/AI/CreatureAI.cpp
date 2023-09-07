@@ -51,6 +51,8 @@ void CreatureAI::OnCharmed(bool isNew)
             EnterEvadeMode(EVADE_REASON_NO_HOSTILES);
     }
     UnitAI::OnCharmed(isNew);
+    me->NeedChangeAI = true;
+    me->IsAIEnabledAlt = false;
 }
 
 AISpellInfoType* UnitAI::AISpellInfo;
