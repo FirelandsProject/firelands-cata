@@ -32,6 +32,7 @@
 
 #include <array>
 #include <SpellMgr.h>
+#include <PlayerAI.h>
 
 enum EchoOfMedivhGossipOptions
 {
@@ -384,7 +385,7 @@ class npc_echo_of_medivh : public CreatureScript
                 return _instance->GetData(CHESS_EVENT_TEAM) == TEAM_HORDE;
             }
 
-            return false;
+            return true;
         }
 
         Creature* GetHostileTargetForChangeFacing(Creature* piece, KarazhanChessOrientationType orientation)
@@ -1164,7 +1165,7 @@ class npc_echo_of_medivh : public CreatureScript
                 break;
             }
 
-            return false;
+            return true;
         }
 
         void HandleCheat()
@@ -1361,7 +1362,7 @@ class npc_echo_of_medivh : public CreatureScript
             }
 
             SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
-            return false;
+            return true;
         }
 
         bool GossipSelect(Player* player, uint32 /*sender*/, uint32 gossipListId) override
@@ -1405,7 +1406,7 @@ class npc_echo_of_medivh : public CreatureScript
             default:
                 break;
             }
-            return false;
+            return true;
         }
 
       private:
@@ -1511,12 +1512,12 @@ class npc_chesspiece : public CreatureScript
 
         void CastChangeFacing(Creature* piece, Creature* trigger) { piece->CastSpell(trigger, SPELL_CHANGE_FACING, true); }
 
-        void OnCharmed(bool apply) override
+        void OnCharmed(bool isNew) override
         {
             Unit* charmer = me->GetCharmer();
-            if (apply)
+            if (isNew)
             {
-                ASSERT(charmer);
+                //ASSERT(charmer);
                 _charmerGUID = charmer->GetGUID();
                 me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                 me->SetWalk(true);
@@ -1570,7 +1571,7 @@ class npc_chesspiece : public CreatureScript
                 _charmerGUID.Clear();
             }
 
-            if (apply)
+            if (isNew)
             {
                 if (_instance->GetData(CHESS_EVENT_TEAM) == TEAM_ALLIANCE)
                 {
@@ -1946,13 +1947,13 @@ class npc_chesspiece : public CreatureScript
             if (player->GetTeamId() == TEAM_ALLIANCE && me->GetFaction() != CHESS_FACTION_ALLIANCE && chessPhase < CHESS_PHASE_PVE_FINISHED)
             {
                 SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
-                return false;
+                return true;
             }
 
             if (player->GetTeamId() == TEAM_HORDE && me->GetFaction() != CHESS_FACTION_HORDE && chessPhase < CHESS_PHASE_PVE_FINISHED)
             {
                 SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
-                return false;
+                return true;
             }
 
             bool ok = true;
@@ -1991,7 +1992,7 @@ class npc_chesspiece : public CreatureScript
             }
 
             SendGossipMenuFor(player, player->GetGossipTextId(me), me->GetGUID());
-            return false;
+            return true;
         }
 
         bool GossipSelect(Player* player, uint32 /*sender*/, uint32 gossipListId) override
@@ -2029,7 +2030,7 @@ class npc_chesspiece : public CreatureScript
             }
 
             CloseGossipMenuFor(player);
-            return false;
+            return true;
         }
 
       private:
@@ -2077,16 +2078,22 @@ class spell_control_piece : public SpellScriptLoader
     {
         void HandleEffectRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
         {
-            if (Player* player = GetTarget()->ToPlayer())
+            if (Player* player = GetCaster()->GetCharmerOrOwner()->ToPlayer())
             {
                 player->StopCastingBindSight();
             }
         }
 
-        void Register() override { OnEffectRemove.Register(&spell_control_piece_AuraScript::HandleEffectRemove, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL); }
+        void Register() override
+        {
+            OnEffectRemove.Register(&spell_control_piece_AuraScript::HandleEffectRemove, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        }
     };
 
-    AuraScript* GetAuraScript() const override { return new spell_control_piece_AuraScript(); }
+    AuraScript* GetAuraScript() const override
+    {
+        return new spell_control_piece_AuraScript();
+    }
 };
 
 void AddSC_boss_chess_event()

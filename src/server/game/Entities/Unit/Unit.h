@@ -975,6 +975,7 @@ class FC_GAME_API Unit : public WorldObject
 
     virtual ~Unit();
 
+    bool IsAIEnabledAlt, NeedChangeAI;
     bool IsAIEnabled() const
     {
         return (i_AI != nullptr);
@@ -1890,7 +1891,7 @@ class FC_GAME_API Unit : public WorldObject
     }
     CharmInfo* InitCharmInfo();
     void DeleteCharmInfo();
-
+    void UpdateCharmAI();
     // base client control of this unit (possess effects, vehicles and similar). Not affected by temporary CC.
     bool IsCharmerOrSelfPlayer() const
     {
@@ -2857,7 +2858,6 @@ class FC_GAME_API Unit : public WorldObject
     friend class ThreatManager;
     ThreatManager m_threatManager;
 
-    void UpdateCharmAI();
     void RestoreDisabledAI();
     typedef std::stack<std::shared_ptr<UnitAI>> UnitAIStack;
     UnitAIStack i_AIs;

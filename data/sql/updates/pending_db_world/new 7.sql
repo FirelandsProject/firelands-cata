@@ -5,6 +5,7 @@ UPDATE `creature_template` SET `ScriptName` = "npc_echo_of_medivh" WHERE `entry`
 UPDATE `creature_template` SET `ScriptName` = "npc_chess_move_trigger", `flags_extra`=130 WHERE `entry`=22519;
 
 DELETE FROM `creature` WHERE `id`=22519;
+DELETE FROM `creature` WHERE  `guid` IN (86488,86489,86490);
 
 DELETE FROM `creature_template_addon` WHERE `entry`=22521;
 INSERT INTO `creature_template_addon` (`entry`,`bytes2`,`auras`) VALUES
@@ -166,30 +167,57 @@ INSERT INTO `conditions` (`SourceTypeOrReferenceId`,`SourceGroup`,`SourceEntry`,
 
 DELETE FROM `creature_text` WHERE `CreatureID`=16816;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
-(16816,0,0,'Very well. Let the game begin.',14,0,100,0,0,0,0,10338,0,'Echo of Medivh - EventBegin'),
-(16816,1,0,'Perhaps a change is in order.',14,0,100,0,0,0,0,10357,0,'Echo of Medivh - Cheat 1'),
-(16816,1,1,'Time for an alternative scenario.',14,0,100,0,0,0,0,10358,0,'Echo of Medivh - Cheat 2'),
-(16816,1,2,'One must not become too complacent.',14,0,100,0,0,0,0,10359,0,'Echo of Medivh - Cheat 3'),
-(16816,2,0,'%s cheats',16,0,100,0,0,0,0,21910,0,'Echo of Medivh - CheatEmote'),
-(16816,3,0,'Let us see.',14,0,100,0,0,0,0,10340,0,'Echo of Medivh - Player Loose Pawn 1'),
-(16816,3,1,'A transparent stratagem.',14,0,100,0,0,0,0,10339,0,'Echo of Medivh - Player Loose Pawn 2'),
-(16816,3,2,'Ah, the wheels have begun to turn.',14,0,100,0,0,0,0,10341,0,'Echo of Medivh - Player Loose Pawn 3'),
-(16816,4,0,'Foolish! Very foolish!',14,0,100,0,0,0,0,10345,0,'Echo of Medivh - Player Loose Rook'),
-(16816,5,0,'Yes... all according to plan.',14,0,100,0,0,0,0,10349,0,'Echo of Medivh - Player Loose Knight'),
-(16816,6,0,'The slightest loss of concentration is all it takes.',14,0,100,0,0,0,0,10347,0,'Echo of Medivh - Player Loose Bishop'),
-(16816,7,0,'Now it gets interesting.',14,0,100,0,0,0,0,10351,0,'Echo of Medivh - Player Loose Queen'),
-(16816,8,0,'As it should be.',14,0,100,0,0,0,0,10354,0,'Echo of Medivh - Player Loose King'),
-(16816,9,0,'Hmm.',14,0,100,0,0,0,0,10342,0,'Echo of Medivh - Medivh Loose Pawn 1'),
-(16816,9,1,'No matter.',14,0,100,0,0,0,0,10344,0,'Echo of Medivh - Medivh Loose Pawn 2'),
-(16816,9,2,'Interesting.',14,0,100,0,0,0,0,10343,0,'Echo of Medivh - Medivh Loose Pawn 3'),
-(16816,10,0,'A minor concern.',14,0,100,0,0,0,0,10346,0,'Echo of Medivh - Medivh Loose Rook'),
-(16816,11,0,'Yes...of course.',14,0,100,0,0,0,0,10350,0,'Echo of Medivh - Medivh Loose Knight'),
-(16816,12,0,'A necessary sacrifice.',14,0,100,0,0,0,0,10348,0,'Echo of Medivh - Medivh Loose Bishop'),
-(16816,13,0,'Ahh, I should have known.',14,0,100,0,0,0,0,10352,0,'Echo of Medivh - Medivh Loose Queen'),
-(16816,14,0,'And so, the end draws near',14,0,100,0,0,0,0,10353,0,'Echo of Medivh - Medivh Loose King'),
-(16816,15,0,'Nothing less than perfection will do.',14,0,100,0,0,0,0,10356,0,'Echo of Medivh - Checkmate 1'),
-(16816,15,1,'And so it ends.',14,0,100,0,0,0,0,10355,0,'Echo of Medivh - Checkmate 2'),
-(16816,16,0,'The halls of Karazhan shake, as the curse binding the doors of the Gamesman\'s Hall is lifted.',16,0,100,0,0,0,0,20430,0,'Echo of Medivh - Event Ended');
+(16816,0,0,'Very well. Let the game begin.',14,0,100,0,0,0,0,78000,0,'Echo of Medivh - EventBegin'),
+(16816,1,0,'Perhaps a change is in order.',14,0,100,0,0,0,0,78001,0,'Echo of Medivh - Cheat 1'),
+(16816,1,1,'Time for an alternative scenario.',14,0,100,0,0,0,0,78002,0,'Echo of Medivh - Cheat 2'),
+(16816,1,2,'One must not become too complacent.',14,0,100,0,0,0,0,78003,0,'Echo of Medivh - Cheat 3'),
+(16816,2,0,'%s cheats',16,0,100,0,0,0,0,78004,0,'Echo of Medivh - CheatEmote'),
+(16816,3,0,'Let us see.',14,0,100,0,0,0,0,78005,0,'Echo of Medivh - Player Loose Pawn 1'),
+(16816,3,1,'A transparent stratagem.',14,0,100,0,0,0,0,78006,0,'Echo of Medivh - Player Loose Pawn 2'),
+(16816,3,2,'Ah, the wheels have begun to turn.',14,0,100,0,0,0,0,78007,0,'Echo of Medivh - Player Loose Pawn 3'),
+(16816,4,0,'Foolish! Very foolish!',14,0,100,0,0,0,0,78008,0,'Echo of Medivh - Player Loose Rook'),
+(16816,5,0,'Yes... all according to plan.',14,0,100,0,0,0,0,78009,0,'Echo of Medivh - Player Loose Knight'),
+(16816,6,0,'The slightest loss of concentration is all it takes.',14,0,100,0,0,0,0,78010,0,'Echo of Medivh - Player Loose Bishop'),
+(16816,7,0,'Now it gets interesting.',14,0,100,0,0,0,0,78011,0,'Echo of Medivh - Player Loose Queen'),
+(16816,8,0,'As it should be.',14,0,100,0,0,0,0,78012,0,'Echo of Medivh - Player Loose King'),
+(16816,9,0,'Hmm.',14,0,100,0,0,0,0,78013,0,'Echo of Medivh - Medivh Loose Pawn 1'),
+(16816,9,1,'No matter.',14,0,100,0,0,0,0,78014,0,'Echo of Medivh - Medivh Loose Pawn 2'),
+(16816,9,2,'Interesting.',14,0,100,0,0,0,0,78015,0,'Echo of Medivh - Medivh Loose Pawn 3'),
+(16816,10,0,'A minor concern.',14,0,100,0,0,0,0,78016,0,'Echo of Medivh - Medivh Loose Rook'),
+(16816,11,0,'Yes...of course.',14,0,100,0,0,0,0,78017,0,'Echo of Medivh - Medivh Loose Knight'),
+(16816,12,0,'A necessary sacrifice.',14,0,100,0,0,0,0,78018,0,'Echo of Medivh - Medivh Loose Bishop'),
+(16816,13,0,'Ahh, I should have known.',14,0,100,0,0,0,0,78019,0,'Echo of Medivh - Medivh Loose Queen'),
+(16816,14,0,'And so, the end draws near',14,0,100,0,0,0,0,78020,0,'Echo of Medivh - Medivh Loose King'),
+(16816,15,0,'Nothing less than perfection will do.',14,0,100,0,0,0,0,78021,0,'Echo of Medivh - Checkmate 1'),
+(16816,15,1,'And so it ends.',14,0,100,0,0,0,0,78022,0,'Echo of Medivh - Checkmate 2'),
+(16816,16,0,'The halls of Karazhan shake, as the curse binding the doors of the Gamesman\'s Hall is lifted.',16,0,100,0,0,0,0,78023,0,'Echo of Medivh - Event Ended');
+
+DELETE FROM `broadcast_text` WHERE `ID` IN (78000,78001,78002,78003,78004,78005,78006,78007,78008,78009,78010,78011,78012,78013,78014,78015,78016,78017,78018,78019,78020,78021,78022,78023);
+INSERT INTO `broadcast_text` (`ID`, `LanguageID`, `Text`, `Text1`, `EmoteID1`, `EmoteID2`, `EmoteID3`, `EmoteDelay1`, `EmoteDelay2`, `EmoteDelay3`, `SoundEntriesID`, `EmotesID`, `Flags`, `VerifiedBuild`) VALUES 
+(78000, 0, 'Very well. Let the game begin.', 'Very well. Let the game begin.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78001, 0, 'Perhaps a change is in order.', 'Perhaps a change is in order.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78002, 0, 'Time for an alternative scenario.', 'Time for an alternative scenario.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78003, 0, 'One must not become too complacent.', 'One must not become too complacent.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78004, 0, '%s cheats', '%s cheats', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78005, 0, 'Let us see.', 'Let us see.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78006, 0, 'A transparent stratagem.', 'A transparent stratagem.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78007, 0, 'Ah, the wheels have begun to turn.', 'Ah, the wheels have begun to turn.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78008, 0, 'Foolish! Very foolish!', 'Foolish! Very foolish!', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78009, 0, 'Yes... all according to plan.', 'Yes... all according to plan.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78010, 0, 'The slightest loss of concentration is all it takes.', 'The slightest loss of concentration is all it takes.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78011, 0, 'Now it gets interesting.', 'Now it gets interesting.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78012, 0, 'As it should be.', 'As it should be.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78013, 0, 'Hmm.', 'Hmm.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78014, 0, 'No matter.', 'No matter.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78015, 0, 'Interesting.', 'Interesting.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78016, 0, 'A minor concern.', 'A minor concern.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78017, 0, 'Yes...of course.', 'Yes...of course.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78018, 0, 'A necessary sacrifice.', 'A necessary sacrifice.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78019, 0, 'Ahh, I should have known.', 'Ahh, I should have known.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78020, 0, 'And so, the end draws near', 'And so, the end draws near', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78021, 0, 'Nothing less than perfection will do.', 'Nothing less than perfection will do.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78022, 0, 'And so it ends.', 'And so it ends.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+(78023, 0, 'The halls of Karazhan shake, as the curse binding the doors of the Gamesman\'s Hall is lifted.', 'The halls of Karazhan shake, as the curse binding the doors of the Gamesman\'s Hall is lifted.', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
 
 DELETE FROM `gossip_menu_option` WHERE `menuid` IN (8404,7413,8354,8345,8346,8347,8348,8349,8355,8362,8366,8367,8368);
 UPDATE `creature_template` SET `npcflag`=0 WHERE `entry` IN (17469,17211,21748,21664,21750,21683,21747,21682,21726,21160,21752,21684);
@@ -197,7 +225,3 @@ UPDATE `creature_template` SET `npcflag`=0 WHERE `entry` IN (17469,17211,21748,2
 DELETE FROM `spell_script_names` WHERE `spell_id`=30019;
 INSERT INTO `spell_script_names` VALUES
 (30019,'spell_control_piece');
-
-DELETE FROM `creature` WHERE  `guid`=86488;
-DELETE FROM `creature` WHERE  `guid`=86489;
-DELETE FROM `creature` WHERE  `guid`=86490;
