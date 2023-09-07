@@ -5396,6 +5396,15 @@ void SpellMgr::LoadSpellInfoCorrections()
     // Rip
     ApplySpellFix({1079}, [](SpellInfo* spellInfo) { spellInfo->AttributesEx8 |= SPELL_ATTR8_PERIODIC_CAN_CRIT; });
 
+    // Game In Session
+    ApplySpellFix({39331},
+        [](SpellInfo* spellInfo)
+        {
+            spellInfo->Effects[EFFECT_0].Effect = SPELL_EFFECT_APPLY_AURA;
+            spellInfo->Attributes |= SPELL_ATTR0_NO_AURA_CANCEL;
+            spellInfo->AuraInterruptFlags = SpellAuraInterruptFlags::LeaveWorld;
+        });
+
     for (uint32 i = 0; i < GetSpellInfoStoreSize(); ++i)
     {
         SpellInfo* spellInfo = mSpellInfoMap[i];

@@ -322,6 +322,10 @@ class FC_GAME_API UnitAI
         static AISpellInfoType* AISpellInfo;
         static void FillAISpellInfo();
 
+        virtual void sGossipHello(Player* /*player*/) {}
+        virtual void sGossipSelect(Player* /*player*/, uint32 /*sender*/, uint32 /*action*/) {}
+        virtual void sGossipSelectCode(Player* /*player*/, uint32 /*sender*/, uint32 /*action*/, char const* /*code*/) {}
+
         // Called when a game event starts or ends
         virtual void OnGameEvent(bool /*start*/, uint16 /*eventId*/) { }
 

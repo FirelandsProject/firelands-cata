@@ -826,6 +826,18 @@ void SmartAI::SetEvadeDisabled(bool disable)
     _evadeDisabled = disable;
 }
 
+void SmartAI::sGossipHello(Player* player)
+{
+    GetScript()->ProcessEventsFor(SMART_EVENT_GOSSIP_HELLO, player);
+}
+
+void SmartAI::sGossipSelect(Player* player, uint32 sender, uint32 action)
+{
+    GetScript()->ProcessEventsFor(SMART_EVENT_GOSSIP_SELECT, player, sender, action);
+}
+
+void SmartAI::sGossipSelectCode(Player* /*player*/, uint32 /*sender*/, uint32 /*action*/, const char* /*code*/) {}
+
 bool SmartAI::GossipHello(Player* player)
 {
     _gossipReturn = false;
