@@ -51,27 +51,25 @@ enum CreatureFlagsExtra : uint32
     CREATURE_FLAG_EXTRA_NO_COMBAT            = 0x00002000,       // creature is not allowed to enter combat
     CREATURE_FLAG_EXTRA_WORLDEVENT           = 0x00004000,       // custom flag for world event creatures (left room for merging)
     CREATURE_FLAG_EXTRA_GUARD                = 0x00008000,       // Creature is guard
-    CREATURE_FLAG_EXTRA_UNUSED_16            = 0x00010000,
+    CREATURE_FLAG_EXTRA_IGNORE_FEIGN_DEATH   = 0x00010000,       // creature ignores feign death
     CREATURE_FLAG_EXTRA_NO_CRIT              = 0x00020000,       // creature can't do critical strikes
     CREATURE_FLAG_EXTRA_NO_SKILLGAIN         = 0x00040000,       // creature won't increase weapon skills
     CREATURE_FLAG_EXTRA_TAUNT_DIMINISH       = 0x00080000,       // Taunt is a subject to diminishing returns on this creautre
     CREATURE_FLAG_EXTRA_ALL_DIMINISH         = 0x00100000,       // creature is subject to all diminishing returns as player are
     CREATURE_FLAG_EXTRA_NO_PLAYER_DAMAGE_REQ = 0x00200000,       // creature does not need to take player damage for kill credit
-    CREATURE_FLAG_EXTRA_UNUSED_22            = 0x00400000,
-    CREATURE_FLAG_EXTRA_UNUSED_23            = 0x00800000,
-    CREATURE_FLAG_EXTRA_UNUSED_24            = 0x01000000,
-    CREATURE_FLAG_EXTRA_UNUSED_25            = 0x02000000,
-    CREATURE_FLAG_EXTRA_UNUSED_26            = 0x04000000,
-    CREATURE_FLAG_EXTRA_UNUSED_27            = 0x08000000,
+    CREATURE_FLAG_EXTRA_AVOID_AOE            = 0x00400000,       // ignored by aoe attacks (for icc blood prince council npc - Dark Nucleus)
+    CREATURE_FLAG_EXTRA_NO_DODGE             = 0x00800000,       // target cannot dodge
+    CREATURE_FLAG_EXTRA_MODULE               = 0x01000000,
+    CREATURE_FLAG_EXTRA_DONT_CALL_ASSISTANCE = 0x02000000,       // Prevent creatures from calling for assistance on initial aggro
+    CREATURE_FLAG_DONT_OVERRIDE_ENTRY_SAI    = 0x04000000,       // Load both ENTRY and GUID specific SAI
+    CREATURE_FLAG_EXTRA_UNUSED_28            = 0x08000000,
     CREATURE_FLAG_EXTRA_DUNGEON_BOSS         = 0x10000000,       // creature is a dungeon boss (SET DYNAMICALLY, DO NOT ADD IN DB)
     CREATURE_FLAG_EXTRA_IGNORE_PATHFINDING   = 0x20000000,       // creature ignore pathfinding
     CREATURE_FLAG_EXTRA_IMMUNITY_KNOCKBACK   = 0x40000000,       // creature is immune to knockback effects
-    CREATURE_FLAG_EXTRA_UNUSED_31            = 0x80000000,
+    CREATURE_FLAG_EXTRA_HARD_RESET           = 0x80000000,
 
     // Masks
-    CREATURE_FLAG_EXTRA_UNUSED               = (CREATURE_FLAG_EXTRA_UNUSED_16 | CREATURE_FLAG_EXTRA_UNUSED_22 |
-                                                CREATURE_FLAG_EXTRA_UNUSED_23 | CREATURE_FLAG_EXTRA_UNUSED_24 | CREATURE_FLAG_EXTRA_UNUSED_25 |
-                                                CREATURE_FLAG_EXTRA_UNUSED_26 | CREATURE_FLAG_EXTRA_UNUSED_27 | CREATURE_FLAG_EXTRA_UNUSED_31),
+    CREATURE_FLAG_EXTRA_UNUSED               = (CREATURE_FLAG_EXTRA_UNUSED_28), // SKIP
 
     CREATURE_FLAG_EXTRA_DB_ALLOWED           = (0xFFFFFFFF & ~(CREATURE_FLAG_EXTRA_UNUSED | CREATURE_FLAG_EXTRA_DUNGEON_BOSS))
 };

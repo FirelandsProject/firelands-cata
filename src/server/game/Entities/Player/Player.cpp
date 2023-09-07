@@ -21134,7 +21134,7 @@ void Player::RemovePetAura(PetAura const* petSpell)
         pet->RemoveAurasDueToSpell(petSpell->GetAura(pet->GetEntry()));
 }
 
-void Player::StopCastingCharm()
+void Player::StopCastingCharm(Aura* except /*= nullptr*/)
 {
     Unit* charm = GetCharmed();
     if (!charm)
@@ -21163,7 +21163,12 @@ void Player::StopCastingCharm()
         }
     }
     if (GetCharmedGUID())
-        charm->RemoveCharmAuras();
+    {
+        charm->RemoveAurasByType(SPELL_AURA_MOD_CHARM, ObjectGuid::Empty, except);
+        charm->RemoveAurasByType(SPELL_AURA_FIXATE, ObjectGuid::Empty, except);
+        charm->RemoveAurasByType(SPELL_AURA_MOD_POSSESS, ObjectGuid::Empty, except);
+        charm->RemoveAurasByType(SPELL_AURA_AOE_CHARM, ObjectGuid::Empty, except);
+    }
 
     if (GetCharmedGUID())
     {
@@ -25395,14 +25400,15 @@ bool ItemPosCount::isContainedIn(std::vector<ItemPosCount> const& vec) const
     return false;
 }
 
-void Player::StopCastingBindSight() const
+void Player::StopCastingBindSight(Aura* except /*= nullptr*/) const
 {
     if (WorldObject* target = GetViewpoint())
     {
         if (target->isType(TYPEMASK_UNIT))
         {
-            static_cast<Unit*>(target)->RemoveAurasByType(SPELL_AURA_BIND_SIGHT, GetGUID());
-            static_cast<Unit*>(target)->RemoveAurasByType(SPELL_AURA_MOD_POSSESS, GetGUID());
+            static_cast<Unit*>(target)->RemoveAurasByType(SPELL_AURA_BIND_SIGHT, GetGUID(), except);
+            static_cast<Unit*>(target)->RemoveAurasByType(SPELL_AURA_MOD_POSSESS, GetGUID(), except);
+            static_cast<Unit*>(target)->RemoveAurasByType(SPELL_AURA_FIXATE, GetGUID(), except);
         }
     }
 }

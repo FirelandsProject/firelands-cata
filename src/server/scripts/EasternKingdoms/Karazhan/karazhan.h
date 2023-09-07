@@ -22,7 +22,7 @@
 
 #define KZScriptName "instance_karazhan"
 #define DataHeader "KZ"
-
+#define RegisterKarazhanCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetKarazhanAI)
 uint32 const EncounterCount = 12;
 
 enum KZDataTypes
@@ -36,7 +36,7 @@ enum KZDataTypes
     DATA_ARAN                       = 6,
     DATA_TERESTIAN                  = 7,
     DATA_NETHERSPITE                = 8,
-    DATA_CHESS                      = 9,
+    DATA_CHESS_EVENT                = 9,
     DATA_MALCHEZZAR                 = 10,
     DATA_NIGHTBANE                  = 11,
 
@@ -56,7 +56,14 @@ enum KZDataTypes
     DATA_MASTERS_TERRACE_DOOR_1     = 27,
     DATA_MASTERS_TERRACE_DOOR_2     = 28,
     DATA_GO_SIDE_ENTRANCE_DOOR      = 29,
-    DATA_GO_BLACKENED_URN           = 30
+    DATA_GO_BLACKENED_URN           = 30,
+
+    // Chess Event
+    CHESS_EVENT_TEAM                = 31,
+    DATA_CHESS_REINIT_PIECES        = 32,
+    DATA_CHESS_GAME_PHASE           = 33,
+    DATA_ECHO_OF_MEDIVH             = 34,
+    DATA_DUST_COVERED_CHEST         = 35
 };
 
 enum KZOperaEvents
@@ -87,7 +94,23 @@ enum KZMiscCreatures
     NPC_PHASE_HOUND                 = 16178,
     NPC_DREADBEAST                  = 16177,
     NPC_SHADOWBEAST                 = 16176,
-    NPC_KILREK                      = 17229
+    NPC_KILREK                      = 17229,
+
+    // Chess Event
+    NPC_ECHO_OF_MEDIVH              = 16816,
+    NPC_PAWN_H                      = 17469,
+    NPC_PAWN_A                      = 17211,
+    NPC_KNIGHT_H                    = 21748,
+    NPC_KNIGHT_A                    = 21664,
+    NPC_QUEEN_H                     = 21750,
+    NPC_QUEEN_A                     = 21683,
+    NPC_BISHOP_H                    = 21747,
+    NPC_BISHOP_A                    = 21682,
+    NPC_ROOK_H                      = 21726,
+    NPC_ROOK_A                      = 21160,
+    NPC_KING_H                      = 21752,
+    NPC_KING_A                      = 21684,
+    NPC_CHESS_EVENT_MEDIVH_CHEAT_FIRES = 22521
 };
 
 enum KZGameObjectIds
@@ -109,7 +132,39 @@ enum KZGameObjectIds
 
 enum KZMisc
 {
-    OPTIONAL_BOSS_REQUIRED_DEATH_COUNT = 50
+    OPTIONAL_BOSS_REQUIRED_DEATH_COUNT = 50,
+
+    ACTION_CHESS_PIECE_RESET_ORIENTATION = 1
+};
+
+enum KarazhanSpells
+{
+    SPELL_RATTLED                   = 32437,
+    SPELL_OVERLOAD                  = 29766,
+    SPELL_BLINK                     = 29884,
+
+    // Chess Event
+    SPELL_GAME_IN_SESSION           = 39331,
+    SPELL_HAND_OF_MEDIVH            = 39339, // 1st cheat: AOE spell burn cell under enemy chesspieces.
+    SPELL_FURY_OF_MEDIVH            = 39383  // 2nd cheat: Berserk own chesspieces.
+};
+
+enum KarazhanChessGamePhase
+{
+    CHESS_PHASE_NOT_STARTED         = 0,
+    CHESS_PHASE_PVE_WARMUP          = 1, // Medivh has been spoken too but king isn't controlled yet
+    CHESS_PHASE_INPROGRESS_PVE      = 2,
+    CHESS_PHASE_FAILED              = 3,
+    CHESS_PHASE_PVE_FINISHED        = 4,
+    CHESS_PHASE_PVP_WARMUP          = 5,
+    CHESS_PHASE_INPROGRESS_PVP      = 6 // Get back to PVE_FINISHED after that
+};
+
+enum KarazhanChessGameFactions
+{
+    CHESS_FACTION_HORDE             = 1689,
+    CHESS_FACTION_ALLIANCE          = 1690,
+    CHESS_FACTION_BOTH              = 536
 };
 
 template <class AI, class T>

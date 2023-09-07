@@ -101,6 +101,7 @@ void AddSC_boss_erudax();
 void AddSC_grim_batol();
 void AddSC_boss_attumen();                   //Karazhan
 void AddSC_boss_curator();
+void AddSC_boss_chess_event();
 void AddSC_boss_maiden_of_virtue();
 void AddSC_boss_shade_of_aran();
 void AddSC_boss_malchezaar();
@@ -333,6 +334,7 @@ void AddEasternKingdomsScripts()
     AddSC_grim_batol();
     AddSC_boss_attumen();                   //Karazhan
     AddSC_boss_curator();
+    AddSC_boss_chess_event();
     AddSC_boss_maiden_of_virtue();
     AddSC_boss_shade_of_aran();
     AddSC_boss_malchezaar();

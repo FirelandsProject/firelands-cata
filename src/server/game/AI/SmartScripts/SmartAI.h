@@ -175,6 +175,9 @@ class FC_GAME_API SmartAI : public CreatureAI
 
         void SetInvincibilityHpLevel(uint32 level) { _invincibilityHpLevel = level; }
 
+        void sGossipHello(Player* player) override;
+        void sGossipSelect(Player* player, uint32 sender, uint32 action) override;
+        void sGossipSelectCode(Player* player, uint32 sender, uint32 action, const char* code) override;
         bool GossipHello(Player* player) override;
         bool GossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override;
         bool GossipSelectCode(Player* player, uint32 menuId, uint32 gossipListId, char const* code) override;

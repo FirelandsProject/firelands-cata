@@ -2602,6 +2602,10 @@ class FC_GAME_API Unit : public WorldObject
     {
         return m_movementCounter;
     }
+    uint32 GetOldFactionId() const
+    {
+        return _oldFactionId;
+    }
     void ClearPendingMovementChangeForType(MovementChangeType changeType);
     void AssignPendingMovementChange(MovementChangeType changeType, PlayerMovementPendingChange&& newChange);
     bool HasPendingMovementChange() const
