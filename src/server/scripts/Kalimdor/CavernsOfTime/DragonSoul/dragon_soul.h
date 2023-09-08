@@ -108,6 +108,16 @@ enum DSCreatures
     NPC_FORGOTTEN_ONE                           = 56265, // Corrupted Minion
     NPC_TIME_WARDEN                             = 57474,
     NPC_HALO_JUMP_YORSAHJ                       = 57629,
+
+    // Deathwing Spine
+    NPC_CORRUPTION_VEH_L                        = 56161,
+    NPC_CORRUPTION_VEH_R                        = 56162,
+    NPC_CORRUPTION                              = 53891,
+    NPC_DW_SPINE_SPAWNER                        = 53888,
+    NPC_CORRUPTED_BLOOD                         = 53889,
+    NPC_HIDEOUS_AMALGAMATION                    = 53890,
+    NPC_BURNING_TENDONS_L                       = 56575,
+    NPC_BURNING_TENDONS_R                       = 56341,
     
     /*Madness of Deathwing*/
     NPC_DEATHWING_MADNESS_OF_DEATHWING          = 57962,

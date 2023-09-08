@@ -83,6 +83,7 @@
 #include "VehiclePackets.h"
 #include "World.h"
 #include "WorldPacket.h"
+#include "MiscPackets.h"
 #include "WorldSession.h"
 #include <cmath>
 
@@ -15435,4 +15436,13 @@ void Unit::SetInCombatWithZone()
             }
         }
     }
+}
+
+void Unit::SendMapObjectEvents(int32 mapObjectId, std::vector<uint8> values)
+{
+    Map* map = GetMap();
+    WorldPackets::Misc::MapObjEvents mapObjectEvent;
+    mapObjectEvent.UniqueID = mapObjectId;
+    mapObjectEvent.Events = values;
+    map->SendToPlayers(mapObjectEvent.Write());
 }

@@ -38,6 +38,7 @@ enum LevelLimit
     STRONG_MAX_LEVEL = 255,
 };
 
+// clang-format off
 enum BattlegroundBracketId                                  // bracketId for level ranges
 {
     BG_BRACKET_ID_FIRST          = 0,
@@ -740,23 +741,28 @@ enum VehicleSeatFlagsB
 enum CurrencyTypes
 {
     // PvE and PvP
-    CURRENCY_TYPE_CONQUEST_POINTS       = 390,
-    CURRENCY_TYPE_HONOR_POINTS          = 392,
-    CURRENCY_TYPE_JUSTICE_POINTS        = 395,
-    CURRENCY_TYPE_VALOR_POINTS          = 396,
-    CURRENCY_TYPE_CONQUEST_META_ARENA   = 483,
-    CURRENCY_TYPE_CONQUEST_META_RBG     = 484,
+    CURRENCY_TYPE_CONQUEST_POINTS                   = 390,
+    CURRENCY_TYPE_HONOR_POINTS                      = 392,
+    CURRENCY_TYPE_JUSTICE_POINTS                    = 395,
+    CURRENCY_TYPE_VALOR_POINTS                      = 396,
+    CURRENCY_TYPE_CONQUEST_META_ARENA               = 483,
+    CURRENCY_TYPE_CONQUEST_META_RBG                 = 484,
 
     // Archaeology
-    CURRENCY_TYPE_DWARF_FRAGMENT        = 384,
-    CURRENCY_TYPE_TROLL_FRAGMENT        = 385,
-    CURRENCY_TYPE_FOSSIL_FRAGMENT       = 393,
-    CURRENCY_TYPE_NELF_FRAGMENT         = 394,
-    CURRENCY_TYPE_ORC_FRAGMENT          = 397,
-    CURRENCY_TYPE_DRAENEI_FRAGMENT      = 398,
-    CURRENCY_TYPE_VRYKUL_FRAGMENT       = 399,
-    CURRENCY_TYPE_NERUBIAN_FRAGMENT     = 400,
-    CURRENCY_TYPE_TOLVIR_FRAGMENT       = 401,
+    CURRENCY_TYPE_DWARF_FRAGMENT                    = 384,
+    CURRENCY_TYPE_TROLL_FRAGMENT                    = 385,
+    CURRENCY_TYPE_FOSSIL_FRAGMENT                   = 393,
+    CURRENCY_TYPE_NELF_FRAGMENT                     = 394,
+    CURRENCY_TYPE_ORC_FRAGMENT                      = 397,
+    CURRENCY_TYPE_DRAENEI_FRAGMENT                  = 398,
+    CURRENCY_TYPE_VRYKUL_FRAGMENT                   = 399,
+    CURRENCY_TYPE_NERUBIAN_FRAGMENT                 = 400,
+    CURRENCY_TYPE_TOLVIR_FRAGMENT                   = 401,
+
+    // DragonSoul 
+    CURRENCY_TYPE_MOTE_OF_DARKNESS                  = 614,
+    CURRENCY_TYPE_ESSENCE_OF_CORRUPTED_DEATHWING    = 615
 };
+// clang-format on
 
 #endif

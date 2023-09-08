@@ -53,13 +53,16 @@ void AddSC_boss_echo_of_jaina();
 void AddSC_instance_end_time();
 void AddSC_instance_well_of_eternity(); // CoT Well of Eternity
 void AddSC_instance_hour_of_twilight(); // CoT Hour of Twilight
-void AddSC_instance_dragon_soul();      // CoT Dragon Soul
-void AddSC_boss_morchok();              // CoT Dragon Soul Boss Morchok
+// Dragon Soul
+void AddSC_instance_dragon_soul(); // CoT Dragon Soul
+void AddSC_boss_morchok();         // CoT Dragon Soul Boss Morchok
 void AddSC_boss_yorsahj();
 void AddSC_boss_madness_of_deathwing(); // CoT Dragon Soul Boss Madness of deathwing
-void AddSC_instance_dire_maul();        // Dire Maul
-void AddSC_instance_ragefire_chasm();   // Ragefire Chasm
-void AddSC_boss_celebras_the_cursed();  // Maraudon
+void AddSC_boss_dw_spine();
+// Dragon Soul
+void AddSC_instance_dire_maul();       // Dire Maul
+void AddSC_instance_ragefire_chasm();  // Ragefire Chasm
+void AddSC_boss_celebras_the_cursed(); // Maraudon
 void AddSC_boss_landslide();
 void AddSC_boss_noxxion();
 void AddSC_boss_ptheradras();
@@ -199,6 +202,7 @@ void AddKalimdorScripts()
     AddSC_boss_morchok();              // CoT Dragon Soul Morchok
     AddSC_boss_madness_of_deathwing(); // CoT Dragon Soul Madness of Deathwing
     AddSC_boss_yorsahj();
+    AddSC_boss_dw_spine();
     /* CoT Dragon Soul END */
     AddSC_instance_dire_maul();       // Dire Maul
     AddSC_instance_ragefire_chasm();  // Ragefire Chasm
