@@ -2078,7 +2078,7 @@ class spell_control_piece : public SpellScriptLoader
     {
         void HandleEffectRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
         {
-            if (Player* player = GetCaster()->GetCharmerOrOwner()->ToPlayer())
+            if (Player* player = GetTarget()->ToPlayer())
             {
                 player->StopCastingBindSight();
             }
