@@ -769,7 +769,6 @@ void Creature::Update(uint32 diff)
             // if creature is charmed, switch to charmed AI
             if (NeedChangeAI)
             {
-                UpdateCharmAI();
                 NeedChangeAI = false;
                 IsAIEnabledAlt = true;
 

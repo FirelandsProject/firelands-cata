@@ -10353,7 +10353,7 @@ void Unit::ScheduleAIChange()
     {
         RestoreDisabledAI();
         PushAI(GetScheduledChangeAI()); // This could actually be PopAI() to get the previous AI but it's required atm to trigger
-                                        // UpdateCharmAI()
+        UpdateCharmAI();
     }
 }
 
