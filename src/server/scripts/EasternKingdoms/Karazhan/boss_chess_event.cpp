@@ -15,7 +15,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "creature.h"
+#include "Creature.h"
 #include "karazhan.h"
 #include "ObjectMgr.h"
 #include "Player.h"
@@ -2027,6 +2027,10 @@ class npc_chesspiece : public CreatureScript
                 default:
                     break;
                 }
+                player->RemoveAurasDueToSpell(SPELL_CONTROL_PIECE);
+                player->CastSpell(me, SPELL_GAME_IN_SESSION, true);
+                player->CastSpell(me, SPELL_RECENTLY_INGAME, true);
+                player->NearTeleportTo(-11106.92f, -1843.32f, 229.626f, 4.2331f);
             }
 
             CloseGossipMenuFor(player);
