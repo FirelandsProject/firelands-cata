@@ -116,9 +116,9 @@ struct FC_GAME_API CreatureMovementData
     bool IsSwimAllowed() const { return Swim; }
     bool IsFlightAllowed() const { return Flight != CreatureFlightMovementType::None; }
     bool IsRooted() const { return Rooted; }
-    bool IsGravityDisabled() const { return  Flight == CreatureFlightMovementType::DisableGravity; }
-    bool CanFly() const { return  Flight == CreatureFlightMovementType::CanFly; }
-    bool IsHoverEnabled() const { return  Ground == CreatureGroundMovementType::Hover; }
+    bool IsGravityDisabled() const { return Flight == CreatureFlightMovementType::DisableGravity; }
+    bool CanFly() const { return Flight == CreatureFlightMovementType::CanFly; }
+    bool IsHoverEnabled() const { return Ground == CreatureGroundMovementType::Hover; }
 
     CreatureRandomMovementType GetRandom() const { return Random; }
 
@@ -137,74 +137,74 @@ static uint32 const MAX_CREATURE_SPELLS = 8;
 // from `creature_template` table
 struct FC_GAME_API CreatureTemplate
 {
-    uint32  Entry;
-    uint32  DifficultyEntry[MAX_DIFFICULTY - 1];
-    uint32  KillCredit[MAX_KILL_CREDIT];
-    uint32  Modelid1;
-    uint32  Modelid2;
-    uint32  Modelid3;
-    uint32  Modelid4;
-    std::string  Name;
+    uint32 Entry;
+    uint32 DifficultyEntry[MAX_DIFFICULTY - 1];
+    uint32 KillCredit[MAX_KILL_CREDIT];
+    uint32 Modelid1;
+    uint32 Modelid2;
+    uint32 Modelid3;
+    uint32 Modelid4;
+    std::string Name;
     std::string FemaleName;
-    std::string  Title;
-    std::string  IconName;
-    uint32  GossipMenuId;
-    uint8   minlevel;
-    uint8   maxlevel;
-    uint32  expansion;
-    uint32  expansionUnknown;                               // either 0 or 3, sent to the client / wdb
-    uint32  faction;
-    uint32  npcflag;
-    float   speed_walk;
-    float   speed_run;
-    float   scale;
-    uint32  rank;
-    uint32  dmgschool;
-    uint32  BaseAttackTime;
-    uint32  RangeAttackTime;
-    float   BaseVariance;
-    float   RangeVariance;
-    uint32  unit_class;                                     // enum Classes. Note only 4 classes are known for creatures.
-    uint32  unit_flags;                                     // enum UnitFlags mask values
-    uint32  unit_flags2;                                    // enum UnitFlags2 mask values
-    uint32  dynamicflags;
-    CreatureFamily  family;                                 // enum CreatureFamily values (optional)
-    uint32  trainer_class;
-    uint32  type;                                           // enum CreatureType values
-    uint32  type_flags;                                     // enum CreatureTypeFlags mask values
-    uint32  type_flags2;                                    // unknown enum, only set for 4 creatures (with value 1)
-    uint32  lootid;
-    uint32  pickpocketLootId;
-    uint32  SkinLootId;
-    int32   resistance[MAX_SPELL_SCHOOL];
-    uint32  spells[MAX_CREATURE_SPELLS];
-    uint32  PetSpellDataId;
-    uint32  VehicleId;
-    uint32  mingold;
-    uint32  maxgold;
+    std::string Title;
+    std::string IconName;
+    uint32 GossipMenuId;
+    uint8 minlevel;
+    uint8 maxlevel;
+    uint32 expansion;
+    uint32 expansionUnknown; // either 0 or 3, sent to the client / wdb
+    uint32 faction;
+    uint32 npcflag;
+    float speed_walk;
+    float speed_run;
+    float scale;
+    uint32 rank;
+    uint32 dmgschool;
+    uint32 BaseAttackTime;
+    uint32 RangeAttackTime;
+    float BaseVariance;
+    float RangeVariance;
+    uint32 unit_class;  // enum Classes. Note only 4 classes are known for creatures.
+    uint32 unit_flags;  // enum UnitFlags mask values
+    uint32 unit_flags2; // enum UnitFlags2 mask values
+    uint32 dynamicflags;
+    CreatureFamily family; // enum CreatureFamily values (optional)
+    uint32 trainer_class;
+    uint32 type;        // enum CreatureType values
+    uint32 type_flags;  // enum CreatureTypeFlags mask values
+    uint32 type_flags2; // unknown enum, only set for 4 creatures (with value 1)
+    uint32 lootid;
+    uint32 pickpocketLootId;
+    uint32 SkinLootId;
+    int32 resistance[MAX_SPELL_SCHOOL];
+    uint32 spells[MAX_CREATURE_SPELLS];
+    uint32 PetSpellDataId;
+    uint32 VehicleId;
+    uint32 mingold;
+    uint32 maxgold;
     std::string AIName;
-    uint32  MovementType;
+    uint32 MovementType;
     CreatureMovementData Movement;
-    float   HoverHeight;
-    float   ModHealth;
-    float   ModHealthExtra;
-    float   ModMana;
-    float   ModManaExtra;                                   // Added in 4.x, this value is usually 2 for a small group of creatures with double mana
-    float   ModArmor;
-    float   ModDamage;
-    float   ModExperience;
-    bool    RacialLeader;
-    uint32  movementId;
-    bool    RegenHealth;
-    uint32  MechanicImmuneMask;
-    uint32  SpellSchoolImmuneMask;
-    uint32  flags_extra;
-    uint32  ScriptID;
+    float HoverHeight;
+    float ModHealth;
+    float ModHealthExtra;
+    float ModMana;
+    float ModManaExtra; // Added in 4.x, this value is usually 2 for a small group of creatures with double mana
+    float ModArmor;
+    float ModDamage;
+    float ModExperience;
+    bool RacialLeader;
+    uint32 movementId;
+    bool RegenHealth;
+    uint32 MechanicImmuneMask;
+    uint32 SpellSchoolImmuneMask;
+    uint32 flags_extra;
+    uint32 ScriptID;
     WorldPacket QueryData[TOTAL_LOCALES];
-    uint32  GetRandomValidModelId() const;
-    uint32  GetFirstValidModelId() const;
-    uint32  GetFirstInvisibleModel() const;
-    uint32  GetFirstVisibleModel() const;
+    uint32 GetRandomValidModelId() const;
+    uint32 GetFirstValidModelId() const;
+    uint32 GetFirstInvisibleModel() const;
+    uint32 GetFirstVisibleModel() const;
 
     // helpers
     SkillType GetRequiredLootSkill() const
@@ -216,13 +216,10 @@ struct FC_GAME_API CreatureTemplate
         else if (type_flags & CREATURE_TYPE_FLAG_ENGINEERING_SKINNING_SKILL)
             return SKILL_ENGINEERING;
         else
-            return SKILL_SKINNING;                          // normal case
+            return SKILL_SKINNING; // normal case
     }
 
-    bool IsExotic() const
-    {
-        return (type_flags & CREATURE_TYPE_FLAG_EXOTIC_PET) != 0;
-    }
+    bool IsExotic() const { return (type_flags & CREATURE_TYPE_FLAG_EXOTIC_PET) != 0; }
 
     bool IsTameable(bool canTameExotic) const
     {
@@ -251,10 +248,7 @@ struct FC_GAME_API CreatureBaseStats
 
     // Helpers
 
-    uint32 GenerateHealth(CreatureTemplate const* info) const
-    {
-        return uint32(ceil(BaseHealth[info->expansion] * info->ModHealth * info->ModHealthExtra));
-    }
+    uint32 GenerateHealth(CreatureTemplate const* info) const { return uint32(ceil(BaseHealth[info->expansion] * info->ModHealth * info->ModHealthExtra)); }
 
     uint32 GenerateMana(CreatureTemplate const* info) const
     {
@@ -265,15 +259,9 @@ struct FC_GAME_API CreatureBaseStats
         return uint32(ceil(BaseMana * info->ModMana * info->ModManaExtra));
     }
 
-    uint32 GenerateArmor(CreatureTemplate const* info) const
-    {
-        return uint32(ceil(BaseArmor * info->ModArmor));
-    }
+    uint32 GenerateArmor(CreatureTemplate const* info) const { return uint32(ceil(BaseArmor * info->ModArmor)); }
 
-    float GenerateBaseDamage(CreatureTemplate const* info) const
-    {
-        return BaseDamage[info->expansion];
-    }
+    float GenerateBaseDamage(CreatureTemplate const* info) const { return BaseDamage[info->expansion]; }
 
     static CreatureBaseStats const* GetBaseStats(uint8 level, uint8 unitClass);
 };
@@ -289,13 +277,13 @@ struct CreatureLocale
 
 struct EquipmentInfo
 {
-    uint32  ItemEntry[MAX_EQUIPMENT_ITEMS];
+    uint32 ItemEntry[MAX_EQUIPMENT_ITEMS];
 };
 
 // from `creature` table
 struct CreatureData : public SpawnData
 {
-    CreatureData() : SpawnData(SPAWN_TYPE_CREATURE) { }
+    CreatureData() : SpawnData(SPAWN_TYPE_CREATURE) {}
     uint32 displayid = 0;
     int8 equipmentId = 0;
     float spawndist = 0.0f;
@@ -320,9 +308,9 @@ struct CreatureModelInfo
 enum InhabitTypeValues
 {
     INHABIT_GROUND = 1,
-    INHABIT_WATER  = 2,
-    INHABIT_AIR    = 4,
-    INHABIT_ROOT   = 8,
+    INHABIT_WATER = 2,
+    INHABIT_AIR = 4,
+    INHABIT_ROOT = 8,
     INHABIT_ANYWHERE = INHABIT_GROUND | INHABIT_WATER | INHABIT_AIR | INHABIT_ROOT
 };
 
@@ -347,16 +335,16 @@ struct CreatureAddon
 // Vendors
 struct VendorItem
 {
-    VendorItem() : item(0), maxcount(0), incrtime(0), ExtendedCost(0), Type(0), PlayerConditionId(0) { }
+    VendorItem() : item(0), maxcount(0), incrtime(0), ExtendedCost(0), Type(0), PlayerConditionId(0) {}
 
     uint32 item;
-    uint32 maxcount;                                        // 0 for infinity item amount
-    uint32 incrtime;                                        // time for restore items amount if maxcount != 0
+    uint32 maxcount; // 0 for infinity item amount
+    uint32 incrtime; // time for restore items amount if maxcount != 0
     uint32 ExtendedCost;
-    uint8  Type;
+    uint8 Type;
     uint32 PlayerConditionId;
 
-    //helpers
+    // helpers
     bool IsGoldRequired(ItemTemplate const* pProto) const;
 };
 
@@ -373,16 +361,10 @@ struct VendorItemData
     }
     bool Empty() const { return m_items.empty(); }
     uint32 GetItemCount() const { return m_items.size(); }
-    void AddItem(VendorItem vItem)
-    {
-        m_items.emplace_back(std::move(vItem));
-    }
+    void AddItem(VendorItem vItem) { m_items.emplace_back(std::move(vItem)); }
     bool RemoveItem(uint32 item_id, uint8 type);
     VendorItem const* FindItemCostPair(uint32 item_id, uint32 extendedCost, uint8 type) const;
-    void Clear()
-    {
-        m_items.clear();
-    }
+    void Clear() { m_items.clear(); }
 };
 
 typedef std::unordered_map<uint32, float /*SparringHealthLimit*/> CreatureSparringTemplateMap;
@@ -402,7 +384,7 @@ struct CreatureSpellFocusData
     ObjectGuid OriginalUnitTarget;
     uint32 ReacquiringTargetDelay = 0;
 
-public:
+  public:
     void Reset()
     {
         FocusSpell = nullptr;

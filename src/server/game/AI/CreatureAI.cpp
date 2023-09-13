@@ -31,10 +31,11 @@
 #include "SpellMgr.h"
 #include "SpellHistory.h"
 #include "TemporarySummon.h"
+#include "InstanceScript.h"
 #include "Vehicle.h"
 #include "World.h"
 
-//Disable CreatureAI when charmed
+// Disable CreatureAI when charmed
 void CreatureAI::OnCharmed(bool isNew)
 {
     if (isNew && !me->IsCharmed() && me->LastCharmerGUID)
@@ -58,18 +59,11 @@ void CreatureAI::OnCharmed(bool isNew)
 AISpellInfoType* UnitAI::AISpellInfo;
 AISpellInfoType* GetAISpellInfo(uint32 i) { return &UnitAI::AISpellInfo[i]; }
 
-CreatureAI::CreatureAI(Creature* creature) : UnitAI(creature), me(creature), _boundary(nullptr), _negateBoundary(false), _isEngaged(false), _moveInLOSLocked(false)
-{
-}
+CreatureAI::CreatureAI(Creature* creature) : UnitAI(creature), me(creature), _boundary(nullptr), _negateBoundary(false), _isEngaged(false), _moveInLOSLocked(false) {}
 
-CreatureAI::~CreatureAI()
-{
-}
+CreatureAI::~CreatureAI() {}
 
-void CreatureAI::Talk(uint8 id, WorldObject const* whisperTarget /*= nullptr*/)
-{
-    sCreatureTextMgr->SendChat(me, id, whisperTarget);
-}
+void CreatureAI::Talk(uint8 id, WorldObject const* whisperTarget /*= nullptr*/) { sCreatureTextMgr->SendChat(me, id, whisperTarget); }
 
 void CreatureAI::DoZoneInCombat(Creature* creature /*= nullptr*/)
 {
@@ -77,7 +71,7 @@ void CreatureAI::DoZoneInCombat(Creature* creature /*= nullptr*/)
         creature = me;
 
     Map* map = creature->GetMap();
-    if (!map->IsDungeon())                                  //use IsDungeon instead of Instanceable, in case battlegrounds will be instantiated
+    if (!map->IsDungeon()) // use IsDungeon instead of Instanceable, in case battlegrounds will be instantiated
     {
         LOG_ERROR("misc", "DoZoneInCombat call for map that isn't an instance (creature entry = %d)", creature->GetTypeId() == TYPEID_UNIT ? creature->ToCreature()->GetEntry() : 0);
         return;
@@ -166,31 +160,31 @@ static bool ShouldFollowOnSpawn(SummonPropertiesEntry const* properties)
 
     switch (properties->Control)
     {
-        case SUMMON_CATEGORY_PET:
+    case SUMMON_CATEGORY_PET:
+        return true;
+    case SUMMON_CATEGORY_WILD:
+    case SUMMON_CATEGORY_ALLY:
+    case SUMMON_CATEGORY_UNK:
+        if (properties->Flags & 512)
             return true;
-        case SUMMON_CATEGORY_WILD:
-        case SUMMON_CATEGORY_ALLY:
-        case SUMMON_CATEGORY_UNK:
-            if (properties->Flags & 512)
-                return true;
 
-            // Guides. They have their own movement
-            if (properties->Flags & SUMMON_PROP_FLAG_UNK14)
-                return false;
+        // Guides. They have their own movement
+        if (properties->Flags & SUMMON_PROP_FLAG_UNK14)
+            return false;
 
-            switch (SummonTitle(properties->Title))
-            {
-                case SummonTitle::Pet:
-                case SummonTitle::Guardian:
-                case SummonTitle::Runeblade:
-                case SummonTitle::Minion:
-                case SummonTitle::Companion:
-                    return true;
-                default:
-                    return false;
-            }
+        switch (SummonTitle(properties->Title))
+        {
+        case SummonTitle::Pet:
+        case SummonTitle::Guardian:
+        case SummonTitle::Runeblade:
+        case SummonTitle::Minion:
+        case SummonTitle::Companion:
+            return true;
         default:
             return false;
+        }
+    default:
+        return false;
     }
 }
 void CreatureAI::JustAppeared()
@@ -355,22 +349,24 @@ int32 CreatureAI::VisualizeBoundary(uint32 duration, Unit* owner, bool fill) con
     float spawnZ = startPosition.GetPositionZ() + BOUNDARY_VISUALIZE_SPAWN_HEIGHT;
 
     bool boundsWarning = false;
-    Q.push({ 0,0 });
+    Q.push({0, 0});
     while (!Q.empty())
     {
         coordinate front = Q.front();
         bool hasOutOfBoundsNeighbor = false;
-        for (coordinate off : std::initializer_list<coordinate>{{1,0}, {0,1}, {-1,0}, {0,-1}})
+        for (coordinate off : std::initializer_list<coordinate>{{1, 0}, {0, 1}, {-1, 0}, {0, -1}})
         {
             coordinate next(front.first + off.first, front.second + off.second);
-            if (next.first > BOUNDARY_VISUALIZE_FAILSAFE_LIMIT || next.first < -BOUNDARY_VISUALIZE_FAILSAFE_LIMIT || next.second > BOUNDARY_VISUALIZE_FAILSAFE_LIMIT || next.second < -BOUNDARY_VISUALIZE_FAILSAFE_LIMIT)
+            if (next.first > BOUNDARY_VISUALIZE_FAILSAFE_LIMIT || next.first < -BOUNDARY_VISUALIZE_FAILSAFE_LIMIT || next.second > BOUNDARY_VISUALIZE_FAILSAFE_LIMIT ||
+                next.second < -BOUNDARY_VISUALIZE_FAILSAFE_LIMIT)
             {
                 boundsWarning = true;
                 continue;
             }
             if (alreadyChecked.find(next) == alreadyChecked.end()) // never check a coordinate twice
             {
-                Position nextPos(startPosition.GetPositionX() + next.first*BOUNDARY_VISUALIZE_STEP_SIZE, startPosition.GetPositionY() + next.second*BOUNDARY_VISUALIZE_STEP_SIZE, startPosition.GetPositionZ());
+                Position nextPos(
+                    startPosition.GetPositionX() + next.first * BOUNDARY_VISUALIZE_STEP_SIZE, startPosition.GetPositionY() + next.second * BOUNDARY_VISUALIZE_STEP_SIZE, startPosition.GetPositionZ());
                 if (CheckBoundary(&nextPos))
                     Q.push(next);
                 else
@@ -380,12 +376,13 @@ int32 CreatureAI::VisualizeBoundary(uint32 duration, Unit* owner, bool fill) con
                 }
                 alreadyChecked.insert(next);
             }
-            else
-                if (outOfBounds.find(next) != outOfBounds.end())
-                    hasOutOfBoundsNeighbor = true;
+            else if (outOfBounds.find(next) != outOfBounds.end())
+                hasOutOfBoundsNeighbor = true;
         }
         if (fill || hasOutOfBoundsNeighbor)
-            if (TempSummon* point = owner->SummonCreature(BOUNDARY_VISUALIZE_CREATURE, Position(startPosition.GetPositionX() + front.first*BOUNDARY_VISUALIZE_STEP_SIZE, startPosition.GetPositionY() + front.second*BOUNDARY_VISUALIZE_STEP_SIZE, spawnZ), TEMPSUMMON_TIMED_DESPAWN, duration * IN_MILLISECONDS))
+            if (TempSummon* point = owner->SummonCreature(BOUNDARY_VISUALIZE_CREATURE,
+                    Position(startPosition.GetPositionX() + front.first * BOUNDARY_VISUALIZE_STEP_SIZE, startPosition.GetPositionY() + front.second * BOUNDARY_VISUALIZE_STEP_SIZE, spawnZ),
+                    TEMPSUMMON_TIMED_DESPAWN, duration * IN_MILLISECONDS))
             {
                 point->SetObjectScale(BOUNDARY_VISUALIZE_CREATURE_SCALE);
                 point->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
@@ -436,10 +433,7 @@ void CreatureAI::SetBoundary(CreatureBoundary const* boundary, bool negateBounda
     me->DoImmediateBoundaryCheck();
 }
 
-Creature* CreatureAI::DoSummon(uint32 entry, Position const& pos, uint32 despawnTime, TempSummonType summonType)
-{
-    return me->SummonCreature(entry, pos, summonType, despawnTime);
-}
+Creature* CreatureAI::DoSummon(uint32 entry, Position const& pos, uint32 despawnTime, TempSummonType summonType) { return me->SummonCreature(entry, pos, summonType, despawnTime); }
 
 Creature* CreatureAI::DoSummon(uint32 entry, WorldObject* obj, float radius, uint32 despawnTime, TempSummonType summonType)
 {
@@ -452,4 +446,16 @@ Creature* CreatureAI::DoSummonFlyer(uint32 entry, WorldObject* obj, float flight
     Position pos = obj->GetRandomNearPosition(radius);
     pos.m_positionZ += flightZ;
     return me->SummonCreature(entry, pos, summonType, despawnTime);
+}
+
+void CreatureAI::AddEncounterFrame()
+{
+    if (InstanceScript* instance = me->GetInstanceScript())
+        instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);
+}
+
+void CreatureAI::RemoveEncounterFrame()
+{
+    if (InstanceScript* instance = me->GetInstanceScript())
+        instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
 }
