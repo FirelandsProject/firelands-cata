@@ -1,6 +1,5 @@
 
 --
-UPDATE `creature_template` SET `flags_extra`='16777218' WHERE `entry` IN (17469,17211,21748,21664,21750,21683,21747,21682,21726,21160,21752,21684);
 DELETE FROM `creature` WHERE `id`=22519;
 DELETE FROM `creature` WHERE  `guid` IN (86488,86489,86490);
 
@@ -9,7 +8,7 @@ INSERT INTO `creature_template_addon` (`entry`,`bytes2`,`auras`) VALUES
 (22521,1,'39383');
 
 UPDATE `creature_template` SET `flags_extra` = 130 WHERE `entry` IN (17208,17305,17317,17316,22521);
-
+UPDATE `creature_template` SET `flags_extra`='16777218' WHERE `entry` IN (17469,17211,21748,21664,21750,21683,21747,21682,21726,21160,21752,21684);
 UPDATE `creature_template` SET `spell1`='37146', `spell2`='30284', `spell3`='37471', `spell4`='37474' WHERE  `entry`=21684; -- King Llane
 UPDATE `creature_template` SET `spell1`='37148', `spell2`='30284', `spell3`='37462', `spell4`='37465' WHERE  `entry`=21683; -- Human Conjurer
 UPDATE `creature_template` SET `spell1`='37146', `spell2`='30284', `spell3`='37455', `spell4`='37459' WHERE  `entry`=21682; -- Human Cleric
