@@ -16,7 +16,7 @@
 #include "Vehicle.h"
 
 // clang-format off
-enum Dialogs 
+enum Dialogs
 {
     TALK_EVENT_GROUP_ONE                = 0,
     TALK_EVENT_GROUP_ONE_2              = 1,
@@ -85,7 +85,7 @@ enum Phases
     PHASE_TWO = 2
 };
 
-enum VehicleTargetHandling 
+enum VehicleTargetHandling
 {
     DATA_VEHICLE_TARGET    = 100,
     VEHICLE_TARGET_MORCHOK = 200,

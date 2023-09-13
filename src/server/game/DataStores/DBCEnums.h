@@ -759,7 +759,7 @@ enum CurrencyTypes
     CURRENCY_TYPE_NERUBIAN_FRAGMENT                 = 400,
     CURRENCY_TYPE_TOLVIR_FRAGMENT                   = 401,
 
-    // DragonSoul 
+    // DragonSoul
     CURRENCY_TYPE_MOTE_OF_DARKNESS                  = 614,
     CURRENCY_TYPE_ESSENCE_OF_CORRUPTED_DEATHWING    = 615
 };
