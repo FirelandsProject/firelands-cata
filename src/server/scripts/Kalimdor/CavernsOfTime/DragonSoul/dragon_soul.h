@@ -118,7 +118,7 @@ enum DSCreatures
     NPC_HIDEOUS_AMALGAMATION                    = 53890,
     NPC_BURNING_TENDONS_L                       = 56575,
     NPC_BURNING_TENDONS_R                       = 56341,
-    
+
     /*Madness of Deathwing*/
     NPC_DEATHWING_MADNESS_OF_DEATHWING          = 57962,
     NPC_ARM_TENTACLE_1                          = 56167,
