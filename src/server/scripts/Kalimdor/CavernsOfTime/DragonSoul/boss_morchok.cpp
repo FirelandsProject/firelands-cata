@@ -249,7 +249,7 @@ struct boss_morchok : public BossAI
         BossAI::JustEnteredCombat(victim);
     }
 
-    void JustDied(Unit* killer) override
+    void JustDied(Unit* /*killer*/) override
     {
         RemoveFragments(true);
         instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
@@ -458,7 +458,7 @@ struct boss_kohcrom : public ScriptedAI
         me->SetObjectScale(std::max((me->GetHealthPct() / 100), 0.10f));
     }
 
-    void JustEnteredCombat(Unit* victim) override
+    void JustEnteredCombat(Unit* /*victim*/) override
     {
         crystalCount = 0;
         Talk(TALK_AGGRO);
@@ -473,7 +473,7 @@ struct boss_kohcrom : public ScriptedAI
         }
     }
 
-    void JustDied(Unit* killer) override
+    void JustDied(Unit* /*killer*/) override
     {
         RemoveFragments();
         summons.DespawnAll();
@@ -614,7 +614,7 @@ struct npc_ds_earthen_vortex_vehicle : public PassiveAI
       public:
         EjectPassengerEvent(Creature* owner) : _owner(owner) {}
 
-        bool Execute(uint64 execTime, uint32 /*diff*/)
+        bool Execute(uint64 /*execTime*/, uint32 /*diff*/)
         {
             if (Vehicle* veh = _owner->GetVehicleKit())
                 veh->RemoveAllPassengers();
@@ -842,7 +842,7 @@ class spell_ds_falling_fragments_periodic : public AuraScript
         return true;
     }
 
-    void HandleTriggerSpell(AuraEffect const* aurEff)
+    void HandleTriggerSpell(AuraEffect const* /*aurEff*/)
     {
         uint8 maxAttemps = 0;
         while (maxAttemps < 20)

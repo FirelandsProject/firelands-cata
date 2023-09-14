@@ -7767,43 +7767,43 @@ void Spell::DoEffectOnLaunchTarget(TargetInfo& targetInfo, float multiplier, uin
     }();
 
     if (triggerCombat)
-        m_originalCaster->SetInCombatWith(unit);
+        {m_originalCaster->SetInCombatWith(unit);
+    }
+    m_damage = 0;
+    m_healing = 0;
 
-        m_damage = 0;
-        m_healing = 0;
-
-        HandleEffects(unit, nullptr, nullptr, nullptr, effIndex, SPELL_EFFECT_HANDLE_LAUNCH_TARGET);
-        if (m_damage > 0)
+    HandleEffects(unit, nullptr, nullptr, nullptr, effIndex, SPELL_EFFECT_HANDLE_LAUNCH_TARGET);
+    if (m_damage > 0)
+    {
+        if (m_spellInfo->Effects[effIndex].IsTargetingArea() || m_spellInfo->Effects[effIndex].IsAreaAuraEffect() || m_spellInfo->Effects[effIndex].IsEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA))
         {
-            if (m_spellInfo->Effects[effIndex].IsTargetingArea() || m_spellInfo->Effects[effIndex].IsAreaAuraEffect() || m_spellInfo->Effects[effIndex].IsEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA))
-            {
-                m_damage = unit->CalculateAOEAvoidance(m_damage, m_spellInfo->SchoolMask, m_caster->GetGUID());
+            m_damage = unit->CalculateAOEAvoidance(m_damage, m_spellInfo->SchoolMask, m_caster->GetGUID());
 
-                if (m_caster->GetTypeId() == TYPEID_PLAYER)
-                {
-                    // cap damage of player AOE
-                    uint32 targetAmount = m_UniqueTargetInfo.size();
-                    if (targetAmount > 10)
-                        m_damage = m_damage * 10 / targetAmount;
-                }
+            if (m_caster->GetTypeId() == TYPEID_PLAYER)
+            {
+                // cap damage of player AOE
+                uint32 targetAmount = m_UniqueTargetInfo.size();
+                if (targetAmount > 10)
+                    m_damage = m_damage * 10 / targetAmount;
             }
         }
+    }
 
-        if (m_applyMultiplierMask & (1 << effIndex))
-        {
-            m_damage = int32(m_damage * m_damageMultipliers[effIndex]);
-            m_healing = int32(m_healing * m_damageMultipliers[effIndex]);
+    if (m_applyMultiplierMask & (1 << effIndex))
+    {
+        m_damage = int32(m_damage * m_damageMultipliers[effIndex]);
+        m_healing = int32(m_healing * m_damageMultipliers[effIndex]);
 
-            m_damageMultipliers[effIndex] *= multiplier;
-        }
+        m_damageMultipliers[effIndex] *= multiplier;
+    }
 
-        targetInfo.Damage += m_damage;
-        targetInfo.Healing += m_healing;
+    targetInfo.Damage += m_damage;
+    targetInfo.Healing += m_healing;
 
-        float critChance = m_spellValue->CriticalChance;
-        if (!critChance)
-            critChance = m_caster->SpellCritChanceDone(m_spellInfo, m_spellSchoolMask, m_attackType);
-        targetInfo.IsCrit = roll_chance_f(unit->SpellCritChanceTaken(m_caster, m_spellInfo, m_spellSchoolMask, critChance, m_attackType));
+    float critChance = m_spellValue->CriticalChance;
+    if (!critChance)
+        critChance = m_caster->SpellCritChanceDone(m_spellInfo, m_spellSchoolMask, m_attackType);
+    targetInfo.IsCrit = roll_chance_f(unit->SpellCritChanceTaken(m_caster, m_spellInfo, m_spellSchoolMask, critChance, m_attackType));
 }
 
 SpellCastResult Spell::CanOpenLock(uint32 effIndex, uint32 lockId, SkillType& skillId, int32& reqSkillValue, int32& skillValue)
