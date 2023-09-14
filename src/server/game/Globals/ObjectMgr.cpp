@@ -3246,7 +3246,7 @@ void ObjectMgr::LoadMailServerTemplates()
 
         if (servMail.moneyA > MAX_MONEY_AMOUNT || servMail.moneyH > MAX_MONEY_AMOUNT)
         {
-            LOG_ERROR("sql.sql", "Table `mail_server_template` has moneyA %u or moneyH %u larger than MAX_MONEY_AMOUNT %u for id %u, skipped.", servMail.moneyA, servMail.moneyH, MAX_MONEY_AMOUNT,
+            LOG_ERROR("sql.sql", "Table `mail_server_template` has moneyA %u or moneyH %u larger than MAX_MONEY_AMOUNT %lu for id %u, skipped.", servMail.moneyA, servMail.moneyH, MAX_MONEY_AMOUNT,
                 servMail.id);
             return;
         }

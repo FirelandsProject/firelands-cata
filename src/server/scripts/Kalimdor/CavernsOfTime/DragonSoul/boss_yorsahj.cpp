@@ -224,7 +224,7 @@ struct boss_yorsahj : public BossAI
 
     void JustSummoned(Creature* summon) override { summons.Summon(summon); }
 
-    void SummonedCreatureDespawn(Creature* summon)
+    void SummonedCreatureDespawn(Creature* summon) override
     {
         if (summon->GetEntry() == NPC_FORGOTTEN_ONE)
             instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_FIXATE);
@@ -551,7 +551,7 @@ struct npc_chosen_one : public ScriptedAI
         me->DespawnOrUnsummon();
     }
 
-    void SetGUID(ObjectGuid const& guid, int32 id)
+    void SetGUID(ObjectGuid const& guid, int32 id) override
     {
         if (id == ACTION_CHOISE_TARGET)
             _targetGUID.Set(guid);
@@ -593,7 +593,7 @@ struct npc_mana_void : public ScriptedAI
         events.ScheduleEvent(EVENT_ACTIVATE_MINION, 4000);
     }
 
-    void SetData(uint32 type, uint32 value)
+    void SetData(uint32 type, uint32 value) override
     {
         if (type == DATA_RESTORED_MANA)
             manaLeeched += value;
@@ -726,7 +726,7 @@ class spell_deep_corruption : public AuraScript
 class spell_mana_diffusion : public SpellScript
 {
 
-    bool Load()
+    bool Load() override
     {
         _targets = 0;
         return GetCaster()->ToCreature();
@@ -782,7 +782,7 @@ class spell_searing_blood : public SpellScript
 class spell_fusing_vapors : public AuraScript
 {
 
-    bool Load()
+    bool Load() override
     {
         wasTriggered = false;
         return true;

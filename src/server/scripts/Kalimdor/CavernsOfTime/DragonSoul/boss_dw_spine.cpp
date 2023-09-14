@@ -168,7 +168,7 @@ struct boss_dw_spine : public BossAI
         std::list<Creature*> creatureList;
         GetCreatureListWithEntryInGrid(creatureList, me, NPC_HIDEOUS_AMALGAMATION, 200.0f);
         for (Creature* crea : creatureList)
-            crea->GetMotionMaster()->MoveJump(-13875.01f, -13769.59f, 285.1783f, 15.0f, 20.0f);
+            crea->GetMotionMaster()->MoveJump(-13875.01f, -13769.59f, 285.1783f, 15.0f, 20.0f, 30.0f);
     }
 
     void Reset() override
@@ -206,7 +206,7 @@ struct boss_dw_spine : public BossAI
         RemoveEncounterFrame();
     }
 
-    void MoveInLineOfSight(Unit* victim)
+    void MoveInLineOfSight(Unit* victim) override
     {
         if (victim->GetTypeId() != TYPEID_PLAYER)
             return;
@@ -306,7 +306,7 @@ struct boss_dw_spine : public BossAI
         BossAI::JustEnteredCombat(victim);
     }
 
-    void UpdateAI(uint32 const diff)
+    void UpdateAI(uint32 const diff) override
     {
         events.Update(diff);
 
@@ -391,7 +391,7 @@ struct npc_corruption : public ScriptedAI
         isUnactive = false;
     }
 
-    void JustDied(Unit* killer) override
+    void JustDied(Unit* /* killer*/) override
     {
         Creature* spawner = me->FindNearestCreature(NPC_DW_SPINE_SPAWNER, 5.0f);
         if (!spawner)
@@ -420,7 +420,7 @@ struct npc_corruption : public ScriptedAI
         }
     }
 
-    void DamageTaken(Unit* attacker, uint32& damage)
+    void DamageTaken(Unit* /*attacker*/, uint32& damage) override
     {
         if (me->GetCurrentSpell(CURRENT_CHANNELED_SPELL))
             if ((damageTaken += damage) > CalculatePct(me->GetMaxHealth(), 20))
@@ -443,7 +443,7 @@ struct npc_corruption : public ScriptedAI
         }
     }
 
-    void UpdateAI(uint32 const diff) override
+    void UpdateAI(uint32 const /*diff*/) override
     {
         if (!me->IsVisible() || !UpdateVictim() || isUnactive)
             return;
@@ -494,13 +494,13 @@ struct npc_hideous_amalgamation : public ScriptedAI
             events.ScheduleEvent(EVENT_BLOOD_CORRUPTION, 30000);
     }
 
-    void JustDied(Unit* killer) override
+    void JustDied(Unit* /*killer*/) override
     {
         if (IsHeroic())
             DoCast(me, SPELL_DEGRADATION, true);
     }
 
-    void DamageTaken(Unit* attacker, uint32& damage) override
+    void DamageTaken(Unit* /*attacker*/, uint32& damage) override
     {
         if (me->HealthBelowPctDamaged(1, damage))
         {
@@ -558,13 +558,13 @@ struct npc_corrupted_blood : public ScriptedAI
         me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_GRIP, true);
     }
 
-    void IsSummonedBy(Unit* /*summoner*/)
+    void IsSummonedBy(Unit* /*summoner*/) override
     {
         DoCast(SPELL_DECREASE_CRIT);
         canExplode = true;
     }
 
-    void DamageTaken(Unit* attacker, uint32& damage) override
+    void DamageTaken(Unit* /*attacker*/, uint32& damage) override
     {
         if (!canExplode)
         {
@@ -591,7 +591,7 @@ struct npc_corrupted_blood : public ScriptedAI
         }
     }
 
-    void MovementInform(uint32 type, uint32 id)
+    void MovementInform(uint32 type, uint32 id) override
     {
         if (type == POINT_MOTION_TYPE && id == POINT_SPAWNER)
         {
@@ -622,7 +622,7 @@ struct npc_burning_tendon : public ScriptedAI
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC);
     }
 
-    void JustDied(Unit* killer) override
+    void JustDied(Unit* /*killer*/) override
     {
         if (GameObject* backplate = instance->GetGameObject(DATA_DW_SPINE_BACKPLATE_1 + instance->GetData(DATA_DW_SPINE_BACKPLATE_CNT)))
         {
@@ -697,7 +697,7 @@ struct npc_spine_spawner : public ScriptedAI
         me->SetInCombatWithZone();
     }
 
-    ObjectGuid GetGUID(int32 type = 0) const override { return corruptionGUID; }
+    ObjectGuid GetGUID(int32 /*type*/ = 0) const override { return corruptionGUID; }
 
   private:
     SummonList summons;
@@ -747,7 +747,7 @@ class spell_absorb_blood : public SpellScript
 class spell_absorb_blood_aura : public AuraScript
 {
 
-    bool Validate(SpellInfo const* /*spellInfo*/)
+    bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         if (!sSpellMgr->GetSpellInfo(SPELL_SUPERHEATED_NUCLEUS))
             return false;
@@ -755,7 +755,7 @@ class spell_absorb_blood_aura : public AuraScript
         return true;
     }
 
-    void AfterApply(AuraEffect const* aurEff, AuraEffectHandleModes mode)
+    void AfterApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         if (GetStackAmount() == 9)
         {
@@ -802,7 +802,7 @@ class spell_nuclear_blast : public SpellScript
 class spell_nuclear_blast_triggered : public SpellScript
 {
 
-    bool Validate(SpellInfo const* /*spellInfo*/)
+    bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         if (!sSpellMgr->GetSpellInfo(SPELL_SEAL_ARMOR_BREACH_L) || !sSpellMgr->GetSpellInfo(SPELL_SEAL_ARMOR_BREACH_R))
             return false;
@@ -855,7 +855,7 @@ class spell_nuclear_blast_triggered : public SpellScript
 class spell_dw_spine_roll_control : public SpellScript
 {
 
-    bool Validate(SpellInfo const* /*spellInfo*/)
+    bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         if (!sSpellMgr->GetSpellInfo(SPELL_ROLL_CONTROL_ROLL))
             return false;
@@ -946,7 +946,7 @@ class spell_dw_spine_roll_control_roll : public SpellScript
             { return target->ToUnit()->HasAura(graspingTendris) || target->ToUnit()->HasAura(fieryGrip) || target->ToUnit()->HasAura(SPELL_ROLL_CONTROL_AURA); });
 
         for (auto target : targets)
-            target->ToUnit()->GetMotionMaster()->MoveJump(-13875.01f, -13769.59f, 285.1783f, 15.0f, 20.0f);
+            target->ToUnit()->GetMotionMaster()->MoveJump(-13875.01f, -13769.59f, 285.1783f, 15.0f, 20.0f, 30.0f);
     }
 
     void Register() override { OnObjectAreaTargetSelect.Register(&spell_dw_spine_roll_control_roll::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY); }
@@ -956,7 +956,7 @@ class spell_dw_spine_roll_control_roll : public SpellScript
 class spell_roll_control_aura : public AuraScript
 {
 
-    void Remove(AuraEffect const* aurEff, AuraEffectHandleModes mode) { Unit::Kill(GetTarget(), GetTarget()); }
+    void Remove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Unit::Kill(GetTarget(), GetTarget()); }
 
     void Register() override { OnEffectRemove.Register(&spell_roll_control_aura::Remove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL); }
 };
@@ -965,7 +965,7 @@ class spell_roll_control_aura : public AuraScript
 class spell_seal_armor_breach : public AuraScript
 {
 
-    void AfterApply(AuraEffect const* aurEff, AuraEffectHandleModes mode)
+    void AfterApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         GetCaster()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC);
         GetCaster()->ToCreature()->AI()->RemoveEncounterFrame();
@@ -985,7 +985,7 @@ class spell_seal_armor_breach : public AuraScript
 class spell_blood_corruption_aura : public AuraScript
 {
 
-    bool Validate(SpellInfo const* spellInfo) override
+    bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         if (!sSpellMgr->GetSpellInfo(SPELL_BLOOD_OF_NELTHARION) || !sSpellMgr->GetSpellInfo(SPELL_BLOOD_OF_DEATHWING))
             return false;
@@ -993,7 +993,7 @@ class spell_blood_corruption_aura : public AuraScript
         return true;
     }
 
-    void Dispel(DispelInfo* dispelInfo)
+    void Dispel(DispelInfo* /*dispelInfo*/)
     {
         // Blood Corruption: Death generally must be dispelled 3-4 times before it turns into Blood Corruption: Earth
         uint32 aura = SPELL_BLOOD_CORRUPTION_DEATH;
@@ -1007,7 +1007,7 @@ class spell_blood_corruption_aura : public AuraScript
         GetOwner()->ToUnit()->CastSpell(GetCaster(), (GetId() == SPELL_BLOOD_CORRUPTION_EARTH) ? GetId() : aura, args);
     }
 
-    void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes mode)
+    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         if (GetTargetApplication()->GetRemoveMode() != AuraRemoveFlags::ByEnemySpell)
         {
