@@ -7767,7 +7767,8 @@ void Spell::DoEffectOnLaunchTarget(TargetInfo& targetInfo, float multiplier, uin
     }();
 
     if (triggerCombat)
-        {m_originalCaster->SetInCombatWith(unit);
+    {
+        m_originalCaster->SetInCombatWith(unit);
     }
     m_damage = 0;
     m_healing = 0;
