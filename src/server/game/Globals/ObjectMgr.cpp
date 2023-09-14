@@ -9132,6 +9132,9 @@ void ObjectMgr::LoadVendors()
         uint32 entry        = fields[0].GetUInt32();
         int32 item_id      = fields[1].GetInt32();
 
+        if (DisableMgr::IsDisabledFor(DISABLE_TYPE_ITEM, item_id, nullptr, ITEM_DISABLE_VENDOR))
+            continue;
+
         // if item is a negative, its a reference
         if (item_id < 0)
             count += LoadReferenceVendor(entry, -item_id, &skip_vendors);

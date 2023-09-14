@@ -20,6 +20,7 @@
 
 #include "Define.h"
 #include "DatabaseEnvFwd.h"
+#include "DisableMgr.h"
 #include "ObjectGuid.h"
 #include <map>
 #include <set>

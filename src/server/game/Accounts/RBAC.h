@@ -765,6 +765,9 @@ enum RBACPermissions
     RBAC_PERM_COMMAND_SERVER_DEBUG                           = 872,
     RBAC_PERM_COMMAND_RELOAD_CREATURE_MOVEMENT_OVERRIDE      = 873,
     RBAC_PERM_COMMAND_NPC_RELOAD                             = 874,
+    RBAC_PERM_COMMAND_DISABLE_ADD_ITEM                       = 875,
+    RBAC_PERM_COMMAND_DISABLE_REMOVE_ITEM                    = 876,
+
     //
     // IF YOU ADD NEW PERMISSIONS, ADD THEM IN MASTER BRANCH AS WELL!
     //

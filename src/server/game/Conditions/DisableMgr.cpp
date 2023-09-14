@@ -44,7 +44,7 @@ namespace
 
     DisableMap m_DisableMap;
 
-    uint8 MAX_DISABLE_TYPES = 9;
+    uint8 MAX_DISABLE_TYPES = 10;
 }
 
 void LoadDisables()
@@ -253,6 +253,22 @@ void LoadDisables()
                 }
                 break;
             }
+            case DISABLE_TYPE_ITEM:
+            {
+                ItemEntry const* itemEntry = sItemStore.LookupEntry(entry);
+                if (!itemEntry)
+                {
+                        LOG_ERROR("sql.sql", "Item entry %u from `disables` doesn't exist in item_template, skipped.", entry);
+                        continue;
+                }
+
+                if (!flags || flags > MAX_ITEM_DISABLE_TYPE)
+                {
+                        LOG_ERROR("sql.sql", "Disable flags for item %u are invalid, skipped.", entry);
+                        continue;
+                }
+                break;
+            }
             default:
                 break;
         }
@@ -380,6 +396,7 @@ bool IsDisabledFor(DisableType type, uint32 entry, Unit const* unit, uint8 flags
         case DISABLE_TYPE_MMAP:
             return true;
         case DISABLE_TYPE_VMAP:
+        case DISABLE_TYPE_ITEM:
            return (flags & itr->second.flags) != 0;
     }
 

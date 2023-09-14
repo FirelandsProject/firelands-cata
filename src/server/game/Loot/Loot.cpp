@@ -17,6 +17,7 @@
 
 #include "Loot.h"
 #include "DBCStores.h"
+#include "DisableMgr.h"
 #include "Group.h"
 #include "ItemEnchantmentMgr.h"
 #include "ItemTemplate.h"
@@ -76,6 +77,9 @@ bool LootItem::AllowedForPlayer(Player const* player) const
 
     ItemTemplate const* pProto = sObjectMgr->GetItemTemplate(itemid);
     if (!pProto)
+        return false;
+
+    if (DisableMgr::IsDisabledFor(DISABLE_TYPE_ITEM, itemid, nullptr, ITEM_DISABLE_LOOT_DROP))
         return false;
 
     // not show loot for players without profession or those who already know the recipe
