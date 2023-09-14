@@ -332,7 +332,7 @@ struct boss_yorsahj : public BossAI
         BossAI::JustEnteredCombat(victim);
     }
 
-    void JustDied(Unit* killer) override
+    void JustDied(Unit* /*killer*/) override
     {
         if (Creature* portal = me->FindNearestCreature(NPC_TRAVEL_TO_WYRMREST_TEMPLE, 200.00f))
             portal->SetVisible(true);
@@ -450,7 +450,7 @@ struct npc_globule : public ScriptedAI
         me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_GRIP, true);
     }
 
-    void SpellHit(Unit* caster, SpellInfo const* spellInfo) override
+    void SpellHit(Unit* /*caster*/, SpellInfo const* spellInfo) override
     {
         if (spellInfo->Id == SPELL_FUSING_VAPORS_IMMUNITY)
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -472,7 +472,7 @@ struct npc_globule : public ScriptedAI
         }
     }
 
-    void JustDied(Unit* killer) override
+    void JustDied(Unit* /*killer*/) override
     {
         DoCast(me, SPELL_FUSING_VAPORS_IMMUNITY, true);
         RemoveEncounterFrame();
@@ -511,7 +511,7 @@ class ForgottenOneActivation : public BasicEvent
     {
         _summon->SetReactState(REACT_AGGRESSIVE);
         _summon->SetInCombatWithZone();
-        if (Unit* target = _summon->AI()->SelectTarget(SELECT_TARGET_RANDOM, 0, 0.0f, true, -SPELL_FIXATE))
+        if (Unit* target = _summon->AI()->SelectTarget(SELECT_TARGET_RANDOM, 0, 0.0f, true, false, -SPELL_FIXATE))
         {
             _summon->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, true);
             _summon->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_ATTACK_ME, true);
@@ -532,7 +532,7 @@ struct npc_chosen_one : public ScriptedAI
 {
     npc_chosen_one(Creature* creature) : ScriptedAI(creature) {}
 
-    void IsSummonedBy(Unit* summoner) override
+    void IsSummonedBy(Unit* /*summoner*/) override
     {
         _targetGUID.Set(0);
         me->SetReactState(REACT_PASSIVE);
@@ -544,7 +544,7 @@ struct npc_chosen_one : public ScriptedAI
         _events.ScheduleEvent(EVENT_PSYCHIC_SLICE, 9000);
     }
 
-    void JustDied(Unit* killer) override
+    void JustDied(Unit* /*killer*/) override
     {
         if (Unit* player = ObjectAccessor::GetUnit(*me, _targetGUID))
             player->RemoveAurasDueToSpell(SPELL_FIXATE, me->GetGUID());
@@ -573,15 +573,15 @@ struct npc_mana_void : public ScriptedAI
         me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
     }
 
-    bool CanAIAttack(Unit const* victim) const override { return false; }
+    bool CanAIAttack(Unit const* /*victim*/) const override { return false; }
 
-    void JustDied(Unit* killer) override
+    void JustDied(Unit* /*killer*/) override
     {
         DoCast(SPELL_MANA_DIFFUSION);
         me->DespawnOrUnsummon(1000);
     }
 
-    void IsSummonedBy(Unit* summoner) override
+    void IsSummonedBy(Unit* /*summoner*/) override
     {
         if (Creature* yorsahj = instance->GetCreature(DATA_YORSAHJ_THE_UNSLEEPING))
             yorsahj->AI()->JustSummoned(me);
@@ -658,9 +658,8 @@ class spell_summon_globule : public SpellScript
         targets.remove_if([spell](WorldObject* target) -> bool { return !target->GetMap()->IsHeroic() && target->GetEntry() == globuleActivation[spell].entry4; });
     }
 
-    void HandleVisual(SpellEffIndex effIndex)
+    void HandleVisual(SpellEffIndex /*effIndex*/)
     {
-        uint32 spell = 0;
         for (Globule const& i : globule)
         {
             if (i.entry == GetHitUnit()->GetEntry())
@@ -735,7 +734,7 @@ class spell_mana_diffusion : public SpellScript
 
     void FilterTargets(std::list<WorldObject*>& targets) { _targets = targets.size(); }
 
-    void HandleScript(SpellEffIndex effIndex)
+    void HandleScript(SpellEffIndex /*effIndex*/)
     {
         uint32 mana = GetCaster()->ToCreature()->AI()->GetData(DATA_RESTORED_MANA);
         SetEffectValue(mana / _targets);
@@ -764,7 +763,7 @@ class spell_searing_blood : public SpellScript
             targets.resize(targetcnt);
     }
 
-    void HandleScript(SpellEffIndex effIndex)
+    void HandleScript(SpellEffIndex /*effIndex*/)
     {
         uint32 damage = GetHitDamage();
         // guessed value
@@ -796,7 +795,7 @@ class spell_fusing_vapors : public AuraScript
         return false;
     }
 
-    void OnProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo) { wasTriggered = true; }
+    void OnProc(AuraEffect const* /*aurEff*/, ProcEventInfo& /*eventInfo*/) { wasTriggered = true; }
 
     void Register() override
     {
@@ -826,7 +825,7 @@ class spell_digestive_acid : public SpellScript
             targets.resize(GetCaster()->GetMap()->Is25ManRaid() ? 15 : 5);
     }
 
-    void HandleDummy(SpellEffIndex effIndex) { GetCaster()->CastSpell(GetHitUnit(), GetSpellInfo()->Effects[EFFECT_0].BasePoints, true); }
+    void HandleDummy(SpellEffIndex /*effIndex*/) { GetCaster()->CastSpell(GetHitUnit(), GetSpellInfo()->Effects[EFFECT_0].BasePoints, true); }
 
     void Register() override
     {
@@ -855,7 +854,7 @@ class spell_summon_manavoid : public SpellScript
 // 109894,109895,109896,109897,109898
 class spell_yorsahj_text : public SpellScript
 {
-    void HandleYell(SpellEffIndex effIndex)
+    void HandleYell(SpellEffIndex /*effIndex*/)
     {
         for (TextGroups const& i : texts)
         {
@@ -868,7 +867,7 @@ class spell_yorsahj_text : public SpellScript
         }
     }
 
-    void HandleWhisper(SpellEffIndex effIndex)
+    void HandleWhisper(SpellEffIndex /*effIndex*/)
     {
         for (TextGroups const& i : texts)
         {
@@ -895,12 +894,11 @@ class achievement_taste_the_rainbow : public AchievementCriteriaScript
   public:
     achievement_taste_the_rainbow(char const* scriptName, uint8 combination) : AchievementCriteriaScript(scriptName), _combination(combination) {}
 
-    bool OnCheck(Player* source, Unit* target)
+    bool OnCheck(Player* /*source*/, Unit* target)
     {
         if (!target)
             return false;
 
-        uint32 amount = 0;
         if (AuraEffect* aura = target->GetAuraEffect(SPELL_TRACK_ACHIEVEMENT, EFFECT_0))
             return (uint8(aura->GetAmount()) & _combination);
 
