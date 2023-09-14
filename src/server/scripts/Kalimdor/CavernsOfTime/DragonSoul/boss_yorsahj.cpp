@@ -511,7 +511,7 @@ class ForgottenOneActivation : public BasicEvent
     {
         _summon->SetReactState(REACT_AGGRESSIVE);
         _summon->SetInCombatWithZone();
-        if (Unit* target = _summon->AI()->SelectTarget(SELECT_TARGET_RANDOM, 0, 0.0f, true, false, -SPELL_FIXATE))
+        if (Unit* target = _summon->AI()->SelectTarget(SELECT_TARGET_RANDOM, 0, 0.0f, true, true, -SPELL_FIXATE))
         {
             _summon->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, true);
             _summon->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_ATTACK_ME, true);
