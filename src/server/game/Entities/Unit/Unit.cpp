@@ -10353,7 +10353,7 @@ void Unit::ScheduleAIChange()
     {
         RestoreDisabledAI();
         PushAI(GetScheduledChangeAI()); // This could actually be PopAI() to get the previous AI but it's required atm to trigger
-                                        // UpdateCharmAI()
+        UpdateCharmAI();
     }
 }
 
@@ -12290,15 +12290,15 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type, AuraApplication const* au
     // Charmer stop charming
     if (playerCharmer)
     {
-        playerCharmer->StopCastingCharm();
-        playerCharmer->StopCastingBindSight();
+        playerCharmer->StopCastingCharm(aurApp ? aurApp->GetBase() : nullptr);
+        playerCharmer->StopCastingBindSight(aurApp ? aurApp->GetBase() : nullptr);
     }
 
     // Charmed stop charming
     if (GetTypeId() == TYPEID_PLAYER)
     {
-        ToPlayer()->StopCastingCharm();
-        ToPlayer()->StopCastingBindSight();
+        ToPlayer()->StopCastingCharm(aurApp ? aurApp->GetBase() : nullptr);
+        ToPlayer()->StopCastingBindSight(aurApp ? aurApp->GetBase() : nullptr);
     }
 
     // StopCastingCharm may remove a possessed pet?
@@ -12331,6 +12331,21 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type, AuraApplication const* au
         GetMotionMaster()->Clear(MOTION_SLOT_ACTIVE);
         PauseMovement(0, MOTION_SLOT_IDLE);
         StopMoving();
+        if (charmer->GetTypeId() == TYPEID_PLAYER && charmer->getClass() == CLASS_WARLOCK && ToCreature()->GetCreatureTemplate()->type == CREATURE_TYPE_DEMON)
+        {
+            // Disable CreatureAI/SmartAI and switch to CharmAI when charmed by warlock
+            Creature* charmed = ToCreature();
+            charmed->NeedChangeAI = true;
+            charmed->IsAIEnabledAlt = false;
+        }
+        else
+        {
+            ToCreature()->AI()->OnCharmed(true);
+        }
+
+        // If creature can fly, add normal player flying flag (fixes speed)
+        if (charmer->GetTypeId() == TYPEID_PLAYER && ToCreature()->CanFly())
+            AddUnitMovementFlag(MOVEMENTFLAG_FLYING);
     }
     else if (Player* player = ToPlayer())
     {
@@ -12390,7 +12405,10 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type, AuraApplication const* au
                     SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, uint32(GameTime::GetGameTime())); // cast can't be helped
                 }
             }
-            playerCharmer->CharmSpellInitialize();
+            if (playerCharmer->m_seer != this)
+            {
+                playerCharmer->CharmSpellInitialize();
+            }
             break;
         default:
         case CHARM_TYPE_CONVERT:
