@@ -551,7 +551,7 @@ struct npc_chosen_one : public ScriptedAI
         me->DespawnOrUnsummon();
     }
 
-    void SetGUID(uint64 guid, int32 id)
+    void SetGUID(ObjectGuid const& guid, int32 id)
     {
         if (id == ACTION_CHOISE_TARGET)
             _targetGUID.Set(guid);
