@@ -185,6 +185,7 @@ static bool ShouldFollowOnSpawn(SummonPropertiesEntry const* properties)
         return false;
     }
 }
+
 void CreatureAI::JustAppeared()
 {
     if (!IsEngaged())
@@ -296,6 +297,18 @@ bool CreatureAI::_EnterEvadeMode(EvadeReason /*why*/)
     {
         EngagementOver();
         return false;
+    }
+
+    if (TempSummon* summon = me->ToTempSummon())
+    {
+        if (SummonPropertiesEntry const* properties = summon->m_Properties)
+        { // Allied summons, pet summons join a formation unless the following exceptions are being met.
+            if (properties->Flags & SUMMON_PROP_FLAG_DESPAWN_ON_SUMMONER_DEATH)
+            {
+                me->DespawnOrUnsummon();
+                return true;
+            }
+        }
     }
 
     me->RemoveAurasOnEvade();
