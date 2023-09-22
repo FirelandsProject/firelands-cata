@@ -6413,7 +6413,7 @@ void Unit::RemoveAllControlled()
         }
         else
             LOG_ERROR("entities.unit", "Unit %u is trying to release unit %u which is neither charmed nor owned by it", GetEntry(), target->GetEntry());
-        
+
         // checking for edge cases
         if (!controlledKeepsFighting)
         {
