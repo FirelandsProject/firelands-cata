@@ -303,7 +303,7 @@ bool CreatureAI::_EnterEvadeMode(EvadeReason /*why*/)
     {
         if (SummonPropertiesEntry const* properties = summon->m_Properties)
         { // Allied summons, pet summons join a formation unless the following exceptions are being met.
-            if (properties->Flags & SUMMON_PROP_FLAG_DESPAWN_ON_SUMMONER_DEATH)
+            if (properties->Flags & SUMMON_PROP_FLAG_DESPAWN_ON_SUMMONER_DEATH || (me->IsGuardian() || me->IsPet()) && !me->GetOwner()->IsAlive())
             {
                 me->DespawnOrUnsummon();
                 return true;
