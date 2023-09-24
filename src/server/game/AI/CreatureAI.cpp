@@ -299,17 +299,6 @@ bool CreatureAI::_EnterEvadeMode(EvadeReason /*why*/)
         return false;
     }
 
-    if (TempSummon* summon = me->ToTempSummon())
-    {
-        if (SummonPropertiesEntry const* properties = summon->m_Properties)
-        { // Allied summons, pet summons join a formation unless the following exceptions are being met.
-            if ((properties->Flags & SUMMON_PROP_FLAG_DESPAWN_ON_SUMMONER_DEATH) || ((me->IsGuardian() || me->IsPet()) && !me->GetOwner()->IsAlive()))
-            {
-                me->DespawnOrUnsummon();
-                return true;
-            }
-        }
-    }
 
     me->RemoveAurasOnEvade();
 
@@ -324,6 +313,17 @@ bool CreatureAI::_EnterEvadeMode(EvadeReason /*why*/)
     me->SetTarget(ObjectGuid::Empty);
     EngagementOver();
 
+    if (TempSummon* summon = me->ToTempSummon())
+    {
+        if (SummonPropertiesEntry const* properties = summon->m_Properties)
+        { // Allied summons, pet summons join a formation unless the following exceptions are being met.
+            if ((properties->Flags & SUMMON_PROP_FLAG_DESPAWN_ON_SUMMONER_DEATH) || ((me->IsGuardian() || me->IsPet()) && !me->GetOwner()->IsAlive()))
+            {
+                me->DespawnOrUnsummon();
+                return true;
+            }
+        }
+    }
     return true;
 }
 
