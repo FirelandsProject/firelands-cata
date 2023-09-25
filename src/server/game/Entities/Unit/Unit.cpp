@@ -6388,7 +6388,7 @@ Unit* Unit::GetFirstControlled() const
 
 // RemoveAllControlled gets called twice - in Unit::setDeathState() & void Unit::RemoveFromWorld()
 // It removes charming effects, controlled vehicles and unsummons minions.
-void Unit::RemoveAllControlled()
+void Unit::RemoveAllControlled(bool onDeath /*= false*/)
 {
     // possessed pet and vehicle
     if (GetTypeId() == TYPEID_PLAYER)
@@ -6405,6 +6405,10 @@ void Unit::RemoveAllControlled()
         // A pet/guardian should continue combat. Since we despawned every other summon type in UnsummonAllTotems(), we can waive on a additional type check and continue with IsSummon().
         else if (target->GetOwnerOrCreatorGUID() == GetGUID() && target->IsSummon())
         {
+            if (!(onDeath && !IsPlayer() && target->IsGuardian()))
+            {
+                target->ToTempSummon()->UnSummon();
+            }
             if (!target->IsInCombat())
                 target->ToTempSummon()->UnSummon();
             else
