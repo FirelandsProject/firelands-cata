@@ -525,11 +525,7 @@ struct FC_GAME_API AuraCreateInfo
         CastItem = item;
         return *this;
     }
-    AuraCreateInfo& SetPeriodicReset(bool reset)
-    {
-        ResetPeriodicTimer = reset;
-        return *this;
-    }
+
     AuraCreateInfo& SetOwnerEffectMask(uint8 effMask)
     {
         _targetEffectMask = effMask;
@@ -544,7 +540,6 @@ struct FC_GAME_API AuraCreateInfo
     int32 const* BaseAmount = nullptr;
     Item* CastItem = nullptr;
     bool* IsRefresh = nullptr;
-    bool ResetPeriodicTimer = true;
 
   private:
     SpellInfo const* _spellInfo = nullptr;
