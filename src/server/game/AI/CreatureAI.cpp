@@ -299,20 +299,6 @@ bool CreatureAI::_EnterEvadeMode(EvadeReason /*why*/)
         return false;
     }
 
-
-    me->RemoveAurasOnEvade();
-
-    me->CombatStop(true);
-    me->LoadCreaturesAddon();
-    me->SetLootRecipient(nullptr);
-    me->ResetPlayerDamageReq();
-    me->SetLastDamagedTime(0);
-    me->SetCannotReachTarget(false);
-    me->ResetSpellFocusInfo();
-    me->GetSpellHistory()->ResetAllCooldowns();
-    me->SetTarget(ObjectGuid::Empty);
-    EngagementOver();
-
     if (TempSummon* summon = me->ToTempSummon())
     {
         if (SummonPropertiesEntry const* properties = summon->m_Properties)
@@ -324,6 +310,19 @@ bool CreatureAI::_EnterEvadeMode(EvadeReason /*why*/)
             }
         }
     }
+
+    me->RemoveAurasOnEvade();
+    me->CombatStop(true);
+    me->LoadCreaturesAddon();
+    me->SetLootRecipient(nullptr);
+    me->ResetPlayerDamageReq();
+    me->SetLastDamagedTime(0);
+    me->SetCannotReachTarget(false);
+    me->ResetSpellFocusInfo();
+    me->GetSpellHistory()->ResetAllCooldowns();
+    me->SetTarget(ObjectGuid::Empty);
+    EngagementOver();
+
     return true;
 }
 
