@@ -451,7 +451,10 @@ AuraEffect::AuraEffect(Aura* base, uint8 effIndex, int32 const* baseAmount, Unit
     CalculateSpellMod();
 }
 
-AuraEffect::~AuraEffect() { delete m_spellmod; }
+AuraEffect::~AuraEffect()
+{
+    delete m_spellmod;
+}
 
 template <typename Container> void AuraEffect::GetTargetList(Container& targetContainer) const
 {

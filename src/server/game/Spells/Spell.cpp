@@ -407,7 +407,10 @@ void SpellCastTargets::ModSrc(Position const& pos)
 
 void SpellCastTargets::RemoveSrc() { m_targetMask &= ~(TARGET_FLAG_SOURCE_LOCATION); }
 
-SpellDestination const* SpellCastTargets::GetDst() const { return &m_dst; }
+SpellDestination const* SpellCastTargets::GetDst() const
+{
+    return &m_dst;
+}
 
 WorldLocation const* SpellCastTargets::GetDstPos() const { return &m_dst._position; }
 
