@@ -68,8 +68,8 @@ enum SpellCastTargetFlags : uint32
     TARGET_FLAG_EXTRA_TARGETS = 0x00080000,   // uint32 counter, loop { vec3 - screen position (?), guid }, not used so far
     TARGET_FLAG_UNIT_PASSENGER = 0x00100000,  // guessed, used to validate target (if vehicle passenger)
 
-    TARGET_FLAG_UNIT_MASK = TARGET_FLAG_UNIT | TARGET_FLAG_UNIT_RAID | TARGET_FLAG_UNIT_PARTY | TARGET_FLAG_UNIT_ENEMY |
-                            TARGET_FLAG_UNIT_ALLY | TARGET_FLAG_UNIT_DEAD | TARGET_FLAG_UNIT_MINIPET | TARGET_FLAG_UNIT_PASSENGER,
+    TARGET_FLAG_UNIT_MASK = TARGET_FLAG_UNIT | TARGET_FLAG_UNIT_RAID | TARGET_FLAG_UNIT_PARTY | TARGET_FLAG_UNIT_ENEMY | TARGET_FLAG_UNIT_ALLY | TARGET_FLAG_UNIT_DEAD | TARGET_FLAG_UNIT_MINIPET |
+                            TARGET_FLAG_UNIT_PASSENGER,
     TARGET_FLAG_GAMEOBJECT_MASK = TARGET_FLAG_GAMEOBJECT | TARGET_FLAG_GAMEOBJECT_ITEM,
     TARGET_FLAG_CORPSE_MASK = TARGET_FLAG_CORPSE_ALLY | TARGET_FLAG_CORPSE_ENEMY,
     TARGET_FLAG_ITEM_MASK = TARGET_FLAG_TRADE_ITEM | TARGET_FLAG_ITEM | TARGET_FLAG_GAMEOBJECT_ITEM
@@ -192,6 +192,7 @@ enum SpellCustomAttributes
     SPELL_ATTR0_CU_DIRECT_DAMAGE = 0x00000100,
     SPELL_ATTR0_CU_CHARGE = 0x00000200,
     SPELL_ATTR0_CU_PICKPOCKET = 0x00000400,
+    SPELL_ATTR0_CU_ROLLING_PERIODIC = 0x00000800,
     SPELL_ATTR0_CU_NEGATIVE_EFF0 = 0x00001000,
     SPELL_ATTR0_CU_NEGATIVE_EFF1 = 0x00002000,
     SPELL_ATTR0_CU_NEGATIVE_EFF2 = 0x00004000,
@@ -279,9 +280,8 @@ class FC_GAME_API SpellEffectInfo
     } Scaling;
 
     SpellEffectInfo()
-        : _spellInfo(nullptr), _effIndex(0), Effect(0), ApplyAuraName(0), AuraPeriod(0), DieSides(0), RealPointsPerLevel(0.f),
-          BasePoints(0), PointsPerComboPoint(0), Amplitude(0.f), DamageMultiplier(0.f), BonusMultiplier(0.f), MiscValue(0),
-          MiscValueB(0), Mechanic(MECHANIC_NONE), RadiusEntry(nullptr), MaxRadiusEntry(nullptr), ChainTarget(0), ItemType(0),
+        : _spellInfo(nullptr), _effIndex(0), Effect(0), ApplyAuraName(0), AuraPeriod(0), DieSides(0), RealPointsPerLevel(0.f), BasePoints(0), PointsPerComboPoint(0), Amplitude(0.f),
+          DamageMultiplier(0.f), BonusMultiplier(0.f), MiscValue(0), MiscValueB(0), Mechanic(MECHANIC_NONE), RadiusEntry(nullptr), MaxRadiusEntry(nullptr), ChainTarget(0), ItemType(0),
           TriggerSpell(0), ImplicitTargetConditions(nullptr), Scaling()
     {
     }
@@ -596,8 +596,7 @@ class FC_GAME_API SpellInfo
     uint32 GetRecoveryTime() const;
 
     int32 CalcPowerCost(Unit const* caster, SpellSchoolMask schoolMask, Spell* spell = nullptr) const;
-    float GetSpellScalingMultiplier(
-        Unit const* caster, SpellScalingEntry const* scalingEntry, bool isPowerCostRelated = false) const;
+    float GetSpellScalingMultiplier(Unit const* caster, SpellScalingEntry const* scalingEntry, bool isPowerCostRelated = false) const;
 
     bool IsRanked() const;
     uint8 GetRank() const;

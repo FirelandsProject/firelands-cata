@@ -32,6 +32,7 @@
 #include "SpellAuraDefines.h"
 #include "SpellInfo.h"
 #include <G3D/g3dmath.h>
+#include "Containers.h"
 
 bool IsPrimaryProfessionSkill(uint32 skill)
 {
@@ -55,14 +56,9 @@ bool IsPartOfSkillLine(uint32 skillId, uint32 spellId)
     return false;
 }
 
-SpellMgr::SpellMgr()
-{
-}
+SpellMgr::SpellMgr() {}
 
-SpellMgr::~SpellMgr()
-{
-    UnloadSpellInfoStore();
-}
+SpellMgr::~SpellMgr() { UnloadSpellInfoStore(); }
 
 SpellMgr* SpellMgr::instance()
 {
@@ -298,15 +294,9 @@ uint32 SpellMgr::GetSpellWithRank(uint32 spell_id, uint32 rank, bool strict) con
     return spell_id;
 }
 
-Firelands::IteratorPair<SpellRequiredMap::const_iterator> SpellMgr::GetSpellsRequiredForSpellBounds(uint32 spell_id) const
-{
-    return Firelands::Containers::MapEqualRange(mSpellReq, spell_id);
-}
+Firelands::IteratorPair<SpellRequiredMap::const_iterator> SpellMgr::GetSpellsRequiredForSpellBounds(uint32 spell_id) const { return Firelands::Containers::MapEqualRange(mSpellReq, spell_id); }
 
-SpellsRequiringSpellMapBounds SpellMgr::GetSpellsRequiringSpellBounds(uint32 spell_id) const
-{
-    return mSpellsReqSpell.equal_range(spell_id);
-}
+SpellsRequiringSpellMapBounds SpellMgr::GetSpellsRequiringSpellBounds(uint32 spell_id) const { return mSpellsReqSpell.equal_range(spell_id); }
 
 bool SpellMgr::IsSpellRequiringSpell(uint32 spellid, uint32 req_spellid) const
 {
@@ -328,15 +318,9 @@ SpellLearnSkillNode const* SpellMgr::GetSpellLearnSkill(uint32 spell_id) const
         return nullptr;
 }
 
-SpellLearnSpellMapBounds SpellMgr::GetSpellLearnSpellMapBounds(uint32 spell_id) const
-{
-    return mSpellLearnSpells.equal_range(spell_id);
-}
+SpellLearnSpellMapBounds SpellMgr::GetSpellLearnSpellMapBounds(uint32 spell_id) const { return mSpellLearnSpells.equal_range(spell_id); }
 
-bool SpellMgr::IsSpellLearnSpell(uint32 spell_id) const
-{
-    return mSpellLearnSpells.find(spell_id) != mSpellLearnSpells.end();
-}
+bool SpellMgr::IsSpellLearnSpell(uint32 spell_id) const { return mSpellLearnSpells.find(spell_id) != mSpellLearnSpells.end(); }
 
 bool SpellMgr::IsSpellLearnToSpell(uint32 spell_id1, uint32 spell_id2) const
 {
@@ -372,10 +356,7 @@ bool SpellMgr::IsSpellMemberOfSpellGroup(uint32 spellid, SpellGroup groupid) con
     return false;
 }
 
-SpellGroupSpellMapBounds SpellMgr::GetSpellGroupSpellMapBounds(SpellGroup group_id) const
-{
-    return mSpellGroupSpell.equal_range(group_id);
-}
+SpellGroupSpellMapBounds SpellMgr::GetSpellGroupSpellMapBounds(SpellGroup group_id) const { return mSpellGroupSpell.equal_range(group_id); }
 
 void SpellMgr::GetSetOfSpellsInSpellGroup(SpellGroup group_id, std::set<uint32>& foundSpells) const
 {
@@ -599,10 +580,7 @@ SpellThreatEntry const* SpellMgr::GetSpellThreatEntry(uint32 spellID) const
     return nullptr;
 }
 
-SkillLineAbilityMapBounds SpellMgr::GetSkillLineAbilityMapBounds(uint32 spell_id) const
-{
-    return mSkillLineAbilityMap.equal_range(spell_id);
-}
+SkillLineAbilityMapBounds SpellMgr::GetSkillLineAbilityMapBounds(uint32 spell_id) const { return mSkillLineAbilityMap.equal_range(spell_id); }
 
 PetAura const* SpellMgr::GetPetAura(uint32 spell_id, uint8 eff) const
 {
@@ -629,11 +607,7 @@ bool SpellMgr::IsArenaAllowedEnchancment(uint32 ench_id) const
     return false;
 }
 
-const std::vector<int32>* SpellMgr::GetSpellLinked(int32 spell_id) const
-{
-    SpellLinkedMap::const_iterator itr = mSpellLinkedMap.find(spell_id);
-    return itr != mSpellLinkedMap.end() ? &(itr->second) : nullptr;
-}
+std::vector<int32> const* SpellMgr::GetSpellLinked(int32 spell_id) const { return Firelands::Containers::MapGetValuePtr(mSpellLinkedMap, spell_id); }
 
 PetLevelupSpellSet const* SpellMgr::GetPetLevelupSpellList(uint32 petFamily) const
 {
@@ -652,30 +626,15 @@ PetDefaultSpellsEntry const* SpellMgr::GetPetDefaultSpellsEntry(int32 id) const
     return nullptr;
 }
 
-SpellAreaMapBounds SpellMgr::GetSpellAreaMapBounds(uint32 spell_id) const
-{
-    return mSpellAreaMap.equal_range(spell_id);
-}
+SpellAreaMapBounds SpellMgr::GetSpellAreaMapBounds(uint32 spell_id) const { return mSpellAreaMap.equal_range(spell_id); }
 
-SpellAreaForQuestMapBounds SpellMgr::GetSpellAreaForQuestMapBounds(uint32 quest_id) const
-{
-    return mSpellAreaForQuestMap.equal_range(quest_id);
-}
+SpellAreaForQuestMapBounds SpellMgr::GetSpellAreaForQuestMapBounds(uint32 quest_id) const { return mSpellAreaForQuestMap.equal_range(quest_id); }
 
-SpellAreaForQuestMapBounds SpellMgr::GetSpellAreaForQuestEndMapBounds(uint32 quest_id) const
-{
-    return mSpellAreaForQuestEndMap.equal_range(quest_id);
-}
+SpellAreaForQuestMapBounds SpellMgr::GetSpellAreaForQuestEndMapBounds(uint32 quest_id) const { return mSpellAreaForQuestEndMap.equal_range(quest_id); }
 
-SpellAreaForAuraMapBounds SpellMgr::GetSpellAreaForAuraMapBounds(uint32 spell_id) const
-{
-    return mSpellAreaForAuraMap.equal_range(spell_id);
-}
+SpellAreaForAuraMapBounds SpellMgr::GetSpellAreaForAuraMapBounds(uint32 spell_id) const { return mSpellAreaForAuraMap.equal_range(spell_id); }
 
-SpellAreaForAreaMapBounds SpellMgr::GetSpellAreaForAreaMapBounds(uint32 area_id) const
-{
-    return mSpellAreaForAreaMap.equal_range(area_id);
-}
+SpellAreaForAreaMapBounds SpellMgr::GetSpellAreaForAreaMapBounds(uint32 area_id) const { return mSpellAreaForAreaMap.equal_range(area_id); }
 
 bool SpellArea::IsFitToRequirements(Player const* player, uint32 newZone, uint32 newArea) const
 {
@@ -2708,18 +2667,18 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
 
             switch (spellInfo->Effects[j].Effect)
             {
-             case SPELL_EFFECT_SCHOOL_DAMAGE:
-             case SPELL_EFFECT_HEALTH_LEECH:
-             case SPELL_EFFECT_HEAL:
-             case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
-             case SPELL_EFFECT_WEAPON_PERCENT_DAMAGE:
-             case SPELL_EFFECT_WEAPON_DAMAGE:
-             case SPELL_EFFECT_POWER_BURN:
-             case SPELL_EFFECT_HEAL_MECHANICAL:
-             case SPELL_EFFECT_NORMALIZED_WEAPON_DMG:
-             case SPELL_EFFECT_HEAL_PCT:
-             spellInfo->AttributesCu |= SPELL_ATTR0_CU_CAN_CRIT;
-             break;
+            case SPELL_EFFECT_SCHOOL_DAMAGE:
+            case SPELL_EFFECT_HEALTH_LEECH:
+            case SPELL_EFFECT_HEAL:
+            case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
+            case SPELL_EFFECT_WEAPON_PERCENT_DAMAGE:
+            case SPELL_EFFECT_WEAPON_DAMAGE:
+            case SPELL_EFFECT_POWER_BURN:
+            case SPELL_EFFECT_HEAL_MECHANICAL:
+            case SPELL_EFFECT_NORMALIZED_WEAPON_DMG:
+            case SPELL_EFFECT_HEAL_PCT:
+                spellInfo->AttributesCu |= SPELL_ATTR0_CU_CAN_CRIT;
+                break;
             }
             switch (spellInfo->Effects[j].Effect)
             {

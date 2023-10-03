@@ -50,6 +50,7 @@
 #include "WeatherMgr.h"
 #include "WorldPacket.h"
 #include <G3D/g3dmath.h>
+#include <numeric>
 
 class Aura;
 //
@@ -614,7 +615,7 @@ int32 AuraEffect::CalculateAmount(Unit* caster)
     return amount;
 }
 
-void AuraEffect::CalculatePeriodic(Unit* caster, bool resetPeriodicTimer /*= true*/, bool load /*= false*/)
+void AuraEffect::CalculatePeriodic(Unit* caster, bool resetPeriodicTimer, bool load)
 {
     // prepare periodics
     switch (GetAuraType())
@@ -1477,7 +1478,7 @@ void AuraEffect::HandleModInvisibilityDetect(AuraApplication const* aurApp, uint
 
     // call functions which may have additional effects after chainging state of unit
     if (target->IsInWorld())
-    target->UpdateObjectVisibility();
+        target->UpdateObjectVisibility();
 }
 
 void AuraEffect::HandleModInvisibility(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -1541,7 +1542,7 @@ void AuraEffect::HandleModInvisibility(AuraApplication const* aurApp, uint8 mode
         target->RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags::StealthOrInvis);
     }
     if (target->IsInWorld())
-    target->UpdateObjectVisibility();
+        target->UpdateObjectVisibility();
 }
 
 void AuraEffect::HandleModStealthDetect(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -1567,7 +1568,7 @@ void AuraEffect::HandleModStealthDetect(AuraApplication const* aurApp, uint8 mod
 
     // call functions which may have additional effects after chainging state of unit
     if (target->IsInWorld())
-    target->UpdateObjectVisibility();
+        target->UpdateObjectVisibility();
 }
 
 void AuraEffect::HandleModStealth(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -1609,7 +1610,7 @@ void AuraEffect::HandleModStealth(AuraApplication const* aurApp, uint8 mode, boo
     }
 
     if (target->IsInWorld())
-    target->UpdateObjectVisibility();
+        target->UpdateObjectVisibility();
 }
 
 void AuraEffect::HandleModStealthLevel(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -1627,7 +1628,7 @@ void AuraEffect::HandleModStealthLevel(AuraApplication const* aurApp, uint8 mode
 
     // call functions which may have additional effects after chainging state of unit
     if (target->IsInWorld())
-    target->UpdateObjectVisibility();
+        target->UpdateObjectVisibility();
 }
 
 void AuraEffect::HandleDetectAmore(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -2639,7 +2640,7 @@ void AuraEffect::HandleAuraModStalked(AuraApplication const* aurApp, uint8 mode,
 
     // call functions which may have additional effects after chainging state of unit
     if (target->IsInWorld())
-    target->UpdateObjectVisibility();
+        target->UpdateObjectVisibility();
 }
 
 void AuraEffect::HandleAuraUntrackable(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -3138,10 +3139,7 @@ void AuraEffect::HandleAuraModIncreaseSpeed(AuraApplication const* aurApp, uint8
     target->UpdateSpeed(MOVE_RUN);
 }
 
-void AuraEffect::HandleAuraModIncreaseMountedSpeed(AuraApplication const* aurApp, uint8 mode, bool apply) const
-{
-    HandleAuraModIncreaseSpeed(aurApp, mode, apply);
-}
+void AuraEffect::HandleAuraModIncreaseMountedSpeed(AuraApplication const* aurApp, uint8 mode, bool apply) const { HandleAuraModIncreaseSpeed(aurApp, mode, apply); }
 
 void AuraEffect::HandleAuraModIncreaseFlightSpeed(AuraApplication const* aurApp, uint8 mode, bool apply) const
 {
@@ -3749,10 +3747,7 @@ void AuraEffect::HandleModPowerRegen(AuraApplication const* aurApp, uint8 mode, 
     aurApp->GetTarget()->UpdatePowerRegeneration(Powers(GetMiscValue()));
 }
 
-void AuraEffect::HandleModPowerRegenPCT(AuraApplication const* aurApp, uint8 mode, bool apply) const
-{
-    HandleModPowerRegen(aurApp, mode, apply);
-}
+void AuraEffect::HandleModPowerRegenPCT(AuraApplication const* aurApp, uint8 mode, bool apply) const { HandleModPowerRegen(aurApp, mode, apply); }
 
 void AuraEffect::HandleModHealingPercent(AuraApplication const* aurApp, uint8 mode, bool /*apply*/) const
 {
@@ -3961,10 +3956,7 @@ void AuraEffect::HandleAuraModBlockPercent(AuraApplication const* aurApp, uint8 
     target->ToPlayer()->UpdateBlockPercentage();
 }
 
-void AuraEffect::HandleAuraModRegenInterrupt(AuraApplication const* aurApp, uint8 mode, bool apply) const
-{
-    HandleModManaRegen(aurApp, mode, apply);
-}
+void AuraEffect::HandleAuraModRegenInterrupt(AuraApplication const* aurApp, uint8 mode, bool apply) const { HandleModManaRegen(aurApp, mode, apply); }
 
 void AuraEffect::HandleAuraModWeaponCritPercent(AuraApplication const* aurApp, uint8 mode, bool /*apply*/) const
 {
@@ -5243,7 +5235,7 @@ void AuraEffect::HandleAuraModFakeInebriation(AuraApplication const* aurApp, uin
 
     // call functions which may have additional effects after chainging state of unit
     if (target->IsInWorld())
-    target->UpdateObjectVisibility();
+        target->UpdateObjectVisibility();
 }
 
 void AuraEffect::HandleAuraOverrideSpells(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -5986,7 +5978,7 @@ void AuraEffect::HandlePeriodicHealthLeechAuraTick(Unit* target, Unit* caster) c
     // SendSpellNonMeleeDamageLog expects non-absorbed/non-resisted damage
     if (caster)
 
-    caster->SendSpellNonMeleeDamageLog(target, GetId(), damage, GetSpellInfo()->GetSchoolMask(), absorb, resist, false, 0, crit);
+        caster->SendSpellNonMeleeDamageLog(target, GetId(), damage, GetSpellInfo()->GetSchoolMask(), absorb, resist, false, 0, crit);
     damage = damageInfo.GetDamage();
 
     // Set trigger flag
