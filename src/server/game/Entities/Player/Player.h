@@ -1910,6 +1910,7 @@ class FC_GAME_API Player : public Unit, public GridObject<Player>
 
     void SendProficiency(ItemClass itemClass, uint32 itemSubclassMask) const;
     void SendKnownSpells(bool firstLogin = false);
+    void SendUnlearnSpells();
     bool AddSpell(uint32 spellId, bool active, bool learning, bool dependent,
         bool disabled, bool loading = false, uint32 fromSkill = 0);
     void LearnSpell(uint32 spell_id, bool dependent, uint32 fromSkill = 0);
@@ -2287,6 +2288,8 @@ class FC_GAME_API Player : public Unit, public GridObject<Player>
 
     WorldSession* GetSession() const { return m_session; }
     GameClient* GetGameClient() const;
+
+    void RemoveRewardedSpecializationQuest(uint32 spellId);
 
     void BuildCreateUpdateBlockForPlayer(
         UpdateData* data, Player* target) const override;
@@ -3255,6 +3258,7 @@ class FC_GAME_API Player : public Unit, public GridObject<Player>
     float m_rest_bonus;
     uint32 _restFlagMask;
     ////////////////////Rest System/////////////////////
+    uint32 m_usedTalentCount;
 
     // Social
     PlayerSocial* m_social;

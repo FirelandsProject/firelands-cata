@@ -251,6 +251,7 @@ void OpcodeTable::Initialize()
     DEFINE_HANDLER(CMSG_CHAR_RENAME,                                      STATUS_AUTHED,    PROCESS_THREADUNSAFE, &WorldSession::HandleCharRenameOpcode          );
     DEFINE_HANDLER(CMSG_CHAT_FILTERED,                                    STATUS_UNHANDLED, PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     DEFINE_HANDLER(CMSG_CHAT_IGNORED,                                     STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleChatIgnoredOpcode         );
+    DEFINE_HANDLER(CMSG_COMPLETED_ARTIFACTS,                              STATUS_LOGGEDIN,  PROCESS_INPLACE,      &WorldSession::HandleCompletedArtifactsOpcode  );
     DEFINE_HANDLER(CMSG_CLEAR_CHANNEL_WATCH,                              STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleUnsetChannelWatch         );
     DEFINE_HANDLER(CMSG_CLEAR_RAID_MARKER,                                STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleGroupClearMarker          );
     DEFINE_HANDLER(CMSG_CLEAR_TRADE_ITEM,                                 STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleClearTradeItemOpcode      );
@@ -611,7 +612,7 @@ void OpcodeTable::Initialize()
     DEFINE_HANDLER(CMSG_TUTORIAL_RESET,                                   STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleTutorialReset             );
     DEFINE_HANDLER(CMSG_UNACCEPT_TRADE,                                   STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleUnacceptTradeOpcode       );
     DEFINE_HANDLER(CMSG_UNLEARN_SKILL,                                    STATUS_LOGGEDIN,  PROCESS_INPLACE,      &WorldSession::HandleUnlearnSkillOpcode        );
-    DEFINE_HANDLER(CMSG_UNLEARN_SPECIALIZATION,                           STATUS_UNHANDLED, PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
+    DEFINE_HANDLER(CMSG_UNLEARN_SPECIALIZATION,                           STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleUnlearnSpecializationOpcode);
     DEFINE_HANDLER(CMSG_UNREGISTER_ALL_ADDON_PREFIXES,                    STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleUnregisterAddonPrefixesOpcode);
     DEFINE_HANDLER(CMSG_UPDATE_ACCOUNT_DATA,                              STATUS_AUTHED,    PROCESS_THREADUNSAFE, &WorldSession::HandleUpdateAccountData         );
     DEFINE_HANDLER(CMSG_UPDATE_MISSILE_TRAJECTORY,                        STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleUpdateMissileTrajectory   );
