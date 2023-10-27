@@ -159,8 +159,8 @@ struct boss_morchok : public BossAI
             oldOrientation = morchokDest.GetOrientation();
             summon->SetMaxHealth(me->GetMaxHealth());
             summon->SetHealth(me->GetHealth());
-            me->MovePosition(kohcromDest, 20.00f, -M_PI / 2);
-            me->MovePosition(morchokDest, 20.00f, M_PI / 2);
+            me->MovePosition(kohcromDest, 20.00f, static_cast<float>(-M_PI / 2));
+            me->MovePosition(morchokDest, 20.00f, static_cast<float>(M_PI / 2));
             me->GetMotionMaster()->MoveJump(morchokDest, 20.00f, 10.00f);
             summon->GetMotionMaster()->MoveJump(kohcromDest, 20.00f, 10.00f);
         }
@@ -335,7 +335,7 @@ struct boss_morchok : public BossAI
             case EVENT_RESONATING_CRYSTAL:
             {
                 Talk(TALK_SUMMON_RESONATING_CRYSTAL);
-                float angle = frand(0.0f, 2.0f * M_PI);
+                float angle = frand(0.0f, 2.0f * static_cast<float>(M_PI));
                 float dist = frand(25.0f, 35.0f);
                 float tempAngle = me->NormalizeOrientation(angle);
                 Position pos(*me);
@@ -538,7 +538,7 @@ struct boss_kohcrom : public ScriptedAI
             case EVENT_RESONATING_CRYSTAL:
             {
                 Talk(TALK_SUMMON_RESONATING_CRYSTAL);
-                float angle = frand(0.0f, 2.0f * M_PI);
+                float angle = frand(0.0f, 2.0f * static_cast<float>(M_PI));
                 float dist = frand(30.0f, 40.0f);
                 float tempAngle = me->NormalizeOrientation(angle);
                 Position pos(*me);
@@ -847,7 +847,7 @@ class spell_ds_falling_fragments_periodic : public AuraScript
         uint8 maxAttemps = 0;
         while (maxAttemps < 20)
         {
-            float angle = frand(0.0f, 2.0f * M_PI);
+            float angle = frand(0.0f, 2.0f * static_cast<float>(M_PI));
             float tempAngle = Position::NormalizeOrientation(angle);
             bool nearObject = false;
             Position pos(*GetCaster());
@@ -877,7 +877,7 @@ class spell_ds_falling_fragments_periodic : public AuraScript
             uint8 maxAttemps = 0;
             while (maxAttemps < 20)
             {
-                float angle = frand(0.0f, 2.0f * M_PI);
+                float angle = frand(0.0f, 2.0f * static_cast<float>(M_PI));
                 float tempAngle = Position::NormalizeOrientation(angle);
                 bool nearObject = false;
                 Position pos(*GetCaster());
@@ -972,7 +972,7 @@ class spell_ds_black_blood_of_the_earth_periodic : public AuraScript
 
         if (Unit* caster = GetCaster())
         {
-            float angle = frand(0.0f, 2.0f * M_PI);
+            float angle = frand(0.0f, 2.0f * static_cast<float>(M_PI));
             float step = float(M_PI) / 16.0f;
             for (uint8 i = 0; i < 32; ++i)
             {
