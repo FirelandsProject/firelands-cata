@@ -22,7 +22,26 @@
 #include "ObjectAccessor.h"
 #include "Pet.h"
 #include "Player.h"
+#include "SpellMgr.h"
 #include "WorldPacket.h"
+
+enum Professions
+{
+    S_TRANSMUTE = 28672,
+    S_ELIXIR = 28677,
+    S_POTION = 28675,
+    S_GOBLIN = 20222,
+    S_GNOMISH = 20219,
+};
+
+enum Specializations
+{
+    SPEC_GNOMISH = 0,
+    SPEC_GOBLIN = 1,
+    SPEC_ELIXIR = 2,
+    SPEC_POTION = 3,
+    SPEC_TRANSMUTATION = 4,
+};
 
 void WorldSession::HandleLearnTalentOpcode(WorldPacket& recvData)
 {
@@ -120,4 +139,50 @@ void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recvData)
         return;
 
     GetPlayer()->SetSkill(skillId, 0, 0, 0);
+}
+
+void WorldSession::HandleUnlearnSpecializationOpcode(WorldPacket& recvData)
+{
+    uint32 specialization = 0;
+    uint32 spellId = 0;
+    recvData >> specialization;
+
+    switch (specialization)
+    {
+    case SPEC_GNOMISH:
+        spellId = S_GNOMISH;
+        break;
+    case SPEC_GOBLIN:
+        spellId = S_GOBLIN;
+        break;
+    case SPEC_ELIXIR:
+        spellId = S_ELIXIR;
+        break;
+    case SPEC_POTION:
+        spellId = S_POTION;
+        break;
+    case SPEC_TRANSMUTATION:
+        spellId = S_TRANSMUTE;
+        break;
+    default:
+        return;
+    }
+
+    GetPlayer()->RemoveSpell(spellId, false, false);
+    GetPlayer()->RemoveRewardedSpecializationQuest(spellId);
+}
+
+void WorldSession::HandleCompletedArtifactsOpcode(WorldPacket& recv_data)
+{
+    uint32 skillId;
+    recv_data >> skillId;
+
+    WorldPacket data(SMSG_COMPLETED_ARTIFACTS, 4 + 12 * 1);
+    data << uint32(1); // Number of artifact completed
+    // FOR
+    data << uint32(349);                // ID
+    data << uint32(uint32(time(NULL))); // Time
+    data << uint32(10);                 // Count
+    // END FOR
+    SendPacket(&data);
 }

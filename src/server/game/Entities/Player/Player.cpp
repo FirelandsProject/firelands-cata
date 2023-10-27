@@ -145,6 +145,52 @@ uint32 const MasterySpells[MAX_CLASSES] = {
     87491, // Druid
 };
 
+enum Professions
+{
+    //Skills Spell
+    S_TRANSMUTE = 28672,
+    S_ELIXIR = 28677,
+    S_POTION = 28675,
+    S_GOBLIN = 20222,
+    S_GNOMISH = 20219,
+    S_SPELLFIRE = 26797,
+    S_MOONCLOTH = 26798,
+    S_SHADOWEAVE = 26801,
+    S_CLOTH_SCAVENGING = 59390,
+    S_WEAPONSMITH = 9787,
+    S_ARMORSMITH = 9788,
+    S_SWORDSMITH = 17039,
+    S_HAMMERSMITH = 17040,
+    S_AXESSMITH = 17041,
+    S_DRAGONSCALE = 10656,
+    S_ELEMENTAL = 10658,
+    S_TRIBAL = 10660,
+
+    //Quests
+    Q_GOBLIN_1 = 3639,
+    Q_GOBLIN_2 = 29475,
+    Q_GNOMISH_1 = 3641,
+    Q_GNOMISH_2 = 3643,
+    Q_GNOMISH_3 = 29476,
+    Q_GNOMISH_4 = 29477,
+    Q_TRANSMUTE_1 = 10899,
+    Q_TRANSMUTE_2 = 29482,
+    Q_ELIXIR_1 = 10902,
+    Q_ELIXIR_2 = 29068,
+    Q_ELIXIR_3 = 29069,
+    Q_ELIXIR_4 = 29481,
+    Q_POTION_1 = 10897,
+    Q_POTION_2 = 29067,
+    Q_SPELLFIRE = 10832,
+    Q_MOONCLOTH = 10831,
+    Q_SHADOWEAVE = 10833,
+    Q_CLOTH_SCAVENGING_1 = 13265,
+    Q_CLOTH_SCAVENGING_2 = 13268,
+    Q_CLOTH_SCAVENGING_3 = 13269,
+    Q_CLOTH_SCAVENGING_4 = 13270,
+    Q_CLOTH_SCAVENGING_5 = 13272,
+};
+
 uint64 const MAX_MONEY_AMOUNT = 9999999999ULL;
 
 Player::Player(WorldSession* session) : Unit(true)
@@ -2619,6 +2665,53 @@ void Player::SendKnownSpells(bool firstLogin /*= false*/)
     SendDirectMessage(knownSpells.Write());
 }
 
+void Player::SendUnlearnSpells()
+{
+    WorldPacket data(SMSG_SEND_UNLEARN_SPELLS, 4 + 4 * m_spells.size());
+
+    uint32 spellCount = 0;
+    size_t countPos = data.wpos();
+    data << uint32(spellCount); // spell count placeholder
+
+    for (PlayerSpellMap::const_iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
+    {
+        if (itr->second.state == PLAYERSPELL_REMOVED)
+            continue;
+
+        if (itr->second.active || itr->second.disabled)
+            continue;
+
+        auto skillLineAbilities = sSpellMgr->GetSkillLineAbilityMapBounds(itr->first);
+        if (skillLineAbilities.first == skillLineAbilities.second)
+            continue;
+
+        bool hasSupercededSpellInfoInClient = false;
+        for (auto boundsItr = skillLineAbilities.first; boundsItr != skillLineAbilities.second; ++boundsItr)
+        {
+            if (boundsItr->second->SupercededBySpell)
+            {
+                hasSupercededSpellInfoInClient = true;
+                break;
+            }
+        }
+
+        if (hasSupercededSpellInfoInClient)
+            continue;
+
+        uint32 nextRank = sSpellMgr->GetNextSpellInChain(itr->first);
+        if (!nextRank || !HasSpell(nextRank))
+            continue;
+
+        data << uint32(itr->first);
+
+        ++spellCount;
+    }
+
+    data.put<uint32>(countPos, spellCount); // write real count value
+
+    SendDirectMessage(&data);
+}
+
 void Player::RemoveMail(uint32 id)
 {
     for (PlayerMails::iterator itr = m_mail.begin(); itr != m_mail.end(); ++itr)
@@ -2772,6 +2865,31 @@ bool Player::AddTalent(uint32 spellId, uint8 spec, bool learning)
     return false;
 }
 
+static bool IsUnlearnSpellsPacketNeededForSpell(uint32 spellId)
+{
+    SpellInfo const* spellInfo = sSpellMgr->AssertSpellInfo(spellId);
+    if (spellInfo->IsRanked() && !spellInfo->IsStackableWithRanks())
+    {
+        auto skillLineAbilities = sSpellMgr->GetSkillLineAbilityMapBounds(spellId);
+        if (skillLineAbilities.first != skillLineAbilities.second)
+        {
+            bool hasSupercededSpellInfoInClient = false;
+            for (auto boundsItr = skillLineAbilities.first; boundsItr != skillLineAbilities.second; ++boundsItr)
+            {
+                if (boundsItr->second->SupercededBySpell)
+                {
+                    hasSupercededSpellInfoInClient = true;
+                    break;
+                }
+            }
+
+            return !hasSupercededSpellInfoInClient;
+        }
+    }
+
+    return false;
+}
+
 bool Player::AddSpell(uint32 spellId, bool active, bool learning, bool dependent, bool disabled, bool loading /*= false*/, uint32 fromSkill /*= 0*/)
 {
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
@@ -2876,6 +2994,8 @@ bool Player::AddSpell(uint32 spellId, bool active, bool learning, bool dependent
             {
                 if (next_active_spell_id)
                     SendSupercededSpell(spellId, next_active_spell_id);
+                if (IsUnlearnSpellsPacketNeededForSpell(spellId))
+                    SendUnlearnSpells();
                 else
                 {
                     WorldPackets::Spells::UnlearnedSpells unlearnedSpells;
@@ -2957,6 +3077,8 @@ bool Player::AddSpell(uint32 spellId, bool active, bool learning, bool dependent
         newspell.dependent = dependent;
         newspell.disabled = disabled;
 
+        bool needsUnlearnSpellsPacket = false;
+
         // replace spells in action bars and spellbook to bigger rank if only one spell rank must be accessible
         if (newspell.active && !newspell.disabled && !spellInfo->IsStackableWithRanks() && spellInfo->IsRanked())
         {
@@ -2998,6 +3120,9 @@ bool Player::AddSpell(uint32 spellId, bool active, bool learning, bool dependent
                 }
             }
         }
+
+        if (needsUnlearnSpellsPacket)
+            SendUnlearnSpells();
 
         // return false if spell disabled
         if (newspell.disabled)
@@ -3270,10 +3395,10 @@ void Player::RemoveSpell(uint32 spell_id, bool disabled, bool learn_low_rank)
     uint32 talentCosts = sDBCManager.GetTalentSpellCost(spell_id);
     if (talentCosts > 0 && giveTalentPoints)
     {
-        if (talentCosts < GetUsedTalentCount())
-            SetUsedTalentCount(GetUsedTalentCount() - talentCosts);
+        if (talentCosts < m_usedTalentCount)
+            m_usedTalentCount -= talentCosts;
         else
-            SetUsedTalentCount(0);
+            m_usedTalentCount = 0;
     }
 
     // update free primary prof.points (if not overflow setting, can be in case GM use before .learn prof. learning)
@@ -3330,6 +3455,7 @@ void Player::RemoveSpell(uint32 spell_id, bool disabled, bool learn_low_rank)
 
     // activate lesser rank in spellbook/action bar, and cast it if need
     bool prev_activate = false;
+    bool needsUnlearnSpellsPacket = false;
 
     if (uint32 prev_id = sSpellMgr->GetPrevSpellInChain(spell_id))
     {
@@ -3363,6 +3489,7 @@ void Player::RemoveSpell(uint32 spell_id, bool disabled, bool learn_low_rank)
                     {
                         // downgrade spell ranks in spellbook and action bar
                         SendSupercededSpell(spell_id, prev_id);
+                        needsUnlearnSpellsPacket = IsUnlearnSpellsPacketNeededForSpell(prev_id);
                         prev_activate = true;
                     }
                 }
@@ -3392,6 +3519,9 @@ void Player::RemoveSpell(uint32 spell_id, bool disabled, bool learn_low_rank)
 
     if (sWorld->getBoolConfig(CONFIG_OFFHAND_CHECK_AT_SPELL_UNLEARN))
         AutoUnequipOffhandIfNeed();
+
+    if (needsUnlearnSpellsPacket)
+        SendUnlearnSpells();
 
     // remove from spell book if not replaced by lesser rank
     if (!prev_activate)
@@ -5619,9 +5749,61 @@ void Player::SetSkill(uint16 id, uint16 step, uint16 newVal, uint16 maxVal)
             else if (GetUInt32Value(PLAYER_PROFESSION_SKILL_LINE_1 + 1) == id)
                 SetUInt32Value(PLAYER_PROFESSION_SKILL_LINE_1 + 1, 0);
 
-            // archaeology skill unlearned
-            if (id == SKILL_ARCHAEOLOGY)
-                _archaeology->UnLearn();
+            switch (id)
+            {
+            case SKILL_HERBALISM:
+                break;
+            case SKILL_FISHING:
+                break;
+            case SKILL_BLACKSMITHING:
+                RemoveSpell(S_WEAPONSMITH, false, false);
+                RemoveSpell(S_ARMORSMITH, false, false);
+                RemoveSpell(S_SWORDSMITH, false, false);
+                RemoveSpell(S_HAMMERSMITH, false, false);
+                RemoveSpell(S_AXESSMITH, false, false);
+                break;
+            case SKILL_ALCHEMY:
+                RemoveSpell(S_ELIXIR, false, false);
+                RemoveRewardedSpecializationQuest(S_ELIXIR);
+                RemoveSpell(S_POTION, false, false);
+                RemoveRewardedSpecializationQuest(S_POTION);
+                RemoveSpell(S_TRANSMUTE, false, false);
+                RemoveRewardedSpecializationQuest(S_TRANSMUTE);
+                break;
+            case SKILL_LEATHERWORKING:
+                RemoveSpell(S_DRAGONSCALE, false, false);
+                RemoveSpell(S_ELEMENTAL, false, false);
+                RemoveSpell(S_TRIBAL, false, false);
+                break;
+            case SKILL_ENGINEERING:
+                RemoveSpell(S_GNOMISH, false, false);
+                RemoveRewardedSpecializationQuest(S_GNOMISH);
+                RemoveSpell(S_GOBLIN, false, false);
+                RemoveRewardedSpecializationQuest(S_GOBLIN);
+                break;
+            case SKILL_TAILORING:
+                RemoveSpell(S_SPELLFIRE, false, false);
+                RemoveRewardedSpecializationQuest(S_SPELLFIRE);
+                RemoveSpell(S_MOONCLOTH, false, false);
+                RemoveRewardedSpecializationQuest(S_MOONCLOTH);
+                RemoveSpell(S_SHADOWEAVE, false, false);
+                RemoveRewardedSpecializationQuest(S_SHADOWEAVE);
+                RemoveSpell(S_CLOTH_SCAVENGING, false, false);
+                RemoveRewardedSpecializationQuest(S_CLOTH_SCAVENGING);
+                break;
+            case SKILL_COOKING:
+                break;
+            case SKILL_FIRST_AID:
+                break;
+            case SKILL_JEWELCRAFTING:
+                break;
+            case SKILL_INSCRIPTION:
+                break;
+            case SKILL_ARCHAEOLOGY:
+                break;
+            default:
+                break;
+            }
         }
     }
     else
@@ -28563,4 +28745,124 @@ void Player::SendTamePetFailure(PetTameFailureReason reason)
 GameClient* Player::GetGameClient() const
 {
     return GetSession()->GetGameClient();
+}
+
+void Player::RemoveRewardedSpecializationQuest(uint32 spellId)
+{
+    uint32 guid = GetGUID();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+
+    switch (spellId)
+    {
+    case S_GNOMISH:
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_GNOMISH_1);
+        trans->Append(stmt);
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_GNOMISH_2);
+        trans->Append(stmt);
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_GNOMISH_3);
+        trans->Append(stmt);
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_GNOMISH_4);
+        trans->Append(stmt);
+        break;
+    case S_GOBLIN:
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_GOBLIN_1);
+        trans->Append(stmt);
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_GOBLIN_2);
+        trans->Append(stmt);
+        break;
+    case S_POTION:
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_POTION_1);
+        trans->Append(stmt);
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_POTION_2);
+        trans->Append(stmt);
+        break;
+    case S_TRANSMUTE:
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_TRANSMUTE_1);
+        trans->Append(stmt);
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_TRANSMUTE_2);
+        trans->Append(stmt);
+        break;
+    case S_ELIXIR:
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_ELIXIR_1);
+        trans->Append(stmt);
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_ELIXIR_2);
+        trans->Append(stmt);
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_ELIXIR_3);
+        trans->Append(stmt);
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_ELIXIR_4);
+        trans->Append(stmt);
+        break;
+    case S_SPELLFIRE:
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_SPELLFIRE);
+        trans->Append(stmt);
+        break;
+    case S_MOONCLOTH:
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_MOONCLOTH);
+        trans->Append(stmt);
+        break;
+    case S_SHADOWEAVE:
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_SHADOWEAVE);
+        trans->Append(stmt);
+        break;
+    case S_CLOTH_SCAVENGING:
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_CLOTH_SCAVENGING_1);
+        trans->Append(stmt);
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_CLOTH_SCAVENGING_2);
+        trans->Append(stmt);
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_CLOTH_SCAVENGING_3);
+        trans->Append(stmt);
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_CLOTH_SCAVENGING_4);
+        trans->Append(stmt);
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_QUESTSTATUS_REWARDED_BY_QUEST);
+        stmt->setUInt32(0, guid);
+        stmt->setUInt32(1, Q_CLOTH_SCAVENGING_5);
+        trans->Append(stmt);
+        break;
+    default:
+        return;
+    }
+    CharacterDatabase.CommitTransaction(trans);
 }

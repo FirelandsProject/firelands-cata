@@ -981,6 +981,10 @@ class FC_GAME_API WorldSession {
   void HandleTalentWipeConfirmOpcode(WorldPacket& recvPacket);
   void HandleUnlearnSkillOpcode(WorldPacket& recvPacket);
 
+  void HandleUnlearnSpecializationOpcode(WorldPacket& recvData);
+
+  void HandleCompletedArtifactsOpcode(WorldPacket& recv_data);
+
   void HandleQuestgiverStatusQueryOpcode(
       WorldPackets::Quest::QuestGiverStatusQuery& packet);
   void HandleQuestgiverStatusMultipleQuery(
