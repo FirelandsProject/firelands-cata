@@ -36,7 +36,7 @@ void PlayerTaxi::InitTaxiNodesForLevel(uint32 race, uint32 chrClass, uint8 level
 
     uint32 team = Player::TeamForRace(race);
 
-    // Patch 4.2: players will now unlock all taxi nodes within the recommended level range of the player
+    // Patch 4.2: players will also unlock all taxi nodes within the recommended level range of the player
     for (TaxiNodesEntry const* itr : sTaxiNodesStore)
     {
         // Skip scripted and debug nodes
@@ -52,20 +52,47 @@ void PlayerTaxi::InitTaxiNodesForLevel(uint32 race, uint32 chrClass, uint8 level
             SetTaximaskNode(itr->ID);
     }
 
-    // New continent starting masks (It will be accessible only at new map)
+    // https://wow.gamepedia.com/Flight_path: Patch 4.0.3a (2010-11-23): All characters now know the flight paths to their faction's capital cities, starting zone hubs, and Dalaran.
     switch (team)
     {
         case ALLIANCE:
-            SetTaximaskNode(100); // Honor Hold
+            SetTaximaskNode(2);   // Stormwind, Elwynn
+            SetTaximaskNode(582); // Goldshire, Elwynn
+            SetTaximaskNode(589); // Eastvale Logging Camp, Elwynn
+            SetTaximaskNode(6);   // Ironforge, Dun Morogh
+            SetTaximaskNode(619); // Kharanos, Dun Morogh
+            SetTaximaskNode(620); // Gol'Bolar Quarry, Dun Morogh
+            SetTaximaskNode(26);  // Lor'danel, Darkshore
+            SetTaximaskNode(456); // Dolanaar, Teldrassil
+            SetTaximaskNode(457); // Darnassus, Teldrassil
+            SetTaximaskNode(94);  // The Exodar
+            SetTaximaskNode(624); // Azure Watch, Azuremyst Isle
+            SetTaximaskNode(49);  // Moonglade
+            SetTaximaskNode(100); // Honor Hold, Hellfire Peninsula
             SetTaximaskNode(245); // Valiance Keep
             break;
         case HORDE:
-            SetTaximaskNode(99); // Thrallmar
+            SetTaximaskNode(23);  // Orgrimmar, Durotar
+            SetTaximaskNode(536); // Sen'jin Village, Durotar
+            SetTaximaskNode(537); // Razor Hill, Durotar
+            SetTaximaskNode(11);  // Undercity, Tirisfal
+            SetTaximaskNode(384); // The Bulwark, Tirisfal
+            SetTaximaskNode(460); // Brill, Tirisfal Glades
+            SetTaximaskNode(22);  // Thunder Bluff, Mulgore
+            SetTaximaskNode(402); // Bloodhoof Village, Mulgore
+            SetTaximaskNode(82);  // Silvermoon City
+            SetTaximaskNode(625); // Fairbreeze Village, Eversong Woods
+            SetTaximaskNode(631); // Falconwing Square, Eversong Woods
+            SetTaximaskNode(99);  // Thrallmar, Hellfire Peninsula
             SetTaximaskNode(257); // Warsong Hold
             break;
-        default:
-            break;
     }
+    SetTaximaskNode(128); // Shattrath, Terokkar Forest
+    SetTaximaskNode(310); // Dalaran
+
+    // level dependent taxi hubs
+    if (level >= 68)
+        SetTaximaskNode(213); // Shattered Sun Staging Area
 }
 
 void PlayerTaxi::LoadTaxiMask(std::string const &data)
