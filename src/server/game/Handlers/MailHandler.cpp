@@ -188,11 +188,6 @@ void WorldSession::HandleSendMail(WorldPacket &recvData) {
     return;
   }
 
-  if (!player->HasEnoughMoney(reqmoney) && !player->IsGameMaster()) {
-    player->SendMailResult(0, MAIL_SEND, MAIL_ERR_NOT_ENOUGH_MONEY);
-    return;
-  }
-
   Player *receiver = ObjectAccessor::FindConnectedPlayer(receiverGuid);
 
   uint32 receiverTeam = 0;
@@ -224,6 +219,12 @@ void WorldSession::HandleSendMail(WorldPacket &recvData) {
       mailsCount = fields[0].GetUInt64();
     }
 
+  }
+
+  if (!player->HasEnoughMoney(reqmoney) && !player->IsGameMaster())
+  {
+    player->SendMailResult(0, MAIL_SEND, MAIL_ERR_NOT_ENOUGH_MONEY);
+    return;
   }
 
   // do not allow to have more than 100 mails in mailbox.. mails count is in
