@@ -1636,7 +1636,7 @@ class FC_GAME_API Unit : public WorldObject
     void ModifyAuraState(AuraStateType flag, bool apply);
     uint32 BuildAuraStateUpdateForTarget(Unit* target) const;
     bool HasAuraState(AuraStateType flag, SpellInfo const* spellProto = nullptr, Unit const* Caster = nullptr) const;
-    void UnsummonAllTotems();
+    void UnsummonAllTotems(bool onDeath = false);
     bool IsMagnet() const;
     Unit* GetMagicHitRedirectTarget(Unit* victim, SpellInfo const* spellInfo);
     Unit* GetMeleeHitRedirectTarget(Unit* victim, SpellInfo const* spellInfo = nullptr);
