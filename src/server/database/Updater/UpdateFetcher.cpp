@@ -14,20 +14,20 @@
  * You should have received a copy of the GNU Affero General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
-#include "UpdateFetcher.h"
 #include "Common.h"
+#include "UpdateFetcher.h"
 #include "DBUpdater.h"
 #include "Field.h"
 #include "Log.h"
 #include "QueryResult.h"
 #include "SHA1.h"
 #include "Util.h"
-#include <boost/filesystem/operations.hpp>
-#include <fstream>
-#include <sstream>
+#include <filesystem>
 
-using namespace boost::filesystem;
+#include <sstream>
+#include <fstream>
+
+using namespace std::filesystem;
 
 struct UpdateFetcher::DirectoryEntry
 {
@@ -201,7 +201,7 @@ UpdateFetcher::AppliedFileStorage UpdateFetcher::ReceiveAppliedFiles() const
     return map;
 }
 
-std::string UpdateFetcher::ReadSQLUpdate(boost::filesystem::path const& file) const
+std::string UpdateFetcher::ReadSQLUpdate(std::filesystem::path const& file) const
 {
     std::ifstream in(file.c_str());
     if (!in.is_open())

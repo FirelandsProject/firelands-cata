@@ -18,7 +18,7 @@ if(WIN32)
   add_definitions(-D_WIN32_WINNT=0x0601)
 endif()
 
-find_package(Boost 1.49 REQUIRED system filesystem thread program_options iostreams regex)
+find_package(Boost 1.85 REQUIRED system filesystem thread program_options iostreams regex)
 add_definitions(-DBOOST_DATE_TIME_NO_LIB)
 add_definitions(-DBOOST_REGEX_NO_LIB)
 add_definitions(-DBOOST_CHRONO_NO_LIB)

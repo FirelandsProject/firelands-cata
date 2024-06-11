@@ -21,6 +21,7 @@
 #include "Define.h"
 #include <string>
 #include <openssl/sha.h>
+#include <openssl/evp.h>
 
 class BigNumber;
 
@@ -28,7 +29,13 @@ class FC_COMMON_API SHA1Hash
 {
     public:
         SHA1Hash();
+        SHA1Hash(SHA1Hash const &other);     // copy
+        SHA1Hash(SHA1Hash &&other);          // move
+        SHA1Hash &operator=(SHA1Hash other); // assign
         ~SHA1Hash();
+
+        void Swap(SHA1Hash &other) throw();
+        friend void Swap(SHA1Hash &left, SHA1Hash &right) { left.Swap(right); }
 
         void UpdateBigNumbers(BigNumber* bn0, ...);
 
@@ -42,7 +49,7 @@ class FC_COMMON_API SHA1Hash
         int GetLength(void) const { return SHA_DIGEST_LENGTH; }
 
     private:
-        SHA_CTX mC;
+        EVP_MD_CTX *m_ctx;
         uint8 mDigest[SHA_DIGEST_LENGTH];
 };
 

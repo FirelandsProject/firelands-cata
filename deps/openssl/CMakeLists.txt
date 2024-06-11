@@ -14,7 +14,7 @@
 set(OPENSSL_EXPECTED_VERSION 1.0.0)
 set(OPENSSL_MAX_VERSION "1.2")
 
-find_package(OpenSSL REQUIRED)
+find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
 
 add_library(openssl INTERFACE)
 
