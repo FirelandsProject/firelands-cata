@@ -45,7 +45,6 @@ target_link_libraries(authserver
     PRIVATE
     fc-core-interface
     PUBLIC
-    openssl
     shared)
 
 CollectIncludeDirectories(
