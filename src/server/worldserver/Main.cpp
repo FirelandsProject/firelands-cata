@@ -215,7 +215,7 @@ extern int main(int argc, char **argv)
             LOG_INFO("server.worldserver", "Using Boost version: %i.%i.%i", BOOST_VERSION / 100000, BOOST_VERSION / 100 % 1000, BOOST_VERSION % 100);
         });
 
-    OpenSSLCrypto::threadsSetup();
+    OpenSSLCrypto::threadsSetup(boost::dll::program_location().remove_filename());
 
     std::shared_ptr<void> opensslHandle(nullptr, [](void *) { OpenSSLCrypto::threadsCleanup(); });
 
