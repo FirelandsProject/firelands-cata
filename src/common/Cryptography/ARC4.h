@@ -30,10 +30,7 @@ class FC_COMMON_API ARC4
         void Init(uint8* seed);
         void UpdateData(int len, uint8* data);
     private:
-    
-    #if OPENSSL_VERSION_NUMBER >= 0x30000000L
         EVP_CIPHER* _cipher;
-    #endif
         EVP_CIPHER_CTX* m_ctx;
 };
 

@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AUTH_SHA1_H
-#define _AUTH_SHA1_H
+#ifndef FC_AUTH_SHA1_H
+#define FC_AUTH_SHA1_H
 
 #include "Define.h"
 #include <string>

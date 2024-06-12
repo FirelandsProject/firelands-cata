@@ -19,11 +19,7 @@
 
 ARC4::ARC4(uint32 len) : m_ctx(EVP_CIPHER_CTX_new())
 {
-    #if OPENSSL_VERSION_NUMBER >= 0x30000000L
-        _cipher = EVP_CIPHER_fetch(nullptr, "RC4", nullptr);
-    #else
-        EVP_CIPHER const* _cipher = EVP_rc4();
-    #endif
+    _cipher = EVP_CIPHER_fetch(nullptr, "RC4", nullptr);
     EVP_CIPHER_CTX_init(m_ctx);
     EVP_EncryptInit_ex(m_ctx, _cipher, nullptr, nullptr, nullptr);
     EVP_CIPHER_CTX_set_key_length(m_ctx, len);
@@ -40,9 +36,7 @@ ARC4::ARC4(uint8* seed, uint32 len) : m_ctx(EVP_CIPHER_CTX_new())
 ARC4::~ARC4()
 {
     EVP_CIPHER_CTX_free(m_ctx);
-    #if OPENSSL_VERSION_NUMBER >= 0x30000000L
-        EVP_CIPHER_free(_cipher);
-    #endif
+    EVP_CIPHER_free(_cipher);
 }
 
 void ARC4::Init(uint8* seed)

@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OPENSSL_CRYPTO_H
-#define OPENSSL_CRYPTO_H
+#ifndef FIRELANDS_OPENSSL_CRYPTO_H
+#define FIRELANDS_OPENSSL_CRYPTO_H
 
 #include "Define.h"
 #include <boost/filesystem/path.hpp>
