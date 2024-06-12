@@ -22,3 +22,4 @@ target_link_libraries(openssl
   INTERFACE
     OpenSSL::Crypto  
     OpenSSL::SSL)
+    
