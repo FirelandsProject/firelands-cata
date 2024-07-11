@@ -30,6 +30,7 @@ class FC_COMMON_API ARC4
         void Init(uint8* seed);
         void UpdateData(int len, uint8* data);
     private:
+        EVP_CIPHER* _cipher;
         EVP_CIPHER_CTX* m_ctx;
 };
 

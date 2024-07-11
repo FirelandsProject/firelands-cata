@@ -62,13 +62,13 @@ target_link_libraries(common
   PRIVATE
     fc-core-interface
   PUBLIC
+    openssl
     boost
     fmt
     g3dlib
     Detour
     sfmt
     utf8cpp
-    openssl
     valgrind
     threads
     jemalloc)

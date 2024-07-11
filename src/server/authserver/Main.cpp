@@ -38,16 +38,20 @@
 #include "ProcessPriority.h"
 #include "RealmList.h"
 #include "Util.h"
-
+#include "OpenSSLCrypto.h"
 #include <openssl/crypto.h>
 #include <openssl/opensslv.h>
 
+#include <boost/dll/runtime_symbol_info.hpp>
 #include <boost/asio/signal_set.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/program_options.hpp>
 
 #include <csignal>
 #include <iostream>
+#if defined(OPENSSL_VERSION_MAJOR) && (OPENSSL_VERSION_MAJOR >= 3)
+#include <openssl/provider.h>
+#endif
 
 using boost::asio::ip::tcp;
 using namespace boost::program_options;
@@ -115,9 +119,12 @@ int main(int argc, char** argv)
         []()
         {
             LOG_INFO("server.authserver", "Using configuration file %s.", sConfigMgr->GetFilename().c_str());
-            LOG_INFO("server.authserver", "Using SSL version: %s (library: %s)", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
+            //LOG_INFO("server.authserver", "Using SSL version: %s (library: %s)", OPENSSL_VERSION_TEXT, OpenSSL_version(OPENSSL_VERSION));
             LOG_INFO("server.authserver", "Using Boost version: %i.%i.%i", BOOST_VERSION / 100000, BOOST_VERSION / 100 % 1000, BOOST_VERSION % 100);
         });
+
+    OpenSSLCrypto::threadsSetup(boost::dll::program_location().remove_filename());
+    std::shared_ptr<void> opensslHandle(nullptr, [](void*) { OpenSSLCrypto::threadsCleanup(); });
 
     // authserver PID file creation
     std::string pidFile = sConfigMgr->GetStringDefault("PidFile", "");

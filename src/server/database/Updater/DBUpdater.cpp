@@ -25,7 +25,8 @@
 #include "QueryResult.h"
 #include "StartProcess.h"
 #include "UpdateFetcher.h"
-#include <boost/filesystem/operations.hpp>
+
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 
@@ -39,7 +40,7 @@ std::string DBUpdaterUtil::GetCorrectedMySQLExecutable()
 
 bool DBUpdaterUtil::CheckExecutable()
 {
-    boost::filesystem::path exe(GetCorrectedMySQLExecutable());
+    std::filesystem::path exe(GetCorrectedMySQLExecutable());
     if (!is_regular_file(exe))
     {
         exe = Firelands::SearchExecutableInPath("mysql");
@@ -163,12 +164,12 @@ template <class T> bool DBUpdater<T>::Create(DatabaseWorkerPool<T>& pool)
     catch (UpdateException&)
     {
         LOG_FATAL("sql.updates", "Failed to create database %s! Does the user (named in *.conf) have `CREATE` privileges on the MySQL server?", pool.GetConnectionInfo()->database.c_str());
-        boost::filesystem::remove(temp);
+        std::filesystem::remove(temp);
         return false;
     }
 
     LOG_INFO("sql.updates", "Done.");
-    boost::filesystem::remove(temp);
+    std::filesystem::remove(temp);
     return true;
 }
 
@@ -324,7 +325,7 @@ template <class T> bool DBUpdater<T>::Populate(DatabaseWorkerPool<T>& pool)
         return true;
     }
 
-    if (!boost::filesystem::is_directory(base))
+    if (!std::filesystem::is_directory(base))
     {
         switch (DBUpdater<T>::GetBaseLocationType())
         {
@@ -337,7 +338,7 @@ template <class T> bool DBUpdater<T>::Populate(DatabaseWorkerPool<T>& pool)
         case LOCATION_DOWNLOAD:
         {
             std::string const filename = base.filename().generic_string();
-            std::string const workdir = boost::filesystem::current_path().generic_string();
+            std::string const workdir = std::filesystem::current_path().generic_string();
             LOG_ERROR("sql.updates",
                 ">> File \"%s\" is missing, download it from \"https://github.com/FirelandsProject/firelands-cata/releases\""
                 " uncompress it and place the file \"%s\" in the directory \"%s\".",
@@ -348,9 +349,9 @@ template <class T> bool DBUpdater<T>::Populate(DatabaseWorkerPool<T>& pool)
         return false;
     }
 
-    boost::filesystem::directory_iterator dirIt;
+    std::filesystem::directory_iterator dirIt;
     uint32 filesCount = 0;
-    for (boost::filesystem::directory_iterator it(base); it != dirIt; ++it)
+    for (std::filesystem::directory_iterator it(base); it != dirIt; ++it)
     {
         if (it->path().extension() == ".sql")
         {
@@ -364,7 +365,7 @@ template <class T> bool DBUpdater<T>::Populate(DatabaseWorkerPool<T>& pool)
         return false;
     }
 
-    for (boost::filesystem::directory_iterator it(base); it != dirIt; ++it)
+    for (std::filesystem::directory_iterator it(base); it != dirIt; ++it)
     {
         if (it->path().extension() != ".sql")
         {

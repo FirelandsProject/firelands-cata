@@ -21,16 +21,8 @@
 #include "DatabaseEnvFwd.h"
 #include "Define.h"
 #include <string>
-
+#include <filesystem>
 template <class T> class DatabaseWorkerPool;
-
-namespace boost
-{
-namespace filesystem
-{
-class path;
-}
-} // namespace boost
 
 class FC_DATABASE_API UpdateException : public std::exception
 {
@@ -71,7 +63,7 @@ class DBUpdaterUtil
 template <class T> class FC_DATABASE_API DBUpdater
 {
   public:
-    using Path = boost::filesystem::path;
+    using Path = std::filesystem::path;
 
     static inline std::string GetConfigEntry();
 

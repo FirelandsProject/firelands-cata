@@ -23,6 +23,8 @@
 
 #include "Hacks/boost_1_73_process_windows_nopch.h"
 
+#include <filesystem>
+
 #include <boost/algorithm/string/join.hpp>
 #include <boost/iostreams/copy.hpp>
 #include <boost/process/args.hpp>
@@ -98,7 +100,7 @@ static int CreateChildProcess(T waiter, std::string const& executable,
         {
             // With binding stdin
             return child{
-                exe = boost::filesystem::absolute(executable).string(),
+                exe = std::filesystem::absolute(executable).string(),
                 args = argsVector,
                 env = environment(boost::this_process::environment()),
                 std_in = inputFile.get(),
@@ -110,7 +112,7 @@ static int CreateChildProcess(T waiter, std::string const& executable,
         {
             // Without binding stdin
             return child{
-                exe = boost::filesystem::absolute(executable).string(),
+                exe = std::filesystem::absolute(executable).string(),
                 args = argsVector,
                 env = environment(boost::this_process::environment()),
                 std_in = boost::process::close,
