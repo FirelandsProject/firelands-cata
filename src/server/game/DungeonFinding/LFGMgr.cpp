@@ -1060,6 +1060,7 @@ void LFGMgr::MakeNewGroup(LfgProposal const& proposal)
             uint32 rDungeonId = (*dungeons.begin());
             LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(rDungeonId);
             if (dungeon && dungeon->TypeID == LFG_TYPE_RANDOM)
+                if (!m_Testing)
                 player->CastSpell(player, LFG_SPELL_DUNGEON_COOLDOWN, false);
         }
     }
