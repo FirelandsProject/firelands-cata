@@ -1160,5 +1160,9 @@ enum FirelandsStrings
     // For NPC reload command
     LANG_NPC_RELOADED                             = 11020,
     LANG_NPCS_RELOADED                            = 11021,
+
+    LANG_DEBUG_LFG_ON                             = 11022,
+    LANG_DEBUG_LFG_OFF                            = 11023
+
 };
 #endif

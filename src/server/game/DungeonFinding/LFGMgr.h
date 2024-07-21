@@ -459,6 +459,10 @@ class FC_GAME_API LFGMgr
         /// Returns the stored role mask for the shortage system indexed by random dungeon id
         uint32 GetShortageRoleMask(uint32 dungeonId);
 
+        // debug lfg command
+        void ToggleTesting();
+        /// For 1 player queue testing
+        [[nodiscard]] bool IsTesting() const { return m_Testing; }
         // WPE Protection
         /// Checks if the player's class is allowed to perform his selected roles
         bool CanPerformSelectedRoles(uint8 playerClass, uint8 roles) const;
@@ -522,6 +526,7 @@ class FC_GAME_API LFGMgr
         LfgPlayerBootContainer BootsStore;                 ///< Current player kicks
         LfgPlayerDataContainer PlayersStore;               ///< Player data
         LfgGroupDataContainer GroupsStore;                 ///< Group data
+        bool m_Testing;
 };
 
 } // namespace lfg

@@ -39,6 +39,7 @@
 #include "RBAC.h"
 #include "SharedDefines.h"
 #include "SocialMgr.h"
+#include "Language.h"
 #include "World.h"
 #include "WorldSession.h"
 
@@ -53,7 +54,7 @@ LFGDungeonData::LFGDungeonData(LFGDungeonEntry const* dbc) : id(dbc->ID), name(d
 {
 }
 
-LFGMgr::LFGMgr(): m_QueueTimer(0), m_lfgProposalId(1), m_options(sWorld->getIntConfig(CONFIG_LFG_OPTIONSMASK)), m_isSoloLFG(false)
+LFGMgr::LFGMgr() : m_QueueTimer(0), m_lfgProposalId(1), m_options(sWorld->getIntConfig(CONFIG_LFG_OPTIONSMASK)), m_isSoloLFG(false), m_Testing(false)
 {
 }
 
@@ -652,6 +653,12 @@ void LFGMgr::JoinLfg(Player* player, uint8 roles, LfgDungeonSet& dungeons, const
         grp ? "group" : "player", debugNames.c_str(), uint32(dungeons.size()), ConcatenateDungeons(dungeons).c_str());
 }
 
+void LFGMgr::ToggleTesting()
+{
+    m_Testing = !m_Testing;
+    sWorld->SendWorldText(m_Testing ? LANG_DEBUG_LFG_ON : LANG_DEBUG_LFG_OFF);
+}
+
 /**
     Leaves Dungeon System. Player/Group is removed from queue, rolechecks, proposals
     or votekicks. Player or group needs to be not nullptr and using Dungeon System
@@ -1121,7 +1128,7 @@ void LFGMgr::UpdateProposal(uint32 proposalId, ObjectGuid guid, bool accept)
         if (itPlayers->second.accept != LFG_ANSWER_AGREE)   // No answer (-1) or not accepted (0)
             allAnswered = false;
 
-    if (!sLFGMgr->IsSoloLFG() && !allAnswered)
+    if (!m_Testing && !sLFGMgr->IsSoloLFG() && !allAnswered)
     {
         for (LfgProposalPlayerContainer::const_iterator it = proposal.players.begin(); it != proposal.players.end(); ++it)
             SendLfgUpdateProposal(it->first, proposal);

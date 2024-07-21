@@ -49,6 +49,7 @@ EndScriptData */
 #include <limits>
 #include <map>
 #include <set>
+#include <LFGMgr.h>
 
 class debug_commandscript : public CommandScript
 {
@@ -103,6 +104,7 @@ public:
             { "worldstate",    rbac::RBAC_PERM_COMMAND_DEBUG_WORLDSTATE,    false, &HandleDebugUpdateWorldStateCommand, "" },
             { "update",        rbac::RBAC_PERM_COMMAND_DEBUG_UPDATE,        false, &HandleDebugUpdateCommand,           "" },
             { "itemexpire",    rbac::RBAC_PERM_COMMAND_DEBUG_ITEMEXPIRE,    false, &HandleDebugItemExpireCommand,       "" },
+            { "lfg",            rbac::RBCA_PERM_COMMAND_LFG_DEBUG,           false, &HandleDebugDungeonFinderCommand,    "" },
             { "areatriggers",  rbac::RBAC_PERM_COMMAND_DEBUG_AREATRIGGERS,  false, &HandleDebugAreaTriggersCommand,     "" },
             { "los",           rbac::RBAC_PERM_COMMAND_DEBUG_LOS,           false, &HandleDebugLoSCommand,              "" },
             { "moveflags",     rbac::RBAC_PERM_COMMAND_DEBUG_MOVEFLAGS,     false, &HandleDebugMoveflagsCommand,        "" },
@@ -1757,6 +1759,13 @@ public:
 
         return true;
     }
+
+    static bool HandleDebugDungeonFinderCommand(ChatHandler* /*handler*/, char const* /*args*/)
+    {
+        sLFGMgr->ToggleTesting();
+        return true;
+    }
+
 };
 
 void AddSC_debug_commandscript()

@@ -483,7 +483,7 @@ LfgCompatibility LFGQueue::CheckCompatibility(GuidList check)
         }
     }
 
-    if (!sLFGMgr->IsSoloLFG() && numPlayers != MAXGROUPSIZE) // solo lfg
+    if (!sLFGMgr->IsTesting() && !sLFGMgr->IsSoloLFG() && numPlayers != MAXGROUPSIZE) // solo lfg
     {
         LOG_DEBUG("lfg.queue.match.compatibility.check", "Guids: (%s) single group. Compatibles", GetDetailedMatchRoles(check).c_str());
         LfgQueueDataContainer::iterator itQueue = QueueDataStore.find(check.front());
@@ -556,7 +556,7 @@ LfgCompatibility LFGQueue::CheckCompatibility(GuidList check)
     }
 
     // Enough players?
-    if (!sLFGMgr->IsSoloLFG() && numPlayers != MAXGROUPSIZE) // solo  lfg
+    if (!sLFGMgr->IsTesting() &&!sLFGMgr->IsSoloLFG() && numPlayers != MAXGROUPSIZE) // solo  lfg
     {
         LOG_DEBUG("lfg.queue.match.compatibility.check", "Guids: (%s) Compatibles but not enough players(%u)", GetDetailedMatchRoles(check).c_str(), numPlayers);
         LfgCompatibilityData data(LFG_COMPATIBLES_WITH_LESS_PLAYERS);
