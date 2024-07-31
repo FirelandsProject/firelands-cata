@@ -21,7 +21,7 @@
 #include "Define.h"
 #include <string>
 #include <openssl/sha.h>
-
+#include <openssl/hmac.h>
 class BigNumber;
 
 class FC_COMMON_API SHA256Hash
@@ -42,7 +42,7 @@ class FC_COMMON_API SHA256Hash
         int GetLength(void) const { return SHA256_DIGEST_LENGTH; };
 
     private:
-        SHA256_CTX mC;
+        EVP_MD_CTX* _ctx;
         uint8 mDigest[SHA256_DIGEST_LENGTH];
 };
 
