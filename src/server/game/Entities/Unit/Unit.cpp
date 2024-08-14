@@ -715,6 +715,9 @@ bool Unit::HasBreakableByDamageCrowdControlAura(Unit* excludeCasterChannel) cons
 /*static*/ uint32 Unit::DealDamage(
     Unit* attacker, Unit* victim, uint32 damage, CleanDamage const* cleanDamage, DamageEffectType damagetype, SpellSchoolMask damageSchoolMask, SpellInfo const* spellProto, bool durabilityLoss)
 {
+    if (!attacker)
+        return false;
+
     // Sparring Checks
     if (Creature* target = victim->ToCreature())
     {
