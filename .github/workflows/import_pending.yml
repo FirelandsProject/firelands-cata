@@ -6,8 +6,6 @@ on:
 
 jobs:
   import-pending:
-    strategy:
-      fail-fast: false
     runs-on: ubuntu-20.04
     if: github.repository == 'FirelandsProject/firelands-cata'
     steps:

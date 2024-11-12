@@ -6,7 +6,7 @@ Firelands Core Project is an open source community, is interested in working on 
 
 ## Copyright
 
-License: GPL 2.0
+License: A GPL 3.0
 
 Read file [LICENSE](LICENSE)
 

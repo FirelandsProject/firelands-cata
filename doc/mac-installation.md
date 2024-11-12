@@ -15,7 +15,7 @@ The most important ones are:
     cmake
     make
     clang
-    openssl-1.x
+    openssl@3.4
     mariadb-client or mysql-8
     boost
     readline
@@ -31,38 +31,19 @@ installed in /Users/YOUR_USER/firelands/build, an example sequence of commands c
 be :
 
 ```
-    export OPENSSL_ROOT_DIR=/usr/local/opt/openssl@1.1
-    cmake ../ -GXcode \
-    -DMYSQL_ADD_INCLUDE_PATH=/usr/local/opt/mysql-client/lib/libmysqlclient.dylib \
-    -DMYSQL_INCLUDE_DIR=/usr/local/opt/mysql-client/include/mysql \
-    -DMYSQL_LIBRARY=/usr/local/opt/mysql-client/lib/libmysqlclient.dylib \
-    -DOPENSSL_INCLUDE_DIR=$OPENSSL_ROOT_DIR/include \
-    -DOPENSSL_SSL_LIBRARIES=$OPENSSL_ROOT_DIR/lib/libssl.dylib \
-    -DOPENSSL_CRYPTO_LIBRARIES=$OPENSSL_ROOT_DIR/lib/libcrypto.dylib \
-    -DREADLINE_INCLUDE_DIR=/usr/local/opt/readline/include \
-    -DREADLINE_LIBRARY=/usr/local/opt/readline/lib/libreadline.dylib \
-    -DCMAKE_INSTALL_PREFIX=../release/ \
-    -DWITH_WARNINGS=1 \
-    -DSCRIPTS=static \
-    -DTOOLS=1
+cmake ../ -DCMAKE_INSTALL_PREFIX=/home/firelands/server -DTOOLS=1 -DWITH_WARNINGS=1 -DSCRIPTS=static
 ```
 
 Or If you want to install the core only:
 ```
-    export OPENSSL_ROOT_DIR=/usr/local/opt/openssl@1.1
-    cmake ../ -GXcode \
-    -DMYSQL_ADD_INCLUDE_PATH=/usr/local/opt/mysql-client/lib/libmysqlclient.dylib \
-    -DMYSQL_INCLUDE_DIR=/usr/local/opt/mysql-client/include/mysql \
-    -DMYSQL_LIBRARY=/usr/local/opt/mysql-client/lib/libmysqlclient.dylib \
-    -DOPENSSL_INCLUDE_DIR=$OPENSSL_ROOT_DIR/include \
-    -DOPENSSL_SSL_LIBRARIES=$OPENSSL_ROOT_DIR/lib/libssl.dylib \
-    -DOPENSSL_CRYPTO_LIBRARIES=$OPENSSL_ROOT_DIR/lib/libcrypto.dylib \
-    -DREADLINE_INCLUDE_DIR=/usr/local/opt/readline/include \
-    -DREADLINE_LIBRARY=/usr/local/opt/readline/lib/libreadline.dylib \
-    -DCMAKE_INSTALL_PREFIX=../release/ \
-    -DWITH_WARNINGS=1 \
-    -DSCRIPTS=static \
-    -DTOOLS=0
+cmake ../ -DCMAKE_INSTALL_PREFIX=/home/firelands/server -DTOOLS=0 -DWITH_WARNINGS=1 -DSCRIPTS=static
+```
+
+Then run make and make install
+
+```
+make -j8
+make install
 ```
 
 Thats just about all thats needed. You can however tweak more settings
