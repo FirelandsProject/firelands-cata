@@ -6412,8 +6412,6 @@ void Unit::RemoveAllControlled(bool onDeath /*= false*/)
             {
                 target->ToTempSummon()->UnSummon();
             }
-            if (!target->IsInCombat())
-                target->ToTempSummon()->UnSummon();
             else
                 // we set this for edge case checks
                 controlledKeepsFighting = true;
@@ -6540,7 +6538,7 @@ void Unit::RemoveCharmAuras()
 
 // UnsummonAllTotems gets called twice - in Unit::setDeathState() & void Unit::RemoveFromWorld()
 // It iterates through all summon slots and despawns the summons
-void Unit::UnsummonAllTotems()
+void Unit::UnsummonAllTotems(bool onDeath /*= false*/)
 {
     for (uint8 i = 0; i < MAX_SUMMON_SLOT; ++i)
     {
@@ -6553,8 +6551,10 @@ void Unit::UnsummonAllTotems()
             // We want to keep guardians and pets alive for now. A InCombat check is not needed here, we do this
             // in void Unit::RemoveAllControlled()
             {
-                if (!OldTotem->IsGuardian() && !OldTotem->IsPet())
+                if (!(onDeath && !IsPlayer() && OldTotem->IsGuardian()))
+                {
                     OldTotem->ToTempSummon()->UnSummon();
+                }
             }
         }
     }
@@ -9216,8 +9216,8 @@ void Unit::setDeathState(DeathState s)
         ExitVehicle(); // Exit vehicle before calling RemoveAllControlled
                        // vehicles use special type of charm that is not removed by the next function
                        // triggering an assert
-        UnsummonAllTotems();
-        RemoveAllControlled();
+        UnsummonAllTotems(true);
+        RemoveAllControlled(true);
         RemoveAllAurasOnDeath();
     }
 
